@@ -1,3 +1,5 @@
+[![Travis CI](https://travis-ci.org/wonkey-coders/wonkey.svg?branch=develop)](https://travis-ci.org/wonkey-coders/wonkey)
+![Github CI](https://github.com/wonkey-coders/wonkey/workflows/Github%20CI/badge.svg?branch=develop)
 # Wonkey Programming Language
 
 Wonkey is a fork of Monkey2 programming language designed by Mark Sibly, creator of the 'Blitz' range of languages.
