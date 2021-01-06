@@ -1,0 +1,807 @@
+
+Namespace wonkey.types
+
+Extern
+
+#rem wonkeydoc Implemented by numeric types.
+#end
+Interface INumeric
+End
+
+#rem wonkeydoc Implemented by integral numeric types.
+#end
+Interface IIntegral Extends INumeric
+End
+
+#rem wonkeydoc Implemented by real numeric types.
+#end
+Interface IReal Extends INumeric
+End
+
+#rem wonkeydoc Primitive bool type.
+#end
+Struct @Bool ="wxBool"
+End
+
+#rem wonkeydoc Primitive 8 bit byte type.
+#end
+Struct @Byte Implements IIntegral ="wxByte"
+End
+
+#rem wonkeydoc Primitive 8 bit unsigned byte type.
+#end
+Struct @UByte Implements IIntegral ="wxUByte"
+End
+
+#rem wonkeydoc Primitive 16 bit short type.
+#end
+Struct @Short Implements IIntegral ="wxShort"
+End
+
+#rem wonkeydoc Primitive 16 bit unsigned short type.
+#end
+Struct @UShort Implements IIntegral ="wxUShort"
+End
+
+#rem wonkeydoc Primitive 32 bit int type.
+#end
+Struct @Int Implements IIntegral ="wxInt"
+End
+
+#rem wonkeydoc Primitive 32 bit unsigned int type.
+#end
+Struct @UInt Implements IIntegral ="wxUInt"
+End
+
+#rem wonkeydoc Primitive 64 bit long type.
+#end
+Struct @Long Implements IIntegral ="wxLong"
+End
+
+#rem wonkeydoc Primitive 64 bit unsigned long type.
+#end
+Struct @ULong Implements IIntegral ="wxULong"
+End
+
+#rem wonkeydoc Primitive 32 bit float type.
+#end
+Struct @Float Implements IReal ="wxFloat"
+End
+
+#rem wonkeydoc Primitive 64 bit double type.
+#end
+Struct @Double Implements IReal ="wxDouble"
+End
+
+#rem wonkeydoc Primitive string type
+#end
+Struct @String ="wxString"
+
+	#rem wonkeydoc Gets the length of the string.
+	
+	@return The number of characters in the string.
+	
+	#end
+	Property Length:Int()="length"
+	
+	
+	#rem wonkeydoc Gets the utf8 length of the string.
+	
+	@return The size of the buffer required to store a utf8 representation of the string.
+	
+	#end
+	Property Utf8Length:Int()="utf8Length"
+
+	
+	#rem wonkeydoc Gets the CString length of the string.
+	
+	@return The size of the buffer required to store a cstring representation of the string.
+	
+	#end
+	Property CStringLength:Int()="utf8Length"
+
+	
+	#rem wonkeydoc Finds a substring in the string.
+	
+	If `substr` is not found, -1 is returned.
+	
+	@param substr The substring to search for.
+	
+	@param from The start index for the search.
+	
+	@return The index of the first occurance of `substr` in the string, or -1 if `substr` was not found.
+	
+	#end
+	Method Find:Int( substr:String,from:Int=0 )="find"
+	
+	#rem wonkeydoc Finds the last occurance of a substring in the string.
+	
+	If `substr` is not found, -1 is returned.
+	
+	@param substr The substring to search for.
+	
+	@param from The start index for the search.
+	
+	@return The index of the last occurance of `substr` in the string, or -1 if `substr` was not found.
+	
+	#end
+	Method FindLast:Int( substr:String,from:Int=0 )="findLast"
+	
+	#rem wonkeydoc Checks if the string contains a substring.
+	
+	@param substr The substring to check for.
+	
+	@return True if the string contains `substr`.
+	
+	#end
+	Method Contains:Bool( substr:String )="contains"
+	
+	#rem wonkeydoc Check if the string starts with another string.
+	
+	@param substr The string to check for.
+	
+	@return True if the string starts with `substr`.
+	
+	#end
+	Method StartsWith:Bool( str:String )="startsWith"
+	
+	#rem wonkeydoc Check if the string ends with another string.
+	
+	@param substr The string to check for.
+	
+	@return True if the string ends with `substr`.
+	
+	#end
+	Method EndsWith:Bool( str:String )="endsWith"
+	
+	#rem wonkeydoc Extracts a substring from the string.
+	
+	Returns a string consisting of all characters from `from` until (but not including) `tail`, or until the end of the string if `tail` 
+	is not specified.
+	
+	If either `from` or `tail` is negative, it represents an offset from the end of the string.
+	
+	@param `from` The starting index.
+	
+	@param `tail` The ending index.
+	
+	@return A substring.
+	
+	#end
+	Method Slice:String( from:Int )="slice"
+	
+	Method Slice:String( from:Int,tail:Int )="slice"
+	
+	#rem wonkeydoc Gets a substring from the start of the string.
+	
+	Returns a string consisting of the first `count` characters of this string.
+	
+	If `count` is less than or equal to 0, an empty string is returned.
+	
+	If `count` is greater than the length of this string, this string is returned.
+	
+	@param count The number of characters to return.
+
+	@return A string consisting of the first `count` characters of this string.
+	
+	#end
+	Method Left:String( count:Int )="left"
+	
+	#rem wonkeydoc Gets a substring from the end of the string.
+
+	Returns a string consisting of the last `count` characters of this string.
+
+	If `count` is less than or equal to 0, an empty string is returned.
+	
+	If `count` is greater than the length of this string, this string is returned.
+	
+	@param count The number of characters to return.
+
+	@return A string consisting of the last `count` characters of this string.
+	
+	#end
+	Method Right:String( count:Int )="right"
+	
+	#rem wonkeydoc Gets a substring from the middle of the string.
+	
+	Returns a string consisting of `count` characters starting from index `from`.
+	
+	If `count` is less than or equal to 0, an empty string is returned.
+	
+	If `from`+`count` is greater than the length of the string, the returned string is truncated.
+
+	@param from The index of the first character to return.
+
+	@param count The number of characters to return.
+
+	@return A string consisting of `count` characters starting from index `from`.
+	
+	#end
+	Method Mid:String( from:Int,count:Int )="mid"
+	
+	#rem wonkeydoc Convert the string to uppercase.
+	
+	Return the string converted to uppercase.
+	
+	@return The string converted to uppercase.
+	
+	#end
+	Method ToUpper:String()="toUpper"
+	
+	#rem wonkeydoc Convert the string to lowercase.
+	
+	Returns the string converted to lowercase.
+	
+	@return The string converted to lowercase.
+	
+	#end
+	Method ToLower:String()="toLower"
+
+	#rem wonkeydoc Capitalizes the string.
+	
+	Returns the string with the first character converted to uppercase and the remaining characters unmodified.
+
+	@return The string with the first character converted to uppercase and the remaining characters unmodified.
+	
+	#end	
+	Method Capitalize:String()="capitalize"
+	
+	#rem wonkeydoc Trim whitespace from a string.
+	
+	Returns the string with leading and trailing whitespace removed.
+	
+	@return The string with leading and trailing whitespace removed.
+	
+	#end
+	Method Trim:String()="trim"
+	
+	#rem wonkeydoc Trim whitespace from the start a string.
+	
+	Returns the string with any leading whitespace removed.
+	
+	@return The string with any leading whitespace removed.
+	
+	#end
+	Method TrimStart:String()="trimStart"
+	
+	#rem wonkeydoc Trim whitespace from the end of a string.
+	
+	Returns the string with any trailing whitespace removed.
+
+	@return The string with any trailing whitespace removed.
+	
+	#end
+	Method TrimEnd:String()="trimEnd"
+	
+	#rem wonkeydoc Duplicates a string.
+	
+	Returns the string duplicated `count` times.
+	
+	@return The string duplicated `count` times.
+	
+	#end
+	Method Dup:String( count:Int )="dup"
+	
+	#rem wonkeydoc Replace all occurances of a substring with another string.
+
+	Returns the string with all occurances of `find` replaced with `replace`.
+	
+	@param find The string to search for.
+	
+	@param replace The string to replace with.
+	
+	@return The string with all occurances of `find` replaced with `replace`.
+	
+	#end
+	Method Replace:String( find:String,replace:String )="replace"
+	
+	#rem wonkeydoc Splits this string.
+	
+	Splits this string into an array of strings.
+	
+	@param separator Separator to use for splitting.
+	
+	@return An array of strings.
+	
+	#end
+	Method Split:String[]( separator:String )="split"
+	
+	#rem wonkeydoc Joins an array of strings.
+	
+	Joins an array of strings, inserting this string between elements.
+	
+	@param bits The strings to join.
+
+	@return The joined string.	
+	
+	#end
+	Method Join:String( bits:String[] )="join"
+	
+
+	#rem wonkeydoc Converts the string to a CString.
+	
+	If there is enough room in the memory buffer, a null terminating '0' is appended to the CString.
+	
+	@param buf Memory buffer to write the CString to.
+	
+	@param bufSize Size of the memory buffer in bytes.
+	
+	#end
+	Method ToCString( buf:Void Ptr,bufSize:Int )="toCString"
+
+
+	#rem wonkeydoc Converts the string to a WString.
+	
+	If there is enough room in the memory buffer, a null terminating '0' is appended to the WString.
+	
+	@param buf Memory buffer to write the WString to.
+	
+	@param bufSize Size of the memory buffer in bytes.
+	
+	#end
+	Method ToWString( buf:Void Ptr,bufSize:Int )="toWString"
+	
+
+	#rem wonkeydoc Creates a string containing a single character.
+	
+	@param char The character.
+	
+	#end
+	Function FromChar:String( char:Int )="wxString::fromChar"
+	
+
+	#rem wonkeydoc Creates a string containing characters in an array.
+	
+	@param chars The array.
+	
+	#end
+	Function FromChars:String( chars:Int[] )="wxString::fromChars"
+	
+	
+	#rem wonkeydoc Creates a string from a CString.
+	
+	If `bufSize` is specified, the CString may contain null characters which will be included in the string.
+	
+	If `bufSize` is not specified, the CString must be correctly null terminated or Bad Things Will Happen.
+	
+	@param buf The memory buffer containing the CString.
+	
+	@param bufSize The size of the memory buffer in bytes.
+	
+	#end	
+	Function FromCString:String( buf:Void Ptr,bufSize:Int )="wxString::fromCString"
+
+	Function FromCString:String( buf:Void Ptr )="wxString::fromCString"
+
+	
+	#rem wonkeydoc Creates a string from a null terminated WString.
+	
+	If `bufSize` is specified, the WString may contain null characters which will be included in the string.
+	
+	If `bufSize` is not specified, the WString must be correctly null terminated or Bad Things Will Happen.
+	
+	@param buf The memory buffer containing the WString.
+	
+	@param bufSize The size of the memory buffer in bytes.
+	
+	#end	
+	Function FromWString:String( buf:Void Ptr,bufSize:Int )="wxString::fromWString"
+	
+	Function FromWString:String( buf:Void Ptr )="wxString::fromWString"
+	
+End
+
+#rem wonkeydoc String wrapper type for native 'char *' strings.
+
+This type should only be used when declaring parameters for extern functions.
+
+#end
+Struct @CString="wxCString"
+End
+
+#rem wonkeydoc String wrapper type for native 'wchar_t *' strings.
+
+This type should only be used when declaring parameters for extern functions.
+
+#end
+Struct @WString="wxWString"
+End
+
+#rem wonkeydoc Variant type.
+
+The 'Variant' type is a primitive type that can be used to 'box' values of any type.
+
+An uninitialized variant will contain a 'null' value (of type Void) until you assign something to it.
+
+A variant is 'true' if it contains any value with a non-void type (including a bool false value!) and 'false' if it is uninitialized and has no (void) type.
+
+Any type of value can be implicitly converted to a variant.
+
+To retrieve the value contained in a variant, you must explicitly cast the variant to the desired type. Note that the cast must specify the exact type of the value already contained in the variant, or a runtime error will occur.
+
+The one exception to this is if the variant contains a class object, in which case you can cast the variant to any valid base class of the object.
+
+#end
+Struct @Variant="wxVariant"
+
+	#rem wonkeydoc Static Type of the variant value.
+	#end
+	Property Type:TypeInfo()="getType"
+	
+	#rem wonkeydoc Dynamic type of the variant value.
+	#end
+	Property DynamicType:TypeInfo()="getDynamicType"
+		
+	#rem wonkeydoc Gets the integer enum value of an enum variant.
+	
+	The type of the variant must be an enum type, or a runtime error will occur.
+	
+	#end
+	Property EnumValue:Int()="enumValue"
+		
+	#rem wonkeydoc Gets the length of an array.
+	
+	The type of the variant must be an array type, or a runtime error will occur.
+	
+	#end
+	Method GetArrayLength:Int()="getArrayLength"
+		
+	#rem wonkeydoc Gets an element from an array.
+	
+	The type of the variant must be an array type, or a runtime error will occur.
+	
+	#end
+	Method GetArrayElement:Variant( index:Int )="getArrayElement"
+		
+	#rem wonkeydoc Sets an element of an array.
+	
+	The type of the variant must be an array type, or a runtime error will occur.
+	
+	#end
+	Method SetArrayElement( index:Int,value:Variant )="setArrayElement"
+		
+	
+End
+
+#rem wonkeydoc Primtive array type.
+
+This is a 'pseduo type' extended by all array types.
+
+#end
+Struct @Array<T>
+
+	#rem wonkeydoc The raw memory used by the array.
+	
+	#end
+	Property Data:T Ptr()="data"
+	
+	#rem wonkeydoc The length of the array.
+	
+	In the case of multi-dimensional arrays, the length of the array is the product of the sizes of all dimensions.
+	
+	#end
+	Property Length:Int()="length"
+	
+	#rem wonkeydoc Extracts a subarray from the array.
+	
+	Returns an array consisting of all elements from `from` until (but not including) `tail`, or until the end of the string if `tail` is not specified.
+	
+	If either `from` or `tail` is negative, it represents an offset from the end of the array.
+	
+	@param `from` The starting index.
+	
+	@param `tail` The ending index.
+	
+	@return A subarray.
+	
+	#end
+	Method Slice:T[]( from:Int )="slice"
+	
+	Method Slice:T[]( from:Int,term:Int )="slice" 
+	
+	
+	#rem wonkeydoc Resizes an array.
+	
+	Returns a copy of the array resized to length `newLength`.
+	
+	Note that this method does not modify this array in any way.
+	
+	@param newLength The length of the new array.
+	
+	@return A new array.
+	
+	#end
+	Method Resize:T[]( newLength:Int )="resize"
+	
+	#rem wonkeydoc Gets the size of a single array dimension.
+	
+	Returns The size of the array in the given dimension.
+	
+	@param dimensions The dimension.
+	
+	@return The size of the array in the given dimension.
+	
+	#end
+	Method GetSize:Int( dimension:Int )="size"
+	
+	#rem wonkeydoc Copies a range of elements from this array to another.
+	
+	In debug mode, a runtime error will occur if the copy is outside the range of the array.
+	
+	@param dstArray destination of the copy.
+	
+	@param srcOffset First element to copy from this array.
+	
+	@param dstOffset First element to copy to in destination array.
+	
+	@param count Number of elements to copy.
+	
+	#end
+	Method CopyTo( dstArray:T[],srcOffset:Int,dstOffset:Int,count:Int )="copyTo"
+
+End
+
+#rem wonkeydoc Base class of all objects.
+#end
+Class @Object="wxObject"
+
+	#rem wonkeydoc The dynamic type of the object.
+	#end
+	Property DynamicType:TypeInfo()="typeof"
+
+	#rem wonkeydoc @deprecated use [[DynamicType]].
+	#end
+	Property InstanceType:TypeInfo()="typeof"
+	
+	'#rem wonkeydoc Finalize method.
+	'#end
+	'Method Finalize() Virtual="gcFinalize"
+
+	#rem wonkeydoc @hidden
+	#end
+	Method typeName:Void Ptr()="typeName"
+		
+End
+
+#rem wonkeydoc Base class of all throwable objects.
+
+#end
+Class @Throwable="wxThrowable"
+
+End
+
+'***** Reflecftion types *****
+
+#rem wonkeydoc Runtime type information.
+#End
+Class @TypeInfo Extends Void="wxTypeInfo"
+
+	#rem wonkeydoc Type name.
+	#end
+	Property Name:String()="getName"
+	
+	#rem wonkeydoc Type kind.
+	
+	Will be one of: Unknown, Primitive, Pointer, Array, Function, Class, Interface, Struct, Namespace.
+	
+	#end
+	Property Kind:String()="getKind"
+
+	#rem wonkeydoc A variant containing a null value of this type.
+	#end		
+	Property NullValue:Variant()="nullValue"
+	
+	#rem wonkeydoc Pointer pointee type.
+	
+	If the type is a pointer type, returns the type of what it's pointing at.
+	
+	If the type is not a pointer type a runtime exception occurs.
+	
+	#end
+	Property PointeeType:TypeInfo()="pointeeType"
+
+	#rem wonkeydoc Array element type.
+	
+	If the type is an array type, returns the array element type.
+	
+	If the type is not an array type a runtime exception occurs.
+	
+	#end
+	Property ElementType:TypeInfo()="elementType"
+	
+	#rem wonkeydoc Array rank.
+	
+	If the type is an array type, returns rank of the array.
+	
+	If the type is not an array type a runtime exception occurs.
+	
+	#end
+	Property ArrayRank:Int()="arrayRank"
+	
+	#rem wonkeydoc Function return type.
+	
+	If the type is a function type, returns the return type of the functions.
+	
+	If the type is not a function type a runtime exception occurs.
+	
+	#end
+	Property ReturnType:TypeInfo()="returnType"
+	
+	#rem wonkeydoc Function parameter types.
+	
+	If the type is a function type, returns the types of the function parameters.
+	
+	If the type is not a function type a runtime exception occurs.
+	
+	#end
+	Property ParamTypes:TypeInfo[]()="paramTypes"
+	
+	#rem wonkeydoc Class super type.
+	
+	If the type is a class type, returns the type of the super class.
+	
+	If the type is not a class type a runtime exception occurs.
+	
+	#end
+	Property SuperType:TypeInfo()="superType"
+	
+	#rem wonkeydoc Implemented interfaces.
+	
+	The interfaces implemented by the class or interface type.
+
+	If the type is not a class or interface type a runtime exception occurs.
+	
+	#end
+	Property InterfaceTypes:TypeInfo[]()="interfaceTypes"
+	
+	#rem wonkeydoc Gets string representation of type.
+	#end
+	Method To:String()="toString"
+	
+	#rem wonkeydoc class or namespace member decls.
+	
+	If the type is a class or namespace type, returns the members of the type.
+	
+	If the type is not a class or namespace type a runtime exception occurs.
+	
+	#end
+	Method GetDecls:DeclInfo[]()="getDecls"
+	
+	#rem wonkeydoc Gets the unique member decl with the given name.
+	
+	If there are multiple members with the same name, null is returned.
+	
+	#end
+	Method GetDecl:DeclInfo( name:String )="getDecl"
+	
+	#rem wonkeydoc Gets the member decl with the given name and type.
+	#end
+	Method GetDecl:DeclInfo( name:String,type:TypeInfo )="getDecl"
+	
+	#rem wonkeydoc Gets the member decls with the given name.
+	#end
+	Method GetDecls:DeclInfo[]( name:String )="getDecls"
+	
+	#rem wonkeydoc Checks whether a class extends a class.
+	#end
+	Method ExtendsType:Bool( type:TypeInfo )="extendsType"
+		
+	#rem wonkeydoc Creates an enum variant from an arbitrary int value.
+
+	This type must represent an enum type.
+	
+	#end
+	Method MakeEnum:Variant( enumValue:Int )="makeEnum"
+		
+	
+	#rem wonkeydoc Creates a new array of this type.
+	#end
+	Method NewArray:Variant( length:Int )="newArray"
+
+
+	#rem wonkeydoc Gets a user defined type by name.
+	
+	Only user defined types are returned by this function.
+	
+	#end
+	Function GetType:TypeInfo( name:String )="wxTypeInfo::getType"
+	
+	#rem wonkeydoc Gets all user defined types.
+	
+	Only user defined types are returned by this function.
+	
+	#end
+	Function GetTypes:TypeInfo[]()="wxTypeInfo::getTypes"
+End
+
+#rem wonkeydoc Runtime declaration information.
+#end
+Class DeclInfo Extends Void="wxDeclInfo"
+
+	#rem wonkeydoc Declaration name.
+	#end
+	Property Name:String()="getName"
+	
+	#rem wonkeydoc Declaration kind.
+	
+	This will be one of: Const, Field, Global, Property, Method, Function, Constructor.
+	
+	#end
+	Property Kind:String()="getKind"
+	
+	#rem wonkeydoc Declaration type.
+	#end
+	Property Type:TypeInfo()="getType"
+
+	#rem wonkeydoc True if Get can be used with this declaration.
+	#end	
+	Property Gettable:Bool()="gettable"
+
+	#rem wonkeydoc True if Set can be used with this declaration.
+	#end	
+	Property Settable:Bool()="settable"
+
+	#rem wonkeydoc True if Invoke can be used with this declaration.
+	#end	
+	Property Invokable:Bool()="invokable"
+	
+	#rem wonkeydoc Gets string representation of decl.
+	#end
+	Method To:String()="toString"
+
+	#rem wonkeydoc Gets meta data keys.
+	#end	
+	Method GetMetaKeys:String[]()="getMetaKeys"
+	
+	#rem wonkeydoc Gets meta data value for a key.
+	#end
+	Method GetMetaValue:String( key:String )="getMetaValue"
+	
+	#rem wonkeydoc Gets field, property or global value.
+	
+	If the declaration kind is 'Global', the `instance` parameter is ignored.
+	
+	A runtime error will occur if the declaration kind is not 'Field' or 'Global'.
+
+	#end
+	Method Get:Variant( instance:Variant )="get"
+	
+	#rem wonkeydoc Sets field, property or global value.
+
+	If the declaration kind is 'Global', the `instance` parameter is ignored.
+	
+	A runtime error will occur if the declaration kind is not 'Field' or 'Global'.
+	
+	#end
+	Method Set( instance:Variant,value:Variant )="set"
+	
+	#rem wonkeydoc Invokes method or function.
+
+	If the declaration kind is 'Function', the `instance` parameter is ignored.
+
+	A runtime error will occur if the declaration kind is not 'Method' or 'Function'.
+	
+	#end
+	Method Invoke:Variant( instance:Variant,params:Variant[] )="invoke"
+End
+
+#rem wonkeydoc Weak reference class.
+
+A weak reference is an object that contains a reference to another object, but without preventing the other object from being garbage collected.
+
+The [[Target]] property returns the object being referenced, or null if the object has been garbage collected.
+
+A weak reference must be contructed with the object it references.
+
+#end
+Class WeakRef="wxGCWeakRef"
+	
+	Method New( target:Object )
+		
+	Property Target:Object()="getTarget"
+End
+
+	
+
+
+

@@ -1,0 +1,123 @@
+
+'***** MACOS DESKTOP TARGET *****
+
+WX_THREADS=1
+
+'Hacks for dylibs in app
+
+'dylibs for in Contents/MacOS dir...
+WX_APP_DIR_DYLIB=
+
+'frameworks go in app Contents/Frameworks dir
+WX_APP_DIR_FRAMEWORK=../Frameworks
+
+'LD options
+WX_LD_OPTS_MACOS=-mmacosx-version-min=10.9 -Wl,-rpath,@executable_path -Wl,-rpath,@executable_path/../Frameworks
+WX_LD_OPTS_MACOS_DEBUG=
+WX_LD_OPTS_MACOS_RELEASE=-O3
+
+'C compiler options
+WX_CC_OPTS_MACOS=-std=gnu99 -mmacosx-version-min=10.9 -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality
+WX_CC_OPTS_MACOS_DEBUG=
+WX_CC_OPTS_MACOS_RELEASE=-O3 -DNDEBUG
+
+'C++ compiler options
+WX_CPP_OPTS_MACOS=-std=c++14 -mmacosx-version-min=10.9 -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality
+WX_CPP_OPTS_MACOS_DEBUG=
+WX_CPP_OPTS_MACOS_RELEASE=-O3 -DNDEBUG
+
+'AS options
+WX_AS_OPTS=
+
+
+'***** EMSCRIPTEN TARGET *****
+
+'Change this to the location of your emsdk:
+'
+EMSDK=${HOME}/emsdk
+
+PATH=${EMSDK}:${EMSDK}/clang/e1.38.0_64bit:${EMSDK}/node/8.9.1_64bit/bin:${EMSDK}/emscripten/1.38.0:${PATH}
+
+'El Capitan broke my python...
+'
+PATH=/usr/local/bin:${PATH}
+
+'To run emscripten apps you'll need the mserver mini-server.
+'
+WX_MSERVER=open "${WX_HOME}/devtools/mserver-v86c/mserver_macos.app" --args
+
+'LD options
+WX_LD_OPTS_EMSCRIPTEN=-s FETCH=1 -s USE_SDL=2 -s TOTAL_MEMORY=268435456 -s DISABLE_EXCEPTION_CATCHING=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0
+WX_LD_OPTS_EMSCRIPTEN_DEBUG=-O2 -s ASSERTIONS=2
+WX_LD_OPTS_EMSCRIPTEN_RELEASE=-O3
+
+WX_LD_OPTS_EMSCRIPTEN_WASM=-s BINARYEN=1 
+
+'C compiler options
+WX_CC_OPTS_EMSCRIPTEN=-std=gnu99 -s USE_SDL=2 -s TOTAL_MEMORY=268435456 -s DISABLE_EXCEPTION_CATCHING=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0
+WX_CC_OPTS_EMSCRIPTEN_DEBUG=-O2
+WX_CC_OPTS_EMSCRIPTEN_RELEASE=-O3 -DNDEBUG
+
+'C++ compiler options
+WX_CPP_OPTS_EMSCRIPTEN=-std=c++11 -s USE_SDL=2 -s TOTAL_MEMORY=268435456 -s DISABLE_EXCEPTION_CATCHING=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0
+WX_CPP_OPTS_EMSCRIPTEN_DEBUG=-O2
+WX_CPP_OPTS_EMSCRIPTEN_RELEASE=-O3 -DNDEBUG
+
+
+'***** ANDROID TARGET *****
+
+'Add path to android NDK
+'
+PATH=${HOME}/Library/Android/sdk/ndk-bundle:${PATH}
+
+'Controls APP_ABI in Application.mk for NDK
+'
+WX_ANDROID_APP_ABI=armeabi-v7a x86
+'WX_ANDROID_APP_ABI=all
+
+'Controls APP_PLATFORM in Application.mk for NDK
+'
+WX_ANDROID_APP_PLATFORM=android-16
+
+'Android app compiler Compiler flags
+'
+WX_ANDROID_APP_CFLAGS=-std=gnu99 -fno-stack-protector -w
+WX_ANDROID_APP_CPPFLAGS=-std=c++11 -fno-stack-protector -frtti -fexceptions -w
+
+'Controls version of STL used by android apps.
+'
+WX_ANDROID_APP_STL=c++_static
+
+
+'***** IOS TARGET *****
+
+WX_IOS_ARCHS=-arch arm64
+
+'Note: must appear BEFORE first use of WX_IOS_SDK
+'
+WX_IOS_USE_SIMULATOR=0
+
+'This is now set for you by mx2cc.
+'
+'WX_IOS_SDK=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk
+
+WX_IOS_DEPLOYMENT_TARGET=8.0
+
+'LD options
+WX_LD_OPTS_IOS=${WX_IOS_ARCHS} -isysroot ${WX_IOS_SDK}
+WX_LD_OPTS_IOS_DEBUG=
+WX_LD_OPTS_IOS_RELEASE=-O3 
+
+'C compiler options
+'
+WX_CC_OPTS_IOS=-std=gnu99 ${WX_IOS_ARCHS} -miphoneos-version-min=${WX_IOS_DEPLOYMENT_TARGET} -isysroot ${WX_IOS_SDK} -fobjc-arc -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality
+
+WX_CC_OPTS_IOS_DEBUG=
+WX_CC_OPTS_IOS_RELEASE=-O3 -DNDEBUG
+
+'C++ compiler options
+'
+WX_CPP_OPTS_IOS=-std=c++11 ${WX_IOS_ARCHS} -miphoneos-version-min=${WX_IOS_DEPLOYMENT_TARGET} -isysroot ${WX_IOS_SDK} -fobjc-arc -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality -fvisibility=hidden
+
+WX_CPP_OPTS_IOS_DEBUG=-O0 -g
+WX_CPP_OPTS_IOS_RELEASE=-O3 -DNDEBUG

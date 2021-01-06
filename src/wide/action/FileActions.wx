@@ -1,0 +1,338 @@
+
+Namespace wide
+
+
+Class FileActions
+
+	Field new_:Action
+	Field open:Action
+	Field close:Action
+	Field closeOthers:Action
+	Field closeToRight:Action
+	Field closeAll:Action
+	Field save:Action
+	Field saveAs:Action
+	Field saveAll:Action
+	Field quit:Action
+	Field prefs:Action
+	
+	Method New( docs:DocumentManager )
+		
+		_docs=docs
+		
+		new_=ActionById( ActionId.NewFile )
+		new_.Triggered=OnNew
+		
+		open=ActionById( ActionId.OpenFile )
+		open.Triggered=OnOpen
+		
+		close=ActionById( ActionId.CloseTab )
+		close.Triggered=OnClose
+		
+		closeOthers=ActionById( ActionId.CloseOtherTabs )
+		closeOthers.Triggered=OnCloseOthers
+		
+		closeToRight=ActionById( ActionId.CloseTabsToTheRight )
+		closeToRight.Triggered=OnCloseToRight
+		
+		closeAll=ActionById( ActionId.CloseAllTabs )
+		closeAll.Triggered=Lambda()
+			CloseFiles( _docs.OpenDocuments )
+		End
+		
+		save=ActionById( ActionId.Save )
+		save.Triggered=OnSave
+		
+		saveAs=ActionById( ActionId.SaveAs )
+		saveAs.Triggered=OnSaveAs
+		
+		saveAll=ActionById( ActionId.SaveAll )
+		saveAll.Triggered=OnSaveAll
+		
+		quit=ActionById( ActionId.Quit )
+		quit.Triggered=OnQuit
+		
+		prefs=ActionById( ActionId.Preferences )
+		prefs.Triggered=OnPrefs
+	End
+	
+	Method Update()
+	
+		Local docs:=_docs.OpenDocuments
+
+		Local n:=0
+		Local anyDirty:Bool
+		For Local doc:=Eachin docs
+			If doc.Dirty anyDirty=True
+			n+=1
+		Next
+	
+		Local doc:=_docs.CurrentDocument
+
+		close.Enabled=doc
+		closeOthers.Enabled=n>1
+		closeToRight.Enabled=doc And doc<>docs[docs.Length-1]
+		closeAll.Enabled=n>0
+		save.Enabled=doc And (doc.Dirty Or MainWindow.IsTmpPath( doc.Path ))
+		saveAs.Enabled=doc
+		saveAll.Enabled=anyDirty
+	End
+	
+	Method CloseFiles( docs:WideDocument[] )
+		
+		If Not docs.Length Return
+		
+		_saveAllFlag=False
+		_discardAllFlag=False
+	
+		For Local doc:=Eachin docs
+			If Not CanClose( doc,True ) Return
+		Next
+	
+		For Local doc:=Eachin docs
+			doc.Close()
+		Next
+	
+	End
+	
+	
+	Private
+	
+	Field _docs:DocumentManager
+	Field _saveAllFlag:Bool,_discardAllFlag:Bool
+	Field _quit:Bool
+	
+	
+	Method SaveAs:WideDocument()
+	
+		Local doc:=_docs.CurrentDocument
+		If Not doc Return Null
+		
+		Local name:=StripDir( doc.Path )
+		Local path:=MainWindow.RequestFile( "Save As",name,True )
+		If Not path Return Null
+		
+		If Not ExtractExt( path ) path+=ExtractExt( doc.Path )
+		
+		Return _docs.RenameDocument( doc,path )
+	End
+
+	Method CanClose:WideDocument( doc:WideDocument,manyFiles:Bool=False )
+	
+		If Not doc.Dirty Return doc
+		
+		'_docs.CurrentDocument=doc
+				
+		Local buttons:String[]
+		If manyFiles
+			buttons=New String[]( "Save","Save All","Discard","Discard All","Cancel" )
+		Else
+			buttons=New String[]( "Save","Discard","Cancel" )
+		Endif
+			
+		Local result:=-1
+		If manyFiles
+			If _saveAllFlag
+				result=1
+			Elseif _discardAllFlag
+				result=3
+			Endif
+		Endif
+		If result = -1 Then result=TextDialog.Run( "Close File","File '"+doc.Path+"' has been modified.",buttons )
+		
+		Select result
+		Case 0 'save
+			If MainWindow.IsTmpPath( doc.Path )
+				Return SaveAs()
+			Else
+				If Not doc.Save() Return Null
+			Endif
+		Case 1 'saveAll or discard
+			If manyFiles
+				If MainWindow.IsTmpPath( doc.Path )
+					Return SaveAs()
+				Else
+					If Not doc.Save() Return Null
+				Endif
+				_saveAllFlag=True
+			Endif
+		Case 2 'discard or cancel
+			Return manyFiles ? doc Else Null
+		Case 3 'discardAll
+			_discardAllFlag=True
+		Case 4 'cancel
+			Return Null
+		End
+		
+		Return doc
+	End
+	
+	Method OnNew()
+	
+		Local path:=MainWindow.AllocTmpPath( "untitled",".wx" )
+		If Not path
+			Alert( "Can't allocate temporary file" )
+			Return
+		Endif
+
+		SaveString( "",path )
+		
+		_docs.OpenDocument( path,True )
+	End
+		
+	Method OnOpen()
+	
+		Local path:=MainWindow.RequestFile( "Open File","",False )
+		If Not path Return
+		
+		path=RealPath( path )
+		
+		_docs.OpenDocument( path,True )
+	End
+	
+	Method OnClose()
+	
+		Local doc:=_docs.CurrentDocument
+		If Not doc Return
+		
+		doc=CanClose( doc )
+		If Not doc Return
+		
+		doc.Close()
+	End
+	
+	Method OnCloseOthers()
+	
+		Local current:=_docs.CurrentDocument
+		If Not current Return
+	
+		_saveAllFlag=False
+		_discardAllFlag=False
+		
+		Local docs:=_docs.OpenDocuments
+		
+		For Local doc:=Eachin docs
+			If doc<>current And Not CanClose( doc,True ) Return
+		Next
+		
+		For Local doc:=Eachin docs
+			If doc<>current doc.Close()
+		Next
+	End
+	
+	Method OnCloseToRight()
+	
+		Local current:=_docs.CurrentDocument
+		If Not current Return
+	
+		_saveAllFlag=False
+		_discardAllFlag=False
+		
+		Local docs:=_docs.OpenDocuments
+		
+		Local close:=False
+		For Local doc:=Eachin docs
+			If close
+				If Not CanClose( doc,True ) Return
+			Else
+				If doc=current close=True
+			Endif
+		Next
+		
+		close=False
+		For Local doc:=Eachin docs
+			If close
+				doc.Close()
+			Else
+				If doc=current close=True
+			Endif
+		Next
+		
+	End
+	
+	Method OnSave()
+	
+		Local doc:=_docs.CurrentDocument
+		If Not doc Return
+		
+		If MainWindow.IsTmpPath( doc.Path )
+			SaveAs()
+		Else
+			doc.Save()
+		Endif
+	End
+	
+	Method OnSaveAs()
+	
+		SaveAs()
+	End
+	
+	Method OnSaveAll()
+	
+		For Local doc:=Eachin _docs.OpenDocuments
+
+			If MainWindow.IsTmpPath( doc.Path )
+				_docs.CurrentDocument=doc
+				If Not SaveAs() Return
+			Else
+				doc.Save()
+			Endif
+		Next
+	End
+	
+	Method OnQuit()
+		
+		If _quit Return
+		_quit=True
+		
+		_saveAllFlag=False
+		_discardAllFlag=False
+		
+		For Local doc:=Eachin _docs.OpenDocuments
+		
+			If MainWindow.IsTmpPath( doc.Path )
+				If Not doc.Save() Then _quit=False ; Return
+			Else
+				If Not CanClose( doc,True ) Then _quit=False ; Return
+			Endif
+		Next
+		
+		MainWindow.Terminate()
+	End
+	
+	Field _prefsDialog:PrefsDialog
+	
+	Method OnPrefs()
+		
+		If _prefsDialog Then _prefsDialog.Hide()
+		
+		LiveTemplates.Load()
+		
+		_prefsDialog=New PrefsDialog
+		
+		' not good place for subscribing, but it's simplier than proper one...
+		'
+		_prefsDialog.Apply+=Lambda()
+		
+			For Local d:=Eachin _docs.OpenDocuments
+				Local tv:=Cast<CodeDocumentView>( d.TextView )
+				If tv Then tv.UpdatePrefs()
+			Next
+			
+			MainWindow.OnPrefsChanged()
+		End
+		
+		' analyze opened docs to show prompt "fix indentation?"
+		'
+		_prefsDialog.TabulationChanged+=Lambda()
+			
+			For Local d:=Eachin _docs.OpenDocuments
+				Local codeDoc:=Cast<CodeDocument>( d )
+				If codeDoc Then codeDoc.AnalyzeIndentation()
+			Next
+		End
+		
+		_prefsDialog.ShowModal()
+	End
+	
+End

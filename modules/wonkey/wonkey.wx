@@ -1,0 +1,39 @@
+
+Namespace wonkey
+
+#Import "native/wxtypes.cpp"
+#Import "native/wxassert.cpp"
+#Import "native/wxstring.cpp"
+#Import "native/wxfunction.cpp"
+#Import "native/wxarray.cpp"
+#Import "native/wxwonkey.cpp"
+#Import "native/wxobject.cpp"
+#Import "native/wxdebug.cpp"
+#Import "native/wxweakref.cpp"
+#Import "native/wxvariant.cpp"
+#Import "native/wxtypeinfo.cpp"
+#Import "native/wxdeclinfo.cpp"
+#Import "native/wxwonkey_c.c"
+
+#Import "native/wxgc_mx.cpp"
+#Import "native/wxgc.cpp"
+
+#If __TARGET__="macos" Or __TARGET__="ios"
+#Import "native/wxwonkey.mm"
+#Import "native/wxstring.mm"
+#Endif
+
+#if __TARGET__="android"
+#Import "native/WonkeyLang.java"
+#import "<liblog.a>"
+#endif
+
+#If __TARGET__="raspbian" Or __TARGET__="linux"
+#Import "<libpthread.a>"
+#endif
+
+#Import "types"
+#Import "math"
+#Import "debug"
+#Import "gc"
+

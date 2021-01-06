@@ -1,0 +1,32 @@
+
+Namespace sdl2
+
+#If __TARGET__="windows"
+
+	#Import "makefile_windows"
+		
+#Else If __TARGET__="macos"
+	
+	#Import "makefile_macos"
+		
+#Else If __TARGET__="linux"
+	
+	#Import "makefile_linux"
+	
+#Else If __TARGET__="raspbian"
+
+	#Import "makefile_raspbian"
+
+#Else If __TARGET__="emscripten"
+
+	#Import "makefile_emscripten"
+	
+#Else If __TARGET__="android"
+
+	#Import "makefile_android"
+	
+#Else If __TARGET__="ios"
+
+	#Import "makefile_ios"
+
+#Endif

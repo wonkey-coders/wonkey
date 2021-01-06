@@ -1,0 +1,71 @@
+//Theme by Ethernaut, vaguely based on "smooth" by Hezkore
+{
+	"extends":"wide-default",
+
+	"colors":{
+
+		"content": "#282728",			//page and toolbar background
+		"clear": "#23211f",				//bg behind document tabs
+		"panel": "#3B332B",				//menu background
+		"gutter": "#242324",			//bg on scrollbar and tabs
+		"menu-shortcut":"#9C7E57",		//shortcut hint on menu
+
+		"border": "#211d12",			//nothing?
+
+		"knob": "#363330",				//scrollbar, dock separator
+		"hover": "#090604",				//menu hilight
+		"active" : "#9C7E57",
+
+		"text-default": "#f2dba6",		//menu text, tab text
+		"text-highlight": "#ffcf22",
+		"text-disabled": "#444",		//inactive menu options, line numbers
+		"text-background": "#817A6A",	//inactive tab text
+
+		"textview-cursor":"#FFDD55",
+		"textview-selection":"#3E4451",
+
+		"textview-color0": "#f2dba6",
+		"textview-color1": "#f6e4bc",	//identifiers
+		"textview-color2": "#ffbf00",	//keywords
+		"textview-color3": "#cbcb4d",	//strings
+		"textview-color4": "#66b3cc",	//numbers
+		"textview-color5": "#8E744A",	//comment
+		"textview-color6": "#729888",	//preproc
+		"textview-color7": "#fff9e6",	//default
+		"textview-color8": "textview-color2" //core types like Int, Bool
+	},
+
+	"styles":{
+		"default":{
+			"font":"normal",
+			"textColor":"text-default",
+			"iconColor":"#D6B69D",
+			"states":{
+				"disabled":{
+					"textColor":"text-disabled",
+					"iconColor":"#B46B29"
+				}
+			}
+		},
+
+		"ColoredToolButton":{
+			"extends":"ToolButton",
+			"iconColor":"#AB9D8D"
+		},
+
+		"TabClose":{
+			"margin":[8,8,8,8 ],
+			"icons":"prime_assets/prime_tabclose_icons.png",
+			"iconColor":"text-disabled",
+			"states":{
+				"hover":{
+					"iconColor":"#FF0000"
+				},
+				"active":{
+					"iconColor":"#FFFFFF"
+				}
+			}
+		}
+	}
+
+}

@@ -1,0 +1,8 @@
+{
+	"module":"stb-image",
+	"about":"Minimal image loader",
+	"author":"Sean T Barret/Wonkey Coders",
+	"version":"1.0.0",
+	"support":"http://github.com/wonkey-coders",
+	"depends":["libc"]
+}

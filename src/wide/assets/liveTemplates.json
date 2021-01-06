@@ -1,0 +1,33 @@
+{
+	".wx":{
+		"do":"Repeat\n\t${Cursor}\nForever",
+		"doca":"#Rem monkeydoc ${cursor}\n\t...\n\t@param val descr\n\t\n    @example\n    \t...\n    @end\n#End\n",
+		"docd":"#Rem monkeydoc ${Cursor}\n\tdetails [[class name]]\n#End\n",
+		"docs":"#Rem monkeydoc ${Cursor}\n#End",
+		"dou":"Repeat\n\t\nUntil _${Cursor}",
+		"each":"For Local ${Cursor}:=Eachin _\n\t\nNext",
+		"fib":"New Fiber( Lambda()\n\t${Cursor}\nEnd )",
+		"fori":"For Local ${Cursor}:=0 Until _\n\t\nNext",
+		"fu":"Function ${Cursor}()\n\t\n\t\nEnd",
+		"fus":"Function ${Cursor}:String()\n\t\n\tReturn \nEnd",
+		"get":"Property ${Cursor}()\n\tReturn \nEnd",
+		"ifb":"If ${Cursor}\n\t\nEndif",
+		"ife":"If ${Cursor}\n\t\nElse\n\t\nEndif",
+		"ifn":"If ${Cursor} = Null\n\t\nEndif",
+		"inn":"If ${Cursor} <> Null\n\t\nEndif",
+		"last":"[_${Cursor}.Length-1]",
+		"lo":"Local ${Cursor}:=",
+		"me":"Method ${Cursor}()\n\t\n\t\nEnd",
+		"meb":"Method ${Cursor}:Bool()\n\t\n\t\nEnd",
+		"mes":"Method ${Cursor}:String()\n\t\n\tReturn \nEnd",
+		"prnt":"Print \"${Cursor}\"",
+		"prop":"Property ${Cursor}()\n\tReturn \nSetter( value: )\n\t\n\t=value\nEnd",
+		"sel":"Select ${Cursor}\n\tCase \n\t\t\nEnd",
+		"seld":"Select ${Cursor}\n\tCase \n\t\t\n\tDefault \n\t\t\nEnd",
+		"st":"String",
+		"try":"Try\n\t${Cursor}\nCatch _\n\t\nEnd",
+		"whe":"While ${Cursor} = _\n\t\nWend",
+		"whi":"While ${Cursor}\n\t\nWend",
+		"whn":"While ${Cursor} <> _\n\t\nWend"
+	}
+}

@@ -1,0 +1,188 @@
+
+'Hyper experimental thread builds!
+'
+WX_THREADS=1
+
+'Use WX_USE_MSVC=1 to force use of msvc, or WX_USE_MSVC=0 to force use of mingw. If WX_USE_MSVC=1, msvc paths
+'below are used.
+'
+'If WX_USE_MSVC is not set (or blank) mx2cc will attempt to autodetect msvc and msvc paths.
+'
+WX_USE_MSVC=
+
+'Build architecture: x86 or x64, x64 only working with msvc.
+'
+WX_ARCH_WINDOWS=x64
+
+'Semi-colon separated list of module root dirs, relative to WX_HOME or absolute.
+'
+'mx2cc always adds local modules/ dir to start of list.
+'
+'WX_MODULE_DIRS=modules;modules_ext
+
+'If you change anything below, you should rebuild all!
+
+'***** WINDOWS DESKTOP TARGET - MINGW *****
+
+'Note: Requires MinGW compilers+build tools, see: http://monkeycoder.co.nz/monkey2-files.
+'
+'(Note: TDM GCC not recommended, as it uses SJLJ exceptions which are very slow)
+'
+PATH=${WX_HOME}\devtools\i686-6.2.0-posix-dwarf-rt_v5-rev1\mingw32\bin;${PATH}
+
+'Need this to override installed mingw.
+'
+GCC_EXEC_PREFIX=
+
+'Linker options
+WX_LD_OPTS_WINDOWS=-s -static -m64
+WX_LD_OPTS_WINDOWS_DEBUG=
+WX_LD_OPTS_WINDOWS_RELEASE=
+
+'C Compiler options. Note: -D_WIN32_WINNT=0x0601 means headers for Windows 7, ie: Windows 7 is min SDK!
+WX_CC_OPTS_WINDOWS=-std=gnu99 -D_WIN32_WINNT=0x0603 -m64 -Wa,-mbig-obj
+WX_CC_OPTS_WINDOWS_DEBUG=-O2
+WX_CC_OPTS_WINDOWS_RELEASE=-O3 -DNDEBUG
+
+'C++ Compiler options
+WX_CPP_OPTS_WINDOWS=-std=c++11 -D_WIN32_WINNT=0x0603 -m64 -Wa,-mbig-obj
+WX_CPP_OPTS_WINDOWS_DEBUG=-O2
+WX_CPP_OPTS_WINDOWS_RELEASE=-O3 -DNDEBUG
+
+
+'***** WINDOWS DESKTOP TARGET - MSVC *****
+
+'Note: these paths are only used if legacy WX_USE_MSVC=1
+'
+'If WX_USE_MSVC is not set, mx2cc attempts to autodetect latest version of msvc and latest windows kit.
+'
+WX_MSVC_DIR=${ProgramFiles(x86)}\Microsoft Visual Studio\2017\Community\VC
+
+WX_MSVC_TOOLS_DIR=${WX_MSVC_DIR}\Tools\MSVC\14.14.26428
+
+WX_WINDOWS_KITS_DIR=${ProgramFiles(x86)}\Windows Kits\10
+
+WX_WINDOWS_KIT=10.0.16299.0
+
+WX_MSVC_PATH_X86=${WX_MSVC_TOOLS_DIR}\bin\Hostx86\x86
+
+WX_MSVC_INCLUDE_X86=${WX_MSVC_TOOLS_DIR}\include;
+WX_MSVC_INCLUDE_X86=${WX_MSVC_INCLUDE_X86}${WX_WINDOWS_KITS_DIR}\Include\${WX_WINDOWS_KIT}\ucrt;
+WX_MSVC_INCLUDE_X86=${WX_MSVC_INCLUDE_X86}${WX_WINDOWS_KITS_DIR}\Include\${WX_WINDOWS_KIT}\shared;
+WX_MSVC_INCLUDE_X86=${WX_MSVC_INCLUDE_X86}${WX_WINDOWS_KITS_DIR}\Include\${WX_WINDOWS_KIT}\um;
+
+WX_MSVC_LIB_X86=${WX_MSVC_TOOLS_DIR}\lib\x86;
+WX_MSVC_LIB_X86=${WX_MSVC_LIB_X86}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\ucrt\x86;
+WX_MSVC_LIB_X86=${WX_MSVC_LIB_X86}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\um\x86;
+
+WX_MSVC_PATH_X64=${WX_MSVC_TOOLS_DIR}\bin\Hostx64\x64
+
+WX_MSVC_INCLUDE_X64=${WX_MSVC_TOOLS_DIR}\include;
+WX_MSVC_INCLUDE_X64=${WX_MSVC_INCLUDE_X64}${WX_WINDOWS_KITS_DIR}\Include\${WX_WINDOWS_KIT}\ucrt;
+WX_MSVC_INCLUDE_X64=${WX_MSVC_INCLUDE_X64}${WX_WINDOWS_KITS_DIR}\Include\${WX_WINDOWS_KIT}\um;
+WX_MSVC_INCLUDE_X64=${WX_MSVC_INCLUDE_X64}${WX_WINDOWS_KITS_DIR}\Include\${WX_WINDOWS_KIT}\shared;
+
+WX_MSVC_LIB_X64=${WX_MSVC_TOOLS_DIR}\lib\x64;
+WX_MSVC_LIB_X64=${WX_MSVC_LIB_X64}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\ucrt\x64;
+WX_MSVC_LIB_X64=${WX_MSVC_LIB_X64}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\um\x64;
+
+'***** MSVC COMMAND LINE OPTIONS *****
+
+'Linker options
+WX_LD_OPTS_MSVC=user32.lib
+WX_LD_OPTS_MSVC_DEBUG=
+WX_LD_OPTS_MSVC_RELEASE=
+
+'C Compiler options
+WX_CC_OPTS_MSVC=-EHs -W0 -MT -utf-8 -bigobj
+WX_CC_OPTS_MSVC_DEBUG=-O1
+WX_CC_OPTS_MSVC_RELEASE=-O2 -DNDEBUG
+
+'C++ Compiler options
+WX_CPP_OPTS_MSVC=-EHs -W0 -MT -utf-8 -bigobj
+WX_CPP_OPTS_MSVC_DEBUG=-O1
+WX_CPP_OPTS_MSVC_RELEASE=-O2 -DNDEBUG
+
+'assembler opts
+WX_AS_OPTS_MSVC=-DBOOST_CONTEXT_EXPORT=
+
+
+'***** EMSCRIPTEN TARGET *****
+
+'This is for the emsdk download available at http://monkeycoder.co.nz/monkey2-files/
+'
+'If you have a different emscripten installation installed that you want to use, comment this lot out.
+'
+EMSDK=${WX_HOME}\devtools\emsdk-1.37.35_64bit
+EM_CONFIG=${EMSDK}\.emscripten
+BINARYEN_ROOT = ${EMSDK}\clang\e1.37.35_64bit\binaryen
+JAVA_HOME = ${EMSDK}\java\8.152_64bit
+EMSCRIPTEN = ${EMSDK}\emscripten\1.37.35
+
+PATH=${EMSDK};${PATH}
+PATH=${EMSDK}\clang\e1.37.35_64bit;${PATH}
+PATH=${EMSDK}\node\8.9.1_64bit\bin;${PATH}
+PATH=${EMSDK}\python\2.7.5.3_64bit;${PATH}
+PATH=${EMSDK}\java\8.152_64bit\bin;${PATH}
+PATH=${EMSDK}\emscripten\1.37.35;${PATH}
+
+'Add mserver_winnt emscripten mini-server/launcher.
+'
+WX_MSERVER="${WX_HOME}\devtools\mserver-v86c\mserver_winnt.exe"
+
+'If you have installed the emsdk download from monkeycoder, you can use this one instead...
+'
+'WX_MSERVER="${EMSDK}\mserver-v86c\mserver_winnt.exe"
+
+'Linker options
+WX_LD_OPTS_EMSCRIPTEN=-s FETCH=1 -s USE_SDL=2 -s TOTAL_MEMORY=536870912 -s DISABLE_EXCEPTION_CATCHING=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0
+WX_LD_OPTS_EMSCRIPTEN_WASM=-s BINARYEN=1
+WX_LD_OPTS_EMSCRIPTEN_DEBUG=-O2 -s ASSERTIONS=2
+WX_LD_OPTS_EMSCRIPTEN_RELEASE=-O3
+
+'C Compiler options
+WX_CC_OPTS_EMSCRIPTEN=-std=gnu99 -s USE_SDL=2 -s TOTAL_MEMORY=536870912 -s DISABLE_EXCEPTION_CATCHING=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0
+WX_CC_OPTS_EMSCRIPTEN_DEBUG=-O2
+WX_CC_OPTS_EMSCRIPTEN_RELEASE=-O3 -DNDEBUG
+
+'C++ Compiler options
+WX_CPP_OPTS_EMSCRIPTEN=-std=c++11 -Wno-all -s USE_SDL=2 -s TOTAL_MEMORY=536870912 -s DISABLE_EXCEPTION_CATCHING=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0
+WX_CPP_OPTS_EMSCRIPTEN_DEBUG=-O2
+WX_CPP_OPTS_EMSCRIPTEN_RELEASE=-O3 -DNDEBUG
+
+'***** ANDROID TARGET *****
+
+'Note: Requires Android Studio + Android NDK, see: https://developer.android.com/studio/index.html
+
+'This is where *my* ndk-bundle is located - yours is probably somewhere else!
+'
+'For android builds, you need to either set this correctly or make sure 'ndk-build' is available from the command line via you PATH.
+'
+'PATH=D:\devtools\Android\sdk\ndk-bundle;${PATH}
+
+'Application.mk
+'
+WX_ANDROID_APP_CFLAGS=-std=gnu99 -fno-stack-protector
+WX_ANDROID_APP_CPPFLAGS=-std=c++11 -fno-stack-protector -frtti -fexceptions
+WX_ANDROID_APP_PLATFORM=android-16
+WX_ANDROID_APP_ABI=armeabi-v7a x86
+WX_ANDROID_APP_STL=c++_static
+
+'***** RASPBIAN *****
+
+WX_RASPBIAN_TOOLS=${WX_HOME}\devtools\SysGCC\Raspberry\bin
+
+'Linker options
+WX_LD_OPTS_RASPBIAN=-s -static
+WX_LD_OPTS_RASPBIAN_DEBUG=
+WX_LD_OPTS_RASPBIAN_RELEASE=
+
+'C Compiler options
+WX_CC_OPTS_RASPBIAN=-std=gnu99
+WX_CC_OPTS_RASPBIAN_DEBUG=-Os
+WX_CC_OPTS_RASPBIAN_RELEASE=-O3 -DNDEBUG
+
+'C++ Compiler options
+WX_CPP_OPTS_RASPBIAN=-std=c++11
+WX_CPP_OPTS_RASPBIAN_DEBUG=-Os
+WX_CPP_OPTS_RASPBIAN_RELEASE=-O3 -DNDEBUG

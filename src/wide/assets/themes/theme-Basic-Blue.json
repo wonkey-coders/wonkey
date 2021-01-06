@@ -1,0 +1,41 @@
+{
+	"extends":"wide-default",
+	
+	"colors":{
+
+		"content": "#005",
+		"clear": "#000",
+		"panel": "#00b",
+		"gutter": "#000",
+		
+		"knob": "#009",
+		"hover": "#09f",
+		"active" : "#009",
+
+		"text-default": "#fff",
+		"text-highlight": "#09f",
+		"text-disabled":  "#888",
+		"text-background": "#09f",
+		
+		"textview-cursor":"#fff",
+		"textview-selection":"#222",
+		
+		"textview-color0": "#0000",
+		"textview-color1": "#07e",	//identifiers
+		"textview-color2": "#ff0",	//keywords
+		"textview-color3": "#e0e",	//strings
+		"textview-color4": "#0f0",	//numbers
+		"textview-color5": "#fff",	//comment
+		"textview-color6": "#d82",	//preproc
+		"textview-color7": "#222",	//default
+		"textview-color8": "textview-color2" //core types like Int, Bool
+	},
+	
+	"fonts":{
+	
+		"normal":"Verdana.ttf,16",
+		"fixedWidth":"Verdana.ttf,16",
+		"editor":"Verdana.ttf,16",
+		"small":"Verdana.ttf,14"
+	}
+}

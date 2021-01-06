@@ -1,0 +1,75 @@
+
+Namespace std.process
+
+#If __TARGET__<>"emscripten"
+
+#Import "native/process.cpp"
+#Import "native/procutil.cpp"
+#Import "native/process.h"
+
+Extern
+
+#rem The Process class.
+
+Note that stderr output handling is not yet implemented.
+
+#end
+Class Process="wxProcess"
+
+	#rem wonkeydoc Invoked when process has finished executing.
+	#end
+	Field Finished:Void()="finished"
+	
+	#rem wonkeydoc Invoked when process has written to stdout.
+	#end
+	Field StdoutReady:Void()="stdoutReady"
+	
+	#rem wonkeydoc Invoked when proces has written to stderr (TODO).
+	#end
+	Field StderrReady:Void()="stderrReady"
+	
+	#rem wonkeydoc Process exit code.
+	#end
+	Property ExitCode:Int()="exitCode"
+
+	#rem wonkeydoc Process stdout bytes available to read.
+	#end	
+	Property StdoutAvail:Int()="stdoutAvail"
+
+	#rem wonkeydoc Process stder bytes available to read (TODO).
+	#end	
+	Property StderrAvail:Int()="stderrAvail"
+	
+	#rem wonkeydoc Starts a new process.
+	#end
+	Method Start:Bool( cmd:String )="start"
+
+	#rem wonkeydoc Read process stdout.
+	#end	
+	Method ReadStdout:String()="readStdout"
+	
+	Method ReadStdout:Int( buf:Void Ptr,count:Int )="readStdout"
+
+	#rem wonkeydoc Read process stderr (TODO).
+	#end	
+	Method ReadStderr:String()="readStderr"
+	
+	Method ReadStderr:Int( buf:Void Ptr,count:Int )="readStderr"
+
+	#rem wonkeydoc Write process stdin.
+	#end
+	Method WriteStdin( str:String )="writeStdin"
+	
+	Method WriteStdin:Int( buf:Void Ptr,count:Int )="writeStdin"
+
+	#rem wonkeydoc Send break signal to process.
+	#end	
+	Method SendBreak()="sendBreak"
+	
+	#rem wonkeydoc Terminate process.
+	#end
+	Method Terminate:Void()="terminate"
+
+End
+
+#Endif

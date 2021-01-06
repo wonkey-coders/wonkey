@@ -1,0 +1,10 @@
+{
+	"module":"stb-vorbis",
+	"about":"Minimal vorbis loader",
+	"author":"Sean Barret",
+	"version":"1.0.0",
+	"support":"http://github.com/wonkey-coders",
+	"depends":[]
+}
+
+	

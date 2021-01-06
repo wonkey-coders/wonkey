@@ -1,0 +1,12 @@
+
+Namespace mojox
+
+#rem wonkeydoc @hidden
+#end
+Class Separator Extends View
+
+	Method New()
+		Style=Style.GetStyle( "Separator" )
+	End
+
+End

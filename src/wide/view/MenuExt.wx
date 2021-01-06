@@ -1,0 +1,389 @@
+
+Namespace wide
+
+Class MenuExt Extends DockingView
+
+	#rem wonkeydoc Creates a new menu.
+	#end
+	Method New( text:String="" )
+		
+		Style=GetStyle( "Menu" )
+		Visible=False
+		Layout="float"
+		Gravity=New Vec2f( 0,0 )
+		
+		_text=text
+	End
+	
+	#rem wonkeydoc Menu text
+	#end
+	Property Text:String()
+		Return _text
+	End
+
+	#rem wonkeydoc Clears all items from the menu.
+	#end
+	Method Clear()
+		Super.RemoveAllViews()
+	End
+
+	#rem wonkeydoc Adds a view to the menu.
+	#end	
+	Method AddView( view:View )
+	
+		AddView( view,"top" )
+	End
+	
+	#rem wonkeydoc Adds an action to the menu.
+	#end	
+	Method AddAction( action:Action )
+	
+		Local button:=New MenuButtonExt( action )
+		
+		button.Clicked=Lambda()
+		
+			CloseAll()
+			'
+			'a bit gnarly, but makes sure menu is *really* closed...
+			'
+			App.RequestRender()
+			App.Idle+=action.Trigger
+		End
+		
+		AddView( button )
+	End
+	
+	Method AddAction:Action( text:String )
+		
+		Local action:=New Action( text )
+		AddAction( action )
+		Return action
+	End
+	
+	#rem wonkeydoc Adds a separator to the menu.
+	#end
+	Method AddSeparator()
+		
+		AddView( New MenuSeparator,"top" )
+	End
+	
+	#rem wonkeydoc Adds a submenu to the menu.
+	#end
+	Method AddSubMenu( menu:MenuExt )
+	
+		Local button:=New MenuButtonExt( menu.Text )
+		button.HasSubmenu=True
+		
+		_subs[button]=menu
+		
+		button.Clicked=Lambda()
+			If Not menu.Visible
+				Local location:=New Vec2i( button.Bounds.Right,button.Bounds.Top )
+				menu.Open( location,button,Self )
+			Endif
+		End
+		
+		AddView( button,"top" )
+	End
+	
+	#rem wonkeydoc Opens the menu.
+	#end
+	Method Open()
+	
+		Open( App.MouseLocation,App.ActiveWindow,Null )
+	End
+	
+	#rem wonkeydoc @hidden
+	#end
+	Method Open( location:Vec2i,view:View,owner:View )
+	
+		If Visible Return
+		
+		While Not _open.Empty And _open.Top<>owner
+			_open.Top.Close()
+		Wend
+		
+		If _open.Empty
+			_filter=App.MouseEventFilter
+			App.MouseEventFilter=MouseEventFilter
+		Endif
+		
+		Local window:=view.Window
+		
+		window.AddChildView( Self )
+		Visible=True
+		
+		location=view.TransformPointToView( location,window )
+		
+		' fit into window area
+		Local size:=MeasureLayoutSize()
+		If location.x+size.x>window.Bounds.Right
+			location=location-New Vec2i( size.x,0 )
+		Endif
+		If location.y+size.y>window.Bounds.Bottom
+			location=location-New Vec2i( 0,size.y )
+		Endif
+		
+		Offset=location
+		
+		_owner=owner
+
+		_open.Push( Self )
+	End
+	
+	#rem wonkeydoc @hidden
+	#end	
+	Method Close()
+	
+		If Not Visible Return
+		
+		While Not _open.Empty
+		
+			Local menu:=_open.Pop()
+			menu.Parent.RemoveChildView( menu )
+			menu.Visible=False
+			menu._owner=Null
+			
+			If menu=Self Exit
+		Wend
+		
+		If Not _open.Empty Return
+		
+		App.MouseEventFilter=_filter
+
+		_filter=Null
+	End
+	
+	Private
+	
+	Field _subs:=New Map<View,MenuExt>
+	Field _text:String
+	Field _owner:View
+	Global _hovered:View
+	Global _timer:Timer
+	Global _sub:MenuExt
+	Global _seq:Int
+	
+	Global _open:=New Stack<MenuExt>
+	
+	Global _filter:Void( MouseEvent )
+	
+	Function CloseAll()
+		
+		_open[0].Close()
+	End
+	
+	Function MouseEventFilter( event:MouseEvent )
+	
+		If event.Eaten Return
+		
+		Local view:=event.View
+			
+		For Local menu:=Eachin _open
+		
+			If view.IsChildOf( menu )
+				
+				If event.Type=EventType.MouseMove
+					
+					' auto-expand sub menus
+					'
+					If view=_hovered Return
+					_hovered=view
+					If _timer Then _timer.Cancel()
+					
+					Local sub:=menu._subs[view]
+					
+					_seq=0
+					_timer=New Timer( 4,Lambda()
+						
+						' close previous
+						If _seq=0
+							If _sub And menu<>_sub
+								_sub.Close()
+								_sub=Null
+							Endif
+							_seq+=1
+							Return
+						Endif
+						
+						' open submenu
+						If sub
+							Local location:=New Vec2i( view.Bounds.Right,view.Bounds.Top )
+							
+							If sub.Visible Then sub.Close()
+							sub.Open( location,view,menu )
+							_sub=sub
+						Endif
+						
+						_timer.Cancel()
+						_timer=Null
+						
+					End )
+				Endif
+				
+				Return
+			Endif
+		Next
+		
+		_hovered=Null
+		If _timer Then _timer.Cancel()
+		
+		' auto-expand root menus in menu bar
+		'
+		If event.Type=EventType.MouseMove
+			
+			Local bar:=Cast<MenuBarExt>( _open[0]._owner )
+			If bar
+				Local window:=view.Window
+				Local location:=view.TransformPointToView( event.Location,window )
+				Local v:=bar.FindViewAtWindowPoint( location )
+				If v<>bar.Opened
+					Local b:=Cast<MenuButton>( v )
+					If b Then b.Clicked()
+				Endif
+			Endif
+		Endif
+		
+		' we are interesting to mousedown only
+		'
+		If event.Type<>EventType.MouseDown Return
+		
+		If _open[0]._owner
+		
+			If view<>_open[0]._owner And view.IsChildOf( _open[0]._owner ) Return
+			
+			CloseAll()
+		Else
+			
+			CloseAll()
+		Endif
+	End
+	
+End
+
+
+Class MenuButtonExt Extends Button
+	
+	Field HasSubmenu:Bool
+	
+	Method New( action:Action )
+	
+		Super.New( action )
+		
+		Style=GetStyle( "MenuButton" )
+		TextGravity=New Vec2f( 0,.5 )
+		Layout="fill-x"
+		
+		_action=action
+		
+		UpdateThemeColors()
+	End
+	
+	Method New( text:String )
+	
+		Super.New( text )
+		
+		Style=GetStyle( "MenuButton" )
+		TextGravity=New Vec2f( 0,.5 )
+		Layout="fill-x"
+		
+		UpdateThemeColors()
+	End
+	
+	
+	Protected
+	
+	Method OnThemeChanged() Override
+		
+		UpdateThemeColors()
+	End
+	
+	Method OnMeasure:Vec2i() Override
+	
+		Local size:=Super.OnMeasure()
+	
+		If _action
+			Local hotKey:=_action.HotKeyText
+			If hotKey size.x+=RenderStyle.Font.TextWidth( "         "+hotKey )
+		Endif
+		If HasSubmenu
+			size.x+=RenderStyle.Font.TextWidth( " >" )
+		Endif
+		Return size
+	End
+	
+	Method OnRender( canvas:Canvas ) Override
+	
+		Super.OnRender( canvas )
+		
+		If _action
+			Local hotKey:=_action.HotKeyText
+			If hotKey
+				Local w:=RenderStyle.Font.TextWidth( hotKey )
+				Local tx:=(Width-w)
+				Local ty:=(Height-MeasuredSize.y) * TextGravity.y
+				Local color:=canvas.Color
+				canvas.Color=_shortCutColor
+				canvas.DrawText( hotKey,tx,ty )
+				canvas.Color=color
+			Endif
+		Endif
+		
+		If HasSubmenu
+			Local tx:=Width
+			Local ty:=(Height-MeasuredSize.y) * TextGravity.y
+			canvas.DrawText( ">",tx,ty,1,0 )
+		Endif
+	End
+	
+	
+	Private
+	
+	Field _action:Action
+	Field _shortCutColor:Color
+	
+	Method UpdateThemeColors()
+		
+		_shortCutColor=App.Theme.GetColor( "menu-shortcut" )
+	End
+	
+End
+
+
+Class MenuBarExt Extends ToolBar
+
+	Method New()
+		Style=GetStyle( "MenuBar" )
+		
+		Layout="fill-x"
+		Gravity=New Vec2f( 0,0 )
+	End
+	
+	Method AddMenu( menu:MenuExt )
+	
+		Local button:=New MenuButton( menu.Text )
+
+		button.Clicked=Lambda()
+			_opened=Null
+			If menu.Visible
+				menu.Close()
+			Else
+				Local location:=New Vec2i( button.Bounds.Left,button.Bounds.Bottom )
+				menu.Open( location,button,Self )
+				_opened=button
+			Endif
+		End
+		
+		AddView( button )
+	End
+	
+	Property Opened:MenuButton()
+		Return _opened
+	End
+	
+	
+	Private
+	
+	Field _opened:MenuButton
+	
+End

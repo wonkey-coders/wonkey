@@ -1,0 +1,9 @@
+//Theme by @Hezkore
+{
+	"extends":"theme-prime-base",
+	
+	"colors":{
+		"accent": "#3CD6E7",
+		"accentDark": "#0F3E4D"
+	}
+}

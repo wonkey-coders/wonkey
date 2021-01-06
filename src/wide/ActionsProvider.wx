@@ -1,0 +1,470 @@
+
+Namespace wide
+
+
+Function InitHotkeys()
+	
+	ActionsProvider.Init()
+End
+
+Function ActionById:Action( actionId:String )
+	
+	Return ActionsProvider.GetAction( actionId )
+End
+
+
+Class ActionsProvider
+	
+	Function Init()
+		
+		CreateDefaultActions()
+		
+		Local pathToJson:=Prefs.HotkeysFilePath
+		
+		Load( pathToJson )
+		
+		' save merged version: default+custom
+		Save( pathToJson )
+	End
+	
+	Function GetAction:Action( actionId:String )
+		
+		Local act:=_actions[actionId]
+		If act=Null
+			RuntimeError( "Have no action for actionId="+actionId )
+		Endif
+		
+		Return act
+	End
+	
+	Function CreateAction:Action( actionId:String,hotKeyString:String )
+		
+		' todo !!! check for duplicates
+		
+		Local actionTitle:=ActionTitle.Get( actionId )
+		Local act:=ActionFromString( actionTitle,hotKeyString )
+		_actions[actionId]=act
+		
+		Return act
+	End
+	
+	Function Save( pathToJson:String )
+		
+		Local jobj:=New JsonObject
+		Local jarr:=New JsonArray
+		jobj["hotkeys"]=jarr
+		
+		For Local key:=Eachin _actions.Keys
+			Local action:=_actions[key]
+			Local jval:=New JsonObject
+			jval["id"]=New JsonString( key )
+			jval["hotkey"]=New JsonString( action.HotKeyText )
+			jarr.Add( jval )
+		Next
+		
+		Local json:=jobj.ToJson()
+		
+		SaveString( json,pathToJson )
+	End
+	
+	
+	Private
+	
+	Global _actions:=New StringMap<Action>
+	
+	Function Load( pathToJson:String )
+		
+		Local jobj:=JsonObject.Load( pathToJson )
+		If Not jobj Return
+		
+		Local jarr:=jobj.GetArray( "hotkeys" )
+		
+		For Local jval:=Eachin jarr
+			Local jobj2:=jval.ToObject()
+			Local id:=jobj2["id"].ToString()
+			Local action:=_actions[id]
+			If action
+				' actualize action
+				Local hotkey:=jobj2["hotkey"].ToString()
+				Local pair:=HotKeyFromString( hotkey )
+				action.HotKey=pair.Item1
+				action.HotKeyModifiers=pair.Item2
+			Endif
+		Next
+	End
+	
+	Function CreateDefaultActions()
+		
+		#If __TARGET__="macos"
+		CreateAction( ActionId.Build,"Ctrl+B" )
+		CreateAction( ActionId.Run,"Ctrl+R" )
+		CreateAction( ActionId.Semant,"Ctrl+C" )
+		CreateAction( ActionId.Debug,"Ctrl+D" )
+		CreateAction( ActionId.ForceStop,"Ctrl+Shift+R" )
+		CreateAction( ActionId.ProductSettings,"" )
+		CreateAction( ActionId.NextError,"F4" )
+		CreateAction( ActionId.LockBuildFile,"Cmd+L" )
+		CreateAction( ActionId.UpdateModules,"Cmd+U" )
+		CreateAction( ActionId.ModuleManager,"" )
+		CreateAction( ActionId.RebuildDocs,"" )
+		
+		CreateAction( ActionId.ExpandSelection,"Alt+Up" )
+		CreateAction( ActionId.ShrinkSelection,"Alt+Down" )
+		CreateAction( ActionId.WordWrap,"Alt+Z" )
+		CreateAction( ActionId.DeleteLine,"Ctrl+Shift+K" )
+		CreateAction( ActionId.DeleteWordForward,"Ctrl+Delete" )
+		CreateAction( ActionId.DeleteWordBackward,"Ctrl+Backspace" )
+		CreateAction( ActionId.DeleteToBegin,"Cmd+Backspace" )
+		CreateAction( ActionId.DeleteToEnd,"Ctrl+K" )
+		CreateAction( ActionId.MakeLowercase,"Ctrl+Shift+L" )
+		CreateAction( ActionId.MakeUppercase,"Ctrl+Shift+U" )
+		CreateAction( ActionId.SwapCase,"" )
+		CreateAction( ActionId.CommentBlock,"Cmd+'" )
+		CreateAction( ActionId.UncommentBlock,"Cmd+Shift+'" )
+		
+		CreateAction( ActionId.NewFile,"Cmd+T" )
+		CreateAction( ActionId.OpenFile,"Cmd+O" )
+		CreateAction( ActionId.CloseTab,"Cmd+W" )
+		CreateAction( ActionId.NextTab,"Ctrl+Tab" )
+		CreateAction( ActionId.PrevTab,"Ctrl+Shift+Tab" )
+		CreateAction( ActionId.CloseOtherTabs,"" )
+		CreateAction( ActionId.CloseAllTabs,"" )
+		CreateAction( ActionId.CloseTabsToTheRight,"" )
+		CreateAction( ActionId.Save,"Cmd+S" )
+		CreateAction( ActionId.SaveAs,"" )
+		CreateAction( ActionId.SaveAll,"Cmd+Shift+S" )
+		CreateAction( ActionId.Quit,"Cmd+Q" )
+		CreateAction( ActionId.Preferences,"Cmd+," )
+		
+		CreateAction( ActionId.Find,"Cmd+F" )
+		CreateAction( ActionId.FindNext,"F3" )
+		CreateAction( ActionId.FindPrev,"Shift+F3" )
+		CreateAction( ActionId.FindInFiles,"Cmd+Shift+F" )
+		CreateAction( ActionId.Replace,"Cmd+R" )
+		CreateAction( ActionId.ReplaceNext,"" )
+		CreateAction( ActionId.ReplaceAll,"" )
+		
+		CreateAction( ActionId.FoldCurrent,"Cmd+[" )
+		CreateAction( ActionId.FoldCurrentAndParent,"Cmd+Alt+[" )
+		CreateAction( ActionId.FoldAll,"Cmd+Shift+[" )
+		CreateAction( ActionId.UnfoldCurrent,"Cmd+]" )
+		CreateAction( ActionId.UnfoldCurrentAndChildren,"Cmd+Alt+]" )
+		CreateAction( ActionId.UnfoldAll,"Cmd+Shift+]" )
+		
+		CreateAction( ActionId.JumpBack,"Cmd+Alt+Left" )
+		CreateAction( ActionId.JumpForward,"Cmd+Alt+Right" )
+		CreateAction( ActionId.JumpToLine,"Cmd+G" )
+		CreateAction( ActionId.JumpToDefinition,"Cmd+B" )
+		CreateAction( ActionId.JumpToNextScope,"Cmd+Alt+Down" )
+		CreateAction( ActionId.JumpToPrevScope,"Cmd+Alt+Up" )
+		
+		CreateAction( ActionId.FullscreenWindow,"Cmd+Ctrl+F" )
+		CreateAction( ActionId.FullscreenEditor,"Cmd+Ctrl+Shift+F" )
+		CreateAction( ActionId.ZoomIn,"Ctrl+Keypad +" )
+		CreateAction( ActionId.ZoomOut,"Ctrl+Keypad -" )
+		CreateAction( ActionId.ZoomDefault,"Ctrl+Keypad 0" )
+		
+		CreateAction( ActionId.RecentlyViewedFiles,"Cmd+E" )
+		CreateAction( ActionId.DuplicateBlock,"Cmd+D" )
+		
+		#Else
+		
+		CreateAction( ActionId.Build,"F6" )
+		CreateAction( ActionId.Run,"F5" )
+		CreateAction( ActionId.Semant,"F7" )
+		CreateAction( ActionId.Debug,"F8" )
+		CreateAction( ActionId.ForceStop,"Shift+F5" )
+		CreateAction( ActionId.ProductSettings,"" )
+		CreateAction( ActionId.NextError,"F4" )
+		CreateAction( ActionId.LockBuildFile,"Ctrl+L" )
+		CreateAction( ActionId.UpdateModules,"Ctrl+U" )
+		CreateAction( ActionId.ModuleManager,"" )
+		CreateAction( ActionId.RebuildDocs,"" )
+		
+		CreateAction( ActionId.ExpandSelection,"Alt+Up" )
+		CreateAction( ActionId.ShrinkSelection,"Alt+Down" )
+		CreateAction( ActionId.WordWrap,"Alt+Z" )
+		CreateAction( ActionId.DeleteLine,"Ctrl+Shift+K" )
+		CreateAction( ActionId.DeleteWordForward,"Ctrl+Delete" )
+		CreateAction( ActionId.DeleteWordBackward,"Ctrl+Backspace" )
+		CreateAction( ActionId.DeleteToBegin,"Ctrl+Shift+Backspace" )
+		CreateAction( ActionId.DeleteToEnd,"Ctrl+Shift+Delete" )
+		CreateAction( ActionId.MakeLowercase,"Ctrl+Shift+L" )
+		CreateAction( ActionId.MakeUppercase,"Ctrl+Shift+U" )
+		CreateAction( ActionId.SwapCase,"" )
+		CreateAction( ActionId.CommentBlock,"Ctrl+'" )
+		CreateAction( ActionId.UncommentBlock,"Ctrl+Shift+'" )
+		
+		CreateAction( ActionId.NewFile,"Ctrl+N" )
+		CreateAction( ActionId.OpenFile,"Ctrl+O" )
+		CreateAction( ActionId.CloseTab,"Ctrl+W" )
+		CreateAction( ActionId.NextTab,"Ctrl+Tab" )
+		CreateAction( ActionId.PrevTab,"Ctrl+Shift+Tab" )
+		CreateAction( ActionId.CloseOtherTabs,"" )
+		CreateAction( ActionId.CloseAllTabs,"" )
+		CreateAction( ActionId.CloseTabsToTheRight,"" )
+		CreateAction( ActionId.Save,"Ctrl+S" )
+		CreateAction( ActionId.SaveAs,"" )
+		CreateAction( ActionId.SaveAll,"Ctrl+Shift+S" )
+		CreateAction( ActionId.Quit,"Alt+F4" )
+		CreateAction( ActionId.Preferences,"Ctrl+P" )
+		
+		CreateAction( ActionId.Find,"Ctrl+F" )
+		CreateAction( ActionId.FindNext,"F3" )
+		CreateAction( ActionId.FindPrev,"Shift+F3" )
+		CreateAction( ActionId.FindInFiles,"Ctrl+Shift+F" )
+		CreateAction( ActionId.Replace,"Ctrl+H" )
+		CreateAction( ActionId.ReplaceNext,"" )
+		CreateAction( ActionId.ReplaceAll,"" )
+		
+		CreateAction( ActionId.FoldCurrent,"Ctrl+[" )
+		CreateAction( ActionId.FoldCurrentAndParent,"Ctrl+Alt+[" )
+		CreateAction( ActionId.FoldAll,"Ctrl+Shift+[" )
+		CreateAction( ActionId.UnfoldCurrent,"Ctrl+]" )
+		CreateAction( ActionId.UnfoldCurrentAndChildren,"Ctrl+Alt+]" )
+		CreateAction( ActionId.UnfoldAll,"Ctrl+Shift+]" )
+		
+		CreateAction( ActionId.JumpBack,"Ctrl+Alt+Left" )
+		CreateAction( ActionId.JumpForward,"Ctrl+Alt+Right" )
+		CreateAction( ActionId.JumpToLine,"Ctrl+G" )
+		CreateAction( ActionId.JumpToDefinition,"F12" )
+		CreateAction( ActionId.JumpToNextScope,"Alt+Down" )
+		CreateAction( ActionId.JumpToPrevScope,"Alt+Up" )
+		
+		CreateAction( ActionId.FullscreenWindow,"F11" )
+		CreateAction( ActionId.FullscreenEditor,"Shift+F11" )
+		CreateAction( ActionId.ZoomIn,"Ctrl+Keypad +" )
+		CreateAction( ActionId.ZoomOut,"Ctrl+Keypad -" )
+		CreateAction( ActionId.ZoomDefault,"Ctrl+Keypad 0" )
+		
+		CreateAction( ActionId.RecentlyViewedFiles,"Ctrl+E" )
+		CreateAction( ActionId.DuplicateBlock,"Ctrl+D" )
+		
+		#Endif
+	End
+End
+
+
+Class ActionId Final
+	
+	Const Build:="build"
+	Const Run:="run"
+	Const Semant:="check"
+	Const Debug:="debug"
+	Const ForceStop:="force_stop"
+	Const ProductSettings:="product_settings"
+	Const NextError:="next_error"
+	Const LockBuildFile:="lock_build_file"
+	Const UpdateModules:="update_modules"
+	Const ModuleManager:="module_manager"
+	Const RebuildDocs:="rebuild_docs"
+	
+	Const ExpandSelection:="expand_selection"
+	Const ShrinkSelection:="shrink_selection"
+	Const WordWrap:="word_wrap"
+	Const DeleteLine:="delete_line"
+	Const DeleteWordForward:="delete_word_forward"
+	Const DeleteWordBackward:="delete_word_backward"
+	Const DeleteToBegin:="delete_to_begin"
+	Const DeleteToEnd:="delete_to_end"
+	Const MakeLowercase:="make_lowercase"
+	Const MakeUppercase:="make_uppercase"
+	Const SwapCase:="swap_case"
+	Const CommentBlock:="comment_block"
+	Const UncommentBlock:="uncomment_block"
+	
+	Const NewFile:="new_file"
+	Const OpenFile:="open_file"
+	Const CloseTab:="close_tab"
+	Const NextTab:="next_tab"
+	Const PrevTab:="prev_tab"
+	Const CloseOtherTabs:="close_other_tabs"
+	Const CloseAllTabs:="close_all_tabs"
+	Const CloseTabsToTheRight:="close_tabs_to_the_right"
+	Const Save:="save"
+	Const SaveAs:="save_as"
+	Const SaveAll:="save_all"
+	Const Quit:="quit"
+	Const Preferences:="preferences"
+	
+	Const Find:="find"
+	Const FindNext:="find_next"
+	Const FindPrev:="find_prev"
+	Const FindInFiles:="find_in_files"
+	Const Replace:="replace"
+	Const ReplaceNext:="replace_next"
+	Const ReplaceAll:="replace_all"
+	
+	Const FoldCurrent:="fold_current"
+	Const FoldCurrentAndParent:="fold_current_and_parent"
+	Const FoldAll:="fold_all"
+	Const UnfoldCurrent:="unfold_current"
+	Const UnfoldCurrentAndChildren:="unfold_current_and_children"
+	Const UnfoldAll:="unfold_all"
+	
+	Const JumpBack:="jump_back"
+	Const JumpForward:="jump_forward"
+	Const JumpToLine:="jump_to_line"
+	Const JumpToDefinition:="jump_to_definition"
+	Const JumpToNextScope:="jump_to_next_scope"
+	Const JumpToPrevScope:="jump_to_prev_scope"
+	
+	Const FullscreenWindow:="fullscreen_window"
+	Const FullscreenEditor:="fullscreen_editor"
+	Const ZoomIn:="zoom_in"
+	Const ZoomOut:="zoom_out"
+	Const ZoomDefault:="zoom_default"
+	
+	Const RecentlyViewedFiles:="recently_viewed_files"
+	Const DuplicateBlock:="duplicate_block"
+	
+	Private
+	
+	Method New()
+	End
+End
+
+
+Class ActionTitle Final
+	
+	Function Get:String( actionId:String )
+		
+		Return _titles[actionId]
+	End
+	
+	
+	Private
+	
+	Global _titles:=Init()
+	
+	Function Init:StringMap<String>()
+		
+		Local map:=New StringMap<String>
+		
+		map.Add( ActionId.Build,"Build" )
+		map.Add( ActionId.Run,"Run" )
+		map.Add( ActionId.Semant,"Check" )
+		map.Add( ActionId.Debug,"Debug" )
+		map.Add( ActionId.ForceStop,"Force stop" )
+		map.Add( ActionId.ProductSettings,"Product settings..." )
+		map.Add( ActionId.NextError,"Next build error" )
+		map.Add( ActionId.LockBuildFile,"Lock build file" )
+		map.Add( ActionId.UpdateModules,"Update / Rebuild modules..." )
+		map.Add( ActionId.ModuleManager,"Module manager..." )
+		map.Add( ActionId.RebuildDocs,"Rebuild documentation" )
+		
+		map.Add( ActionId.ExpandSelection,"Expand selection" )
+		map.Add( ActionId.ShrinkSelection,"Shrink selection" )
+		map.Add( ActionId.WordWrap,"Toggle word wrap" )
+		map.Add( ActionId.DeleteLine,"Delete line" )
+		map.Add( ActionId.DeleteWordForward,"Delete word forward" )
+		map.Add( ActionId.DeleteWordBackward,"Delete word backward" )
+		map.Add( ActionId.DeleteToBegin,"Delete to beginning" )
+		map.Add( ActionId.DeleteToEnd,"Delete to end" )
+		map.Add( ActionId.MakeLowercase,"lowercase" )
+		map.Add( ActionId.MakeUppercase,"UPPERCASE" )
+		map.Add( ActionId.SwapCase,"Swap case" )
+		map.Add( ActionId.CommentBlock,"Comment block" )
+		map.Add( ActionId.UncommentBlock,"Uncomment block" )
+		
+		map.Add( ActionId.NewFile,"New file" )
+		map.Add( ActionId.OpenFile,"Open file" )
+		map.Add( ActionId.CloseTab,"Close tab" )
+		map.Add( ActionId.NextTab,"Next tab" )
+		map.Add( ActionId.PrevTab,"Previous tab" )
+		map.Add( ActionId.CloseOtherTabs,"Close other tabs" )
+		map.Add( ActionId.CloseAllTabs,"Close all tabs" )
+		map.Add( ActionId.CloseTabsToTheRight,"Close tabs to the right" )
+		map.Add( ActionId.Save,"Save" )
+		map.Add( ActionId.SaveAs,"Save as..." )
+		map.Add( ActionId.SaveAll,"Save all" )
+		map.Add( ActionId.Quit,"Quit" )
+		map.Add( ActionId.Preferences,"Preferences..." )
+		
+		map.Add( ActionId.Find,"Find..." )
+		map.Add( ActionId.FindNext,"Find next" )
+		map.Add( ActionId.FindPrev,"Find previous" )
+		map.Add( ActionId.FindInFiles,"Find in files..." )
+		map.Add( ActionId.Replace,"Replace..." )
+		map.Add( ActionId.ReplaceNext,"Replace next" )
+		map.Add( ActionId.ReplaceAll,"Replace all" )
+		
+		map.Add( ActionId.FoldCurrent,"Fold current" )
+		map.Add( ActionId.FoldCurrentAndParent,"Fold current & parents" )
+		map.Add( ActionId.FoldAll,"Fold all" )
+		map.Add( ActionId.UnfoldCurrent,"Unfold current" )
+		map.Add( ActionId.UnfoldCurrentAndChildren,"Unfold current & children" )
+		map.Add( ActionId.UnfoldAll,"Unfold all" )
+		
+		map.Add( ActionId.JumpBack,"Jump back" )
+		map.Add( ActionId.JumpForward,"Jump forward" )
+		map.Add( ActionId.JumpToLine,"Goto line" )
+		map.Add( ActionId.JumpToDefinition,"Goto definition" )
+		map.Add( ActionId.JumpToNextScope,"Next scope" )
+		map.Add( ActionId.JumpToPrevScope,"Previous scope" )
+		
+		map.Add( ActionId.FullscreenWindow,"Fullscreen window" )
+		map.Add( ActionId.FullscreenEditor,"Fullscreen editor" )
+		map.Add( ActionId.ZoomIn,"Zoom in" )
+		map.Add( ActionId.ZoomOut,"Zoom out" )
+		map.Add( ActionId.ZoomDefault,"Reset zoom" )
+		
+		map.Add( ActionId.RecentlyViewedFiles,"Recently viewed files..." )
+		map.Add( ActionId.DuplicateBlock,"Duplicate block" )
+		
+		Return map
+	End
+	
+	Method New()
+	End
+End
+
+
+Function HotKeyFromString:Tuple2<Key,Modifier>( str:String )
+	
+	str=str.Trim()
+	
+	Local endsWithPlus:=str.EndsWith( "+" )
+	If endsWithPlus Then str=str.Slice( 0,-1 )
+	
+	Local arr:=str.Split( "+" )
+'	For Local i:=0 Until arr.Length
+'		arr[i]=arr[i].Trim()
+'	Next
+	
+	Local items:=New StringStack( arr )
+	Local modifiers:=Modifier.None
+	If items.Contains( "Shift" )
+		modifiers|=Modifier.Shift
+		items.Remove( "Shift" )
+	Endif
+	If items.Contains( "Ctrl" )
+		modifiers|=Modifier.Control
+		items.Remove( "Ctrl" )
+	Endif
+	If items.Contains( "Alt" )
+		modifiers|=Modifier.Alt
+		items.Remove( "Alt" )
+	Endif
+	If items.Contains( "Cmd" )
+		modifiers|=Modifier.Gui
+		items.Remove( "Cmd" )
+	Endif
+	
+	Local last:=items.Last
+	If endsWithPlus Then last+="+"
+	
+	Local key:=Keyboard.KeyFromName( last )
+	
+	Return New Tuple2<Key,Modifier>( key,modifiers )
+End
+
+Function ActionFromString:Action( title:String,hotKeyString:String )
+	
+	Local action:=New Action( title )
+	Local pair:=HotKeyFromString( hotKeyString )
+	action.HotKey=pair.Item1
+	action.HotKeyModifiers=pair.Item2
+	
+	Return action
+End

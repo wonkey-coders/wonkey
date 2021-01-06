@@ -1,0 +1,217 @@
+{
+	"extends":"wide-default",
+
+	"colors":{
+
+		"clear": "#181818",
+		"gutter": "#262626",
+		"content": "#323232",
+		"panel": "#4c4c4c",
+		
+		"knob": "#666666",
+		"hover": "#888888",
+		"active" : "#989898",
+
+		"textview-cursor-line":"#101020",  // current line background
+		
+		"text-default": "#A0A0A0",         // default text          (menu, active   tabs, ...)
+		"text-highlight": "#ff0",
+		"text-disabled": "#707070",        // default disabled text (menu, inactive tabs, ...)
+		"text-background": "#606060",
+		
+		"textview-cursor":"#808080",
+		"textview-selection":"#E4FD92",    //"#aaff44",
+		
+		"textview-color0":"#ffffff",       // none
+		"textview-color1":"#A0A000",       // identifiers (classes, sub-members)
+		"textview-color2":"#5050ff",       // keywords
+		"textview-color3":"#800080",       // strings
+		"textview-color4":"#ff0000",       // numbers
+		"textview-color5":"#555555",       // comment
+		"textview-color6":"#208020",       // preproc
+		"textview-color7":"#aaaa00",       // other (normal text)
+		"textview-color8":"#3485A6",       // core types like Int, Bool, Byte Ptr, String
+
+		"codemap-background":"#101010",
+		"codemap-border"    :"#202020",
+		"codemap-selection" :"#10ffffff",  //"#40101040",  //"#208080ff",
+
+		"completion-list-text": "textview-color1",        // normal text
+		"completion-list-selected": "#303030",            // selection bar background
+		"completion-list-marked-bg": "transparent",       // colored/marked text background
+		"completion-list-marked-text": "textview-color2"  // colored/marked text color
+	},
+
+	"fonts":{
+		"normal":"Roboto-Medium,18",
+		"fixedWidth":"LiberationMono-Regular,16",
+                //"editor":"Lucon,16",
+		"editor":"LiberationMono-Regular,18",
+                //"small":"Lucon,14"
+		"small":"LiberationMono-Regular,16"
+	},
+
+	"styles":{
+		"TextView":{
+			"font":"editor",
+			"border":[1,0,1,1],
+			"borderColor":"#404040",
+			"backgroundColor":"#000000",
+			"textColor":"#9090ff"
+		},
+		"GutterView":{
+			"font":"editor",
+			"border":[0,0,0,1],
+			"borderColor":"#202020",
+			"backgroundColor":"#101010",
+			"textColor":"#303030"                     // Line numbers color
+		},
+		"Console":{
+			"border":[1,0,1,1],
+			"borderColor":"#404040",
+			"textColor":"#208020",
+			"font":"small",
+			"backgroundColor":"#101010"               // content
+		},
+		"TreeView":{
+			"border":[1,0,1,0],
+			"borderColor":"#404040",
+			"backgroundColor":"#101010",
+			"icons":"smooth_assets/smooth_treeview_icons.png",
+			"iconColor":"#9DA5B4"
+		},
+		"TreeViewContent":{
+			"border":[0],
+			"padding":[4]
+		},
+ 		"TreeViewNode":{
+			"border":[0],
+			"padding":[3],
+			"font":"small",
+			"textColor":"#208020",
+			"states":{
+				"hover":{
+					"backgroundColor":"#3F3F3F"
+				},
+				"selected":{
+					"backgroundColor":"#3F3F3F",
+					"textColor":"text-highlight"
+				}
+			}
+		},
+		"Menu":{
+			"padding":[ 0 ],
+			"skin":"dialog_skin.png",
+			"skinColor":"#EE202020"                // menu background with transparency
+		},
+		"MenuButton":{
+			"extends":"Label",
+			"padding":[8,4],
+			"states":{
+				"hover":{
+					"backgroundColor":"#606060"
+				},
+				"active":{
+					"backgroundColor":"active"
+				},
+				"selected":{
+					"backgroundColor":"active"
+				}
+			}
+		},
+		"MenuBar":{
+			"extends":"ToolBar",
+			"backgroundColor":"content"
+		},
+		"CodeMapView":{
+			"extends":"TextView",
+			"margin":[ 0 ],
+			"padding":[ 0 ],
+			"border":[ 1,0,0,0 ],
+			"borderColor": "codemap-border",
+			"backgroundColor":"codemap-background"
+		},
+		"ScrollBar":{
+			"backgroundColor":"#202020"
+		},
+		"ScrollKnob":{
+			"padding":[ 4 ],
+			"border":[ 1 ],
+			"borderColor":"#0000",
+			"skin":"button_skin.png",
+			"skinColor":"#373737",
+			"states":{
+				"hover":{
+					"skinColor":"hover"
+				},
+				"active":{
+					"skinColor":"active"
+				}
+			}
+		},
+		"DockKnob":{
+			"padding":[ 3 ],
+			"backgroundColor":"#202020",
+			"states":{
+				"hover":{
+					"backgroundColor":"hover"
+				},
+				"active":{
+					"backgroundColor":"active"
+				}
+			}
+		},
+		"TabButton":{
+            "backgroundColor":"#202020",
+			//"extends":"Button",
+			//"font":"small",
+			"padding":[10,5,10,5],
+			"border":[0,0,0,2],
+			"borderColor":"#404040",
+			"textColor":"text-disabled",
+			"states":{
+				"hover":{
+					"backgroundColor":"#404040",
+					//"textColor":"text-default",
+					"borderColor":"#808080"
+				},
+				"active":{
+					"backgroundColor":"#101010",
+					"textColor":"text-default"
+				},
+				"selected":{
+					"backgroundColor":"#202020",
+					"textColor":"text-default",
+					"borderColor":"#3CD6E7"  //#5050ff"
+				}
+			}
+		},
+		"TabButtonLocked":{
+			"extends":"TabButton",
+			"borderColor":"textview-color2"
+		},
+		"CompletionDialog":{
+			"extends":"Dialog",
+			"skinColor":"#303030",        // completion box border color
+			"textColor":"#ffff00",        // - nothing
+			"color":"#ffff00"             // - nothing
+		},
+		"CompletionDialogContent":{
+			"padding":[ 0 ],              // completion box padding
+			"backgroundColor":"#101010",  // completion box background color
+			"textColor":"#ffff00",        // - nothing
+			"color":"#ffff00",            // - nothing
+			"font":"editor"               // - nothing
+		},
+		"CompletionHint":{
+			"extends":"Label",
+			"padding":[ 3 ],
+			"borderColor": "#20000000",
+			"border":[ 0,1,0,0 ],
+			"margin":[ 0,4,0,0 ],
+			"font":"editor",
+			"color":"#ffff00",            // - nothing
+			"textColor":"#404040"         // completion box text color "Press Ctr+Space to show more.."
+		}
+  	}
+}

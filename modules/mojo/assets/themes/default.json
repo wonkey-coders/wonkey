@@ -1,0 +1,22 @@
+{
+	"colors":{
+	
+		"windowClearColor":"#000"
+	},
+	
+	"fonts":{
+	
+		"normal":"DejaVuSans,16"
+	},
+	
+	"styles":{
+	
+		"default":{
+		
+			"font":"normal"
+		},
+		
+		"Window":{
+		}
+	}
+}

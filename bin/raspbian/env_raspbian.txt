@@ -1,0 +1,17 @@
+
+'***** RASPBIAN TARGET *****
+
+'LD options
+WX_LD_OPTS_RASPBIAN=-s -L/opt/vc/lib -lbcm_host -lvcos -lvchiq_arm
+WX_LD_OPTS_RASPBIAN_DEBUG=
+WX_LD_OPTS_RASPBIAN_RELEASE=
+
+'C compiler options
+WX_CC_OPTS_RASPBIAN=-std=gnu99 -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads
+WX_CC_OPTS_RASPBIAN_DEBUG=-Os
+WX_CC_OPTS_RASPBIAN_RELEASE=-O3 -DNDEBUG
+
+'C++ compiler options
+WX_CPP_OPTS_RASPBIAN=-std=c++11 -I/opt/vc/include  -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads
+WX_CPP_OPTS_RASPBIAN_DEBUG=-Os
+WX_CPP_OPTS_RASPBIAN_RELEASE=-O3 -DNDEBUG

@@ -1,0 +1,50 @@
+{
+	"Classic dark": {
+		"path": "theme-classic-dark",
+		"dark": true
+	},
+	"Overcast": {
+		"path": "theme-overcast",
+		"dark": false
+	},
+	"Monkey 1": {
+		"path": "theme-monkey1",
+		"dark": false
+	},
+	"Blitzed": {
+		"path": "theme-blitzed",
+		"dark": true
+	},
+	"Basic Blue": {
+		"path": "theme-Basic-Blue",
+		"dark": true
+	},
+	"Hollow": {
+		"path": "theme-hollow",
+		"dark": true
+	},
+	"Washed": {
+		"path": "theme-washed",
+		"dark": true
+	},
+	"Prime - Red": {
+		"path": "theme-prime-red",
+		"dark": true
+	},
+	"Prime - Blue": {
+		"path": "theme-prime-blue",
+		"dark": true
+	},
+	"Smooth": {
+		"path": "theme-smooth",
+		"dark": true
+	},
+	"Warm": {
+		"path": "theme-warm",
+		"dark": true
+	},
+	"Dark Nights": {
+		"path": "theme-darknights",
+		"dark": true
+	}
+}

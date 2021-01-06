@@ -1,0 +1,226 @@
+{
+	"extends":"default",
+	
+	"colors":{
+
+		"transparent": "#0000",
+		"textview-cursor-line":"#2000",
+		"textview-whitespaces":"#2aaa",
+		"textview-extra-selection":"#5555",
+		"statusbar": "content",
+		"statusbar-active": "#CA5100",
+		"menu-shortcut":"text-background",
+		"codemap-background": "transparent",
+		"codemap-selection": "#48000000",
+		"params-hint-common": "textview-color1",
+		"params-hint-selected": "textview-color4",
+		"completion-list-text": "text-default",
+		"completion-list-selected": "content",
+		"completion-list-marked-bg": "#0fff",
+		"completion-list-marked-text": "textview-color4",
+		"treeview-selected-row": "#1fff",
+		"textview-color8": "textview-color2" //core types like Int, Bool
+	},
+
+	"fonts":{
+	
+		"editor":"DejaVuSansMono.ttf,14",
+		"bananas-title":"DejaVuSansMono.ttf,20"
+	},
+	
+	"styles":{
+		
+		"GutterView":{
+			"extends":"TextView",
+			"textColor":"text-disabled",
+			"font":"normal"
+		},
+		
+		"DebugToolBar":{
+			"extends":"ToolBar",
+			"border":[ 4 ],
+			"borderColor":"content",
+			"icons":"debug_icons.png"
+		},
+		
+		"HelpTextField":{
+			"extends":"TextField",
+			"skinColor":"panel",
+			"border":[ 1 ],
+			"borderColor":"#2000"
+		},
+		"HelpPageAddress":{
+			"extends":"Label",
+			"font":"small"
+		},
+
+		"Hint":{
+			"border":[ 1 ],
+			"borderColor":"clear",
+			"backgroundColor":"panel"
+		},
+
+		"ParamsHint":{
+			"extends":"Hint"
+		},
+
+		"ToolBarExt":{
+			"extends":"ToolBar",
+			"padding":[ 0 ],
+			"margin":[ 0 ],
+			"backgroundColor":"content",
+			"border":[ 0,0,0,1 ],
+			"borderColor":"clear",
+			"iconColor":"#f00"
+		},
+
+		"MainToolBar":{
+			"extends":"ToolBarExt"
+		},
+
+		"EditorToolBar":{
+			"extends":"ToolBarExt"
+		},
+
+		"SourceToolBar":{
+			"extends":"ToolBarExt"
+		},
+
+		"ToolButton":{
+			"extends":"Button",
+			"padding":[ 4,4 ],
+			"margin":[ 2,2 ]
+		},
+
+		"ColoredToolButton":{
+			"extends":"ToolButton",
+			"iconColor":"text-default"
+		},
+
+		"TabViewArrowPrev":{
+			"extends":"Button",
+			"padding":[ 4,1 ],
+			"margin":[ 2,0,1,0 ]
+		},
+
+		"TabViewArrowNext":{
+			"extends":"Button",
+			"padding":[ 4,1 ],
+			"margin":[ 1,0,2,0 ]
+		},
+
+		"ProgressBar":{
+			"icons":"progressbar_icons.png"
+		},
+
+		"StatusBar":{
+			"extends":"DockingView",
+			"padding":[ 0 ],
+			"backgroundColor":"statusbar",
+			"border":[ 0,1,0,0 ]
+		},
+		"StatusBarText":{
+			"extends":"Label"
+		},
+		"StatusBarLineInfo":{
+			"extends":"Label",
+			"margin":[ 40,0,0,0 ]
+		},
+		"StatusBarIns":{
+			"extends":"Label"
+		},
+		"StatusBarProgress":{
+			"extends":"ProgressBar",
+			"margin":[ 6,0 ]
+		},
+		"StatusBarButton":{
+			"extends":"ToolButton",
+			"padding":[ 0 ],
+			"skinColor":"transparent"
+		},
+
+		"CompletionDialog":{
+			"extends":"Dialog"
+		},
+		"CompletionDialogContent":{
+			"padding":[ 1 ]
+		},
+		"CompletionHint":{
+			"extends":"Label",
+			"padding":[ 3 ],
+			"borderColor": "#20000000",
+			"border":[ 0,1,0,0 ],
+			"margin":[ 0,4,0,0 ],
+			"font":"small"
+		},
+				
+		"TextFieldBordered":{
+			"extends":"TextField",
+			"border":[ 1 ],
+			"borderColor":"clear"
+		},
+		
+		"CodeMapView":{
+			"extends":"TextView",
+			"margin":[ 4,0,0,0 ],
+			"padding":[ 0 ],
+			"border":[ 1,0,0,0 ],
+			"borderColor": "clear",
+			"backgroundColor":"codemap-background"
+		},
+
+		"BananasView":{
+			"border":[ 0 ],
+			"padding":[ 0 ],
+			"backgroundColor":"content"
+		},
+		"BananasCard":{
+			"margin":[ 10,15,10,15 ],
+			"border":[ 1 ],
+			"borderColor":"clear"
+		},
+		"BananasTitle":{
+			"extends": "Label",
+			"font": "bananas-title"
+		},
+		"BananasButton":{
+			"extends": "Button",
+			"margin": [ 4,0,0,0 ]
+		},
+		"BananasDescription":{
+			"extends":"TextView",
+			"font":"normal"
+		},
+
+		"MenuButton":{
+			"extends":"Label",
+			"states":{
+				"hover":{
+					"backgroundColor":"hover"
+				},
+				"active":{
+					"backgroundColor":"active"
+				},
+				"selected":{
+					"backgroundColor":"active"
+				}
+			}
+		},
+
+		"FindReplaceView":{
+			"extends":"DockingView",
+			"padding":[ 0,4,0,2 ]
+		},
+
+		"TabsDropArea":{
+			"extends":"Label",
+			"backgroundColor":"#5009"
+		},
+		
+		"TabButtonLocked":{
+			"extends":"TabButton",
+			"borderColor":"#fa22",
+			"border":[ 0,0,0,1 ]
+		}
+	}
+}

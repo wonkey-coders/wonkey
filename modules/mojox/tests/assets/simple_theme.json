@@ -1,0 +1,335 @@
+{
+	"colors":{
+
+		"clear": "#080808",
+		"gutter": "#262626",
+		"content": "#121212",
+		"panel": "#4c4c4c",
+		"knob": "#666666",
+		"hover": "#888888",
+		"active" : "#989898",
+		
+		"text-default": "#fff",
+		"text-highlight": "#ff0",
+		"text-disabled": "#888",
+		"text-background": "#888",
+		
+		"textview-cursor":"#08f",
+		"textview-selection":"#888",
+
+		"textview-color0":"#0000",
+		"textview-color1":"#fff",
+		"textview-color2":"#ff0",
+		"textview-color3":"#0f8",
+		"textview-color4":"#0f8",
+		"textview-color5":"#0ff",
+		"textview-color6":"#fc0",
+		"textview-color7":"#fff",
+		
+		"windowClearColor":"clear"
+	},
+	
+	"fonts":{
+	
+		"normal":"DejaVuSans.ttf,16",
+		"fixedWidth":"DejaVuSansMono.ttf,16",
+		"small":"DejaVuSans.ttf,14"
+	},
+	
+	"styles":{
+
+		"default":{
+			"font":"normal",
+			"textColor":"text-default",
+			"iconColor":"#ffff",
+			"states":{
+				"disabled":{
+					"textColor":"text-disabled",
+					"iconColor":"#8fff"
+				}
+			}
+		},
+		
+		"Label":{
+			"padding":[8,4]
+		},
+		
+		"Button":{
+			"extends":"Label",
+			"padding":[4,2],
+			"skin":"button_skin.png",
+			"skinColor":"content",
+			
+			"states":{
+				"hover":{
+					"skinColor":"hover"
+				},
+				"active":{
+					"skinColor":"active"
+				},
+				"selected":{
+					"skinColor":"active"
+				}
+			}
+		},
+		
+		"PushButton":{
+			"extends":"Button",
+			"margin":[4,4]
+		},
+		
+		"CheckButton":{
+			"extends":"Label"
+		},
+		
+		"CheckBox":{
+			"icons":"checkbox_icons.png",
+			"margin":[8,0,0,0]
+		},
+		
+		"ProgressBar":{
+			"icons":"progressbar_icons.png"
+		},
+		
+		"ScrollView":{
+		},
+		
+		"ScrollBar":{
+			"backgroundColor":"gutter"
+		},
+		
+		"ScrollKnob":{
+			"padding":[ 4 ],
+			"border":[ 1 ],
+			"borderColor":"#0000",
+			"skin":"button_skin.png",
+			"skinColor":"knob",
+			"states":{
+				"hover":{
+					"skinColor":"hover"
+				},
+				"active":{
+					"skinColor":"active"
+				}
+			}
+		},
+		
+		"TextView":{
+			"font":"fixedWidth",
+			"backgroundColor":"content"
+		},
+		
+		"TextViewContent":{
+			"padding":[4]
+		},
+		
+		"TextField":{
+			"padding":[ 2 ],
+			"margin":[ 2 ],
+			"skin":"button_skin.png",
+			"skinColor":"content"
+		},
+		
+		"DockingView":{
+		},
+		
+		"DockedView":{
+		},
+		
+		"DockKnob":{
+			"padding":[ 3 ],
+			"backgroundColor":"knob",
+			"states":{
+				"hover":{
+					"backgroundColor":"hover"
+				},
+				"active":{
+					"backgroundColor":"active"
+				}
+			}
+		},
+		
+		"ToolBar":{
+			"padding":[ 2 ],
+			"backgroundColor":"panel"
+		},
+		
+		"ToolButton":{
+			"extends":"Button",
+			"padding":[2,0],
+			"margin":[6,0]
+		},
+		
+		"Menu":{
+			
+			"padding":[ 0 ],
+			"skin":"dialog_skin.png",
+			"skinColor":"panel"
+		},
+		
+		"MenuButton":{
+			"extends":"Label",
+			"padding":[8,4],
+			"states":{
+				"hover":{
+					"backgroundColor":"hover"
+				},
+				"active":{
+					"backgroundColor":"active"
+				},
+				"selected":{
+					"backgroundColor":"active"
+				}
+			}
+		},
+		
+		"MenuBar":{
+			"extends":"ToolBar",
+			"backgroundColor":"content"
+		},
+		
+		"MenuSeparator":{
+			"padding":[ 0,0,0,1 ],
+			"backgroundColor":"content",
+			"border":[ 8,8,7,7 ]
+		},
+		
+		"TabView":{
+		},
+		
+		"TabBar":{
+			"extends":"ToolBar",
+			"padding":[ 0,2,4,0 ],
+			"backgroundColor":"clear"
+		},
+		
+		"TabButton":{
+			"extends":"Button",
+//			"font":"small",
+			"padding":[1],
+			"margin":[2,0],
+			"backgroundColor":"#0000",
+			"skin":"tabbutton_skin.png",
+			"skinColor":"gutter",
+			"textColor":"text-background",
+			
+			"states":{
+				"hover":{
+					"skinColor":"gutter"
+				},
+				"active":{
+					"skinColor":"content"
+				},
+				"selected":{
+					"skinColor":"content",
+					"textColor":"text-default"
+				}
+			}
+		},
+		
+		"TabClose":{
+			"margin":[ 4,0,0,0 ],
+			"icons":"tabclose_icons.png",
+			"iconColor":"#cfff",
+			"states":{
+				"hover":{
+					"iconColor":"#ffff"
+				},
+				"active":{
+					"iconColor":"#ffff"
+				}
+			}
+		},
+
+		"GridView":{
+		},
+
+		"TableView":{
+			"extends":"DockingView"
+		},
+		
+		"TableHeader":{
+			"extends":"Label",
+			"textColor":"text-highlight",
+			"border":[0,0,0,1],
+			"borderColor":"panel"
+		},
+		
+		"TableColumn":{
+		},
+		
+		"TreeView":{
+			"backgroundColor":"content",
+			"icons":"treeview_icons.png",
+			"iconColor":"#8fff"
+		},
+		
+		"TreeViewContent":{
+			"padding":[2]
+		},
+
+		"TreeViewNode":{
+			"padding":[1],
+			"states":{
+				"hover":{
+					"backgroundColor":"panel"
+				},
+				"selected":{
+					"backgroundColor":"panel",
+					"textColor":"text-highlight"
+				}
+			}
+		},
+		
+		"ListView":{
+			"backgroundColor":"content"
+		},
+		
+		"ListViewContent":{
+			"padding":[2]
+		},
+		
+		"ListViewItem":{
+			"padding":[1],
+			"states":{
+				"hover":{
+					"backgroundColor":"panel"
+				},
+				"selected":{
+					"backgroundColor":"panel",
+					"textColor":"text-highlight"
+				}
+			}
+		},
+		
+		"FileBrowser":{
+			"extends":"TreeView"
+		},
+		
+		"HtmlView":{
+		},
+		
+		"Console":{
+			"backgroundColor":"content"
+		},
+		
+		"Dialog":{
+			"skin":"dialog_skin.png",
+			"skinColor":"panel"
+		},
+		
+		"DialogTitle":{
+			"extends":"Label",
+			"backgroundColor":"knob"
+		
+		},
+		
+		"DialogContent":{
+			"padding":[ 8,8,8,4 ]
+		},
+		
+		"DialogActions":{
+			"padding":[ 8,4,8,4 ]
+		}
+	}
+}

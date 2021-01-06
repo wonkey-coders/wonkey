@@ -1,0 +1,75 @@
+
+Namespace mojox
+
+#rem wonkeydoc The ToolButton class.
+#end
+Class ToolButton Extends Button
+
+	Method New( action:Action )
+		Super.New( action )
+		
+		Style=GetStyle( "ToolButton" )
+		
+		PushButtonMode=True
+	End
+	
+End
+
+#rem wonkeydoc The ToolBar class.
+#end
+Class ToolBar Extends DockingView
+
+	#rem wonkeydoc Creates a new tool bar.
+	#end
+	Method New()
+		Self.New( std.geom.Axis.X )
+	End
+	
+	Method New( axis:Axis )
+		Style=GetStyle( "ToolBar" )
+		
+		Layout=(axis=Axis.X ? "fill-x" Else "fill-y")
+
+		Gravity=New Vec2f( 0,0 )
+		
+		_axis=axis
+		_add=axis=Axis.X ? "left" Else "top"
+	End
+	
+	#rem wonkeydoc Toolbar axis.
+	#end
+	Property Axis:Axis()
+		Return _axis
+	End
+
+	#rem wonkeydoc Adds a view to the tool bar.
+	#end	
+	Method AddView( view:View )
+		AddView( view,_add )
+	End
+	
+	#rem wonkeydoc Adds a separator to the tool bar.
+	#end	
+	Method AddSeparator()
+		AddView( New MenuSeparator )
+	End
+
+	#rem wonkeydoc Adds an action to the tool bar.
+	#end	
+	Method AddAction( action:Action )
+		Local button:=New ToolButton( action )
+		AddView( button,_add )
+	End
+	
+	Method AddAction:Action( label:String,icon:Image=Null )
+		Local action:=New Action( label,icon )
+		AddAction( action )
+		Return action
+	End
+	
+	Private
+	
+	Field _axis:Axis
+	Field _add:String
+
+End

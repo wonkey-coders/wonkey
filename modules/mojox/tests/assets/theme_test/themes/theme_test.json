@@ -1,0 +1,38 @@
+{
+	"extends":"default",
+	
+	"colors":{
+		"text-default": "#66CDAA",
+		"text-disabled": "#722",
+		"disabled":"#555"
+	},
+	
+	"fonts":{
+		"normal":"DejaVuSans.ttf, 46"
+	},
+	
+	"styles":{
+		"Button":{
+			"extends":"Label",
+			"padding":[4,2],
+			"skin":"button_skin.png",
+			"skinColor":"content",
+			
+			"states":{
+				"hover":{
+					"skinColor":"hover"
+				},
+				"active":{
+					"skinColor":"active"
+				},
+				"selected":{
+					"skinColor":"active"
+				},
+				"disabled":{
+					"skinColor":"disabled"
+				}
+			}
+		}
+	}
+	
+}

@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+<style>
+
+body{
+	background: transparent;
+	color: #eee;
+	font-size: 18px;
+	margin: 8px;
+	padding: 0px;
+	line-height:20px;
+}
+
+h1{
+	color: #fc0;
+	font-size: 28px;
+	text-align: center;
+}
+
+h2{
+	color: #fc0;
+	font-size: 24px;
+	text-align: center;
+}
+
+div.awesome{
+	color: #ccc;
+	font-size: 14px;
+}
+
+a{
+	color: #4ef;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+a:hover{
+	color: #0e0;
+}
+
+</style>
+</head>
+
+<body>
+
+<center>
+	<p>Wide (Wonkey IDE) is a fork of Ted2Go (big thanks to Evgeniy Goroshkin)</p>
+	<a href="https://github.com/wonkey-coders/wide">Sources on Github</a> | <a href="https://github.com/wonkey-coders/wide/discussions">Discuss on Github</a><br>
+</center>
+
+<h3>Features</h3>
+
+<ul>
+<li><b>Autocompletion List</b><br>
+It is based on real parsing of sources, parse all modules and user's code.<br>
+(WIP, don't parse locals yet.)
+</li>
+<br>
+<li><b>CodeTree View</b><br>
+Shows code structure, gives us comfortable code jumping.
+</li>
+<br>
+<li><b>Code templates</b><br>
+You just type short combination (like 'prop'), press TAB and get whole code constuction (for ex. property with setter and getter).<br>
+You can add your own templates. Speed up your coding!
+</li>
+<br>
+<li><b>Goto definition</b><br>
+Press F12 (or F2) to goto definition of ident under cursor.
+</li>
+<br>
+<li><b>Parsing on-the-fly</b><br>
+You can see parse errors in realtime. Point the mouse to see a hint.
+</li>
+<br>
+<li><b>Code folding</b><br>
+Fold members to have more crear editor area.
+</li>
+<br>
+<li><b>ToolBars</b><br>
+MainToolBar - to simplify access to actions: open/save/undo/redo/build.<br>
+EditorToolBar: find/comment/shift.
+</li>
+<br>
+<li><b>StatusBar</b><br>
+You can see some useful info here:<br>
+* quick help for any (almost) code member by F1;<br>
+* cursor line number and position in line;<br>
+* building dialog moved here, so you can comfortable write code while compiling.<br>
+</li>
+<br>
+<li><b>Quick help</b><br>
+Press F1 first time and you'll see quick help in status bar.<br>
+Press F1 again and you'll see the full help for module members, or will be jumped to member declaration.<br>
+Help system find idents more accurately (in comparison with original ted2, ted2go).
+</li>
+<br>
+<li><b>"Find in files" dialog</b> (Ctrl+Shift+F)</li>
+Allow you to find in whole project.
+</ul>
+
+
+<h3>Shortcuts</h3>
+<ul>
+<li>F1 - show help for ident under cursor;</li>
+<li>F2/F12 - goto ident declaration;</li>
+<li>Ctrl+Alt+Left / Ctrl+Alt+Right - go back / go forward through navigation stack;</li>
+<li>Ctrl+' (or just ' for selection) - comment selected lines (macos: Ctrl+\);</li>
+<li>Ctrl+Shift+' (or just ' for selection) - uncomment selected lines (macos: Ctrl+Shift+\);</li>
+<li>Ctrl+E - delete whole line under cursor (macos: Ctrl+Backspace).</li>
+<li>Ctrl+Shift+F - open "Find in files" dialog.</li>
+<li>Shift+F5 - stop current process (cancel building, etc).</li>
+<li>Esc - show/hide bottom tabs.</li>
+<li>Shift+Esc - show/hide left&right tabs.</li>
+</ul>
+
+
+<h3>Authors</h3>
+
+<p>Original Ted2go maintained by Evgeniy Goroshkin (nerobot/engor) and Mark Sibly.<br>
+Welcome to say thanks to Evgeniy with <a href="https://paypal.me/engor/10">PayPal donation</a>.<br>
+Enjoy coding!</p>
+
+
+<h3>Third party</h3>
+
+<p>Almost all icons for CodeTree were taken from <a href="https://netbeans.org">Netbeans IDE</a>.<br>
+ToolBar icons were taken from <a href="https://icons8.com/icon/new-icons/win8">icons8.com</a>.</p>
+
+
+<h3>Special thanks</h3>
+
+<p>Jean-Marc Quere, Jimmy Söderman, Second Gear Games, Dominique MIS, Rajasekaran Senthil Kumaran, abakobo, Peter Rigby, Dmitry Fadeev, James Boyd, Sam Fisher, Matthew Bowen, Mark Mcvittie, Simon Armstrong, Rudy van Etten, Hezkore, Sal Gunduz, Peter Scheutz, Matthieu Chemin, David Maziarka, Leonardo Teixeira, Jesus Perez, Mark Sibly, Philipp Moeller, Lee Wade.</p>
+
+<p>Wonkey Teams</p>
+
+</body>
+
+</html>

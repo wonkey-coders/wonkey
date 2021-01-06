@@ -1,0 +1,42 @@
+{
+	"extends":"wide-default",
+
+	"colors":{
+
+		"content": "#ffffff",
+		"clear": "#e0e0e0",
+		"panel": "#e8e8e8",
+		"gutter": "#f0f0f0",
+		
+		"knob": "#cdcdcd",
+		"hover": "#a6a6a6",
+		"active" : "#606060",
+		
+		"text-default": "#222",
+		"text-highlight": "#484",
+		"text-disabled":  "#888",
+		"text-background": "#888",
+		
+		"textview-cursor":"#08f",
+		"textview-selection":"#888",
+		
+		"textview-color0": "#0000",
+		"textview-color1": "#222",	//identifiers
+		"textview-color2": "#26f",	//keywords
+		"textview-color3": "#282",	//strings
+		"textview-color4": "#228",	//numbers
+		"textview-color5": "#288",	//comment
+		"textview-color6": "#828",	//preproc
+		"textview-color7": "#222",	//default
+		"textview-color8": "textview-color2" //core types like Int, Bool
+	},
+
+	"styles":{
+	
+		"TreeView":{
+			"backgroundColor":"content",
+			"icons":"treeview_icons.png",
+			"iconColor":"#aaa"
+		}
+	}
+}

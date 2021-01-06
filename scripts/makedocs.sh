@@ -1,0 +1,5 @@
+
+. ./common.sh
+
+$wake docs
+

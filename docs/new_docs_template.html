@@ -1,0 +1,115 @@
+<!doctype html>
+
+<html>
+
+<head>
+
+	<meta charset="utf-8">
+	
+	<title>Wonkey Modules Reference</title>
+
+	<script src="jstree/dist/libs/jquery.js"></script>
+
+	<script src="jstree/dist/libs/bootstrap/js/bootstrap.min.js" ></script>
+	<link rel="stylesheet" href="jstree/dist/libs/bootstrap/css/bootstrap.min.css">
+
+	<script src="jstree/dist/jstree.min.js"></script>	 	
+	<link rel="stylesheet" href="jstree/dist/themes/proton/style.min.css" />
+	
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="theme.css">
+
+
+	<script>
+		
+	var jstree_theme='proton';
+
+	// Ok, link format is:
+	//
+	// module:nmspace.nmspace.decl, eg "monkey:monkey.types.Int"
+	//
+	// ...or...
+	// 
+	// module:topic#section, eg: "monkey:modules#creating-modules"
+	//
+	function openPage( page ){
+	
+		var url=page;
+		
+		//alert( 'page='+page+', url='+url );
+			
+		var docs=document.getElementById( 'docs-iframe' );
+		
+		docs.contentWindow.location=url;
+	}
+
+	</script>
+
+</head>
+
+<body class="page_body">
+
+<!-- CONTENT -->
+
+<div class="modules_nav_wrapper">
+<form role="search"><input type="text" id="search" placeholder="Search for..." style="width:100%;" /></form>
+<div id="tree" class="modules_nav_tree"></div>
+</div>
+
+<div class="modules_docs_wrapper">
+<iframe id="docs-iframe" class="modules_docs_iframe"></iframe>
+</div>
+
+<script>
+
+jQuery( function($){
+
+	$('#tree').jstree( {
+
+		'core':{
+			'multiple' : false,
+			'animation' : false,
+			'themes':{
+				'name' : jstree_theme,
+				'dots' : false,
+				'icons' : false,
+				'stripes' : false
+			},
+			'data':[ ${DOCS_TREE} ]
+		},
+		'plugins':[ 'search' ]
+ 	});
+ 	
+	$('#tree').on( 'changed.jstree',function( e,data ){
+
+		var node=data.instance.get_node( data.selected[0] );
+		if( !node || !node.data ) return;
+		
+		var page=node.data.page;
+		if( !page ) return;
+		
+		openPage( page );
+	});
+	
+	var to=false;
+
+	$('#search').keyup( function(){
+
+		if( to ) { clearTimeout( to ); }
+
+		to = setTimeout( function(){
+			var v = $('#search').val();
+			$('#tree').jstree( true ).search( v );
+		},250 );
+
+	});
+
+} );	
+	
+</script>
+
+<!-- END -->
+
+</body>
+
+</html>

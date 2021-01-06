@@ -1,0 +1,2 @@
+
+Changed 'typedef void' on line 224 of src/autofit/aftypes.h to 'typedef int' to fix emscripten crash.

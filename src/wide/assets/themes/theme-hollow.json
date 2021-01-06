@@ -1,0 +1,487 @@
+//Theme by @Hezkore
+//Inspired by gruvbox
+{
+	"extends":"wide-default",
+	
+	"fonts":{
+	
+		"normal":"Roboto-Medium.ttf,16",
+		"fixedWidth":"RobotoMono-Medium.ttf,19",
+		"small":"Roboto-Medium.ttf,14",
+		"editor":"SourceCodePro-Medium.otf,19"
+	},
+	
+	"colors":{
+
+		"border": "#121111",
+
+		"transparent": "#0000",
+		"darkest": "#222020",
+		"darker": "#32302F",
+		"dark": "#3C3836",
+		"bright": "#504945",
+		"brighter": "#665C54",
+		"brightest": "#7C6F64",
+
+		"separator": "#2A2828",
+
+		"text-default": "#CECECE",
+		"text-highlight": "#FFFFFF",
+		"text-disabled": "#6F6F6F",
+		"text-background": "#969696",
+		
+		"textview-cursor":"textview-color1",
+		"textview-selection":"brightest",
+		"textview-cursor-line":"dark",
+		"textview-whitespaces":"bright",
+
+		"textview-color0":"#FF00FF", 	//When is this used?
+		"textview-color1": "#FFFBF2",	//identifiers
+		"textview-color2": "#FA3E28",	//keywords
+		"textview-color3": "#C4C722",	//strings
+		"textview-color4": "#B77FE5",	//numbers
+		"textview-color5": "#6F665E",	//comment
+		"textview-color6": "#FDBD28",	//preproc
+		"textview-color7": "#8EC07C",
+		"textview-color8": "#FA3E28",	//core types like Int, Bool
+		
+		"windowClearColor":"darkest",
+		"menu-shortcut":"text-background",
+
+		"statusbar": "darkest",
+		"statusbar-active": "darkest"
+	},
+	
+	"styles":{
+
+		"default":{
+			"font":"normal",
+			"textColor":"text-default",
+			"iconColor":"#ffff",
+			"states":{
+				"disabled":{
+					"textColor":"text-disabled",
+					"iconColor":"#8fff"
+				}
+			}
+		},
+
+		"CodeMapView":{
+			"extends":"TextView",
+			"margin":[ 4,0,0,0 ]
+		},
+
+		"GutterView":{
+			"padding":[ -16,0,16,0 ],
+			"extends":"TextView",
+			"textColor":"text-disabled",
+			"backgroundColor":"darkest",
+			"font":"editor"
+		},
+		
+		"DebugToolBar":{
+			"extends":"ToolBar",
+			"border":[ 1 ],
+			"borderColor":"darker",
+			"icons":"debug_icons.png"
+		},
+		
+		"HelpTextField":{
+			"extends":"TextField",
+			"skinColor":"darker"
+		},
+
+		"Hint":{
+			"font":"small",
+			"textColor":"text-default",
+			"backgroundColor":"border"
+		},
+
+		"ToolBarExt":{
+			"extends":"ToolBar",
+			"padding":[ 0 ],
+			"margin":[ 0 ],
+			"backgroundColor":"dark",
+			"border":[ 0 ]
+		},
+
+		"MainToolBar":{
+			"extends":"ToolBarExt"
+		},
+
+		"EditorToolBar":{
+			"extends":"ToolBarExt"
+		},
+
+		"SourceToolBar":{
+			"extends":"ToolBarExt",
+			"backgroundColor":"darker"
+		},
+
+		"TabViewArrowPrev":{
+			"extends":"Button",
+			"textColor":"text-background",
+			"padding":[ 8,4 ],
+			"margin":[ 2,0,2,0 ]
+		},
+
+		"TabViewArrowNext":{
+			"extends":"Button",
+			"textColor":"text-background",
+			"padding":[ 8,4 ],
+			"margin":[ 2,0,12,0 ]
+		},
+
+		"ProgressBar":{
+			"icons":"hollow_assets/hollow_progressbar_icons.png"
+		},
+
+		"StatusBar":{
+			"extends":"DockingView",
+			"padding":[ 0,8,0,8 ],
+			"border":[0,1,0,0],
+			"borderColor":"border",
+			"backgroundColor":"statusbar"
+		},
+		"StatusBarText":{
+			"extends":"Label",
+			"font":"small"
+		},
+		"StatusBarLineInfo":{
+			"extends":"Label",
+			"margin":[ 40,0,0,0 ],
+			"font":"small"
+		},
+		"StatusBarIns":{
+			"extends":"Label",
+			"font":"small"
+		},
+		"StatusBarProgress":{
+			"extends":"ProgressBar",
+			"margin":[ 6,0 ]
+		},
+
+		"CompletionDialog":{
+			"extends":"Dialog"
+		},
+		"CompletionDialogContent":{
+			"padding":[ 1 ]
+		},
+		
+		"ProjectTabView":{
+			"extends":"TabView",
+			"backgroundColor":"dark"
+		},
+		
+		"StatusBarButton":{
+			"extends":"ToolButton",
+			"padding":[ 0 ],
+			"skinColor":"transparent",
+			"backgroundColor":"transparent"
+		},
+		
+		"Label":{
+			"padding":[8,4]
+		},
+		
+		"Button":{
+			"extends":"Label",
+			"padding":[4,2],
+			"backgroundColor":"dark",
+			"textColor":"text-default",
+			
+			"states":{
+				"hover":{
+					"textColor":"text-highlight",
+					"backgroundColor":"bright"
+				},
+				"active":{
+					"textColor":"text-highlight",
+					"backgroundColor":"brighter"
+				},
+				"selected":{
+					"textColor":"text-highlight",
+					"backgroundColor":"brightest"
+				}
+			}
+		},
+
+		"ToolButton":{
+			"extends":"Button",
+			"backgroundColor":"dark",
+			"padding":[ 4,4 ],
+			"margin":[ 2,2 ],
+
+			"states":{
+				"hover":{
+					"backgroundColor":"bright"
+				},
+				"active":{
+					"backgroundColor":"brighter"
+				},
+				"selected":{
+					"backgroundColor":"brighter"
+				}
+			}
+		},
+		
+		"PushButton":{
+			"extends":"Button",
+			"margin":[4,4]
+		},
+		
+		"CheckButton":{
+			"extends":"Label"
+		},
+		
+		"CheckBox":{
+			"icons":"hollow_assets/hollow_checkbox_icons.png",
+			"iconColor":"textview-color7",
+			"margin":[0,0,0,0]
+		},
+		
+		"ScrollView":{
+		},
+		
+		"ScrollBar":{
+			"backgroundColor":"darker"
+		},
+		
+		"ScrollKnob":{
+			"padding":[ 6 ],
+			"border":[ 0 ],
+			"backgroundColor":"dark",
+			"states":{
+				"hover":{
+					"backgroundColor":"bright"
+				},
+				"active":{
+					"backgroundColor":"brighter"
+				}
+			}
+		},
+		
+		"TextView":{
+			"font":"editor",
+			"textColor":"textview-color7",
+			"backgroundColor":"darker"
+		},
+		
+		"TextViewContent":{
+			"padding":[4]
+		},
+		
+		"TextField":{
+			"font":"normal",
+			"padding":[ 2 ],
+			"margin":[ 2 ],
+			"backgroundColor":"darker"
+		},
+		
+		"DockingView":{
+		},
+		
+		"DockedView":{
+		},
+		
+		"DockKnob":{
+			"padding":[ 3 ],
+			"backgroundColor":"darkest",
+			"states":{
+				"hover":{
+					"backgroundColor":"bright"
+				},
+				"active":{
+					"backgroundColor":"brightest"
+				}
+			}
+		},
+		
+		"ToolBar":{
+			"padding":[ 2 ],
+			"backgroundColor":"darker"
+		},
+		
+		"Menu":{
+			"extends":"DockingView",
+			"padding":[ 0 ],
+			"skin":"hollow_assets/hollow_dialog_skin.png",
+			"skinColor":"dark"
+		},
+		
+		"MenuButton":{
+			"extends":"Label",
+			"padding":[8,3],
+			"states":{
+				"hover":{
+					"textColor":"text-highlight",
+					"backgroundColor":"brightest"
+				},
+				"active":{
+					"backgroundColor":"brightest"
+				},
+				"selected":{
+					"backgroundColor":"brightest"
+				}
+			}
+		},
+		
+		"MenuBar":{
+			"extends":"ToolBar",
+			"backgroundColor":"border",
+			"border":[ 0,0,0,1 ],
+			"backgroundColor":"dark",
+			"margin":[ 0 ]
+		},
+		
+		"MenuSeparator":{
+			"padding":[ 0,0,0,1 ],
+			"backgroundColor":"separator",
+			"border":[ 8,8,7,7 ]
+		},
+
+		"TabView":{
+		},
+		
+		"TabBar":{
+			"extends":"ToolBar",
+			"padding":[ 0,0,0,0 ],
+			"backgroundColor":"windowClearColor"
+		},
+		
+		"TabButton":{
+			"extends":"Button",
+			"font":"small",
+			"padding":[10],
+			"textColor":"text-disabled",
+			"backgroundColor":"darkest",
+			"borderColor":"darkest",
+			"border":[0,2,0,0],
+			"states":{
+				"hover":{
+					"textColor":"text-background"
+				},
+				"active":{
+					"textColor":"text-background"
+				},
+				"selected":{
+					"borderColor":"textview-color7",
+					"backgroundColor":"darker",
+					"textColor":"text-default"
+				}
+			}
+		},
+		
+		"TabButtonLocked":{
+			"extends":"TabButton",
+			"borderColor":"#F26522"
+		},
+		
+		"TabClose":{
+			"margin":[32,0,0,0 ],
+			"icons":"hollow_assets/hollow_tabclose_icons.png",
+			"iconColor":"text-disabled",
+			"states":{
+				"hover":{
+					"iconColor":"text-background"
+				},
+				"active":{
+					"iconColor":"text-highlight"
+				}
+			}
+		},
+		
+		"TableView":{
+			"extends":"DockingView"
+		},
+		
+		"TableHeader":{
+			"extends":"Label",
+			"textColor":"text-highlight",
+			"borderColor":"darker"
+		},
+		
+		"TableColumn":{
+		},
+		
+		"TreeView":{
+			"backgroundColor":"darker",
+			"icons":"hollow_assets/hollow_treeview_icons.png",
+			"iconColor":"text-background"
+		},
+		
+		"TreeViewContent":{
+			"padding":[3]
+		},
+
+		"TreeViewNode":{
+			"font":"small",
+			"textColor":"text-background",
+			"padding":[0,2,0,2],
+			"states":{
+				"hover":{
+					"textColor":"text-default"
+				},
+				"selected":{
+					"textColor":"text-default"
+				}
+			}
+		},
+		
+		"ListView":{
+			"backgroundColor":"dark"
+		},
+		
+		"ListViewContent":{
+			"padding":[2]
+		},
+		
+		"ListViewItem":{
+			"padding":[1],
+			"states":{
+				"hover":{
+					"backgroundColor":"darker"
+				},
+				"selected":{
+					"backgroundColor":"darker",
+					"textColor":"text-highlight"
+				}
+			}
+		},
+		
+		"FileBrowser":{
+			"extends":"TreeView"
+		},
+		
+		"HtmlView":{
+		},
+		
+		"Console":{
+			"backgroundColor":"darker"
+		},
+		
+		"Dialog":{
+			"skin":"hollow_assets/hollow_dialog_skin.png",
+			"skinColor":"bright"
+		},
+		
+		"DialogTitle":{
+			"extends":"Label",
+			"backgroundColor":"brightest"
+		
+		},
+		
+		"DialogContent":{
+			"padding":[ 8,8,8,4 ]
+		},
+		
+		"DialogActions":{
+			"padding":[ 8,4,8,4 ]
+		},
+		
+		"ColoredToolButton":{
+			"extends":"ToolButton",
+			"iconColor":"text-default"
+		}
+	}
+}

@@ -1,0 +1,16 @@
+
+Namespace std.memory
+
+#rem wonkeydoc ByteOrder enumeration.
+
+| ByterOrder		| Description 
+|:------------------|:-----------
+| `LittleEndian`	| Least significant byte first.
+| `BigEndian`		| Most significant byte first.
+
+#end
+Enum ByteOrder
+
+	LittleEndian,BigEndian
+	
+End

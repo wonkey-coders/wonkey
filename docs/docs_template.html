@@ -1,0 +1,118 @@
+<!doctype html>
+
+<html>
+
+<head>
+
+	<meta charset="utf-8">
+
+	<title>Wonkey Modules Reference</title>
+
+	<link rel="stylesheet" href="style.css">
+	
+	<link rel="stylesheet" href="jstree/dist/themes/default-dark/style.min.css" />
+
+	<script src="jstree/dist/libs/jquery-1.9.1.min.js"></script>
+
+	<script src="jstree/dist/jstree.min.js"></script>
+
+	<script>
+	
+	var jstree_theme='default-dark';
+
+	// Ok, link format is:
+	//
+	// module:nmspace.nmspace.decl, eg "monkey:monkey.types.Int"
+	//
+	// ...or...
+	// 
+	// module:topic#section, eg: "monkey:modules#creating-modules"
+	//
+	function openDocsPage( page ){
+	
+		if( page.indexOf( '#' )!=-1 ){
+		
+			var url='../modules/'+page.replace( ':','/docs/__MANPAGES__/' ).replace( /\#/g,'.md.html#' );
+			
+		}else{
+		
+			var url='../modules/'+page.replace( ':','/docs/__PAGES__/' ).replace( /\./g,'-' )+'.html';
+		}
+		
+		//alert( 'page='+page+', url='+url );
+			
+		var docs=document.getElementById( 'docs-iframe' );
+		
+		docs.contentWindow.location=url;
+	}
+
+	</script>
+
+</head>
+
+<body class="page_body">
+
+<!-- CONTENT -->
+
+<div class="modules_nav_wrapper">
+<form role="search"><input type="text" id="search" placeholder="Search for..." style="width:100%;" /></form>
+<div id="tree" class="modules_nav_tree"></div>
+</div>
+
+<div class="modules_docs_wrapper">
+<iframe id="docs-iframe" class="modules_docs_iframe"></iframe>
+</div>
+
+<script>
+
+jQuery( function($){
+
+	$('#tree').jstree( {
+
+		'core':{
+			'multiple' : false,
+			'animation' : false,
+			'themes':{
+				'name' : jstree_theme,
+				'dots' : false,
+				'icons' : false,
+				'stripes' : false
+			},
+			'data':[ ${DOCS_TREE} ]
+		},
+		'plugins':[ 'search' ]
+ 	});
+ 	
+	$('#tree').on( 'changed.jstree',function( e,data ){
+
+		var node=data.instance.get_node( data.selected[0] );
+		if( !node || !node.data ) return;
+		
+		var page=node.data.page;
+		if( !page ) return;
+		
+		openDocsPage( page );
+	});
+	
+	var to=false;
+
+	$('#search').keyup( function(){
+
+		if( to ) { clearTimeout( to ); }
+
+		to = setTimeout( function(){
+			var v = $('#search').val();
+			$('#tree').jstree( true ).search( v );
+		},250 );
+
+	});
+
+} );	
+	
+</script>
+
+<!-- END -->
+
+</body>
+
+</html>

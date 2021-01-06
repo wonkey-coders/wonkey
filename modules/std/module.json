@@ -1,0 +1,8 @@
+{
+	"module":"std",
+	"about":"Standard wonkey library",
+	"author":"Wonkey Coders",
+	"version":"1.0.0",
+	"support":"http://github.com/wonkey-coders",
+	"depends":["libc","sdl2","jni","android","emscripten","zlib","miniz","stb-image","stb-image-write","stb-vorbis"]
+}

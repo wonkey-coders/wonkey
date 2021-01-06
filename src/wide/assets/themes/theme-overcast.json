@@ -1,0 +1,33 @@
+{
+	"extends":"wide-default",
+	
+	"colors":{
+
+		"clear": "#989898",
+		"content": "#c8c8c8",
+		"panel": "#e8e8e8",
+		"gutter": "#a8a8a8",
+		
+		"knob": "#909090",
+		"hover": "#808080",
+		"active" : "#707070",
+		
+		"text-default": "#000",
+		"text-highlight": "#08f",
+		"text-disabled": "#444",
+		"text-background": "#444",
+		
+		"textview-cursor":"#08f",
+		"textview-selection":"#888",
+
+		"textview-color0":"#0000",
+		"textview-color1":"#000",
+		"textview-color2":"#008",
+		"textview-color3":"#080",
+		"textview-color4":"#080",
+		"textview-color5":"#808",
+		"textview-color6":"#840",
+		"textview-color7":"#000",
+		"textview-color8":"textview-color2"
+	}
+}

@@ -1,0 +1,263 @@
+
+Namespace wide
+
+
+Class EditActions
+
+	Field undo:Action
+	Field redo:Action
+	Field cut:Action
+	Field copy:Action
+	Field paste:Action
+	Field selectAll:Action
+	Field expandSelection:Action
+	Field shrinkSelection:Action
+	Field wordWrap:Action
+	' Edit -- Text
+	Field textDeleteWordForward:Action
+	Field textDeleteWordBackward:Action
+	Field textDeleteLine:Action
+	Field textDeleteToEnd:Action
+	Field textDeleteToBegin:Action
+	Field textLowercase:Action
+	Field textUppercase:Action
+	Field textSwapCase:Action
+	'
+	Field comment:Action
+	Field uncomment:Action
+	Field duplicateBlock:Action
+	
+	
+	Method New( docs:DocumentManager )
+		
+		_docs=docs
+		
+		undo=New Action( "Undo" )
+		undo.Triggered=OnUndo
+		undo.HotKey=Key.Z
+		undo.HotKeyModifiers=Modifier.Menu|Modifier.Ignore
+		
+		redo=New Action( "Redo" )
+		redo.Triggered=OnRedo
+#If __TARGET__="macos"
+		redo.HotKey=Key.Z
+		redo.HotKeyModifiers=Modifier.Menu|Modifier.Ignore|Modifier.Shift
+#Else
+		redo.HotKey=Key.Y
+		redo.HotKeyModifiers=Modifier.Menu|Modifier.Ignore
+#Endif
+		
+		cut=New Action( "Cut" )
+		cut.Triggered=OnCut
+		cut.HotKey=Key.X
+		cut.HotKeyModifiers=Modifier.Menu|Modifier.Ignore
+		
+		copy=New Action( "Copy" )
+		copy.Triggered=OnCopy
+		copy.HotKey=Key.C
+		copy.HotKeyModifiers=Modifier.Menu|Modifier.Ignore
+		
+		paste=New Action( "Paste" )
+		paste.Triggered=OnPaste
+		paste.HotKey=Key.V
+		paste.HotKeyModifiers=Modifier.Menu|Modifier.Ignore
+		
+		selectAll=New Action( "Select all" )
+		selectAll.Triggered=OnSelectAll
+		selectAll.HotKey=Key.A
+		selectAll.HotKeyModifiers=Modifier.Menu|Modifier.Ignore
+		
+		expandSelection=ActionById( ActionId.ExpandSelection )
+		expandSelection.Triggered=OnExpandSelection
+		
+		shrinkSelection=ActionById( ActionId.ShrinkSelection )
+		shrinkSelection.Triggered=OnShrinkSelection
+		
+		wordWrap=ActionById( ActionId.WordWrap )
+		wordWrap.Triggered=OnWordWrap
+		
+		textDeleteLine=ActionById( ActionId.DeleteLine )
+		textDeleteLine.Triggered=OnDeleteLine
+		
+		textDeleteWordForward=ActionById( ActionId.DeleteWordForward )
+		textDeleteWordForward.Triggered=OnDeleteWordForward
+		
+		textDeleteWordBackward=ActionById( ActionId.DeleteWordBackward )
+		textDeleteWordBackward.Triggered=OnDeleteWordBackward
+		
+		textDeleteToBegin=ActionById( ActionId.DeleteToBegin )
+		textDeleteToBegin.Triggered=OnDeleteToBegin
+		
+		textDeleteToEnd=ActionById( ActionId.DeleteToEnd )
+		textDeleteToEnd.Triggered=OnDeleteToEnd
+		
+		textLowercase=ActionById( ActionId.MakeLowercase )
+		textLowercase.Triggered=OnLowercase
+		
+		textUppercase=ActionById( ActionId.MakeUppercase )
+		textUppercase.Triggered=OnUppercase
+		
+		textSwapCase=ActionById( ActionId.SwapCase )
+		textSwapCase.Triggered=OnSwapCase
+		
+		comment=ActionById( ActionId.CommentBlock )
+		comment.Triggered=OnComment
+		
+		uncomment=ActionById( ActionId.UncommentBlock )
+		uncomment.Triggered=OnUncomment
+		
+		duplicateBlock=ActionById( ActionId.DuplicateBlock )
+		duplicateBlock.Triggered=OnDuplicateBlock
+		
+	End
+	
+	Method Update()
+	
+		Local tv:=Cast<TextView>( App.KeyView )
+		
+		undo.Enabled=tv And tv.CanUndo
+		redo.Enabled=tv And tv.CanRedo
+		cut.Enabled=tv And tv.CanCut
+		copy.Enabled=tv And tv.CanCopy
+		paste.Enabled=tv And tv.CanPaste
+		selectAll.Enabled=tv
+	End
+	
+	Private
+	
+	Field _docs:DocumentManager
+	
+	Property CurrentCodeDocument:CodeTextView()
+		
+		Return Cast<CodeTextView>( App.KeyView )
+	End
+	
+	Method OnDeleteLine()
+		
+		CurrentCodeDocument?.DeleteLineAtCursor()
+	End
+	
+	Method OnDeleteWordForward()
+		
+		CurrentCodeDocument?.DeleteWordForward()
+	End
+	
+	Method OnDeleteWordBackward()
+		
+		CurrentCodeDocument?.DeleteWordBackward()
+	End
+	
+	Method OnDeleteToBegin()
+		
+		CurrentCodeDocument?.DeleteToBegin()
+	End
+	
+	Method OnDeleteToEnd()
+	
+		CurrentCodeDocument?.DeleteToEnd()
+	End
+	
+	Method OnLowercase()
+	
+		CurrentCodeDocument?.LowercaseSelection()
+	End
+	
+	Method OnUppercase()
+	
+		CurrentCodeDocument?.UppercaseSelection()
+	End
+	
+	Method OnSwapCase()
+		
+		CurrentCodeDocument?.SwapCaseSelection()
+	End
+	
+	Method OnUndo()
+
+		Local tv:=Cast<TextView>( App.KeyView )
+		
+		If tv tv.Undo()
+		
+		'TODO
+		' testing stuff here
+		
+	End
+	
+	Method OnRedo()
+	
+		Local tv:=Cast<TextView>( App.KeyView )
+		
+		If tv tv.Redo()
+	End
+	
+	Method OnCut()
+	
+		Local tv:=Cast<TextView>( App.KeyView )
+		
+		If tv tv.Cut()
+	End
+
+	Method OnCopy()
+
+		Local tv:=Cast<TextView>( App.KeyView )
+		
+		If tv tv.Copy()
+	End
+
+	Method OnPaste()
+		
+		Local tv:=Cast<TextView>( App.KeyView )
+		
+		If tv tv.Paste()
+	End
+	
+	Method OnSelectAll()
+		
+		Local tv:=Cast<TextView>( App.KeyView )
+		
+		If tv tv.SelectAll()
+	End
+	
+	Method OnExpandSelection()
+		
+		Cast<CodeTextView>( App.KeyView )?.ExpandSelection()
+	End
+	
+	Method OnShrinkSelection()
+		
+		Cast<CodeTextView>( App.KeyView )?.ShrinkSelection()
+	End
+	
+	Method OnWordWrap()
+	
+		Local tv:=Cast<TextView>( App.KeyView )
+		
+		If tv
+			Local cur:=tv.Cursor
+			Local anc:=tv.Anchor
+			Local sc:=tv.Scroll
+			tv.WordWrap=Not tv.WordWrap
+			tv.SelectText( cur,anc )
+			tv.Scroll=sc
+		Endif
+	End
+	
+	Method OnComment()
+	
+		Local doc:=Cast<CodeDocument>( _docs.CurrentDocument )
+		doc?.Comment()
+	End
+	
+	Method OnUncomment()
+	
+		Local doc:=Cast<CodeDocument>( _docs.CurrentDocument )
+		doc?.Uncomment()
+	End
+	
+	Method OnDuplicateBlock()
+	
+		Local doc:=Cast<CodeDocument>( _docs.CurrentDocument )
+		doc?.CodeView.DuplicateBlock()
+	End
+	
+End

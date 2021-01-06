@@ -1,0 +1,46 @@
+
+Namespace std.async
+
+#import "native/async.cpp"
+#import "native/async_cb.cpp"
+
+#import "native/async.h"
+#import "native/async_cb.h"
+
+#If __TARGET__="android"
+#Import "native/WonkeyAsync.java"
+#Endif
+
+Extern
+
+#rem wonkeydoc @hidden
+
+Internal struct used to deliver events from remote threads.
+
+Probably best to just forget you even saw this...
+
+#end
+Struct AsyncEvent="wxAsync::Event"
+
+	Method Post()="post"
+
+	Method Dispatch() Virtual="dispatch"
+
+End
+
+'Should be invoked on mx2 thread.
+#rem wonkeydoc @hidden
+#end
+Function CreateAsyncCallback:Int( func:Void(),oneshot:bool )="wxAsync::createAsyncCallback"
+
+'Should be invoked on mx2 thread. No effect if callback has been posted.
+#rem wonkeydoc @hidden
+#end
+Function DestroyAsyncCallback:Int( callback:Int )="wxAsync::destroyAsyncCallback"
+
+'Can be invoked on any thread.
+#rem wonkeydoc @hidden
+#end
+Function InvokeAsyncCallback( callback:Int )="wxAsync::invokeAsyncCallback"
+
+Public

@@ -1,0 +1,312 @@
+<!doctype html>
+<html>
+<head>
+<style>
+
+body{
+	background: transparent;
+	color: #eee;
+	font-size: 18px;
+	margin: 8px;
+	padding: 0px;
+	line-height:20px;
+}
+
+h1{
+	color: #fc0;
+	font-size: 28px;
+	text-align: center;
+}
+
+h2{
+	color: #fc0;
+	font-size: 24px;
+	text-align: center;
+}
+
+div.awesome{
+	color: #ccc;
+	font-size: 14px;
+}
+
+a{
+	color: #4ef;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+a:hover{
+	color: #0e0;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Wonkey2 v1.0.0</h1>
+
+<p>Welcome to Wonkey, a open source, user friendly, multi target, fork of Monkey2 programming language created by Mark Sibly.
+
+<p>Please post any bug reports or feature requests to the wonkey github repository: <a href="https://github.com/wonkey-coders/wonkey">https://github.com/wonkey-coders/wonkey</a>.
+
+<p>For wonkey discussion and programming help, feel free to drop by the wonkey discussions: <a href="https://github.com/wonkey-coders/wonkey/discussions">https://github.com/wonkey-coders/wonkey/discussions</a>.
+
+<p>Wonkey is a crowd funded project. If you like what you see, please consider contributing to development either via Github sponsor.
+
+<h2>Building Desktop apps</h2>
+
+<p>If you are reading this in Ted2 on a Windows machine, you should theoretically be able to build desktop apps with no extra hassle.
+
+<p>On Macos, it's a little bit trickier but not much. First, you will need to install XCode from the App Store. Once that's done, go into a shell and enter 'xcode-select --install' to install the 'XCode Command Line Tools'. Note that if you are already using Blitzmax or Monkey on a Mac, you may not have to do anything.
+
+<p>On Linux, you will need the standard set of development tools and libs such as g++, mesa-gl, a ton of X stuff etc. Sorry I can't be more specific here, but past attempts to produce a definitive list of 'what you need to code in linux' have proved fruitless - it changes from distro to distro and version to version.
+
+<p>Once you're ready to go, try clicking on the 'hello-world.wx' file in the 'Files' browser to the right, and then selecting 'Build and Run' from the 'Build' menu.
+
+<p>This will bring up a little 'Build Settings' dialog. Just click OK to use the defaults and build and run the app. If everything is working properly, a simple 'Hello World' window should appear.
+
+<p>Note that the build settings dialog will only appear automatically the first time you build an app for each target. After that, you can manually
+activate it by selecting 'Build Settings' from the 'Build' menu - not that it does a lot right now!
+
+<p>There are a few more examples in the 'examples' directory on the right - more coming!
+
+<h2>Building Emscripten apps</h2>
+
+<p>To build emscripten apps, you will first need to install emscripten: 
+
+<p><a href="http://kripken.github.io/emscripten-site">http://kripken.github.io/emscripten-site</a>.
+
+<p>(On MacOS, you may also need to modify your bin/macos/env_macos.txt file to let wonkey know where emscripten has been installed).
+
+<p>Once emscripten is installed, you will then need to 'rebuild modules' for the emscripten target. This involves selecting 'Rebuild modules' from the 'Build' menu in 'Wide', and then selecting 'Emscripten'. This will take a while, as wonkey needs to rebuild ALL source code used behind the scenes.
+
+<p>Once done, you should be able to build emscripten apps. However, to also actually run them you will need to install the 'mserver' package:
+
+<p><a href="http://www.monkey-x.com/mak/devtools/mserver-v86c.zip">http://www.monkey-x.com/mak/devtools/mserver-v86c.zip</a>.
+
+<p>(On Macos and Linux, you may also need to change file permissions to 'execute').
+
+<p>This needs to be unzipped into your monkey2 'devtools' directory. MServer is actually a mini 'http' server, and is necessary because emscripten apps can't be run directly from the filesystem - they must always be run from a server.
+
+<p>Now, select the 'Emscripten' target from the 'Build Targets' menu and you should be able to build and run emscripten apps.
+
+
+<h2>Building Android apps</h2>
+
+<p>To build android apps, you will first need to install Android Studio:
+
+<p><a href="https://developer.android.com/studio/index.html">https://developer.android.com/studio/index.html</a>.
+
+<p>Once installed, make sure everything's working properly and that you can build and deploy android apps from inside Android studio. The best way to do this is by building and deploying one of the simple 'template' apps in android studio.
+
+<p>Next, install the Android NDK (native development kit) via the SDK Manager->SDK Tools section.
+
+<p>Once android studio and the NDK are installed, you will then need to rebuild modules for android. Once this is done, you should (finally!) be able to build android apps.
+
+<p>Android apps are produced in the form of android studio projects, and can be found in the '.products' directory next to your wonkey source file.
+
+<p>Note that wonkey only currently builds for 'armv7' hardware.
+
+
+<h2>Building iOS apps</h2>
+
+<p>Wonkey iOS apps cannot currently be run on the simulator, so the first thing you will need is a real iOS device plus the necessary 'code signing skills' to be able to actually deploy to it.
+
+<p>Apart from that, all you need to build for iOS is the latest version of XCode. Once you have XCode installed, you will to 'rebuild modules' for iOS after which you should be able to build iOS apps.
+
+<p>iOS apps are produced in the form of XCode projects, and can be found in the '.products' directory next to your wonkey source file.
+
+<p>Note that wonkey only currently builds for 'armv7' hardware.
+
+
+<h2>That's all Folks!</h2>
+
+<p>Wonkey is a crowd funded project. If you like what you see, please consider contributing to development either via Github sponsor.
+
+<p>Finally, a big shout out to everyone who has contributed to Monkey2 to date, including...
+
+<div class="awesome">
+Shane Raffa,
+Danilo,
+Blaine Hodge,
+Lucien Bulles,
+Daniel,
+Martin,
+Tony Smits,
+Peter Rigby,
+Jake Birkett,
+Pharmhaus,
+James Boyd,
+David Maziarka,
+starfruit,
+Stephen	Greener,
+Jonathan Pittock,
+Aaron Woodard,
+Lee Wade,
+abakobo,
+York Burkhardt,
+Rene Damm,
+Capn Lee,
+Jesse M Perez,
+Matthew,
+neuro,
+Paul Apgar,
+Matthew	Camerer,
+Difference,
+Kirsty,
+kmac,
+Richard	Betson,
+Javier,
+Adam,
+Phil7,	
+Erik Thon,
+Noel Cole,
+Ole Jostein Røtne,
+Patrik Strandell,
+Darryl,
+Lars Kristian Gretnes,
+C.E.,
+Roger Lockerbie,
+Philippe Back,
+Bill Stanbrook,
+Hotcakes,
+Christian Leth Jeppesen,
+Makarienkov Vladimir,
+Alan Broad,
+David,
+Christian,
+Leo Santos,
+Pierrou,
+Arthur,
+Richard McLoughlin,
+zui,
+Dennis Rohn,
+Daniele Prandini,
+Hezkore,
+Bill Murray,
+Felipe Alfonso,
+Annika Terrortante,
+Panayiotis Yianni,
+RenK,
+Zachary Cassity,
+Jules Duquette,
+Ian Martin,
+Richard Keam,
+James Freeman,
+Paul Huckstepp,
+Graham,
+Hubert BAYRE,
+Jochen Heizmann,
+Boz	
+Aroldo Carvalho,
+Mattias Hansson,
+Catalin Lucaciu,
+Jochen Heizmann,
+Boz,
+Zachary Cassity,
+Hubert BAYRE,
+Cory Estes,
+Paul Huckstepp,
+Stephen Maden,
+degac,
+sal gunduz,
+Ole Jostein Røtne,
+Alan Rawkins,
+Dennis Rohn,
+Christian,
+Philipp Moeller,
+Roger Lockerbie,
+Pierrou,
+Philippe Back,
+Patrik Strandell,
+Bill Stanbrook,
+Erik Thon,
+Richard Keam,
+James Freeman,
+Danilo,
+Juan Camilo,
+Lars Kristian Gretnes,
+Noel Cole,
+Michael Hartlef,
+Jules Duquette,
+Ian Martin,
+Leigh Bowers,
+Daniele Prandini,
+Alan Broad,
+Christian Leth Jeppesen!,
+Rene Damm,
+Richard McLoughlin,
+Kennie,
+ ussell King,
+gcmartijn,
+Darryl,
+Michael Hauck,
+Graham,
+sal gunduz,
+Danilo,
+Daniele Prandini,
+York Burkhardt,
+Peter Rigby,
+Michael Hartlef,
+Leonardo Teixeira,
+Daniel Murphy,
+Gloomywood,
+Adam,
+Arthur,
+Richard Betson,
+Jake Birkett,
+Simon Harrison,
+Daniel Born,
+David Maziarka,
+starfruit,
+David,
+Markus L,
+Capn Lee,
+Jesus M Perez,
+Hotcakes,
+Amon,
+Blaine Hodge,
+Jeffrey Nofsinger,
+Felipe Alfonso,
+Matthew,
+Robin Columbus,
+Alan Rawkins,
+TeaBoy,
+Brian Kramer,
+Bill Murray,
+neuro,
+degac,
+Javier San Juan Cervera,
+Sander Voorn,
+Makarienkov Vladimir,
+impixi,
+kmac,
+Paul Apgar,
+Shane Woolcock,
+Stephen Greener,
+Tony Smits,
+Lucien Bulles,
+SecondGear,
+Matthew Camerer,
+Jonathan Pittock,
+Annika Terrortante,
+Josh Klint,
+Aaron woodard,
+Lee Wade,
+taumel,
+Arthur Bikmullin,
+Difference,
+Michael Denathorn,
+Jose Faeti,
+Martin Leidel,
+abakobo,
+Kirsty,
+Benjamin Aregger,
+James Boyd,
+Simon Armstrong.
+</div>
+
+</body>
+
+</html>

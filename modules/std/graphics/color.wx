@@ -1,0 +1,407 @@
+
+Namespace std.graphics
+
+using std.geom
+
+#rem wonkeydoc The Color type provides support for manipulating red, green blue, alpha colors.
+#end
+Struct Color
+		
+	#rem wonkeydoc Transparent black.
+	#end
+	Const None:=New Color( 0,0,0,0 )
+	
+	#rem wonkeydoc Black. Equivalent to New Color( 0,0,0 ).
+	#end
+	Const Black:=New Color( 0,0,0 )
+	
+	#rem wonkeydoc Grey. Equivalent to New Color( .5,.5,.5 ).
+	#end
+	Const Grey:=New Color( .5,.5,.5 )
+	
+	#rem wonkeydoc Light Grey. Equivalent to New Color( .75,.75,.75 ).
+	#end
+	Const LightGrey:=New Color( .75,.75,.75 )
+	
+	#rem wonkeydoc Dark Grey. Equivalent to New Color( .25,.25,.25 ).
+	#end
+	Const DarkGrey:=New Color( .25,.25,.25 )
+	
+	#rem wonkeydoc White. Equivalent to New Color( 1,1,1 ).
+	#end
+	Const White:=New Color( 1,1,1 )
+	
+	#rem wonkeydoc Red. Equivalent to New Color( 1,0,0 ).
+	#end
+	Const Red:=New Color( 1,0,0 )
+	
+	#rem wonkeydoc Green. Equivalent to New Color( 0,1,0 ).
+	#end
+	Const Green:=New Color( 0,1,0 )
+	
+	#rem wonkeydoc Blue. Equivalent to New Color( 0,0,1 ).
+	#end
+	Const Blue:=New Color( 0,0,1 )
+	
+	#rem wonkeydoc Brown. Equivalent to New Color( .7,.4,.1 ).
+	#end
+	Const Brown:=New Color( .7,.4,.1 )
+	
+	#rem wonkeydoc Orange. Equivalent to New Color( 1,.5,0 ).
+	#end
+	Const Orange:=New Color( 1,.5,0 )
+	
+	#rem wonkeydoc Yellow. Equivalent to New Color( 1,1,0 ).
+	#end
+	Const Yellow:=New Color( 1,1,0 )
+	
+	#rem wonkeydoc Lime. Equivalent to New Color( .7,1,0 ).
+	#end
+	Const Lime:=New Color( .7,1,0 )
+	
+	#rem wonkeydoc Pine. Equivalent to New Color( 0,.5,0 ).
+	#end
+	Const Pine:=New Color( 0,.5,0 )
+	
+	#rem wonkeydoc Aqua. Equivalent to New Color( 0,.9,.4 ).
+	#end
+	Const Aqua:=New Color( 0,.9,.4 )
+	
+	#rem wonkeydoc Cyan. Equivalent to New Color( 0,1,1 ).
+	#end
+	Const Cyan:=New Color( 0,1,1 )
+	
+	#rem wonkeydoc Sky. Equivalent to New Color( 0,.5,1 ).
+	#end
+	Const Sky:=New Color( 0,.5,1 )
+	
+	#rem wonkeydoc Steel. Equivalent to New Color( .2,.2,.7 ).
+	#end
+	Const Steel:=New Color( .2,.2,.7 )
+	
+	#rem wonkeydoc Violet. Equivalent to New Color( .7,0,1 ).
+	#end
+	Const Violet:=New Color( .7,0,1 )
+	
+	#rem wonkeydoc Magenta. Equivalent to New Color( 1,0,1 ).
+	#end
+	Const Magenta:=New Color( 1,0,1 )
+	
+	#rem wonkeydoc Puce. Equivalent to New Color( 1,0,.4 ).
+	#end
+	Const Puce:=New Color( 1,0,.4 )
+	
+	#rem wonkeydoc Skin. Equivalent to New Color( .8,.5,.6 ).
+	#end
+	Const Skin:=New Color( .8,.5,.6 )
+	
+	#rem wonkeydoc Pink. Equivalent to New Color( 1,.75,.8 ).
+	#end
+	Const Pink:=New Color( 1,.75,.8 )
+	
+	#rem wonkeydoc HotPink. Equivalent to New Color( 1,.41,.71 ).
+	#end
+	Const HotPink:=New Color( 1,.41,.71 )
+
+	#rem wonkeydoc SeaGreen. Roughly equivalent to New Color( .03,.3,.25 ).
+	#end
+	Const SeaGreen:=New Color( .031372,.301960,.247058,1 )
+
+	#rem wonkeydoc Silver. Roughly equivalent to New Color( .99,.98,.96 ).
+	#end
+	Const Silver:=New Color( 0.98695202723239916,0.98157612499486091,0.96058105436290453 )
+
+	#rem wonkeydoc Aluminum. Roughly equivalent to New Color( .96,.96,.96 ).
+	#end
+	Const Aluminum:=New Color( 0.95955910300613745,0.9635188914336692,0.96495768667887971 )
+
+	#rem wonkeydoc Gold. Roughly equivalent to New Color( 1,.89,.61 ).
+	#end
+	Const Gold:=New Color( 1,0.88565078560356991,0.6091625017721024 )
+
+	#rem wonkeydoc Copper. Roughly equivalent to New Color( .98,.82,.76 ).
+	#end
+	Const Copper:=New Color( 0.9792921449434141,0.81490079942355442,0.75455014940288267 )
+
+	#rem wonkeydoc Chromium. Roughly equivalent to New Color( .76,.77,.77 ).
+	#end
+	Const Chromium:=New Color( 0.76178782381338439,0.76588820797089974,0.76472402871006473 )
+
+	#rem wonkeydoc Nickel. Roughly equivalent to New Color( .83,.8,.75 ).
+	#end
+	Const Nickel:=New Color( 0.827766413700323,0.79798492878548577,0.74652364685504802 )
+
+	#rem wonkeydoc Titanium. Roughly equivalent to New Color( .76,.73,.7 ).
+	#end
+	Const Titanium:=New Color( 0.75694694835172049,0.72760746687141564,0.69520723368860826 )
+
+	#rem wonkeydoc Cobalt. Roughly equivalent to New Color( .83,.82,.81 ).
+	#end
+	Const Cobalt:=New Color( 0.82910355988659823,0.82495893307721546,0.81275025476652396 )
+
+	#rem wonkeydoc Platinum. Roughly equivalent to New Color( .84,.82,.78 ).
+	#end
+	Const Platinum:=New Color( 0.83493408973507777,0.81484503266020314,0.78399912482207756 )
+	
+	#rem wonkeydoc Red component of color.
+	#end
+	Field r:Float
+
+	#rem wonkeydoc Green component of color.
+	#end
+	Field g:Float
+	#rem wonkeydoc Blue component of color.
+	#end
+	Field b:Float
+	
+	#rem wonkeydoc Alpha component of color.
+	#end
+	Field a:Float
+	
+	#rem wonkeydoc Creates a new color.
+	#end
+	Method New( a:Float=1 )
+		Self.a=a
+	End
+	
+	Method New( i:Float,a:Float=1 )
+		Self.r=i
+		Self.g=i
+		Self.b=i
+		Self.a=a
+	End
+	
+	Method New( r:Float,g:Float,b:Float,a:Float=1 )
+		Self.r=r
+		Self.g=g
+		Self.b=b
+		Self.a=a
+	End
+	
+	Method New( v:geom.Vec4f )
+		Self.r=v.x
+		Self.g=v.y
+		Self.b=v.z
+		Self.a=v.w
+	End
+	
+	#rem wonkeydoc Converts the color to a printable string.
+	#end
+	Operator To:String()
+		Return "Color("+r+","+g+","+b+","+a+")"
+	End
+	
+	#rem wonkeydoc Converts the color to float 4 vector.
+	#end
+	Operator To:geom.Vec4f()
+		Return New Vec4f( r,g,b,a )
+	End
+
+	#rem wonkeydoc The Red color component.
+	#end
+	Property R:Float()
+		Return r
+	Setter( r:Float )
+		Self.r=r
+	End
+	
+	#rem wonkeydoc The green color component.
+	#end
+	Property G:Float()
+		Return g
+	Setter( g:Float )
+		Self.g=g
+	End
+	
+	#rem wonkeydoc The blue color component.
+	#end
+	Property B:Float()
+		Return b
+	Setter( b:Float )
+		Self.b=b
+	End
+	
+	#rem wonkeydoc The alpha color component.
+	#end
+	Property A:Float()
+		Return a
+	Setter( a:Float )
+		Self.a=a
+	End
+	
+	#rem wonkeydoc Multiplies the color by another color or value and returns the result.
+	#end
+	Operator*:Color( color:Color )
+		Return New Color( r*color.r,g*color.g,b*color.b,a*color.a )
+	End
+
+	Operator*:Color( scale:Float )
+		Return New Color( r*scale,g*scale,b*scale,a*scale )
+	End
+	
+	#rem wonkeydoc Divides the color by another color or value and returns the result.
+	#end
+	Operator/:Color( color:Color )
+		Return New Color( r/color.r,g/color.g,b/color.b,a/color.a )
+	End
+
+	Operator/:Color( scale:Float )
+		Return New Color( r/scale,g/scale,b/scale,a/scale )
+	End
+
+	#rem wonkeydoc Adds another color or value to the color and returns the result.
+	#end
+	Operator+:Color( color:Color )
+		Return New Color( r+color.r,g+color.g,b+color.b,a+color.a )
+	End
+
+	Operator+:Color( offset:Float )
+		Return New Color( r+offset,g+offset,b+offset,a+offset )
+	End
+
+	#rem wonkeydoc Subtracts another color or value from the color and returns the result.
+	#end
+	Operator-:Color( color:Color )
+		Return New Color( r-color.r,g-color.g,b-color.b,a-color.a )
+	End
+
+	Operator-:Color( offset:Float )
+		Return New Color( r-offset,g-offset,b-offset,a-offset )
+	End
+	
+	#rem wonkeydoc Blends the color with another color and returns the result.
+	#end	
+	Method Blend:Color( color:Color,delta:Float )
+		Local idelta:=1-delta
+		Return New Color( r*idelta+color.r*delta,g*idelta+color.g*delta,b*idelta+color.b*delta,a*idelta+color.a*delta )
+	End
+
+	#rem wonkeydoc Converts the color to 32 bit big endian ARGB format.
+	
+	Big endian ARGB is the same as little endian BGRA.
+	
+	#end	
+	Method ToARGB:UInt()
+		Return UInt(a*255) Shl 24 | UInt(r*255) Shl 16 | UInt(g*255) Shl 8 | UInt(b*255)
+	End
+
+	#rem wonkeydoc Converts the color to 32 bit big endian BGRA format.
+
+	Big endian BGRA is the same as little endian ARGB.
+	
+	#end	
+	Method ToBGRA:UInt()
+		Return UInt(b*255) Shl 24 | UInt(g*255) Shl 16 | UInt(r*255) Shl 8 | UInt(a*255)
+	End
+
+	#rem wonkeydoc Converts the color to 32 bit big endian RGBA format.
+	
+	Big endian RGBA is the same as little endian ABGR.
+	
+	#end	
+	Method ToRGBA:UInt()
+		Return UInt(r*255) Shl 24 | UInt(g*255) Shl 16 | UInt(b*255) Shl 8 | UInt(a*255)
+	End
+
+	#rem wonkeydoc Converts the color to 32 bit big endianABGR format.
+	
+	Big endian ABGR is the same as little endian RGBA.
+	
+	#end	
+	Method ToABGR:UInt()
+		Return UInt(a*255) Shl 24 | UInt(b*255) Shl 16 | UInt(g*255) Shl 8 | UInt(r*255)
+	End
+
+	#rem wonkeydoc Converts the color to printable string.
+	#end
+	Method ToString:String()
+		Return Self
+	End
+	
+	#rem wonkeydoc Creates a color from hue, saturation and value.
+	#end
+	Function FromHSV:Color( h:Float,s:Float,v:Float,a:Float=1 )
+
+		h*=6
+		
+		Local f:=h-Floor( h )
+		
+		Local p:=v * ( 1 - s )
+		Local q:=v * ( 1 - ( s * f ) )
+		Local t:=v * ( 1 - ( s * ( 1-f ) ) )
+		
+		Local r:Float,g:Float,b:Float
+		
+		Select Int( h ) Mod 6
+		Case 0 r=v ; g=t ; b=p
+		Case 1 r=q ; g=v ; b=p
+		Case 2 r=p ; g=v ; b=t
+		Case 3 r=p ; g=q ; b=v
+		Case 4 r=t ; g=p ; b=v
+		Case 5 r=v ; g=p ; b=q
+		End
+		
+		Return New Color( r,g,b,a )
+	End
+	
+	#rem wonkeydoc Creates a color from a 32 bit big endian ARGB color.
+
+	Big endian ARGB is the same as little endian BGRA.
+
+	#end
+	Function FromARGB:Color( argb:UInt )
+		Local a:=(argb Shr 24 & $ff)/255.0
+		Local r:=(argb Shr 16 & $ff)/255.0
+		Local g:=(argb Shr 8 & $ff)/255.0
+		Local b:=(argb & $ff)/255.0
+		Return New Color( r,g,b,a )
+	End
+	
+	#rem wonkeydoc Creates a color from a 32 bit big endian BGRA color.
+
+	Big endian BGRA is the same as little endian ARGB.
+	
+	#end
+	Function FromBGRA:Color( bgra:UInt )
+		Local b:=(bgra Shr 24 & $ff)/255.0
+		Local g:=(bgra Shr 16 & $ff)/255.0
+		Local r:=(bgra Shr 8 & $ff)/255.0
+		Local a:=(bgra & $ff)/255.0
+		Return New Color( r,g,b,a )
+	End
+	
+	#rem wonkeydoc Creates a color from a 32 bit big endian RGBA color.
+
+	Big endian RGBA is the same as little endian ABGR.
+	
+	#end
+	Function FromRGBA:Color( rgba:UInt )
+		Local r:=(rgba Shr 24 & $ff)/255.0
+		Local g:=(rgba Shr 16 & $ff)/255.0
+		Local b:=(rgba Shr 8 & $ff)/255.0
+		Local a:=(rgba & $ff)/255.0
+		Return New Color( r,g,b,a )
+	End
+	
+	#rem wonkeydoc Creates a color from a 32 bit big endian ABGR color.
+
+	Big endian ABGR is the same as little endian RGBA.
+	
+	#end
+	Function FromABGR:Color( abgr:UInt )
+		Local a:=(abgr Shr 24 & $ff)/255.0
+		Local b:=(abgr Shr 16 & $ff)/255.0
+		Local g:=(abgr Shr 8 & $ff)/255.0
+		Local r:=(abgr & $ff)/255.0
+		Return New Color( r,g,b,a )
+	End
+	
+	#rem wonkeydoc Creates a random color.
+	#end
+	Function Rnd:Color()
+		
+		Return FromHSV( random.Rnd(6),1,1 )
+		
+	End
+
+End

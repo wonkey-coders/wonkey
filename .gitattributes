@@ -1,0 +1,11 @@
+*.c    linguist-vendored
+*.cc   linguist-vendored
+*.cpp  linguist-vendored
+*.h    linguist-vendored
+*.hpp  linguist-vendored
+*.in   linguist-vendored
+*.inl  linguist-vendored
+*.java linguist-vendored
+
+
+docs/* linguist-documentation

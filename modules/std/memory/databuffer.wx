@@ -1,0 +1,711 @@
+
+Namespace std.memory
+
+Using std.stream
+
+#rem wonkeydoc DataBuffer class.
+#end
+Class DataBuffer Extends std.resource.Resource
+
+	#rem wonkeydoc Creates a new data buffer.
+	
+	Creates a data buffer with a newly allocated or existing block of memory.
+	
+	If you provide a `start` pointer value when creating a data buffer, it should point to a valid block of memory at least `length` bytes in size.
+	This pointer value will be used as the 'base address' when poking/peeking the data buffer, and will be returned by the [[Data]] property.
+	Such data buffer cannot be [[Resize]]d.
+		
+	If you do not provide a `start` value, a block of memory `length` bytes long is allocated for you. This memory will be released when the data 
+	buffer is discarded or becomes unreachable by the garbage collector.
+		
+	The new databuffer initally uses little endian byte order. You can change this via the ByteOrder property.
+	
+	When you have finished with the data buffer, you should call its inherited [[Resource.Discard]] method.
+	
+	@example
+	
+	\#Import "<std>"
+	
+	Using std.memory
+	
+	Function Main()
+
+		Local buf:=New DataBuffer( 10 )
+		
+		Print buf.Length
+	
+		For Local i:=0 Until 10
+			buf.PokeByte( i,i*2 )
+		Next
+		
+		For Local i:=0 Until 10
+			Print buf.PeekByte( i )
+		Next
+		
+	End
+	
+	@end
+	
+	@param start The start of the data buffer memory.
+	
+	@param length The length of the data buffer memory in bytes.
+
+	@param byteOrder Initial byte order of the data.
+	
+	#end
+	Method New( length:Int,byteOrder:ByteOrder=std.memory.ByteOrder.LittleEndian )
+		
+		_data=Cast<UByte Ptr>( GCMalloc( length ) )
+		_length=length
+		_byteOrder=byteOrder
+		_swapEndian=(_byteOrder=ByteOrder.BigEndian)
+		_free=True
+	End
+	
+	Method New( data:Void Ptr,length:Int,byteOrder:ByteOrder=std.memory.ByteOrder.LittleEndian )
+		
+		_data=Cast<UByte Ptr>( data )
+		_length=length
+		_byteOrder=byteOrder
+		_swapEndian=(_byteOrder=ByteOrder.BigEndian)
+		_free=False
+	End
+	
+	#rem wonkeydoc A raw pointer to the databuffer's internal memory.
+	
+	Note: This pointer will change if the databuffer is resized using Resize.
+	
+	#end
+	Property Data:UByte Ptr()
+		
+		Return _data
+	End
+	
+	#rem wonkeydoc The length of the databuffer in bytes.
+	#end
+	Property Length:Int()
+		
+		Return _length
+	End
+	
+	#rem wonkeydoc The byte order of the databuffer.
+	#end
+	Property ByteOrder:ByteOrder()
+		
+		Return _byteOrder
+		
+	Setter( byteOrder:ByteOrder )
+		
+		_byteOrder=byteOrder
+		_swapEndian=(_byteOrder=ByteOrder.BigEndian)
+	End
+
+	#rem wonkeydoc Resizes the databuffer.
+	
+	Note: This method reallocates the internal memory buffer and will cause the [[Data]] property to change.
+	
+	@param length The new length of the databuffer.
+	
+	#end	
+	Method Resize( length:Int )
+		
+		If Not _free RuntimeError( "DataBuffer memory cannot be resized" )
+		
+		Local data:=Cast<UByte Ptr>( GCMalloc( length ) )
+		libc.memcpy( data,_data,Min( length,_length ) )
+		GCFree( _data )
+		_length=length
+		_data=data
+	End
+	
+	#rem wonkeydoc Reads a byte from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The byte read from `offset`.
+	
+	#end
+	Method PeekByte:Byte( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length )
+		
+		Return Cast<Byte Ptr>( _data+offset )[0]
+	End
+	
+	#rem wonkeydoc Reads a ubyte from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The ubyte read from `offset`.
+	
+	#end
+	Method PeekUByte:UByte( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length )
+
+		Return Cast<UByte Ptr>( _data+offset )[0]
+	End
+	
+	#rem wonkeydoc Reads a 16 bit short from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The short read from `offset`.
+	
+	#end
+	Method PeekShort:Short( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length-1 )
+		
+		Local t:=Cast<Short Ptr>( _data+offset )[0]
+		
+		If _swapEndian Swap2( Varptr t )
+			
+		Return t
+	End
+	
+	#rem wonkeydoc Reads a 16 bit ushort from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The ushort read from `offset`.
+	
+	#end
+	Method PeekUShort:UShort( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length-1 )
+
+		Local t:=Cast<UShort Ptr>( _data+offset )[0]
+		
+		If _swapEndian Swap2( Varptr t )
+			
+		Return t
+	End
+	
+	#rem wonkeydoc Reads a 32 bit int from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The int read from `offset`.
+	
+	#end
+	Method PeekInt:Int( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length-3 )
+	
+		Local t:=Cast<Int Ptr>( _data+offset )[0]
+		
+		If _swapEndian Swap4( Varptr t )
+			
+		Return t
+	End
+	
+	#rem wonkeydoc Reads a 32 bit uint from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The uint read from `offset`.
+	
+	#end
+	Method PeekUInt:UInt( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length-3 )
+
+		Local t:=Cast<UInt Ptr>( _data+offset )[0]
+		
+		If _swapEndian Swap4( Varptr t )
+			
+		Return t
+	End
+	
+	#rem wonkeydoc Reads a 64 bit long from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The long read from `offset`.
+	
+	#end
+	Method PeekLong:Long( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length-7 )
+		
+		Local t:=Cast<Long Ptr>( _data+offset )[0]
+		
+		If _swapEndian Swap8( Varptr t )
+			
+		Return t
+	End
+		
+	#rem wonkeydoc Reads a 64 bit ulong from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The ulong read from `offset`.
+	
+	#end
+	Method PeekULong:ULong( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length-7 )
+
+		Local t:=Cast<ULong Ptr>( _data+offset )[0]
+		
+		If _swapEndian Swap8( Varptr t )
+			
+		Return t
+	End
+	
+	#rem wonkeydoc Reads a 32 bit float from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The float read from `offset`.
+	
+	#end
+	Method PeekFloat:Float( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length-3 )
+
+		Local t:=Cast<Float Ptr>( _data+offset )[0]
+		
+		If _swapEndian Swap4( Varptr t )
+			
+		Return t
+	End
+	
+	#rem wonkeydoc Reads a 64 bit double from the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to read.
+	
+	@return The double read from `offset`.
+	
+	#end
+	Method PeekDouble:Double( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<_length-7 )
+	
+		Local t:=Cast<Double Ptr>( _data+offset )[0]
+		
+		If _swapEndian Swap8( Varptr t )
+			
+		Return t
+	End
+	
+	#rem wonkeydoc Reads a string from the databuffer.
+	
+	If `count` is omitted, all bytes from `offset` until the end of the data buffer are read.
+	
+	@param offset Byte offset to read the string.
+	
+	@param count Number of bytes to read.
+	
+	#end
+	Method PeekString:String( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<=_length )
+		
+		Return PeekString( offset,_length-offset )
+	End
+	
+	Method PeekString:String( offset:Int,count:Int )
+		
+		DebugAssert( offset>=0 And count>=0 And offset+count<=_length )
+
+		Return String.FromCString( _data+offset,count )
+	End
+	
+	#rem wonkeydoc Reads a null terminated CString from the databuffer.
+	#end
+	Method PeekCString:String( offset:Int )
+		
+		DebugAssert( offset>=0 And offset<=_length )
+		
+		Local i:=offset
+		While i<_length And _data[i]
+			i+=1
+		Wend
+		
+		Return PeekString( offset,i-offset )
+	End
+		
+	#rem wonkeydoc Writes a byte to the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeByte( offset:Int,value:Byte )
+		
+		DebugAssert( offset>=0 And offset<_length )
+	
+		Cast<Byte Ptr>( _data+offset )[0]=value
+	End
+	
+	#rem wonkeydoc Writes an unsigned byte to the databuffer.
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeUByte( offset:Int,value:UByte )
+		
+		DebugAssert( offset>=0 And offset<_length )
+
+		Cast<UByte Ptr>( _data+offset )[0]=value
+	End
+	
+	#rem wonkeydoc Writes a 16 bit short to the databuffer
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeShort( offset:Int,value:Short )
+		
+		DebugAssert( offset>=0 And offset<_length-1 )
+	
+		If _swapEndian Swap2( Varptr value )
+			
+		Cast<Short Ptr>( _data+offset )[0]=value
+	End
+	
+	#rem wonkeydoc Writes a 16 bit unsigned short to the databuffer
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeUShort( offset:Int,value:UShort )
+		
+		DebugAssert( offset>=0 And offset<_length-1 )
+
+		If _swapEndian Swap2( Varptr value )
+			
+		Cast<UShort Ptr>( _data+offset )[0]=value
+	End
+	
+	#rem wonkeydoc Writes a 32 bit int to the databuffer
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeInt( offset:Int,value:Int )
+		
+		DebugAssert( offset>=0 And offset<_length-3 )
+	
+		If _swapEndian Swap4( Varptr value )
+			
+		Cast<Int Ptr>( _data+offset )[0]=value
+	End
+	
+	#rem wonkeydoc Writes a 32 bit unsigned int to the databuffer
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeUInt( offset:Int,value:UInt )
+		
+		DebugAssert( offset>=0 And offset<_length-3 )
+
+		If _swapEndian Swap4( Varptr value )
+			
+		Cast<UInt Ptr>( _data+offset )[0]=value
+	End
+	
+	#rem wonkeydoc Writes a 64 bit long to the databuffer
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeLong( offset:Int,value:Long )
+		
+		DebugAssert( offset>=0 And offset<_length-7 )
+
+		If _swapEndian Swap8( Varptr value )
+			
+		Cast<Long Ptr>( _data+offset )[0]=value
+	End
+	
+	#rem wonkeydoc Writes a 64 bit unsigned long to the databuffer
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeULong( offset:Int,value:ULong )
+		
+		DebugAssert( offset>=0 And offset<_length-7 )
+		
+		If _swapEndian Swap8( Varptr value )
+			
+		Cast<ULong Ptr>( _data+offset )[0]=value
+	End
+	
+	#rem wonkeydoc Writes a 32 bit float to the databuffer
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeFloat( offset:Int,value:Float )
+		
+		DebugAssert( offset>=0 And offset<_length-3 )
+	
+		If _swapEndian Swap4( Varptr value )
+			
+		Cast<Float Ptr>( _data+offset )[0]=value
+	End
+	
+	#rem wonkeydoc Writes a 64 bit double to the databuffer
+	
+	In debug builds, a runtime error will occur if `offset` is outside the range of the databuffer.
+	
+	@param offset The offset to write.
+	
+	#end
+	Method PokeDouble( offset:Int,value:Double )
+		
+		DebugAssert( offset>=0 And offset<_length-7 )
+	
+		If _swapEndian Swap8( Varptr value )
+			
+		Cast<Double Ptr>( _data+offset )[0]=value
+	End
+
+	#rem wonkeydoc Write a string to the databuffer.
+
+	If there is not enough room in the data buffer, the string data is truncated.
+		
+	The string is written in utf8 format, but no null terminator is written. Use [[PokeCString]] to write a null terminated string.
+	
+	@param offset Byte offset to write the string.
+	
+	@param value The string to write.
+	
+	#end	
+	Method PokeString( offset:Int,value:String )
+		
+		DebugAssert( offset>=0 And offset<=_length )
+		
+		Local count:=value.CStringLength
+		
+		If offset+count>_length count=_length-offset
+			
+		value.ToCString( _data+offset,count )
+	End
+	
+	#rem wonkeydoc Writes a null terminated CString to the data buffer.
+	#end
+	Method PokeCString( offset:Int,value:String )
+		
+		DebugAssert( offset>=0 And offset<=_length )
+		
+		value.ToCString( _data+offset,_length-offset )
+	End
+	
+	#rem wonkeydoc Creates a slice of the databuffer.
+	#end
+	Method Slice:DataBuffer( from:Int=0 )
+	
+		Return Slice( from,_length )
+	End
+		
+	Method Slice:DataBuffer( from:Int,term:int )
+	
+		If from<0
+			from+=_length
+		Else If from>_length
+			from=_length
+		Endif
+		
+		If term<0
+			term+=_length
+			If term<from term=from
+		Else If term<from
+			term=from
+		Else If term>_length
+			term=_length
+		Endif
+		
+		Local newlen:=term-from
+		
+		Local data:=New DataBuffer( newlen )
+		CopyTo( data,from,0,newlen )
+		
+		Return data
+	End
+	
+	#rem wonkeydoc Copies databuffer data to another databuffer.
+	
+	In debug builds, a runtime error while occur if an attempt it made to copy data outside the range of either databuffer.
+	
+	@param dst The destination databuffer.
+	
+	@param srcOffset The starting byte offset in this databuffer to copy from.
+	
+	@param dstOffset The starting byte offest in the destination databuffer to copy to.
+	
+	@param count The number of bytes to copy.
+	
+	#end
+	Method CopyTo( dst:DataBuffer,srcOffset:Int,dstOffset:Int,count:Int )
+		
+		DebugAssert( srcOffset>=0 And srcOffset+count<=_length And dstOffset>=0 And dstOffset+count<=dst._length )
+		
+		libc.memmove( dst._data+dstOffset,_data+srcOffset,count )
+	End
+	
+	#rem wonkeydoc Compresses data buffer.
+	
+	The `compressionLevel` parameter should be a value from 0 to 9 (inclusive), or -1 for default compression (currently 6).
+	
+	A compreesion level of 1 gives best speed, 9 gives best compression.
+	
+	This method prepends an 8 byte 'header' to the returned data.
+	
+	#end
+	Method Compress:DataBuffer( compressionLevel:Int=-1 )
+		Assert( compressionLevel>=-1 And compressionLevel<=9,"Compression level out of range" )
+		Local destLen:=zlib.compressBound( Length )
+		Local dest:=New DataBuffer( destLen+8 )
+		dest.PokeUInt( 0,Length )
+		dest.PokeUInt( 4,~Length )
+		Local destLenOut:=destLen
+		Local r:=zlib.compress2( dest.Data+8,Cast<zlib.z_uLong Ptr>( Varptr destLenOut ),Data,Length,compressionLevel )
+		If r<>zlib.Z_OK RuntimeError( "Error compressing data: zlib return code="+r )
+		If destLenOut=destLen Return dest
+		Local dest2:=New DataBuffer( destLenOut+8 )
+		dest.CopyTo( dest2,0,0,destLenOut+8 )
+		dest.Discard()
+		Return dest2
+	End
+	
+	#rem wonkeydoc Decompresses data buffer.
+	
+	If there was an error decompressing the data, null is returned. Erros can occur if the compressed data 
+	has somehow been corrupted.
+	
+	#end
+	Method Decompress:DataBuffer()
+		If Length<8 Or PeekUInt( 0 )<>~PeekUInt( 4 ) Return Null
+		Local destLen:=PeekUInt( 0 )
+		Local dest:=New DataBuffer( destLen )
+		Local r:=zlib.uncompress( dest.Data,Cast<zlib.z_uLong Ptr>( Varptr destLen ),Data+8,Length-8 )
+		If r<>zlib.Z_OK
+			dest.Discard()
+			Return Null
+		Endif
+		Return dest
+	End
+	
+	#rem wonkeydoc Saves the contents of the databuffer to a file.
+	
+	@param path The file path.
+	
+	@return True if successful, false if `path` could not be opened or not all data could be written.
+	
+	#end
+	Method Save:Bool( path:String )
+	
+		Local stream:=Stream.Open( path,"w" )
+		If Not stream Return False
+		
+		Local n:=stream.Write( _data,_length )
+		
+		stream.Close()
+		
+		Return n=_length
+	End
+	
+	#rem wonkeydoc Creates a databuffer with the contents of a file.
+	
+	@param path The file path.
+	
+	@return A new databuffer containing the contents of `path`, or null if `path` could not be opened.
+	
+	#end
+	Function Load:DataBuffer( path:String )
+	
+		Local stream:=Stream.Open( path,"r" )
+		If Not stream Return Null
+		
+		Local data:=stream.ReadAll()
+		
+		stream.Close()
+		
+		Return data
+	End
+	
+	Protected
+
+	#rem wonkeydoc @hidden
+	#end	
+	Method OnDiscard() Override
+		
+		If _free GCFree( _data )
+		
+		_data=Null
+	End
+
+	#rem wonkeydoc @hidden
+	#end	
+	Method OnFinalize() Override
+		
+		If _free GCFree( _data )
+	End
+	
+	Private
+	
+	Field _data:UByte Ptr
+	Field _length:Int
+	Field _byteOrder:ByteOrder
+	Field _swapEndian:Bool
+	Field _free:Bool
+	
+	Function Swap2( v:Void Ptr )
+		Local t:=Cast<UShort Ptr>( v )[0]
+		Cast<UShort Ptr>( v )[0]=(t Shr 8 & $ff) | (t & $ff) Shl 8
+	End
+	
+	Function Swap4( v:Void Ptr )
+		Local t:=Cast<UInt Ptr>( v )[0]
+		Cast<UInt Ptr>( v )[0]=(t Shr 24 & $ff) | (t & $ff) Shl 24 | (t Shr 8 & $ff00) | (t & $ff00) Shl 8
+	End
+	
+	Function Swap8( v:Void Ptr )
+		Local t:=Cast<ULong Ptr>( v )[0]
+		Cast<ULong Ptr>( v )[0]=(t Shr 56 & $ff) | (t & $ff) Shl 56 | (t Shr 40 & $ff00) | (t & $ff00) Shl 40 | (t Shr 24 & $ff0000) | (t & $ff0000) Shl 24 | (t Shr 8 & $ff000000) | (t & $ff000000) Shl 8
+	End
+
+End
