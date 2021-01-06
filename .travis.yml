@@ -1,0 +1,39 @@
+language: sh
+os:
+  - linux
+  - osx
+  - windows
+
+dist: bionic
+
+addons:
+  apt:
+    update: true
+    packages:
+      - gcc
+      - g++-multilib
+      - libopenal-dev
+      - libpulse-dev
+      - libsdl2-dev
+      - libc6-dev
+      - libc6
+
+before_scripts:
+  - cd scripts
+
+scripts:
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then ./rebuildwake.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then ./rebuildmods.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then ./rebuildwide.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then ./makedocs.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./rebuildwake.bat; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./rebuildmods.bat; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./rebuildwide.bat; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then ./makedocs.bat; fi
+
+branches:
+  only:
+    - develop
+
+notifications:
+  email: false
