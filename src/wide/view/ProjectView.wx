@@ -449,7 +449,7 @@ Class ProjectView Extends DockingView
 	
 	Method OnOpenProjectFile()
 	
-		Local file:=MainWindow.RequestFile( "Select project file...","",False,"Wonkey projects:wxproj" )
+		Local file:=MainWindow.RequestFile( "Select project file...","",False,"Wonkey projects:wxproject" )
 		If Not file Return
 	
 		OpenProject( file )
