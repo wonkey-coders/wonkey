@@ -2,26 +2,39 @@
 ![Github CI](https://github.com/wonkey-coders/wonkey/workflows/Github%20CI/badge.svg?branch=develop)
 # Wonkey Programming Language
 
+<div align="center">
+	<img src="./docs/img/logo-wonkey-anim.svg"/>
+</div>
+
 Wonkey is a fork of Monkey2 programming language designed by Mark Sibly, creator of the 'Blitz' range of languages.
 
 ## How to build from source
 
 If you are reading this on Github, please note there are prebuilt versions of wonkey (with complete source code) available from https://github.com/wonkey-coders/wonkey/releases.
 
-### Building on Windows with GCC
+### Building on Windows
 
-Unless you are using one of the prebuilt releases, you will need to install the mingw-64 compiler. There is a self-extracting archive of mingw-64 that has been tested with monkey here: http://codedan.net/Monkey2/backup/monkeycoder.co.nz/get-file/index-file=i686-6.2.0-posix-dwarf-rt_v5-rev1.exe.html.
+#### Using GCC
 
-If you install this to the wonkey 'devtools' directory, the following steps should 'just work' (ha!) :
+Unless you are using one of the prebuilt releases, you will need to install the mingw-64 compiler. There are self-extracting archive of mingw-64 that has been tested with wonkey here :
 
+* x86 : [i686-6.2.0-release-posix-dwarf-rt_v5-rev1.7z](https://downloads.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/6.2.0/threads-posix/dwarf/i686-6.2.0-release-posix-dwarf-rt_v5-rev1.7z)
+* x64 : [x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z](https://downloads.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z)
+
+If you install this to the wonkey 'devtools' directory, the following steps should 'just work' (ha!) else you must added `mingw64\bin` path in your environment variables.
+
+*NOTE: Wonkey use x64 by default. See `bin\windows\env_windows.txt` file for more information.*
+
+#### Using MSVC
+
+Wonkey auto-detected your MSVC installation and use it by default, no need to changes anymore.
+If you want using `GCC`, you need to change `WX_USE_MSVC` variable in `bin\windows\env_windows.txt`.
+
+Follow the next steps to build :
 1. Open a command prompt and change to the 'wonkey\scripts' directory.
 2. Enter `rebuildall.bat` and hit return. Wait...
-3. If all went well, you should end up with a 'Wonkey' exe in the wonkey directory. Run this to launch the WIDE (Wonkey IDE).
+3. If all went well, you should end up with a 'Wonkey (windows)' exe in the wonkey directory. Run this to launch the WIDE (Wonkey IDE).
 4. You should now be able to build and run wonkey apps. There are some sample apps in the 'wonkey/examples' directory.
-
-### Building on Windows with MSVC
-
-TODO
 
 ### Building on MacOS/Linux
 
@@ -37,9 +50,10 @@ xcode-select --install
 sudo apt-get install g++-multilib libopenal-dev libpulse-dev libsdl2-dev
 ```
 
+Follow the next steps to build :
 1. Open a shell and change to the 'wonkey/scripts' directory.
 2. Enter `./rebuildall.sh` and hit return. Wait...
-3. If all went well, you should end up with a 'Wonkey2 (...)' app in the wonkey directory. Run this to launch the WIDE (Wonkey IDE).
+3. If all went well, you should end up with a 'Wonkey (...)' app in the wonkey directory. Run this to launch the WIDE (Wonkey IDE).
 4. You should now be able to build and run wonkey apps. There are some sample apps in the 'wonkey/examples' directory.
 
 ## Introduction to Wonkey
@@ -197,11 +211,11 @@ End
 
 ### Fully garbage collected
 
-Monkey2 provides a 'mostly' incremental garbage collector that efficiently collects garbage as it runs without any of those annoying 'sweep' spikes found in typical garbage collectors.
+Wonkey provides a 'mostly' incremental garbage collector that efficiently collects garbage as it runs without any of those annoying 'sweep' spikes found in typical garbage collectors.
 
 ### Optional reflection features
 
-Monkey2 includes an optional reflection system that allows you to inspect and modify variables and values at runtime:
+Wonkey includes an optional reflection system that allows you to inspect and modify variables and values at runtime:
 
 ```monkey
 #Import "<reflection>"
@@ -227,7 +241,7 @@ End
 
 ### Multi-target products
 
-Monkey2 works on a wide range of targets: Windows, Macos, Linux, Emscripten, Android and iOS.
+Wonkey works on a wide range of targets: Windows, Macos, Linux, Emscripten, Android and iOS.
 
 #### Desktop targets
 
@@ -249,7 +263,7 @@ Monkey2 works on a wide range of targets: Windows, Macos, Linux, Emscripten, And
 
 ### More information
 
-![](/Users/seyha/git/monkey2/docs/img/icons/logo-github.svg) Github page: https://github.com/wonkey-coders
+![](./docs/img/icons/logo-github.svg) Github page: https://github.com/wonkey-coders
 
-![](/Users/seyha/git/monkey2/docs/img/icons/logo-discord.svg) Discord channel : https://discord.gg/ZHpRAFp
+![](./docs/img/icons/logo-discord.svg) Discord channel : https://discord.gg/awfuRtZay7
 
