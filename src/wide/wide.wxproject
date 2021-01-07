@@ -1,4 +1,4 @@
 {
 	"hidden":[".git*","bin","*.buildv*","*.products","logo",".wx", ".DS_Store"],
-	"mainFile":"Wide.wx"
+	"mainFile":"wide.wx"
 }

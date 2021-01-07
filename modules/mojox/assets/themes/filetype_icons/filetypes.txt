@@ -1,6 +1,7 @@
 _dir.png
 _file.png
 monkey2.png
+wx.png
 7z.png
 ai.png
 aiff.png
