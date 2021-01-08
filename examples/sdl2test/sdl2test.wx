@@ -33,7 +33,7 @@ Class SdlWindow
 		
 		SDL_GL_MakeCurrent( sdlWindow,sdlGLContext )
 		
-		bbglInit()
+		wxglInit()
 	End
 	
 	Method Run()
