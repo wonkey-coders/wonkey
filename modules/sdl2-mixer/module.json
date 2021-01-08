@@ -1,0 +1,8 @@
+{
+	"module":"sdl2-mixer",
+	"about":"SDL mixer library",
+	"author":"Wonkey Coders",
+	"version":"1.0.0",
+	"support":"http://github.com/wonkey-coders",
+	"depends":["sdl2"]
+}
