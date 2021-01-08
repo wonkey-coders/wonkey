@@ -16,7 +16,7 @@
 | gles20          | GLES library                                      | opengl                                                       | mojo     | Done       |
 | hoedown         | Markdown parser                                   |                                                              | mojox    | Done       |
 | httprequest     | Http request module                               | libc, jin, sdl2, mojo                                        | web      | Done       |
-| iap             | In App purchases                                  | jni, mojo                                                    | mobile   |            |
+| iap             | In App purchases                                  | jni, mojo                                                    | mobile   | Done       |
 | jni             | Java JNI wrapper                                  | libc                                                         | mobile   | Done       |
 | litehtml        | Simple HTML renderer                              | libc                                                         | mojox    | Done       |
 | miniz           | Mini Zip library                                  | libc                                                         | system   | Done       |

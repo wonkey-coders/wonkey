@@ -1,0 +1,8 @@
+{
+	"module":"iap",
+	"about":"In App Purchases",
+	"author":"Wonkey Coders",
+	"version":"1.0.04",
+	"support":"http://github.com/wonkey-coders",
+	"depends":["jni","mojo"]
+}
