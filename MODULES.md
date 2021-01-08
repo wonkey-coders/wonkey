@@ -29,7 +29,7 @@
 | opengl          | OpenGL library wrapper                            | libc                                                         | graphics | Done       |
 | sdl2            | SDL2 library wrapper                              | libc                                                         | mojo     | Done       |
 | sdl2-mixer      | SDL2 mixer library                                | sdl2                                                         | audio    | Done       |
-| sokol           | Minimal agnostic graphics backend library wrapper | libc                                                         | graphics |            |
+| sokol           | Minimal agnostic graphics backend library wrapper | libc                                                         | graphics | Done       |
 | sqlite          | SQLite wrapper                                    | libc                                                         | database | Done       |
 | stb-image       | Minimal image loader library                      | libc                                                         | graphics | Done       |
 | stb-image-write | Minimal image saver library                       | libc                                                         | graphics | Done       |

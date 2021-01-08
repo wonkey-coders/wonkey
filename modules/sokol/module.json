@@ -1,0 +1,8 @@
+{
+	"module":"sokol",
+	"about":"Minimal cross-platform standalone C headers. (Wonkey wrapper)",
+	"author":"Andre Weissflog, Wonkey Coders",
+	"version":"1.0.0",
+	"support":"https://github.com/floooh/sokol, https://github.com/wonkey-coders",
+	"depends":["libc"]
+}
