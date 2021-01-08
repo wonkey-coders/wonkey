@@ -1,7 +1,7 @@
 {
 	"module":"mojo",
 	"about":"Wonkey app framework",
-	"author":"Wonkey Coders",
+	"author":"Mark Sibly, Wonkey Coders",
 	"version":"1.0.0",
 	"support":"http://gituhb.com/wonkey-coders",
 	"depends":["freetype","emscripten","std","sdl2","opengl","openal"]

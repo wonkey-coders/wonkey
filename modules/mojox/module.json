@@ -1,7 +1,7 @@
 {
 	"module":"mojox",
 	"about":"GUI extensions for Mojo",
-	"author":"Wonkey Coders",
+	"author":"Mark Sibly, Wonkey Coders",
 	"version":"1.0.0",
 	"support":"http://github.com/wonkey-coders",
 	"depends":["std","mojo","hoedown","litehtml"]
