@@ -35,7 +35,7 @@
 | stb-image-write | Minimal image saver library                       | libc                                                         | graphics | Done   |
 | stb-truetype    | Minimal Truetype font library                     |                                                              | graphics |        |
 | stb-vorbis      | Minimal Vorbis loader                             |                                                              | audio    | Done   |
-| theoraplayer    | Minimal Theora player                             | openal, libc                                                 | audio    |        |
+| theoraplayer    | Minimal Theora player                             | openal, libc                                                 | vidéo    | Done   |
 | thread          | Wonkey threads support                            | libc                                                         | system   |        |
 | tinyregex       | Tiny regex library wrapper                        | libc                                                         | system   |        |
 | tinyxml2        | Tiny XML library wrapper                          |                                                              | system   | Done   |

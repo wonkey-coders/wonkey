@@ -1,0 +1,611 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B4A28ADA1CAD095F004ECC69 /* MkvReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD21CAD095F004ECC69 /* MkvReader.cpp */; };
+		B4A28ADB1CAD095F004ECC69 /* MkvReader.h in Headers */ = {isa = PBXBuildFile; fileRef = B4A28AD31CAD095F004ECC69 /* MkvReader.h */; };
+		B4A28ADC1CAD095F004ECC69 /* Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD41CAD095F004ECC69 /* Utility.cpp */; };
+		B4A28ADD1CAD095F004ECC69 /* Utility.h in Headers */ = {isa = PBXBuildFile; fileRef = B4A28AD51CAD095F004ECC69 /* Utility.h */; };
+		B4A28ADE1CAD095F004ECC69 /* VideoClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD61CAD095F004ECC69 /* VideoClip.cpp */; };
+		B4A28ADF1CAD095F004ECC69 /* VideoClip.h in Headers */ = {isa = PBXBuildFile; fileRef = B4A28AD71CAD095F004ECC69 /* VideoClip.h */; };
+		B4A28AE01CAD095F004ECC69 /* webmdec.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD81CAD095F004ECC69 /* webmdec.cc */; };
+		B4A28AE11CAD095F004ECC69 /* webmdec.h in Headers */ = {isa = PBXBuildFile; fileRef = B4A28AD91CAD095F004ECC69 /* webmdec.h */; };
+		B4A28AE61CAD0967004ECC69 /* MkvReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD21CAD095F004ECC69 /* MkvReader.cpp */; };
+		B4A28AE71CAD0967004ECC69 /* Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD41CAD095F004ECC69 /* Utility.cpp */; };
+		B4A28AE81CAD0967004ECC69 /* VideoClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD61CAD095F004ECC69 /* VideoClip.cpp */; };
+		B4A28AE91CAD0967004ECC69 /* webmdec.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD81CAD095F004ECC69 /* webmdec.cc */; };
+		B4A28AEA1CAD0967004ECC69 /* clipwebm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C0515614BB2A0D005BD333 /* clipwebm.cpp */; };
+		B4A28AEB1CAD0967004ECC69 /* MkvReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD21CAD095F004ECC69 /* MkvReader.cpp */; };
+		B4A28AEC1CAD0967004ECC69 /* Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD41CAD095F004ECC69 /* Utility.cpp */; };
+		B4A28AED1CAD0967004ECC69 /* VideoClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD61CAD095F004ECC69 /* VideoClip.cpp */; };
+		B4A28AEE1CAD0967004ECC69 /* webmdec.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4A28AD81CAD095F004ECC69 /* webmdec.cc */; };
+		C9C0515914BB2A0D005BD333 /* clipwebm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C0515614BB2A0D005BD333 /* clipwebm.cpp */; };
+		C9C0515A14BB2A0D005BD333 /* clipwebm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9C0515614BB2A0D005BD333 /* clipwebm.cpp */; };
+		C9C0516214BB2A16005BD333 /* clipwebm.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C0515F14BB2A16005BD333 /* clipwebm.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C9C0516314BB2A16005BD333 /* clipwebm.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C0515F14BB2A16005BD333 /* clipwebm.h */; };
+		C9C0516414BB2A16005BD333 /* clipwebmExport.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C0516014BB2A16005BD333 /* clipwebmExport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C9C0516514BB2A16005BD333 /* clipwebmExport.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C0516014BB2A16005BD333 /* clipwebmExport.h */; };
+		D1F27B1D177A2F7700E5C131 /* clipwebm.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C0515F14BB2A16005BD333 /* clipwebm.h */; };
+		D1F27B1E177A2F7700E5C131 /* clipwebmExport.h in Headers */ = {isa = PBXBuildFile; fileRef = C9C0516014BB2A16005BD333 /* clipwebmExport.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8DC2EF5B0486A6940098B216 /* clipwebm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = clipwebm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B4A28AD21CAD095F004ECC69 /* MkvReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MkvReader.cpp; path = src/MkvReader.cpp; sourceTree = "<group>"; };
+		B4A28AD31CAD095F004ECC69 /* MkvReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MkvReader.h; path = src/MkvReader.h; sourceTree = "<group>"; };
+		B4A28AD41CAD095F004ECC69 /* Utility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utility.cpp; path = src/Utility.cpp; sourceTree = "<group>"; };
+		B4A28AD51CAD095F004ECC69 /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utility.h; path = src/Utility.h; sourceTree = "<group>"; };
+		B4A28AD61CAD095F004ECC69 /* VideoClip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoClip.cpp; path = src/VideoClip.cpp; sourceTree = "<group>"; };
+		B4A28AD71CAD095F004ECC69 /* VideoClip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoClip.h; path = src/VideoClip.h; sourceTree = "<group>"; };
+		B4A28AD81CAD095F004ECC69 /* webmdec.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = webmdec.cc; path = src/webmdec.cc; sourceTree = "<group>"; };
+		B4A28AD91CAD095F004ECC69 /* webmdec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = webmdec.h; path = src/webmdec.h; sourceTree = "<group>"; };
+		C9C0515614BB2A0D005BD333 /* clipwebm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = clipwebm.cpp; path = src/clipwebm.cpp; sourceTree = "<group>"; };
+		C9C0515F14BB2A16005BD333 /* clipwebm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = clipwebm.h; path = include/clipwebm/clipwebm.h; sourceTree = "<group>"; };
+		C9C0516014BB2A16005BD333 /* clipwebmExport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = clipwebmExport.h; path = include/clipwebm/clipwebmExport.h; sourceTree = "<group>"; };
+		C9C0516814BB2A6E005BD333 /* april.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = april.framework; path = "../../../__build__/pharaoh/Build/Products/Debug-LLVM/april.framework"; sourceTree = "<group>"; };
+		C9C0516914BB2A6E005BD333 /* atres.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = atres.framework; path = "../../../__build__/pharaoh/Build/Products/Debug-LLVM/atres.framework"; sourceTree = "<group>"; };
+		C9C0516A14BB2A6E005BD333 /* freetype.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = freetype.framework; path = "../../../__build__/pharaoh/Build/Products/Debug-LLVM/freetype.framework"; sourceTree = "<group>"; };
+		C9C0516B14BB2A6E005BD333 /* gtypes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = gtypes.framework; path = "../../../__build__/pharaoh/Build/Products/Debug-LLVM/gtypes.framework"; sourceTree = "<group>"; };
+		C9C0516C14BB2A6E005BD333 /* hltypes.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = hltypes.framework; path = "../../../__build__/pharaoh/Build/Products/Debug-LLVM/hltypes.framework"; sourceTree = "<group>"; };
+		C9FBF4AF14E10B47008359C3 /* freetype.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = freetype.framework; path = ../../freetype/build/Release/freetype.framework; sourceTree = "<group>"; };
+		D1522F1C140F79500012F290 /* libclipwebm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libclipwebm.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1681BAA18D768620088FC68 /* iOS.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = iOS.xcconfig; path = xcconfig/iOS.xcconfig; sourceTree = "<group>"; };
+		D1681BAB18D768620088FC68 /* Mac.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Mac.xcconfig; path = xcconfig/Mac.xcconfig; sourceTree = "<group>"; };
+		D178E4D41560F3B60026CCD0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		D178E4D71560F3B60026CCD0 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		D178E4D81560F3B60026CCD0 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		D178E4D91560F3B60026CCD0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D1F27B26177A2F7700E5C131 /* libclipwebm.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libclipwebm.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DC2EF560486A6940098B216 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1522F19140F79500012F290 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1F27B1A177A2F7700E5C131 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DC2EF5B0486A6940098B216 /* clipwebm.framework */,
+				D1522F1C140F79500012F290 /* libclipwebm.a */,
+				D1F27B26177A2F7700E5C131 /* libclipwebm.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* libclipwebm */ = {
+			isa = PBXGroup;
+			children = (
+				D1681B9718D767480088FC68 /* config */,
+				D178E4F31560F3D70026CCD0 /* tools */,
+				7F42F6E811EB0E0600B1C1DF /* include */,
+				7F42F6E711EB0E0200B1C1DF /* src */,
+				034768DFFF38A50411DB9C8B /* Products */,
+				C9C0517214BB2A7D005BD333 /* Frameworks */,
+			);
+			name = libclipwebm;
+			sourceTree = "<group>";
+		};
+		7F42F6E711EB0E0200B1C1DF /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B4A28AD21CAD095F004ECC69 /* MkvReader.cpp */,
+				B4A28AD31CAD095F004ECC69 /* MkvReader.h */,
+				B4A28AD41CAD095F004ECC69 /* Utility.cpp */,
+				B4A28AD51CAD095F004ECC69 /* Utility.h */,
+				B4A28AD61CAD095F004ECC69 /* VideoClip.cpp */,
+				B4A28AD71CAD095F004ECC69 /* VideoClip.h */,
+				B4A28AD81CAD095F004ECC69 /* webmdec.cc */,
+				B4A28AD91CAD095F004ECC69 /* webmdec.h */,
+				C9C0515614BB2A0D005BD333 /* clipwebm.cpp */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		7F42F6E811EB0E0600B1C1DF /* include */ = {
+			isa = PBXGroup;
+			children = (
+				C9C0515F14BB2A16005BD333 /* clipwebm.h */,
+				C9C0516014BB2A16005BD333 /* clipwebmExport.h */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		C9C0517214BB2A7D005BD333 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C9FBF4AF14E10B47008359C3 /* freetype.framework */,
+				C9C0516814BB2A6E005BD333 /* april.framework */,
+				C9C0516914BB2A6E005BD333 /* atres.framework */,
+				C9C0516A14BB2A6E005BD333 /* freetype.framework */,
+				C9C0516B14BB2A6E005BD333 /* gtypes.framework */,
+				C9C0516C14BB2A6E005BD333 /* hltypes.framework */,
+				D178E4D41560F3B60026CCD0 /* Cocoa.framework */,
+				D178E4D61560F3B60026CCD0 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D1681B9718D767480088FC68 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				D1681BAA18D768620088FC68 /* iOS.xcconfig */,
+				D1681BAB18D768620088FC68 /* Mac.xcconfig */,
+				8DC2EF5A0486A6940098B216 /* Info.plist */,
+			);
+			name = config;
+			sourceTree = "<group>";
+		};
+		D178E4D61560F3B60026CCD0 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D178E4D71560F3B60026CCD0 /* AppKit.framework */,
+				D178E4D81560F3B60026CCD0 /* CoreData.framework */,
+				D178E4D91560F3B60026CCD0 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		D178E4F31560F3D70026CCD0 /* tools */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = tools;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		8DC2EF500486A6940098B216 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9C0516214BB2A16005BD333 /* clipwebm.h in Headers */,
+				B4A28ADB1CAD095F004ECC69 /* MkvReader.h in Headers */,
+				B4A28AE11CAD095F004ECC69 /* webmdec.h in Headers */,
+				B4A28ADF1CAD095F004ECC69 /* VideoClip.h in Headers */,
+				C9C0516414BB2A16005BD333 /* clipwebmExport.h in Headers */,
+				B4A28ADD1CAD095F004ECC69 /* Utility.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1522F1A140F79500012F290 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9C0516314BB2A16005BD333 /* clipwebm.h in Headers */,
+				C9C0516514BB2A16005BD333 /* clipwebmExport.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1F27B1B177A2F7700E5C131 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D1F27B1D177A2F7700E5C131 /* clipwebm.h in Headers */,
+				D1F27B1E177A2F7700E5C131 /* clipwebmExport.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		8DC2EF4F0486A6940098B216 /* clipwebm */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "clipwebm" */;
+			buildPhases = (
+				8DC2EF540486A6940098B216 /* Sources */,
+				8DC2EF560486A6940098B216 /* Frameworks */,
+				8DC2EF500486A6940098B216 /* Headers */,
+				8DC2EF520486A6940098B216 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = clipwebm;
+			productInstallPath = "$(HOME)/Library/Frameworks";
+			productName = libclipwebm;
+			productReference = 8DC2EF5B0486A6940098B216 /* clipwebm.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		D1522F1B140F79500012F290 /* clipwebm (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D1522F2B140F79500012F290 /* Build configuration list for PBXNativeTarget "clipwebm (iOS)" */;
+			buildPhases = (
+				D1522F18140F79500012F290 /* Sources */,
+				D1522F19140F79500012F290 /* Frameworks */,
+				D1522F1A140F79500012F290 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "clipwebm (iOS)";
+			productName = "libclipwebm-ios";
+			productReference = D1522F1C140F79500012F290 /* libclipwebm.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		D1F27B16177A2F7700E5C131 /* clipwebm (Mac) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D1F27B20177A2F7700E5C131 /* Build configuration list for PBXNativeTarget "clipwebm (Mac)" */;
+			buildPhases = (
+				D1F27B17177A2F7700E5C131 /* Sources */,
+				D1F27B1A177A2F7700E5C131 /* Frameworks */,
+				D1F27B1B177A2F7700E5C131 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "clipwebm (Mac)";
+			productName = "libclipwebm-ios";
+			productReference = D1F27B26177A2F7700E5C131 /* libclipwebm.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+			};
+			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "clipwebm" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				en,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* libclipwebm */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DC2EF4F0486A6940098B216 /* clipwebm */,
+				D1F27B16177A2F7700E5C131 /* clipwebm (Mac) */,
+				D1522F1B140F79500012F290 /* clipwebm (iOS) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8DC2EF520486A6940098B216 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DC2EF540486A6940098B216 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4A28ADC1CAD095F004ECC69 /* Utility.cpp in Sources */,
+				B4A28ADE1CAD095F004ECC69 /* VideoClip.cpp in Sources */,
+				C9C0515914BB2A0D005BD333 /* clipwebm.cpp in Sources */,
+				B4A28AE01CAD095F004ECC69 /* webmdec.cc in Sources */,
+				B4A28ADA1CAD095F004ECC69 /* MkvReader.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1522F18140F79500012F290 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4A28AEC1CAD0967004ECC69 /* Utility.cpp in Sources */,
+				B4A28AED1CAD0967004ECC69 /* VideoClip.cpp in Sources */,
+				C9C0515A14BB2A0D005BD333 /* clipwebm.cpp in Sources */,
+				B4A28AEE1CAD0967004ECC69 /* webmdec.cc in Sources */,
+				B4A28AEB1CAD0967004ECC69 /* MkvReader.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1F27B17177A2F7700E5C131 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4A28AE81CAD0967004ECC69 /* VideoClip.cpp in Sources */,
+				B4A28AEA1CAD0967004ECC69 /* clipwebm.cpp in Sources */,
+				B4A28AE91CAD0967004ECC69 /* webmdec.cc in Sources */,
+				B4A28AE71CAD0967004ECC69 /* Utility.cpp in Sources */,
+				B4A28AE61CAD0967004ECC69 /* MkvReader.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		7F7A5614129D436D00E0ED12 /* App Store */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"${SRCROOT}/../../include",
+					"${SRCROOT}/../../src",
+					"${SRCROOT}/../../../vpx",
+					"${SRCROOT}/../../../vpx/third_party/libwebm",
+				);
+				PRODUCT_NAME = clipwebm;
+			};
+			name = "App Store";
+		};
+		7F7A5615129D436D00E0ED12 /* App Store */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1681BAB18D768620088FC68 /* Mac.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_MAC,
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LD_DYLIB_INSTALL_NAME = "@executable_path/../Frameworks/$(EXECUTABLE_PATH)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.googlecode.${PRODUCT_NAME:rfc1034Identifier}";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = "App Store";
+		};
+		C9160585132AE60400914FFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"${SRCROOT}/../../include",
+					"${SRCROOT}/../../src",
+					"${SRCROOT}/../../../vpx",
+					"${SRCROOT}/../../../vpx/third_party/libwebm",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = clipwebm;
+			};
+			name = Debug;
+		};
+		C9160586132AE60400914FFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1681BAB18D768620088FC68 /* Mac.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_MAC,
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LD_DYLIB_INSTALL_NAME = "@executable_path/../Frameworks/$(EXECUTABLE_PATH)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.googlecode.${PRODUCT_NAME:rfc1034Identifier}";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		C9160587132AE61000914FFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"${SRCROOT}/../../include",
+					"${SRCROOT}/../../src",
+					"${SRCROOT}/../../../vpx",
+					"${SRCROOT}/../../../vpx/third_party/libwebm",
+				);
+				PRODUCT_NAME = clipwebm;
+			};
+			name = Release;
+		};
+		C9160588132AE61000914FFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1681BAB18D768620088FC68 /* Mac.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_MAC,
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Info.plist;
+				LD_DYLIB_INSTALL_NAME = "@executable_path/../Frameworks/$(EXECUTABLE_PATH)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.googlecode.${PRODUCT_NAME:rfc1034Identifier}";
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
+		D1522F27140F79500012F290 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1681BAA18D768620088FC68 /* iOS.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_IOS,
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				PRODUCT_NAME = clipwebm;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		D1522F29140F79500012F290 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1681BAA18D768620088FC68 /* iOS.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_IOS,
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				PRODUCT_NAME = clipwebm;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		D1522F2A140F79500012F290 /* App Store */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1681BAA18D768620088FC68 /* iOS.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_IOS,
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				PRODUCT_NAME = clipwebm;
+				SKIP_INSTALL = YES;
+			};
+			name = "App Store";
+		};
+		D1F27B22177A2F7700E5C131 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1681BAB18D768620088FC68 /* Mac.xcconfig */;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_MAC,
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				PRODUCT_NAME = clipwebm;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		D1F27B24177A2F7700E5C131 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1681BAB18D768620088FC68 /* Mac.xcconfig */;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_MAC,
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				PRODUCT_NAME = clipwebm;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		D1F27B25177A2F7700E5C131 /* App Store */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1681BAB18D768620088FC68 /* Mac.xcconfig */;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_MAC,
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				PRODUCT_NAME = clipwebm;
+				SKIP_INSTALL = YES;
+			};
+			name = "App Store";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "clipwebm" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9160586132AE60400914FFC /* Debug */,
+				C9160588132AE61000914FFC /* Release */,
+				7F7A5615129D436D00E0ED12 /* App Store */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "clipwebm" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9160585132AE60400914FFC /* Debug */,
+				C9160587132AE61000914FFC /* Release */,
+				7F7A5614129D436D00E0ED12 /* App Store */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D1522F2B140F79500012F290 /* Build configuration list for PBXNativeTarget "clipwebm (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D1522F27140F79500012F290 /* Debug */,
+				D1522F29140F79500012F290 /* Release */,
+				D1522F2A140F79500012F290 /* App Store */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D1F27B20177A2F7700E5C131 /* Build configuration list for PBXNativeTarget "clipwebm (Mac)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D1F27B22177A2F7700E5C131 /* Debug */,
+				D1F27B24177A2F7700E5C131 /* Release */,
+				D1F27B25177A2F7700E5C131 /* App Store */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

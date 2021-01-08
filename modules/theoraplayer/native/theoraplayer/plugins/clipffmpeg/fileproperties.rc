@@ -1,0 +1,29 @@
+#define VER_VERSION 1,0,0,0
+#define VER_VERSION_STR "1.0.0.0\0"
+#define VER_COMPANYNAME_STR "Cateia Games\0"
+#define VER_FILEDESCRIPTION_STR "Theoraplayer FFmpeg VideoClip Plugin\0"
+#define VER_LEGALCOPYRIGHT_STR "(C) K.I.D. d.o.o. Rijeka, Croatia\0"
+#define VER_PRODUCTNAME_STR "Theoraplayer FFmpeg VideoClip Plugin\0"
+
+1 VERSIONINFO
+FILEVERSION		VER_VERSION
+PRODUCTVERSION 	VER_VERSION
+FILETYPE	   	0x2
+BEGIN
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "040904E4"
+		BEGIN
+			VALUE "CompanyName",		VER_COMPANYNAME_STR
+			VALUE "FileDescription",	VER_FILEDESCRIPTION_STR
+			VALUE "FileVersion",		VER_VERSION_STR
+			VALUE "LegalCopyright",		VER_LEGALCOPYRIGHT_STR
+			VALUE "ProductName",		VER_PRODUCTNAME_STR
+			VALUE "ProductVersion",		VER_VERSION_STR
+		END
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x409, 0x4E4
+	END
+END
