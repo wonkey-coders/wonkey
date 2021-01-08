@@ -1,0 +1,14 @@
+
+openvr/openvr-sdk/bin/osx32
+openvr/openvr-sdk/bin/osx64
+openvr/openvr-sdk/bin/linux32
+openvr/openvr-sdk/bin/linux64
+
+openvr/openvr-sdk/lib/osx32
+openvr/openvr-sdk/lib/osx64
+openvr/openvr-sdk/lib/linux32
+openvr/openvr-sdk/lib/linux64
+
+*.buildv*
+*.products
+

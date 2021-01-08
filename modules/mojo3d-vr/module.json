@@ -1,0 +1,8 @@
+{
+	"module":"mojo3d-vr",
+	"about":"VR support for mojo3d",
+	"author":"Mark Sibly, Wonkey Coders",
+	"version":"1.0.0",
+	"support":"http://github.com/wonkey-coders",
+	"depends":["std","mojo3d"]
+}

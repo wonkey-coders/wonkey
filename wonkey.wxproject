@@ -1,4 +1,0 @@
-{
-	"hidden":[".git*","bin","*.buildv*","*.products",".wx",".DS_Store"],
-	"mainFile":"src/wake/wake.wx"
-}
