@@ -1,0 +1,8 @@
+{
+	"module":"httprequest",
+	"about":"HttpRequest module",
+	"author":"Wonkey Coders",
+	"version":"1.0.0",
+	"depends":["libc","jni","std","sdl2","mojo"]
+}
+

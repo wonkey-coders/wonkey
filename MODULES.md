@@ -15,7 +15,7 @@
 | freetype        | Freetype font library                             |                                                              | mojo     | Done       |
 | gles20          | GLES library                                      | opengl                                                       | mojo     | Done       |
 | hoedown         | Markdown parser                                   |                                                              | mojox    | Done       |
-| httprequest     | Http request module                               | libc, jin, sdl2, mojo                                        | web      |            |
+| httprequest     | Http request module                               | libc, jin, sdl2, mojo                                        | web      | Done       |
 | iap             | In App purchases                                  | jni, mojo                                                    | mobile   |            |
 | jni             | Java JNI wrapper                                  | libc                                                         | mobile   | Done       |
 | litehtml        | Simple HTML renderer                              | libc                                                         | mojox    | Done       |
