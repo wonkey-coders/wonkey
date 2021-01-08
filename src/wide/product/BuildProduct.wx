@@ -79,7 +79,7 @@ Class BuildProduct
 	
 		_srcPath=srcPath
 		_target=target
-		_appName=StripDir( StripExt( srcPath ) ).Capitalize()
+		_appName=StripDir( StripExt( srcPath ) )'.Capitalize()
 		_productsDir=StripExt( _srcPath )+".products/"
 		'_productDir=_productsDir+(target="ios" ? "iOS" Else target.Capitalize())+"/"
 		_productDir=_productsDir+target.ToLower()+"/"
