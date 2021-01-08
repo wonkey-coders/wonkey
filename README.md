@@ -1,5 +1,5 @@
 ![Views](https://views.whatilearened.today/views/github/wonkey-coders/wonkey.svg)
-[![Travis CI](https://travis-ci.org/wonkey-coders/wonkey.svg?branch=develop)](https://travis-ci.org/wonkey-coders/wonkey)
+![Travis (.org)](https://img.shields.io/travis/wonkey-coders/wonkey?label=Travis%20CI&logo=travis)
 ![Github CI](https://github.com/wonkey-coders/wonkey/workflows/Github%20CI/badge.svg?branch=develop)
 # Wonkey Programming Language
 
