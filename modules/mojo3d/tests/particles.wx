@@ -67,7 +67,7 @@ Class MyWindow Extends Window
 		
 		For Local an:=0 Until 360 Step 45
 			
-			Local pivot:=New Entity
+			Local pivot:=New Pivot
 			pivot.RotateY( an )
 			pivot.MoveZ( 20 )
 			pivot.Visible=True

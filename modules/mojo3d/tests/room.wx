@@ -13,8 +13,12 @@ Using mojo3d..
 
 Function Main()
 	
-	SetConfig( "MOJO_OPENGL_PROFILE","es" )
-	
+	#If __DESKTOP_TARGET__
+		SetConfig( "MOJO_OPENGL_PROFILE","compatible" )
+	#Else
+		SetConfig( "MOJO_OPENGL_PROFILE","es" )
+	#Endif
+
 	New AppInstance
 	
 	New MyWindow
