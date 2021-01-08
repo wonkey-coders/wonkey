@@ -28,7 +28,8 @@ WX_ARCH_WINDOWS=x64
 '
 '(Note: TDM GCC not recommended, as it uses SJLJ exceptions which are very slow)
 '
-PATH=${WX_HOME}\devtools\i686-6.2.0-posix-dwarf-rt_v5-rev1\mingw32\bin;${PATH}
+'PATH=${WX_HOME}\devtools\i686-6.2.0-release-posix-dwarf-rt_v5-rev1\mingw32\bin;${PATH}
+PATH=${WX_HOME}\devtools\x86_64-8.1.0-release-posix-seh-rt_v6-rev0\mingw64\bin;${PATH}
 
 'Need this to override installed mingw.
 '
