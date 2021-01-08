@@ -12,8 +12,8 @@
 | bullet          | 3d physics library wrapper                        | libc                                                         | mojo3d   | Done   |
 | chipmunk        | 2d physics library wrapper                        | libc                                                         | mojo     | Done   |
 | emscripten      | Emscripten                                        | libc, sdl2                                                   | web      | Done   |
-| freetype        | Freetype font library                             |                                                              | mojo     |        |
-| gles20          | GLES library                                      | opengl                                                       | mojo     |        |
+| freetype        | Freetype font library                             |                                                              | mojo     | Done   |
+| gles20          | GLES library                                      | opengl                                                       | mojo     | Done   |
 | hoedown         | Markdown parser                                   |                                                              | mojox    | Done   |
 | httprequest     | Http request module                               | libc, jin, sdl2, mojo                                        | web      |        |
 | iap             | In App purchases                                  | jni, mojo                                                    | mobile   |        |
