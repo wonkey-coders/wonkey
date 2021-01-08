@@ -6,7 +6,7 @@
 | libc            | Standard C library wrapper                        |                                                              | wonkey   | Done       |
 | std             | Standard Wonkey library                           | libc, sdl2, jni, android, emscripten, zlib, miniz, stb-image, stb-image-write, stb-vorbis | wonkey   | Done       |
 | reflection      | Wonkey reflection support                         |                                                              | wonkey   | Done       |
-| admob           | Admob wrapper                                     | jni, sdl2, mojo                                              | mobile   |            |
+| admob           | Admob wrapper                                     | jni, sdl2, mojo                                              | mobile   | Done       |
 | android         | Android                                           | libc, sdl2, jni                                              | mobile   | Done       |
 | assimp          | 3d importer library wrapper                       | libc, zlib                                                   | mojo3d   | Done       |
 | bullet          | 3d physics library wrapper                        | libc                                                         | mojo3d   | Done       |

@@ -1,0 +1,18 @@
+
+***** V1.0.07 *****
+
+Cleaned up README.TXT a bit.
+
+
+***** V1.0.06 *****
+
+Added VERSIONS.TXT
+
+Added rewarded video ads.
+
+Architecture significantly changed, you now need to create an AdView instance - see bananas.
+
+
+***** V1.0.05 *****
+
+Initial release.
