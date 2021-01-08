@@ -33,7 +33,7 @@
 | sqlite          | SQLite wrapper                                    | libc                                                         | database |        |
 | stb-image       | Minimal image loader library                      | libc                                                         | graphics | Done   |
 | stb-image-write | Minimal image saver library                       | libc                                                         | graphics | Done   |
-| stb-truetype    | Minimal Truetype font library                     |                                                              | graphics |        |
+| stb-truetype    | Minimal Truetype font library                     |                                                              | graphics | Done   |
 | stb-vorbis      | Minimal Vorbis loader                             |                                                              | audio    | Done   |
 | theoraplayer    | Minimal Theora player                             | openal, libc                                                 | vidéo    | Done   |
 | thread          | Wonkey threads support                            | libc                                                         | system   | Done   |
