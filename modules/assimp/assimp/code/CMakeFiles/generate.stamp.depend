@@ -1,0 +1,6 @@
+# CMake generation dependency list for this directory.
+D:/dev/github-assimp/code/CMakeLists.txt
+D:/dev/github-assimp/cmake-modules/FindRT.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeParseArguments.cmake

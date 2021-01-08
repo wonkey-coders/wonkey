@@ -1,0 +1,832 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{0E21964F-1E1B-3A86-84B5-62A48DDFDA23}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>assimp</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\dev\github-assimp\bin\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">assimp.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">assimp-vc140-mt</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\dev\github-assimp\bin\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">assimp.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">assimp-vc140-mt</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\dev\github-assimp\bin\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">assimp.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">assimp-vc140-mt</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\dev\github-assimp\bin\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">assimp.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">assimp-vc140-mt</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;OPENDDL_NO_USE_CPP11;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_IMPORTER_GLTF_USE_OPEN3DGC=1;ASSIMP_BUILD_DLL_EXPORT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;OPENDDLPARSER_BUILD;CMAKE_INTDIR="Debug";assimp_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;OPENDDL_NO_USE_CPP11;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_IMPORTER_GLTF_USE_OPEN3DGC=1;ASSIMP_BUILD_DLL_EXPORT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;OPENDDLPARSER_BUILD;CMAKE_INTDIR=\"Debug\";assimp_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\Debug\zlibstaticd.lib;..\lib\Debug\IrrXML.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/dev/github-assimp/lib/Debug/assimp-vc140-mt.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/dev/github-assimp/bin/Debug/assimp-vc140-mt.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENDDL_NO_USE_CPP11;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_IMPORTER_GLTF_USE_OPEN3DGC=1;ASSIMP_BUILD_DLL_EXPORT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;OPENDDLPARSER_BUILD;CMAKE_INTDIR="Release";assimp_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENDDL_NO_USE_CPP11;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_IMPORTER_GLTF_USE_OPEN3DGC=1;ASSIMP_BUILD_DLL_EXPORT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;OPENDDLPARSER_BUILD;CMAKE_INTDIR=\"Release\";assimp_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\Release\zlibstatic.lib;..\lib\Release\IrrXML.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/dev/github-assimp/lib/Release/assimp-vc140-mt.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/dev/github-assimp/bin/Release/assimp-vc140-mt.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENDDL_NO_USE_CPP11;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_IMPORTER_GLTF_USE_OPEN3DGC=1;ASSIMP_BUILD_DLL_EXPORT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;OPENDDLPARSER_BUILD;CMAKE_INTDIR="MinSizeRel";assimp_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENDDL_NO_USE_CPP11;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_IMPORTER_GLTF_USE_OPEN3DGC=1;ASSIMP_BUILD_DLL_EXPORT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;OPENDDLPARSER_BUILD;CMAKE_INTDIR=\"MinSizeRel\";assimp_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\MinSizeRel\zlibstatic.lib;..\lib\MinSizeRel\IrrXML.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/dev/github-assimp/lib/MinSizeRel/assimp-vc140-mt.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/dev/github-assimp/bin/MinSizeRel/assimp-vc140-mt.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENDDL_NO_USE_CPP11;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_IMPORTER_GLTF_USE_OPEN3DGC=1;ASSIMP_BUILD_DLL_EXPORT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;OPENDDLPARSER_BUILD;CMAKE_INTDIR="RelWithDebInfo";assimp_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENDDL_NO_USE_CPP11;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_IMPORTER_GLTF_USE_OPEN3DGC=1;ASSIMP_BUILD_DLL_EXPORT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;OPENDDLPARSER_BUILD;CMAKE_INTDIR=\"RelWithDebInfo\";assimp_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\dev\github-assimp\.;D:\dev\github-assimp;D:\dev\github-assimp\include;D:\dev\github-assimp\contrib\zlib;D:\dev\github-assimp\code\..\contrib\rapidjson\include;D:\dev\github-assimp\code\..\contrib;D:\dev\github-assimp\code\..\contrib\unzip;D:\dev\github-assimp\contrib\irrXML;D:\dev\github-assimp\code\..\contrib\openddlparser\include;D:\dev\github-assimp\code\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\RelWithDebInfo\zlibstatic.lib;..\lib\RelWithDebInfo\IrrXML.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/dev/github-assimp/lib/RelWithDebInfo/assimp-vc140-mt.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/dev/github-assimp/bin/RelWithDebInfo/assimp-vc140-mt.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\github-assimp\code\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/dev/github-assimp/code/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/dev/github-assimp -BD:/dev/github-assimp --check-stamp-file D:\dev\github-assimp\code\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/dev/github-assimp/code/CMakeLists.txt;D:\dev\github-assimp\code\CMakeLists.txt;D:\dev\github-assimp\cmake-modules\FindRT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\dev\github-assimp\code\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\dev\github-assimp\code\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/dev/github-assimp/code/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/dev/github-assimp -BD:/dev/github-assimp --check-stamp-file D:\dev\github-assimp\code\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/dev/github-assimp/code/CMakeLists.txt;D:\dev\github-assimp\code\CMakeLists.txt;D:\dev\github-assimp\cmake-modules\FindRT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\dev\github-assimp\code\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\dev\github-assimp\code\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule D:/dev/github-assimp/code/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/dev/github-assimp -BD:/dev/github-assimp --check-stamp-file D:\dev\github-assimp\code\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:/dev/github-assimp/code/CMakeLists.txt;D:\dev\github-assimp\code\CMakeLists.txt;D:\dev\github-assimp\cmake-modules\FindRT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\dev\github-assimp\code\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\dev\github-assimp\code\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule D:/dev/github-assimp/code/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/dev/github-assimp -BD:/dev/github-assimp --check-stamp-file D:\dev\github-assimp\code\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:/dev/github-assimp/code/CMakeLists.txt;D:\dev\github-assimp\code\CMakeLists.txt;D:\dev\github-assimp\cmake-modules\FindRT.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;D:\dev\github-assimp\code\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\dev\github-assimp\code\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\dev\github-assimp\code\fast_atof.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\qnan.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BaseImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BaseProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Importer.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ScenePrivate.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ByteSwapper.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\DefaultProgressHandler.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\CInterfaceIOWrapper.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Hash.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\IFF.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MemoryIOWrapper.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ParsingUtils.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\StreamReader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\StreamWriter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\StringComparison.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\StringUtils.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SGSpatialSort.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\VertexTriangleAdjacency.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\GenericProperty.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SpatialSort.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SceneCombiner.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ScenePreprocessor.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SkeletonMeshBuilder.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SplitByBoneCountProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SmoothingGroups.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\StandardShapes.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\TargetAnimation.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\RemoveComments.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Subdivision.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Vertex.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\LineSplitter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\TinyFormatter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Profiler.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\LogAux.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Bitmap.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\XMLTools.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\IOStreamBuffer.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\CreateAnimMesh.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\DefaultLogger.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\LogStream.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\Logger.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\NullLogger.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\code\Win32DebugLogStream.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FileLogStream.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\StdOStreamLogStream.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlobIOSystem.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\CalcTangentsProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ComputeUVMappingProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ConvertToLHProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FindDegenerates.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FindInstancesProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FindInvalidDataProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FixNormalsStep.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\GenFaceNormalsProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\GenVertexNormalsProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\PretransformVertices.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ImproveCacheLocality.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\JoinVerticesProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\LimitBoneWeightsProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\RemoveRedundantMaterials.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\RemoveVCProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SortByPTypeProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SplitLargeMeshes.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\TextureTransform.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\TriangulateProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ValidateDataStructure.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OptimizeGraph.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OptimizeMeshes.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\DeboneProcess.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ProcessHelper.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\PolyTools.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MakeVerboseFormat.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MaterialSystem.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\StepExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\AMFImporter.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\code\AMFImporter_Macro.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\code\AMFImporter_Node.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\code\3DSHelper.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\3DSLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\3DSExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ACLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ASELoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ASEParser.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\AssbinExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\AssbinLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\AssxmlExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\B3DImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BVHLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ColladaHelper.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ColladaLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ColladaParser.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ColladaExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\DXFLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\DXFHelper.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\CSMLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\HMPFileData.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\HMPLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\HalfLifeFileData.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\IRRMeshLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\IRRShared.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\IRRLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\LWOAnimation.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\LWOFileData.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\LWOLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\LWSLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MD2FileData.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MD2Loader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MD2NormalTable.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MD3FileData.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MD3Loader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MD5Loader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MD5Parser.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MDCFileData.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MDCLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MDCNormalTable.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MDLDefaultColorMap.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MDLFileData.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MDLLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\NFFLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\NDOLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OFFLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ObjFileData.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ObjFileImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ObjFileMtlImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ObjFileParser.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ObjTools.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\ObjExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OgreImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OgreStructs.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OgreParsingUtils.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OgreBinarySerializer.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OgreXmlSerializer.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OpenGEXExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OpenGEXImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\OpenGEXStructs.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\PlyLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\PlyParser.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\PlyExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\MS3DLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\COBLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\COBScene.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlenderLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlenderDNA.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlenderDNA.inl" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlenderScene.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlenderSceneGen.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlenderIntermediate.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlenderModifier.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlenderBMesh.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\BlenderTessellator.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\IFCLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\IFCReaderGen.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\IFCUtil.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\STEPFile.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\STEPFileReader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\STEPFileEncoding.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\XGLLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXCompileConfig.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXParser.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXTokenizer.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXImportSettings.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXConverter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXUtil.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXDocument.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXProperties.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\FBXMeshGeometry.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Q3DLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Q3BSPFileData.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Q3BSPFileParser.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Q3BSPFileImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\Q3BSPZipArchive.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\RawLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SIBImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\SMDLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\STLLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\STLExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\TerragenLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\UnrealLoader.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\XFileHelper.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\XFileImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\XFileParser.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\XFileExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\X3DExporter.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\code\X3DImporter.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\code\X3DImporter_Macro.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\code\X3DImporter_Node.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\code\glTFAsset.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\glTFAsset.inl" />
+    <ClInclude Include="D:\dev\github-assimp\code\glTFAssetWriter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\glTFAssetWriter.inl" />
+    <ClInclude Include="D:\dev\github-assimp\code\glTFImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\glTFExporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\D3MFImporter.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\D3MFOpcPackage.h" />
+    <ClInclude Include="D:\dev\github-assimp\code\irrXMLWrapper.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\ConvertUTF\ConvertUTF.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\unzip\crypt.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\unzip\ioapi.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\unzip\unzip.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\common\shapes.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\common\utils.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\sweep\advancing_front.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\sweep\cdt.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\sweep\sweep.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\clipper\clipper.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\openddlparser\include\openddlparser\OpenDDLParser.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\openddlparser\include\openddlparser\OpenDDLParserUtils.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\openddlparser\include\openddlparser\OpenDDLCommon.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\openddlparser\include\openddlparser\OpenDDLExport.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\openddlparser\include\openddlparser\DDLNode.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\openddlparser\include\openddlparser\Value.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcAdjacencyInfo.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcArithmeticCodec.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcBinaryStream.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcCommon.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcDVEncodeParams.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcDynamicVectorDecoder.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcDynamicVectorEncoder.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcDynamicVector.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcFIFO.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcIndexedFaceSet.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcIndexedFaceSet.inl" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcSC3DMCDecoder.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcSC3DMCDecoder.inl" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcSC3DMCEncodeParams.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcSC3DMCEncoder.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcSC3DMCEncoder.inl" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcTimer.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcTriangleFans.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcTriangleListDecoder.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcTriangleListDecoder.inl" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcTriangleListEncoder.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcTriangleListEncoder.inl" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcVector.h" />
+    <ClInclude Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcVector.inl" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\anim.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\ai_assert.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\camera.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\color4.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\color4.inl" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\config.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\defs.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\cfileio.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\light.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\material.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\material.inl" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\matrix3x3.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\matrix3x3.inl" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\matrix4x4.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\matrix4x4.inl" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\mesh.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\postprocess.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\quaternion.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\quaternion.inl" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\scene.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\metadata.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\texture.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\types.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\vector2.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\vector2.inl" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\vector3.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\vector3.inl" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\version.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\cimport.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\importerdesc.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\Importer.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\ProgressHandler.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\IOStream.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\IOSystem.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\cexport.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\Exporter.hpp" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\DefaultIOStream.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\DefaultIOSystem.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\Compiler\pushpack1.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\Compiler\poppack1.h" />
+    <ClInclude Include="D:\dev\github-assimp\include\assimp\Compiler\pstdint.h" />
+    <ClCompile Include="D:\dev\github-assimp\code\Assimp.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\BaseImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\BaseProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\PostStepRegistry.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ImporterRegistry.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\DefaultIOStream.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\DefaultIOSystem.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\CInterfaceIOWrapper.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\Importer.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\SGSpatialSort.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\VertexTriangleAdjacency.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\SpatialSort.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\SceneCombiner.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ScenePreprocessor.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\SkeletonMeshBuilder.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\SplitByBoneCountProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\StandardShapes.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\TargetAnimation.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\RemoveComments.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\Subdivision.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\scene.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\Bitmap.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\Version.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\CreateAnimMesh.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\DefaultLogger.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\Exporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\AssimpCExport.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\CalcTangentsProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ComputeUVMappingProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ConvertToLHProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FindDegenerates.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FindInstancesProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FindInvalidDataProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FixNormalsStep.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\GenFaceNormalsProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\GenVertexNormalsProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\PretransformVertices.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ImproveCacheLocality.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\JoinVerticesProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\LimitBoneWeightsProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\RemoveRedundantMaterials.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\RemoveVCProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\SortByPTypeProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\SplitLargeMeshes.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\TextureTransform.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\TriangulateProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ValidateDataStructure.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OptimizeGraph.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OptimizeMeshes.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\DeboneProcess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ProcessHelper.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MakeVerboseFormat.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MaterialSystem.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\StepExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\AMFImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\AMFImporter_Geometry.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\AMFImporter_Material.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\AMFImporter_Postprocess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\3DSConverter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\3DSLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\3DSExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ACLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ASELoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ASEParser.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\AssbinExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\AssbinLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\AssxmlExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\B3DImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\BVHLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ColladaLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ColladaParser.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ColladaExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\DXFLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\CSMLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\HMPLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IRRMeshLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IRRShared.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IRRLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\LWOAnimation.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\LWOBLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\LWOLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\LWOMaterial.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\LWSLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MD2Loader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MD3Loader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MD5Loader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MD5Parser.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MDCLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MDLLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MDLMaterialLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\NFFLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\NDOLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OFFLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ObjFileImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ObjFileMtlImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ObjFileParser.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\ObjExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OgreImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OgreStructs.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OgreBinarySerializer.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OgreXmlSerializer.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OgreMaterial.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OpenGEXExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\OpenGEXImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\PlyLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\PlyParser.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\PlyExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\MS3DLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\COBLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\BlenderLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\BlenderDNA.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\BlenderScene.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\BlenderModifier.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\BlenderBMesh.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\BlenderTessellator.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IFCLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IFCReaderGen1.cpp" >
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"> /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'"> /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'"> /bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="D:\dev\github-assimp\code\IFCReaderGen2.cpp" >
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"> /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'"> /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'"> /bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="D:\dev\github-assimp\code\IFCUtil.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IFCGeometry.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IFCMaterial.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IFCProfile.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IFCCurve.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IFCBoolean.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\IFCOpenings.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\STEPFileReader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\STEPFileEncoding.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\XGLLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXParser.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXTokenizer.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXConverter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXUtil.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXDocument.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXProperties.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXMeshGeometry.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXMaterial.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXModel.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXAnimation.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXNodeAttribute.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXDeformer.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXBinaryTokenizer.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\FBXDocumentUtil.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\Q3DLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\Q3BSPFileParser.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\Q3BSPFileImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\Q3BSPZipArchive.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\RawLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\SIBImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\SMDLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\STLLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\STLExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\TerragenLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\UnrealLoader.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\XFileImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\XFileParser.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\XFileExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Geometry2D.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Geometry3D.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Group.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Light.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Metadata.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Networking.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Postprocess.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Rendering.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Shape.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\X3DImporter_Texturing.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\glTFImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\glTFExporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\D3MFImporter.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\code\D3MFOpcPackage.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\ConvertUTF\ConvertUTF.c" >
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="D:\dev\github-assimp\contrib\unzip\ioapi.c" >
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="D:\dev\github-assimp\contrib\unzip\unzip.c" >
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\common\shapes.cc"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\sweep\advancing_front.cc"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\sweep\cdt.cc"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\sweep\sweep.cc"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.cc"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\clipper\clipper.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\openddlparser\code\OpenDDLParser.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\openddlparser\code\DDLNode.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\openddlparser\code\OpenDDLCommon.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\openddlparser\code\OpenDDLExport.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\openddlparser\code\Value.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcArithmeticCodec.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcDynamicVectorDecoder.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcDynamicVectorEncoder.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcTools.cpp"  />
+    <ClCompile Include="D:\dev\github-assimp\contrib\Open3DGC\o3dgcTriangleFans.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/dev/github-assimp/ZERO_CHECK.vcxproj">
+      <Project>025672A3-F3EF-3B8F-811D-18F159788D2B</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/dev/github-assimp/contrib/irrXML/IrrXML.vcxproj">
+      <Project>88924157-1902-33CA-95B0-0EA1E6DC920D</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/dev/github-assimp/contrib/zlib/zlibstatic.vcxproj">
+      <Project>1FE87472-696D-3935-A8FE-E747282134B0</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

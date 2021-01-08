@@ -1,0 +1,6 @@
+{
+	"module":"assimp",
+	"about":"Assimp 3d importer",
+	"version":"1.0.0",
+	"depends":["libc","zlib"]
+}

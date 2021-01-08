@@ -1,0 +1,8 @@
+{
+	"module":"mojo3d-loaders",
+	"about":"Mojo3d assimp support",
+	"author":"Mark Sibly, Wonkey Coders",
+	"version":"1.0.0",
+	"support":"http://github.com/wonkey-coders",
+	"depends":["std","assimp","mojo3d"]
+}

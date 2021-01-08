@@ -1,0 +1,22 @@
+Animation info for Turtle:-
+
+1-11	Walk
+12-25	Swim
+26-40	Jump
+41-50	Attack/Bite
+51-64	Die onto back
+66-77	Go into Shell (reverse to pop back out again)
+79-87	360 spin
+89-100	Backflip
+101-120	Idle 1
+121-150	idle 2
+
+
+Thats it have fun!! ;-)
+
+Free for use in any Freeware, Commercial, Shareware etc
+
+Credit to me or a link to my website on your website would be nice but not essential, drop me an email and I'll link you up as well ;-)
+
+Psionic
+http://www.psionic3d.co.uk

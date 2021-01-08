@@ -1,0 +1,6 @@
+
+Tweaked include/assimp/config.h to #define some stuff such as importer disables.
+
+Changed pushpack1.h to use __MINGW32__ instead of HOST_MINGW
+
+Added #include <unistd.h> to gzguts.h in zlib for LSEEK fix.
