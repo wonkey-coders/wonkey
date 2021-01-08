@@ -3,7 +3,7 @@
 #Import "<mojo>"
 #Import "<mojox>"
 
-#Import "assets/mainwindow.monkey2@/"
+#Import "assets/"
 
 Using std..
 Using mojo..
@@ -16,7 +16,7 @@ Class MyWindow Extends Window
 		
 		Local textView:=New TextView( "Hello World!" )
 		
-		textView.Text=stringio.LoadString( "asset::mainwindow.monkey2" )
+		textView.Text=stringio.LoadString( "asset::mainwindow.wx" )
 		
 		textView.ContentView.Style.Border=New Recti( -32,-32,32,32 )
 		textView.ContentView.Style.BorderColor=Color.Blue
