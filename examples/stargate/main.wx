@@ -1,9 +1,9 @@
 
 Namespace stargate
 
-#Import "<mojo.monkey2>"
+#Import "<mojo>"
 
-#Import "src/stargate.monkey2"
+#Import "src/stargate.wx"
 
 Function Main()
 
