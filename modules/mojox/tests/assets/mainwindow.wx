@@ -1,12 +1,12 @@
 
 Namespace ted2
 
-#Import "assets/about.html@/ted2"
-#Import "assets/scripts.json@/ted2"
+#Import "assets/about.html"
+#Import "assets/scripts.json"
 
-#Import "assets/newfiles/Simple_Console_App.monkey2@/ted2/newfiles"
-#Import "assets/newfiles/Simple_Mojo_App.monkey2@/ted2/newfiles"
-#Import "assets/newfiles/Letterboxed_Mojo_App.monkey2@/ted2/newfiles"
+#Import "assets/newfiles/Simple_Console_App.wxs"
+#Import "assets/newfiles/Simple_Mojo_App.wx"
+#Import "assets/newfiles/Letterboxed_Mojo_App.wx"
 
 Global MainWindow:MainWindowInstance
 
