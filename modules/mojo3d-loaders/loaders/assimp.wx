@@ -417,7 +417,7 @@ End
 
 Public
 
-#rem monkeydoc @hidden
+#rem wonkeydoc @hidden
 #End
 Class AssimpMojo3dLoader Extends Mojo3dLoader
 

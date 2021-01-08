@@ -1,9 +1,9 @@
 {
 	".wx":{
 		"do":"Repeat\n\t${Cursor}\nForever",
-		"doca":"#Rem monkeydoc ${cursor}\n\t...\n\t@param val descr\n\t\n    @example\n    \t...\n    @end\n#End\n",
-		"docd":"#Rem monkeydoc ${Cursor}\n\tdetails [[class name]]\n#End\n",
-		"docs":"#Rem monkeydoc ${Cursor}\n#End",
+		"doca":"#Rem wonkeydoc ${cursor}\n\t...\n\t@param val descr\n\t\n    @example\n    \t...\n    @end\n#End\n",
+		"docd":"#Rem wonkeydoc ${Cursor}\n\tdetails [[class name]]\n#End\n",
+		"docs":"#Rem wonkeydoc ${Cursor}\n#End",
 		"dou":"Repeat\n\t\nUntil _${Cursor}",
 		"each":"For Local ${Cursor}:=Eachin _\n\t\nNext",
 		"fib":"New Fiber( Lambda()\n\t${Cursor}\nEnd )",

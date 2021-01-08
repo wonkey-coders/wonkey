@@ -5,7 +5,7 @@ Namespace reflection
 
 Using std..
 
-#rem monkeydoc Debug reflected types.
+#rem wonkeydoc Debug reflected types.
 
 Prints all reflected types and decls.
 
@@ -27,7 +27,7 @@ Function DebugTypes()
 	
 End
 
-#rem monkeydoc Gets type extensions for a given type.
+#rem wonkeydoc Gets type extensions for a given type.
 
 Returns an array containing all type extensions for a given type.
 
@@ -63,7 +63,7 @@ Function GetTypeExtensions:TypeInfo[]( type:TypeInfo )
 	Return _typeExts[type]
 End
 
-#rem monkeydoc Gets the value of a property.
+#rem wonkeydoc Gets the value of a property.
 #end
 Function GetProperty:Variant( name:String,instance:Variant )
 	
@@ -99,7 +99,7 @@ Function GetProperty<T>:T( name:String,instance:Variant )
 	Return Null
 End
 
-#rem monkeydoc Sets a property to a value.
+#rem wonkeydoc Sets a property to a value.
 #end
 Function SetProperty:Bool( name:String,instance:Variant,value:Variant )
 	
