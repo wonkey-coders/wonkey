@@ -1,0 +1,8 @@
+{
+	"module":"win32",
+	"about":"Windows Win32 wrapper",
+	"author":"Wonkey Coders",
+	"version":"1.0.0",
+	"support":"http://github.com/wonkey-coders",
+	"depends":["libc"]
+}

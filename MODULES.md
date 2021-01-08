@@ -39,6 +39,6 @@
 | thread          | Wonkey threads support                            | libc                                                         | system   |        |
 | tinyregex       | Tiny regex library wrapper                        | libc                                                         | system   |        |
 | tinyxml2        | Tiny XML library wrapper                          |                                                              | system   | Done   |
-| win32           | Windows Win32 support                             | libc                                                         | system   |        |
+| win32           | Windows Win32 support                             | libc                                                         | system   | Done   |
 | zlib            | Zlib library                                      | libc                                                         | system   | Done   |
 
