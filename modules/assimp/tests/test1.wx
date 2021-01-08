@@ -7,6 +7,9 @@
 Using std..
 Using assimp..
 
+'
+' Compile in GUI mode!
+'
 Function Main()
 	
 '	Local flags:UInt=aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType
