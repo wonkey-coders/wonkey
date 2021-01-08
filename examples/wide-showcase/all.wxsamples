@@ -1,0 +1,249 @@
+{
+	"examplesFolder": "examples/",
+	"previewsFolder": "examples/wide-showcase/",
+	"examples":[
+{
+	"title": "Billiard",
+	"author": "Jesse",
+	"description": "3D in 2D pool game.",
+	"mainFile": "billiards/pool.wx",
+	"preview": "billiard.jpg",
+	"homepage": "",
+	"modified": "",
+	"version": "1.0",
+	"tags": "2D,Game"
+},
+{
+	"title": "Calculator",
+	"author": "",
+	"description": "Mojox's views example.",
+	"preview": "calculator.jpg",
+	"mainFile": "calculator/calculator.wx",
+	"modified": "",
+	"version": "1.0",
+	"tags": "UI"
+},
+{
+	"title": "Commanche",
+	"author": "GW",
+	"description": "Commanche Voxel for Wonkey by GW, Original code by Sebastian Macke.",
+	"preview": "commanche.jpg",
+	"mainFile": "commanche/commanche.wx",
+	"tags": "Voxel"
+},
+{
+	"title": "Echo server",
+	"author": "",
+	"description": "TCP client/server app.",
+	"preview": "echoserver.jpg",
+	"mainFile":"echoserver/echoserver.wx",
+	"tags": "Network"
+},
+{
+	"title": "Font Test",
+	"author": "",
+	"description": "Extended chars test.",
+	"preview": "fonttest.jpg",
+	"mainFile": "fonttest/fonttest.wx",
+	"tags": "Fonts"
+},
+{
+	"title": "GL Window Test",
+	"author": "",
+	"description": "Test of extended chars.",
+	"preview": "glwindow.jpg",
+	"mainFile": "glwindowtest/glwindowtest.wx",
+	"tags": "OpenGL"
+},
+{
+	"title": "Grid Shooter",
+	"author": "Leo Santos",
+	"description": "Wonkey Side Scrolling Demo.\nFeel free to use it in any form, but please include a credit.\nMore importantly, do not claim to have created any of it, unless you modify it substantially.\nThanks!",
+	"preview": "gridshooter.jpg",
+	"mainFile": "gridshooter/gridshooter.wx",
+	"homepage": "www.leosantos.com",
+	"tags": "2D,Game"
+},
+{
+	"title": "Chipmunk physics",
+	"author": "",
+	"description": "Simple example using chipmunk module.",
+	"preview": "hellochipmunk.jpg",
+	"mainFile": "hellochipmunk/hellochimpmunk.wx",
+	"tags": "2D,Physics"
+},
+{
+	"title": "Joystick test",
+	"author": "",
+	"description": "Joystick test app.",
+	"preview": "joystick.jpg",
+	"mainFile":"joystick/joystick.wx",
+	"tags": "Input"
+},
+{
+	"title": "Life game",
+	"author": "",
+	"description": "An implementation of Conway's Game of Life.\nTo try different patterns, pause the 'game', click cells, then unpause.\nFor best performance run in \"Release\" mode.",
+	"preview": "life.jpg",
+	"mainFile":"life/life.wx",
+	"homepage": "http://en.wikipedia.org/wiki/Conway's_Game_of_Life",
+	"tags": "2D,Game"
+},
+{
+	"title": "Light sparks",
+	"author": "",
+	"description": "Light sparks effect example.",
+	"preview": "lightsparks.jpg",
+	"mainFile":"lightsparks/lightsparks.wx",
+	"tags": "Light,Effects"
+},
+{
+	"title": "Line test",
+	"author": "",
+	"description": "Drawing different lines.",
+	"preview": "linetest.jpg",
+	"mainFile":"linetest/linetest.wx"
+},
+{
+	"title": "Mojo test",
+	"author": "",
+	"description": "Demonstrate Mojo module.",
+	"preview": "mojotest.jpg",
+	"mainFile":"mojotest/mojotest.wx",
+	"tags": "2D"
+},
+{
+	"title": "Monkeyroids",
+	"author": "",
+	"description": "Game prototype.",
+	"preview": "monkeyroids.jpg",
+	"mainFile":"monkeyroids/monkeyroids.wx",
+	"tags": "2D,Game"
+},
+{
+	"title": "OpenAL",
+	"author": "",
+	"description": "OpenAL usage example.",
+	"preview": "openaltest.jpg",
+	"mainFile":"openaltest/openaltest.wx",
+	"tags": "Audio"
+},
+{
+	"title": "Particles demo",
+	"author": "",
+	"description": "Particle system example.",
+	"preview": "particles.jpg",
+	"mainFile":"particles/particles.wx",
+	"tags": "Effects"
+},
+{
+	"title": "RenderToImage",
+	"author": "",
+	"description": "Render to image example.",
+	"preview": "rendertoimage.jpg",
+	"mainFile":"rendertoimage/rendertoimage.wx"
+},
+{
+	"title": "SDL2 test",
+	"author": "",
+	"description": "SDL2 usage example.",
+	"preview": "sdl2test.jpg",
+	"mainFile":"sdl2test/sdl2test.wx"
+},
+{
+	"title": "Shoot-out game",
+	"author": "Tony Smits & Peter van Driel",
+	"description": "Shoot-out game.\nThis demo uses outtakes from the Pyro framework!\nFor more information about Playniax and Playniax products please visit our website (www.playniax.com).",
+	"preview": "shoot-out.jpg",
+	"mainFile":"shoot-out/demo.wx",
+	"modified": "21-06-2016",
+	"version": "1.0",
+	"homepage": "www.playniax.com",
+	"tags": "2D,Game"
+},
+{
+	"title": "Simple light",
+	"author": "",
+	"description": "Light usage example.",
+	"preview": "simplelight.jpg",
+	"mainFile":"simplelight/simplelight.wx",
+	"tags": "Light"
+},
+{
+	"title": "SpaceChimps",
+	"author": "",
+	"description": "SpaceChimps prototype.",
+	"preview": "spacechimps.jpg",
+	"mainFile":"spacechimps/spacechimps.wx"
+},
+{
+	"title": "Stargate game",
+	"author": "",
+	"description": "Stargate game.",
+	"preview": "stargate.jpg",
+	"mainFile":"stargate/main.wx",
+	"tags": "2D,Game"
+},
+{
+	"title": "Theora player",
+	"author": "",
+	"description": "Playing theora video format.",
+	"preview": "theoratest.jpg",
+	"mainFile":"theoratest/theoratest.wx",
+	"tags": "Video"
+},
+{
+	"title": "TinyXML",
+	"author": "",
+	"description": "XML TreeView Test.",
+	"preview": "tinyxml.jpg",
+	"mainFile":"tinyxml2/tinyxml2_test.wx",
+	"tags": "Xml"
+},
+{
+	"title": "Touch test",
+	"author": "",
+	"description": "Touch test example.",
+	"preview": "touchtest.jpg",
+	"mainFile":"touchtest/touchtest.wx",
+	"tags": "Input"
+},
+{
+	"title": "VGrid",
+	"author": "Simon Armstrong",
+	"description": "Isometric Cube Experiment.",
+	"preview": "vgrid.jpg",
+	"mainFile":"vgrid/vgrid.wx",
+	"version": "0.1",
+	"homepage": "https://github.com/nitrologic/m2"
+},
+{
+	"title": "View layout",
+	"author": "",
+	"description": "A slightly more complicated window example.\nThe example implements a resizable window with virtual resolution support via the \"letterbox\" and \"stretch\" layout modes, and shows some simple keyboard/mouse event handling.",
+	"preview": "viewlayout.jpg",
+	"mainFile":"viewlayout/viewlayout.wx",
+	"tags": "UI"
+},
+{
+	"title": "VPaint",
+	"author": "Simon Armstrong",
+	"description": "Painting demo application.",
+	"preview": "vpaint.jpg",
+	"mainFile":"vpaint/vpaint.wx",
+	"tags": "Gfx",
+	"version": "0.1",
+	"homepage": "https://github.com/nitrologic/m2"
+},
+{
+	"title": "VSynth Control",
+	"author": "Simon Armstrong",
+	"description": "VSynth demo.",
+	"preview": "vsynth.jpg",
+	"mainFile":"vsynth/vsynth.wx",
+	"tags": "Audio",
+	"version": "0.01",
+	"homepage": "https://github.com/nitrologic/m2"
+}
+	]
+}
