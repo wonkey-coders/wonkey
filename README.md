@@ -1,4 +1,4 @@
-[![HitCount](http://hits.dwyl.com/wonkey-coders/wonkey.svg)](http://hits.dwyl.com/wonkey-coders/wonkey)
+![Views](https://views.whatilearened.today/views/github/wonkey-coders/wonkey.svg)
 [![Travis CI](https://travis-ci.org/wonkey-coders/wonkey.svg?branch=develop)](https://travis-ci.org/wonkey-coders/wonkey)
 ![Github CI](https://github.com/wonkey-coders/wonkey/workflows/Github%20CI/badge.svg?branch=develop)
 # Wonkey Programming Language
