@@ -1,0 +1,8 @@
+{
+  "module": "tinyregex",
+  "about": "Tiny-regex library wrapper",
+  "author": "Wonkey Coders",
+  "version": "1.0.0",
+  "support": "https://github.com/wonkey-coders",
+  "depends": ["libc"]
+}
