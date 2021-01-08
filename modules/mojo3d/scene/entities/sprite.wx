@@ -1,0 +1,145 @@
+
+Namespace mojo3d
+
+#rem wonkeydoc SpriteMode enumeration.
+
+| LightType		| Description
+|:--------------|:-----------
+| `Billboard`	| Sprite always faces the camera, eg: like a lens flare.
+| `Upright`		| Sprite faces the camera but remains upright, eg: like a tree.
+| `Fixed`		| Sprite is not affected by the camera.
+
+#end
+Enum SpriteMode
+	Billboard=0
+	Upright=1
+	Fixed=2
+End
+
+#rem wonkeydoc The Sprite class.
+#end
+Class Sprite Extends Renderable
+	
+	#rem wonkeydoc Creates a new sprite.
+	#end
+	Method New( parent:Entity=Null )
+		
+		Super.New( parent )
+		
+		Global _defaultMaterial:=New SpriteMaterial
+		
+		Name="Sprite"
+		Material=_defaultMaterial
+		
+		AddInstance( New Variant[]( parent ) )
+		
+		Visible=True
+	End
+
+	Method New( material:Material,parent:Entity=Null )
+		
+		Super.New( parent )
+		
+		Name="Sprite"
+		Material=material
+		
+		AddInstance( New Variant[]( material,parent ) )
+		
+		Visible=True
+	End
+
+	Method New( sprite:Sprite,parent:Entity )
+		
+		Super.New( sprite,parent )
+		
+		_material=sprite._material
+		_handle=sprite._handle
+		_mode=sprite._mode
+		
+		AddInstance( sprite )
+	End
+	
+	#rem wonkeydoc Copies the sprite.
+	#end	
+	Method Copy:Sprite( parent:Entity=Null ) Override
+		
+		Local copy:=New Sprite( Self,parent )
+		
+		CopyTo( copy )
+		
+		Return copy
+	End
+
+	#rem wonkeydoc Material used to render the sprite.
+	
+	This must currently be an instance of a SpriteMaterial.
+	
+	#end	
+	[jsonify=1]
+	Property Material:Material()
+		
+		Return _material
+	
+	Setter( material:Material )
+		
+		_material=material
+	End
+
+	#rem wonkeydoc Rect within texture to draw.
+	
+	#end	
+	[jsonify=1]
+	Property TextureRect:Rectf()
+		
+		Return _textureRect
+	
+	Setter( textureRect:Rectf )
+		
+		_textureRect=textureRect
+	End
+	
+	#rem wonkeydoc Sprite handle.
+	
+	Defaults to 0.5,0.5.
+	
+	#end
+	[jsonify=1]
+	Property Handle:Vec2f()
+		
+		Return _handle
+	
+	Setter( handle:Vec2f )
+		
+		_handle=handle
+	End
+	
+	#rem wonkeydoc Sprite mode.
+	
+	Defaults to SpriteMode.Billboard.
+	
+	#end
+	[jsonify=1]
+	Property Mode:SpriteMode()
+		
+		Return _mode
+		
+	Setter( mode:SpriteMode )
+		
+		_mode=mode
+	End
+	
+	Protected
+
+	Method OnRender( rq:RenderQueue ) Override
+		
+		rq.AddSpriteOp( Self )
+	End
+	
+	Private
+	
+	Field _material:Material
+	Field _textureRect:=New Rectf( 0,0,1,1 )
+	Field _handle:Vec2f=New Vec2f( .5,.5 )
+	Field _mode:SpriteMode
+	
+End
