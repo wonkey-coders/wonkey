@@ -7,7 +7,7 @@
 struct wxVariant{
 	
 	template<class T> static wxObject *_getObject( T const& ){ wxRuntimeError( "Variant cast failed" );return 0; }
-	template<class T,class R=typename T::WX_object_type> static wxObject *_getObject( T *p ){ return dynamic_cast<wxObject*>( p ); }
+	template<class T,class R=typename T::wx_object_type> static wxObject *_getObject( T *p ){ return dynamic_cast<wxObject*>( p ); }
 	
 	template<class T> static int _getArrayLength( T const& ){ wxRuntimeError( "Variant is not an array" );return 0; }
 	template<class T> static wxVariant _getArrayElement( T const&,int index ){ wxRuntimeError( "Variant is not an array" );return {}; }
