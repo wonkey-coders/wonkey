@@ -2,18 +2,18 @@
 Namespace wide
 
 
-Function IsBananasShowcaseAvailable:Bool()
+Function IsExamplesShowcaseAvailable:Bool()
 	
-	Return GetFileType( Prefs.WonkeyRootPath+"bananas/wide-showcase/all.bananas" )=FileType.File
+	Return GetFileType( Prefs.WonkeyRootPath+"examples/wide-showcase/all.wxsamples" )=FileType.File
 End
 
-Class BananasDocument Extends WideDocument
+Class ExamplesDocument Extends WideDocument
 
 	Method New( path:String )
 		Super.New( path )
 		
 		Local scrollView:=New ScrollableViewExt
-		scrollView.Style=App.Theme.GetStyle( "BananasView" )
+		scrollView.Style=App.Theme.GetStyle( "ExamplesView" )
 		_view=scrollView
 		
 		_table=New TableView( 3,1 )
@@ -27,8 +27,8 @@ Class BananasDocument Extends WideDocument
 		
 		scrollView.AddView( sbox,"bottom" )
 		
-		Local lab:=New Label( "Bananas Showcase" )
-		lab.Style=App.Theme.GetStyle( "BananasTitle" )
+		Local lab:=New Label( "Examples Showcase" )
+		lab.Style=App.Theme.GetStyle( "ExamplesTitle" )
 		lab.Gravity=New Vec2f( 0.5,0 )
 		lab.Layout="float"
 		scrollView.AddView( lab,"top" )
@@ -243,8 +243,8 @@ Class BananasDocument Extends WideDocument
 	
 		Local json:=JsonObject.Load( Path )
 		
-		Local arr:=json.GetArray( "bananas" )
-		Local bananasFolder:=FixFolder( json.GetString( "bananasFolder" ) )
+		Local arr:=json.GetArray( "examples" )
+		Local examplesFolder:=FixFolder( json.GetString( "examplesFolder" ) )
 		Local previewsFolder:=FixFolder( json.GetString( "previewsFolder" ) )
 		
 		
@@ -253,7 +253,7 @@ Class BananasDocument Extends WideDocument
 			Try 
 				Local jsonData:=i.ToObject()
 				
-				ParseItem( jsonData,bananasFolder,previewsFolder )
+				ParseItem( jsonData,examplesFolder,previewsFolder )
 				
 			Catch ex:Throwable
 				
@@ -264,7 +264,7 @@ Class BananasDocument Extends WideDocument
 	
 	End
 	
-	Method ParseItem:Item( jsonData:StringMap<JsonValue>,bananasFolder:String,previewsFolder:String )
+	Method ParseItem:Item( jsonData:StringMap<JsonValue>,examplesFolder:String,previewsFolder:String )
 		
 		Local title:=Json_GetString( jsonData,"title","" )
 		Local author:=Json_GetString( jsonData,"author","(unknown)" )
@@ -283,7 +283,7 @@ Class BananasDocument Extends WideDocument
 			preview=previewsFolder+preview
 		Endif
 		If GetFileType( source ) <> FileType.File
-			source=bananasFolder+source
+			source=examplesFolder+source
 		Endif
 		
 		Local i:=New Item
@@ -314,7 +314,7 @@ Class BananasDocument Extends WideDocument
 	Method CreateBananaView:View( item:Item )
 		
 		Local dock:=New DockingView
-		dock.Style=App.Theme.GetStyle( "BananasCard" )
+		dock.Style=App.Theme.GetStyle( "ExamplesCard" )
 		
 		' preview
 		Local img:=Image.Load( item.previewPath )
@@ -325,19 +325,19 @@ Class BananasDocument Extends WideDocument
 		' title and open button
 		Local titleDock:=New DockingView
 		Local btn:=New Button( "Open" )
-		btn.Style=App.Theme.GetStyle( "BananasButton" )
+		btn.Style=App.Theme.GetStyle( "ExamplesButton" )
 		btn.Clicked+=Lambda()
 			OpenItem( item )
 		End
 		lab=New Label( item.title)
-		lab.Style=App.Theme.GetStyle( "BananasTitle" )
+		lab.Style=App.Theme.GetStyle( "ExamplesTitle" )
 		titleDock.ContentView=lab
 		titleDock.AddView( btn,"right" )
 		dock.AddView( titleDock,"top" )
 		' homepage
 		If item.homepage
 			btn=New Button( "Web" )
-			btn.Style=App.Theme.GetStyle( "BananasButton" )
+			btn.Style=App.Theme.GetStyle( "ExamplesButton" )
 			btn.Clicked+=Lambda()
 				OpenUrl( item.homepage )
 			End
@@ -346,7 +346,7 @@ Class BananasDocument Extends WideDocument
 		
 		' description
 		Local tv:=New TextView( item.descr )
-		tv.Style=App.Theme.GetStyle( "BananasDescription" )
+		tv.Style=App.Theme.GetStyle( "ExamplesDescription" )
 		Local ww:=tv.Style.Font.TextWidth( item.descr )
 		Local lines:=1+Max( 1.0, ww/(MAX_WIDTH-40) )
 		tv.WordWrap=True
@@ -410,23 +410,23 @@ Class BananasDocument Extends WideDocument
 End
 
 
-Class BananasDocumentType Extends WideDocumentType
+Class ExamplesDocumentType Extends WideDocumentType
 
 	Protected
 	
 	Method New()
 		AddPlugin( Self )
 		
-		Extensions=New String[]( ".bananas" )
+		Extensions=New String[]( ".wxsamples" )
 	End
 	
 	Method OnCreateDocument:WideDocument( path:String ) Override
 	
-		Return New BananasDocument( path )
+		Return New ExamplesDocument( path )
 	End
 	
 	Private
 	
-	Global _instance:=New BananasDocumentType
+	Global _instance:=New ExamplesDocumentType
 	
 End

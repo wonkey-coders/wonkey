@@ -25,7 +25,7 @@
 	"fonts":{
 	
 		"editor":"DejaVuSansMono.ttf,14",
-		"bananas-title":"DejaVuSansMono.ttf,20"
+		"examples-title":"DejaVuSansMono.ttf,20"
 	},
 	
 	"styles":{
@@ -169,25 +169,25 @@
 			"backgroundColor":"codemap-background"
 		},
 
-		"BananasView":{
+		"ExamplesView":{
 			"border":[ 0 ],
 			"padding":[ 0 ],
 			"backgroundColor":"content"
 		},
-		"BananasCard":{
+		"ExamplesCard":{
 			"margin":[ 10,15,10,15 ],
 			"border":[ 1 ],
 			"borderColor":"clear"
 		},
-		"BananasTitle":{
+		"ExamplesTitle":{
 			"extends": "Label",
-			"font": "bananas-title"
+			"font": "examples-title"
 		},
-		"BananasButton":{
+		"ExamplesButton":{
 			"extends": "Button",
 			"margin": [ 4,0,0,0 ]
 		},
-		"BananasDescription":{
+		"ExamplesDescription":{
 			"extends":"TextView",
 			"font":"normal"
 		},

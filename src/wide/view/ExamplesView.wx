@@ -54,7 +54,7 @@ Class ExamplesView Extends DockingView
 	
 	Private
 	
-	Const VALID_FOLDERS:=New String[]( "bananas","examples","samples","tests" )
+	Const VALID_FOLDERS:=New String[]( "examples","samples","tests" )
 	
 	Field _tree:TreeViewExt
 	Field _dirIcon:Image
@@ -69,9 +69,9 @@ Class ExamplesView Extends DockingView
 			Fiber.Sleep( 1.5 )
 			
 			Local folders:=New StringStack
-			Local path:=Prefs.WonkeyRootPath+"bananas/"
+			Local path:=Prefs.WonkeyRootPath+"examples/"
 			
-			' bananas
+			' examples
 			For Local file:=Eachin LoadDir( path )
 				If file<>"wide-showcase" And GetFileType( path+file )=FileType.Directory
 					folders.Add( path+file )

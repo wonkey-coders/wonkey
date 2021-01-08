@@ -54,7 +54,7 @@ Namespace wide
 #Import "document/AudioDocument"
 #Import "document/JsonDocument"
 #Import "document/XmlDocument"
-#Import "document/BananasDocument"
+#Import "document/ExamplesDocument"
 '#Import "document/SceneDocument" 'need mojo3d, mojo3d-loaders, reflection modules
 
 #Import "eventfilter/TextViewKeyEventFilter"

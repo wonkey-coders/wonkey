@@ -511,7 +511,7 @@ Class MainWindowInstance Extends Window
 		_helpMenu=New MenuExt( "Help" )
 		_helpMenu.AddAction( _helpActions.quickHelp )
 		_helpMenu.AddAction( _helpActions.viewManuals )
-		If IsBananasShowcaseAvailable() Then _helpMenu.AddAction( _helpActions.bananas )
+		If IsExamplesShowcaseAvailable() Then _helpMenu.AddAction( _helpActions.examples )
 		_helpMenu.AddSeparator()
 		_helpMenu.AddAction( _buildActions.rebuildHelp )
 		_helpMenu.AddSeparator()
@@ -1084,7 +1084,7 @@ Class MainWindowInstance Extends Window
 		
 		If GetFileType( AppStateFile )=FileType.None
 			_helpActions.about.Trigger()
-			ShowBananasShowcase()
+			ShowExamplesShowcase()
 		Endif
 	End
 	
@@ -1251,9 +1251,9 @@ Class MainWindowInstance Extends Window
 		_helpTree.Update()
 	End
 	
-	Method ShowBananasShowcase()
+	Method ShowExamplesShowcase()
 		
-		OpenDocument( Prefs.WonkeyRootPath+"bananas/wide-showcase/all.bananas" )
+		OpenDocument( Prefs.WonkeyRootPath+"examples/wide-showcase/all.wxsamples" )
 	End
 	
 	Method ReadError( path:String )

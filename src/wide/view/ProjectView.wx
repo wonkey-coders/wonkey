@@ -732,16 +732,16 @@ Class ProjectView Extends DockingView
 					
 				Endif
 				
-				' bananas showcase
-				If IsBananasShowcaseAvailable()
-					path2=Prefs.WonkeyRootPath+"bananas"
+				' examples showcase
+				If IsExamplesShowcaseAvailable()
+					path2=Prefs.WonkeyRootPath+"examples"
 					If path = path2
 						
 						menu.AddSeparator()
 						
-						menu.AddAction( "Open bananas showcase" ).Triggered=Lambda()
+						menu.AddAction( "Open examples showcase" ).Triggered=Lambda()
 							
-							MainWindow.ShowBananasShowcase()
+							MainWindow.ShowExamplesShowcase()
 						End
 						
 					Endif

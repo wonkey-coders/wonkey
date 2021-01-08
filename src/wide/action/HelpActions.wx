@@ -12,7 +12,7 @@ Class HelpActions
 	Field aboutWide:Action
 	Field makeBetter:Action
 	Field wxhomepage:Action
-	Field bananas:Action
+	Field examples:Action
 	Field joinCommunity:Action
 	
 	
@@ -55,7 +55,7 @@ Class HelpActions
 		makeBetter=New Action( "Make this app better! (PayPal)" )
 		makeBetter.Triggered=Lambda()
 		
-			OpenUrl( "https://paypal.me/engor/10" )
+			OpenUrl( "https://paypal.me/xxx" )
 		End
 		
 		wxhomepage=New Action( "Wonkey homepage" )
@@ -64,16 +64,16 @@ Class HelpActions
 			OpenUrl( WONKEY_DOMAIN )
 		End
 		
-		bananas=New Action( "Bananas showcase" )
-		bananas.Triggered=Lambda()
+		examples=New Action( "Examples showcase" )
+		examples.Triggered=Lambda()
 			
-			MainWindow.ShowBananasShowcase()
+			MainWindow.ShowExamplesShowcase()
 		End
 		
 		joinCommunity=New Action( "Join the community (Discord)" )
 		joinCommunity.Triggered=Lambda()
 		
-			OpenUrl( "https://discord.gg/A2C6AMM" )
+			OpenUrl( "https://discord.gg/awfuRtZay7" )
 		End
 		
 		
