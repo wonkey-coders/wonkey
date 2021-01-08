@@ -8,8 +8,8 @@
 
 'For best performance run in "Release" mode.
 
-#Import "<std.monkey2>"
-#Import "<mojo.monkey2>"
+#Import "<std>"
+#Import "<mojo>"
 
 Using std..
 Using mojo..
