@@ -1,0 +1,114 @@
+<!doctype html>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>${APPLICATION_NAME}</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="header">
+<span>Resize canvas <input type="checkbox" id="resize"></span>&nbsp;&nbsp;
+<span>Hide mouse pointer <input type="checkbox" id="pointerLock"></span>&nbsp;&nbsp;
+<a class="button" onclick="Module.requestFullScreen(document.getElementById('pointerLock').checked,document.getElementById('resize').checked)">Fullscreen</a>
+</div>
+
+<div class="status">
+<span id="status"></span>
+</div>
+
+<div class="canvas">
+<div class="center">
+<canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+</div>
+</div>
+
+<textarea id="output" rows="10"></textarea>
+ 
+<script type="text/javascript">
+
+var statusElement = document.getElementById('status');
+
+var Module = {
+
+	preRun: [],
+
+	postRun: [],
+
+	print: (function() {
+
+		var element = document.getElementById('output');
+
+		if (element) element.value = ''; // clear browser cache
+
+		return function(text) {
+			if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+			// These replacements are necessary if you render to raw HTML
+			//text = text.replace(/&/g, "&amp;");
+			//text = text.replace(/</g, "&lt;");
+			//text = text.replace(/>/g, "&gt;");
+			//text = text.replace('\n', '<br>', 'g');
+			console.log(text);
+			if (element) {
+				element.value += text + "\n";
+				element.scrollTop = element.scrollHeight; // focus on bottom
+			}
+		};
+	})(),
+
+	printErr: function(text) {
+		if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+		if (0) { // XXX disabled for safety typeof dump == 'function') {
+			dump(text + '\n'); // fast, straight to the real console
+		} else {
+			console.error(text);
+		}
+	},
+
+	canvas: (function() {
+
+		var canvas = document.getElementById('canvas');
+
+		// As a default initial behavior, pop up an alert when webgl context is lost. To make your
+		// application robust, you may want to override this behavior before shipping!
+		// See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+		canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+		return canvas;
+	})(),
+
+	setStatus: function(text) {
+
+		if( !statusElement ) return;
+
+		if( text ){
+			statusElement.innerHTML=text;
+			statusElement.hidden=false;
+		}else{
+			statusElement.hidden=true;
+		}
+	}
+};
+
+Module.setStatus( 'Downloading...' );
+
+window.onerror = function(event) {
+
+	// TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+	Module.setStatus('Exception thrown, see JavaScript console');
+
+	Module.setStatus = function(text) {
+		if (text) Module.printErr('[post-exception status] ' + text);
+	};
+};
+
+</script>
+
+<script async type="text/javascript" src="${APPLICATION_NAME}.js"></script>
+
+</body>
+
+</html>
