@@ -14,17 +14,17 @@ WX_APP_DIR_FRAMEWORK=../Frameworks
 'LD options
 WX_LD_OPTS_MACOS=-mmacosx-version-min=10.9 -Wl,-rpath,@executable_path -Wl,-rpath,@executable_path/../Frameworks
 WX_LD_OPTS_MACOS_DEBUG=
-WX_LD_OPTS_MACOS_RELEASE=-O3
+WX_LD_OPTS_MACOS_RELEASE=-O3 -Wl,-dead_strip -Wl,-S -Wl,-x
 
 'C compiler options
 WX_CC_OPTS_MACOS=-std=gnu99 -mmacosx-version-min=10.9 -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality
 WX_CC_OPTS_MACOS_DEBUG=
-WX_CC_OPTS_MACOS_RELEASE=-O3 -DNDEBUG
+WX_CC_OPTS_MACOS_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 
 'C++ compiler options
 WX_CPP_OPTS_MACOS=-std=c++14 -mmacosx-version-min=10.9 -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality
 WX_CPP_OPTS_MACOS_DEBUG=
-WX_CPP_OPTS_MACOS_RELEASE=-O3 -DNDEBUG
+WX_CPP_OPTS_MACOS_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 
 'AS options
 WX_AS_OPTS=
