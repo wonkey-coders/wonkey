@@ -6,17 +6,17 @@ WX_THREADS=1
 'LD options
 WX_LD_OPTS_LINUX=-lpthread -no-pie
 WX_LD_OPTS_LINUX_DEBUG=
-WX_LD_OPTS_LINUX_RELEASE=-no-pie -s -O3
+WX_LD_OPTS_LINUX_RELEASE=-no-pie -s -O3 -Wl,-s -Wl,-S -Wl,-x -Wl,--gc-sections
 
 'C compiler options
 WX_CC_OPTS_LINUX=-std=gnu99
 WX_CC_OPTS_LINUX_DEBUG=
-WX_CC_OPTS_LINUX_RELEASE=-O3 -DNDEBUG
+WX_CC_OPTS_LINUX_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 
 'C++ compiler options
 WX_CPP_OPTS_LINUX=-std=c++11
 WX_CPP_OPTS_LINUX_DEBUG=
-WX_CPP_OPTS_LINUX_RELEASE=-O3 -DNDEBUG
+WX_CPP_OPTS_LINUX_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 
 
 '***** EMSCRIPTEN *****
