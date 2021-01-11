@@ -102,7 +102,7 @@ Function Main()
 		Print "  -run             The works! The default."
 		Print "  -apptype=        App type to make, one of : gui, console. (Defaults: gui)."
 		Print "  -target=         Build target, one of: windows, macos, linux, emscripten, wasm, android, ios, desktop. Desktop is an alias for current host. (Defaults: desktop)."
-		Print "  -config=         Build config, one of: all, debug, release. (Defaults: all)."
+		Print "  -config=         Build config, one of: all, debug, release. (Defaults: 'all' for modules else 'debug')."
 		Print "  -product=        Build product path."
 		Print ""
 		Print "Sources:"
