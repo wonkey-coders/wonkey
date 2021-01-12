@@ -97,28 +97,29 @@ Namespace sdl2
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xbox360w.c" 'v2.0.14
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xboxone.c" 'v2.0.9'
 #import "SDL/src/joystick/hidapi/SDL_hidapijoystick.c" 'v2.0.9'
+#Import "SDL/src/joystick/virtual/SDL_virtualjoystick.c" 'v2.0.14
 
-'libm - really?!?...
-'#Import "SDL/src/libm/e_atan2.c"
-'#Import "SDL/src/libm/e_exp.c" 'v2.0.9
-'#Import "SDL/src/libm/e_fmod.c" '2.0.9
-'#Import "SDL/src/libm/e_log.c"
-'#Import "SDL/src/libm/e_log10.c" 'v2.0.9
-'#Import "SDL/src/libm/e_pow.c"
-'#Import "SDL/src/libm/e_rem_pio2.c"
-'#Import "SDL/src/libm/e_sqrt.c"
-'#Import "SDL/src/libm/k_cos.c"
-'#Import "SDL/src/libm/k_rem_pio2.c"
-'#Import "SDL/src/libm/k_sin.c"
-'#Import "SDL/src/libm/k_tan.c"
-'#Import "SDL/src/libm/s_atan.c"
-'#Import "SDL/src/libm/s_copysign.c"
-'#Import "SDL/src/libm/s_cos.c"
-'#Import "SDL/src/libm/s_fabs.c"
-'#Import "SDL/src/libm/s_floor.c"
-'#Import "SDL/src/libm/s_scalbn.c"
-'#Import "SDL/src/libm/s_sin.c"
-'#Import "SDL/src/libm/s_tan.c"
+'libm
+#Import "SDL/src/libm/e_atan2.c"
+#Import "SDL/src/libm/e_exp.c" 'v2.0.9
+#Import "SDL/src/libm/e_fmod.c" '2.0.9
+#Import "SDL/src/libm/e_log.c"
+#Import "SDL/src/libm/e_log10.c" 'v2.0.9
+#Import "SDL/src/libm/e_pow.c"
+#Import "SDL/src/libm/e_rem_pio2.c"
+#Import "SDL/src/libm/e_sqrt.c"
+#Import "SDL/src/libm/k_cos.c"
+#Import "SDL/src/libm/k_rem_pio2.c"
+#Import "SDL/src/libm/k_sin.c"
+#Import "SDL/src/libm/k_tan.c"
+#Import "SDL/src/libm/s_atan.c"
+#Import "SDL/src/libm/s_copysign.c"
+#Import "SDL/src/libm/s_cos.c"
+#Import "SDL/src/libm/s_fabs.c"
+#Import "SDL/src/libm/s_floor.c"
+#Import "SDL/src/libm/s_scalbn.c"
+#Import "SDL/src/libm/s_sin.c"
+#Import "SDL/src/libm/s_tan.c"
 
 'loadso
 #import "SDL/src/loadso/windows/SDL_sysloadso.c"
@@ -149,11 +150,11 @@ Namespace sdl2
 #Import "SDL/src/render/software/SDL_drawpoint.c"
 #Import "SDL/src/render/software/SDL_render_sw.c"
 #Import "SDL/src/render/software/SDL_rotate.c"
-'#Import "SDL/src/render/direct3d/SDL_render_d3d.c"
-'#Import "SDL/src/render/direct3d/SDL_shaders_d3d.c"
-'#Import "SDL/src/render/direct3d11/SDL_render_d3d11.c"
-'#Import "SDL/src/render/direct3d11/SDL_render_winrt.cpp"
-'#Import "SDL/src/render/direct3d11/SDL_shaders_d3d11.c"
+#Import "SDL/src/render/direct3d/SDL_render_d3d.c"
+#Import "SDL/src/render/direct3d/SDL_shaders_d3d.c"
+#Import "SDL/src/render/direct3d11/SDL_render_d3d11.c"
+#Import "SDL/src/render/direct3d11/SDL_render_winrt.cpp"
+#Import "SDL/src/render/direct3d11/SDL_shaders_d3d11.c"
 
 
 'sensor (v2.0.9)
