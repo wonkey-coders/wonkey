@@ -33,6 +33,10 @@
 #endif
 #define _begin_code_h
 
+//!\\ Mark was here! Prevents SDL generating dll funcs.
+#define DECLSPEC
+
+
 #ifndef SDL_DEPRECATED
 #  if (__GNUC__ >= 4)  /* technically, this arrived in gcc 3.1, but oh well. */
 #    define SDL_DEPRECATED __attribute__((deprecated))

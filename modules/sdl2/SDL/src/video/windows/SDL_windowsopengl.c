@@ -451,6 +451,8 @@ WIN_GL_InitExtensions(_THIS)
 
     /* Check for WGL_EXT_create_context_es2_profile */
     if (HasExtension("WGL_EXT_create_context_es2_profile", extensions)) {
+        //!\\ ***** Mark was here! ***** TO TEST with 2.0.9
+        //_this->gl_data->HAS_WGL_EXT_create_context_es2_profile = SDL_TRUE;
         SDL_GL_DeduceMaxSupportedESProfile(
             &_this->gl_data->es_profile_max_supported_version.major,
             &_this->gl_data->es_profile_max_supported_version.minor

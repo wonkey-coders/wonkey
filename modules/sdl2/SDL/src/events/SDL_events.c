@@ -33,6 +33,12 @@
 #include "../video/SDL_sysvideo.h"
 #include "SDL_syswm.h"
 
+//!\\ ***** Mark was here! *****
+#include <stdio.h>
+#include <SDL_mutex.h>
+static SDL_sem *sem;
+//!\\
+
 #undef SDL_PRIs64
 #ifdef __WIN32__
 #define SDL_PRIs64  "I64d"
@@ -608,7 +614,14 @@ SDL_PeepEvents(SDL_Event * events, int numevents, SDL_eventaction action,
             for (i = 0; i < numevents; ++i) {
                 used += SDL_AddEvent(&events[i]);
             }
+
+            //!\\ ***** Mark was here! *****
+            if( sem ) SDL_SemPost( sem );
         } else {
+
+            //!\\ ***** Mark was here! *****
+            if( sem ) while( SDL_SemValue( sem ) ) SDL_SemWait( sem );
+
             SDL_EventEntry *entry, *next;
             SDL_SysWMEntry *wmmsg, *wmmsg_next;
             Uint32 type;
@@ -787,7 +800,12 @@ SDL_WaitEventTimeout(SDL_Event * event, int timeout)
                 /* Timeout expired and no events */
                 return 0;
             }
-            SDL_Delay(1);
+            
+            //!\\ ***** Mark was here! *****
+            if( !sem ) sem=SDL_CreateSemaphore(0);
+            SDL_SemWaitTimeout( sem,10 );
+            //SDL_Delay(1);
+            
             break;
         default:
             /* Has events */

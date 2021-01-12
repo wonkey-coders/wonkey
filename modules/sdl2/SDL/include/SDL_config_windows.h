@@ -206,15 +206,15 @@ typedef unsigned int uintptr_t;
 #endif /* _MSC_VER >= 1911 */
 
 /* Enable various audio drivers */
-#define SDL_AUDIO_DRIVER_WASAPI 1
+#define SDL_AUDIO_DRIVER_WASAPI 0 //!\\ sey was here! (from 1 to 0)
 #define SDL_AUDIO_DRIVER_DSOUND 1
-#define SDL_AUDIO_DRIVER_WINMM  1
-#define SDL_AUDIO_DRIVER_DISK   1
+#define SDL_AUDIO_DRIVER_WINMM  0 //!\\ sey was here! (from 1 to 0)
+#define SDL_AUDIO_DRIVER_DISK   0 //!\\ sey was here! (from 1 to 0)
 #define SDL_AUDIO_DRIVER_DUMMY  1
 
 /* Enable various input drivers */
 #define SDL_JOYSTICK_DINPUT 1
-#define SDL_JOYSTICK_HIDAPI 1
+#define SDL_JOYSTICK_HIDAPI 0 //!\\ sey was here! (from 1 to 0)
 #ifndef __WINRT__
 #define SDL_JOYSTICK_RAWINPUT   1
 #endif
@@ -239,11 +239,11 @@ typedef unsigned int uintptr_t;
 #define SDL_TIMER_WINDOWS   1
 
 /* Enable various video drivers */
-#define SDL_VIDEO_DRIVER_DUMMY  1
+#define SDL_VIDEO_DRIVER_DUMMY  0 //!\\ sey was here! (from 1 to 0)
 #define SDL_VIDEO_DRIVER_WINDOWS    1
 
 #ifndef SDL_VIDEO_RENDER_D3D
-#define SDL_VIDEO_RENDER_D3D    1
+#define SDL_VIDEO_RENDER_D3D    0 //!\\ sey was here! (from 1 to 0)
 #endif
 #ifdef SDL_WINDOWS7_SDK
 #define SDL_VIDEO_RENDER_D3D11  1
@@ -257,10 +257,10 @@ typedef unsigned int uintptr_t;
 #define SDL_VIDEO_OPENGL_WGL    1
 #endif
 #ifndef SDL_VIDEO_RENDER_OGL
-#define SDL_VIDEO_RENDER_OGL    1
+#define SDL_VIDEO_RENDER_OGL    0 //!\\ sey was here! (from 1 to 0)
 #endif
 #ifndef SDL_VIDEO_RENDER_OGL_ES2
-#define SDL_VIDEO_RENDER_OGL_ES2    1
+#define SDL_VIDEO_RENDER_OGL_ES2    0 //!\\ sey was here! (from 1 to 0)
 #endif
 #ifndef SDL_VIDEO_OPENGL_ES2
 #define SDL_VIDEO_OPENGL_ES2    1

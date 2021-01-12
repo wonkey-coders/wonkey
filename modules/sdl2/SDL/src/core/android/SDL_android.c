@@ -1866,6 +1866,34 @@ static void Internal_Android_Destroy_AssetManager() {
     }
 }
 
+//!\\ Mark was here! Added 'Android_JNI_GetAssetManager' function
+AAssetManager *Android_JNI_GetAssetManager(){
+
+    static AAssetManager *assetManager;
+
+    if( assetManager ) return assetManager;
+
+    JNIEnv *mEnv = Android_JNI_GetEnv();
+
+    /* context = SDLActivity.getContext(); */
+    jmethodID mid = (*mEnv)->GetStaticMethodID(mEnv, mActivityClass,
+            "getContext","()Landroid/content/Context;");
+    jobject context = (*mEnv)->CallStaticObjectMethod(mEnv, mActivityClass, mid);
+
+
+    /* assetManager = context.getAssets(); */
+    mid = (*mEnv)->GetMethodID(mEnv, (*mEnv)->GetObjectClass(mEnv, context),
+            "getAssets", "()Landroid/content/res/AssetManager;");
+    jobject jassetManager = (*mEnv)->CallObjectMethod(mEnv, context, mid);
+
+    jassetManager=(*mEnv)->NewGlobalRef(mEnv, jassetManager);
+
+    assetManager=AAssetManager_fromJava( mEnv,jassetManager );
+
+    return assetManager;
+}
+
+
 int Android_JNI_FileOpen(SDL_RWops *ctx,
         const char *fileName, const char *mode)
 {

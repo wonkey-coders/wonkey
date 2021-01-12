@@ -28,21 +28,32 @@
  *  \file SDL_config.h
  */
 
+//!\\ Platforms : 
+//!\\       add(LINUX, RASPBIAN, EMSCRIPTEN), 
+//!\\       remove(WINRT, PSP)
+
 /* Add any platform that doesn't build using the configure system. */
 #if defined(__WIN32__)
 #include "SDL_config_windows.h"
-#elif defined(__WINRT__)
-#include "SDL_config_winrt.h"
+//#elif defined(__WINRT__)
+//#include "SDL_config_winrt.h"
 #elif defined(__MACOSX__)
 #include "SDL_config_macosx.h"
 #elif defined(__IPHONEOS__)
 #include "SDL_config_iphoneos.h"
 #elif defined(__ANDROID__)
 #include "SDL_config_android.h"
-#elif defined(__PSP__)
-#include "SDL_config_psp.h"
+//#elif defined(__PSP__)
+//#include "SDL_config_psp.h"
 #elif defined(__OS2__)
 #include "SDL_config_os2.h"
+#elif defined(__LINUX__)
+#ifdef __arm__
+#include "SDL_config_raspbian.h" //!\\To created
+#else
+#include "SDL_config_linux.h" //!\\To created
+#elif defined(EMSCRIPTEN)
+#include "SDL_config_emscripten.h" //!\\ To created
 #else
 /* This is a minimal configuration just to get SDL running on new platforms. */
 #include "SDL_config_minimal.h"

@@ -443,6 +443,10 @@ Cocoa_GL_SwapWindow(_THIS, SDL_Window * window)
        threads try to swap at the same time, so put a mutex around it. */
     SDL_LockMutex(videodata->swaplock);
     [nscontext flushBuffer];
+    
+    //!\\ ***** Mark was here! *****
+    //!\\ Fix for Mojave, which wasn't rendering until window moved.
+    //!\\ [nscontext update];//IfNeeded]; <--- Mark fix with this line
     [nscontext updateIfNeeded];
     SDL_UnlockMutex(videodata->swaplock);
     return 0;

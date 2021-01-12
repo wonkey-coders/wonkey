@@ -24,7 +24,9 @@
  *
  *  This is a simple file to encapsulate the EGL API headers.
  */
-#if !defined(_MSC_VER) && !defined(__ANDROID__)
+//!\\ Mark was here! #ifndef _MSC_VER, but we don't want mingw to be dependant on egl.h
+//#if !defined(_MSC_VER) && !defined(__ANDROID__)
+#ifndef _WIN32
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
