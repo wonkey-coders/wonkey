@@ -87,6 +87,9 @@ typedef unsigned int uintptr_t;
 #define HAVE_SENSORSAPI_H
 
 /* This is disabled by default to avoid C runtime dependencies and manifest requirements */
+#ifndef _WIN64 // Fixed 'sdl2' linker error '__ftol2_sse defined' for MSVC x86 target
+  #define HAVE_LIBC 1
+#endif
 #ifdef HAVE_LIBC
 /* Useful headers */
 #define STDC_HEADERS 1
@@ -214,7 +217,7 @@ typedef unsigned int uintptr_t;
 
 /* Enable various input drivers */
 #define SDL_JOYSTICK_DINPUT 1
-#define SDL_JOYSTICK_HIDAPI 0 //!\\ sey was here! (from 1 to 0)
+#define SDL_JOYSTICK_HIDAPI 1
 #ifndef __WINRT__
 #define SDL_JOYSTICK_RAWINPUT   1
 #endif

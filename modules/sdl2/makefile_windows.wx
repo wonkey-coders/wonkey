@@ -19,12 +19,12 @@ Namespace sdl2
 #import "<libversion.a>"
 
 'src
-#Import "SDL/src/SDL_assert.c"
-#import "SDL/src/SDL_error.c"
-#import "SDL/src/SDL_hints.c"
-#import "SDL/src/SDL_log.c"
-#Import "SDL/src/SDL_dataqueue.c" 'v2.0.9 (commented)
 #Import "SDL/src/SDL.c"
+#Import "SDL/src/SDL_assert.c"
+#Import "SDL/src/SDL_dataqueue.c" 'v2.0.9
+#Import "SDL/src/SDL_error.c"
+#Import "SDL/src/SDL_hints.c"
+#Import "SDL/src/SDL_log.c"
 
 'atomic
 #import "SDL/src/atomic/SDL_atomic.c"
@@ -37,12 +37,11 @@ Namespace sdl2
 #Import "SDL/src/audio/SDL_audiotypecvt.c"
 #Import "SDL/src/audio/SDL_mixer.c"
 #import "SDL/src/audio/SDL_wave.c"
-
-
 #Import "SDL/src/audio/directsound/SDL_directsound.c"
 #import "SDL/src/audio/dummy/SDL_dummyaudio.c"
 
 'core
+#import "SDL/src/core/windows/SDL_hid.c"
 #import "SDL/src/core/windows/SDL_windows.c"
 #import "SDL/src/core/windows/SDL_xinput.c"
 
@@ -64,39 +63,76 @@ Namespace sdl2
 #import "SDL/src/events/SDL_touch.c"
 #import "SDL/src/events/SDL_windowevents.c"
 
-'filesystem
-#import "SDL/src/filesystem/windows/SDL_sysfilesystem.c"
-
 'file
 #import "SDL/src/file/SDL_rwops.c"
 
+'filesystem
+#import "SDL/src/filesystem/windows/SDL_sysfilesystem.c"
+
 'haptic
 #import "SDL/src/haptic/SDL_haptic.c"
-
-#import "SDL/src/haptic/windows/SDL_windowshaptic.c"
 #import "SDL/src/haptic/windows/SDL_dinputhaptic.c"
+#import "SDL/src/haptic/windows/SDL_windowshaptic.c"
 #import "SDL/src/haptic/windows/SDL_xinputhaptic.c"
 
 'hidapi
+#import "SDL/src/hidapi//SDL_hidapi.c" 'v2.0.14
 #import "SDL/src/hidapi/windows/hid.c" 'v2.0.9
 
 'joystick
-#import "SDL/src/joystick/SDL_joystick.c"
 #Import "SDL/src/joystick/SDL_gamecontroller.c"
-
-#import "SDL/src/joystick/windows/SDL_windowsjoystick.c"
+#import "SDL/src/joystick/SDL_joystick.c"
 #import "SDL/src/joystick/windows/SDL_dinputjoystick.c"
-#import "SDL/src/joystick/windows/SDL_xinputjoystick.c"
 #import "SDL/src/joystick/windows/SDL_mmjoystick.c" 'v2.0.9'
-
-#import "SDL/src/joystick/hidapi/SDL_hidapijoystick.c" 'v2.0.9'
+#import "SDL/src/joystick/windows/SDL_rawinputjoystick.c" 'v2.0.14'
+#import "SDL/src/joystick/windows/SDL_windowsjoystick.c"
+#import "SDL/src/joystick/windows/SDL_xinputjoystick.c"
+#import "SDL/src/joystick/hidapi/SDL_hidapi_gamecube.c" 'v2.0.14
 #import "SDL/src/joystick/hidapi/SDL_hidapi_ps4.c" 'v2.0.9'
+#import "SDL/src/joystick/hidapi/SDL_hidapi_ps5.c" 'v2.0.14
+#import "SDL/src/joystick/hidapi/SDL_hidapi_rumble.c" 'v2.0.14
+#import "SDL/src/joystick/hidapi/SDL_hidapi_steam.c" 'v2.0.14
 #import "SDL/src/joystick/hidapi/SDL_hidapi_switch.c" 'v2.0.9'
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xbox360.c" 'v2.0.9'
+#import "SDL/src/joystick/hidapi/SDL_hidapi_xbox360w.c" 'v2.0.14
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xboxone.c" 'v2.0.9'
+#import "SDL/src/joystick/hidapi/SDL_hidapijoystick.c" 'v2.0.9'
+
+'libm - really?!?...
+'#Import "SDL/src/libm/e_atan2.c"
+'#Import "SDL/src/libm/e_exp.c" 'v2.0.9
+'#Import "SDL/src/libm/e_fmod.c" '2.0.9
+'#Import "SDL/src/libm/e_log.c"
+'#Import "SDL/src/libm/e_log10.c" 'v2.0.9
+'#Import "SDL/src/libm/e_pow.c"
+'#Import "SDL/src/libm/e_rem_pio2.c"
+'#Import "SDL/src/libm/e_sqrt.c"
+'#Import "SDL/src/libm/k_cos.c"
+'#Import "SDL/src/libm/k_rem_pio2.c"
+'#Import "SDL/src/libm/k_sin.c"
+'#Import "SDL/src/libm/k_tan.c"
+'#Import "SDL/src/libm/s_atan.c"
+'#Import "SDL/src/libm/s_copysign.c"
+'#Import "SDL/src/libm/s_cos.c"
+'#Import "SDL/src/libm/s_fabs.c"
+'#Import "SDL/src/libm/s_floor.c"
+'#Import "SDL/src/libm/s_scalbn.c"
+'#Import "SDL/src/libm/s_sin.c"
+'#Import "SDL/src/libm/s_tan.c"
 
 'loadso
 #import "SDL/src/loadso/windows/SDL_sysloadso.c"
+
+'locale (v2.0.14)
+#Import "SDL/src/locale/SDL_locale.c" 'v2.0.14
+#Import "SDL/src/locale/windows/SDL_syslocale.c" 'v2.0.14
+
+'main
+'#Import "SDL/src/main/windows/SDL_windows_main.c"
+
+'misc (v2.0.14)
+#import "SDL/src/misc/SDL_url.c" 'v2.0.14
+#import "SDL/src/misc/windows/SDL_sysurl.c" 'v2.0.14
 
 'power
 #Import "SDL/src/power/SDL_power.c"
@@ -105,9 +141,7 @@ Namespace sdl2
 'render
 #Import "SDL/src/render/SDL_d3dmath.c"
 #Import "SDL/src/render/SDL_render.c"
-'#Import "SDL/src/render/SDL_yuv_mmx.c"
 #Import "SDL/src/render/SDL_yuv_sw.c"
-
 #Import "SDL/src/render/software/SDL_blendfillrect.c"
 #Import "SDL/src/render/software/SDL_blendline.c"
 #Import "SDL/src/render/software/SDL_blendpoint.c"
@@ -115,24 +149,31 @@ Namespace sdl2
 #Import "SDL/src/render/software/SDL_drawpoint.c"
 #Import "SDL/src/render/software/SDL_render_sw.c"
 #Import "SDL/src/render/software/SDL_rotate.c"
+'#Import "SDL/src/render/direct3d/SDL_render_d3d.c"
+'#Import "SDL/src/render/direct3d/SDL_shaders_d3d.c"
+'#Import "SDL/src/render/direct3d11/SDL_render_d3d11.c"
+'#Import "SDL/src/render/direct3d11/SDL_render_winrt.cpp"
+'#Import "SDL/src/render/direct3d11/SDL_shaders_d3d11.c"
+
 
 'sensor (v2.0.9)
 #Import "SDL/src/sensor/SDL_sensor.c"
 #Import "SDL/src/sensor/dummy/SDL_dummysensor.c"
+#Import "SDL/src/sensor/windows/SDL_windowssensor.c" 'v2.0.14'
 
 'stdlib
+#Import "SDL/src/stdlib/SDL_crc32.c" 'v2.0.14
 #Import "SDL/src/stdlib/SDL_getenv.c"
 #Import "SDL/src/stdlib/SDL_iconv.c"
 #Import "SDL/src/stdlib/SDL_malloc.c"
 #Import "SDL/src/stdlib/SDL_qsort.c"
 #Import "SDL/src/stdlib/SDL_stdlib.c"
 #Import "SDL/src/stdlib/SDL_string.c"
+#Import "SDL/src/stdlib/SDL_strtokr.c" 'v2.0.14
 
 'thread
 #Import "SDL/src/thread/SDL_thread.c"
-
 #Import "SDL/src/thread/generic/SDL_syscond.c"
-
 #Import "SDL/src/thread/windows/SDL_sysmutex.c"
 #Import "SDL/src/thread/windows/SDL_syssem.c"
 #Import "SDL/src/thread/windows/SDL_systhread.c"
@@ -140,7 +181,6 @@ Namespace sdl2
 
 'timer
 #import "SDL/src/timer/SDL_timer.c"
-
 #import "SDL/src/timer/windows/SDL_systimer.c"
 
 'video
@@ -181,25 +221,4 @@ Namespace sdl2
 #import "SDL/src/video/windows/SDL_windowsvideo.c"
 #import "SDL/src/video/windows/SDL_windowsvulkan.c" 'v2.0.9
 #import "SDL/src/video/windows/SDL_windowswindow.c"
-	
-'libm - really?!?...
-#Import "SDL/src/libm/e_atan2.c"
-#Import "SDL/src/libm/e_exp.c" 'v2.0.9
-#Import "SDL/src/libm/e_fmod.c" '2.0.9
-#Import "SDL/src/libm/e_log.c"
-#Import "SDL/src/libm/e_log10.c" 'v2.0.9
-#Import "SDL/src/libm/e_pow.c"
-#Import "SDL/src/libm/e_rem_pio2.c"
-#Import "SDL/src/libm/e_sqrt.c"
-#Import "SDL/src/libm/k_cos.c"
-#Import "SDL/src/libm/k_rem_pio2.c"
-#Import "SDL/src/libm/k_sin.c"
-#Import "SDL/src/libm/k_tan.c"
-#Import "SDL/src/libm/s_atan.c"
-#Import "SDL/src/libm/s_copysign.c"
-#Import "SDL/src/libm/s_cos.c"
-#Import "SDL/src/libm/s_fabs.c"
-#Import "SDL/src/libm/s_floor.c"
-#Import "SDL/src/libm/s_scalbn.c"
-#Import "SDL/src/libm/s_sin.c"
-#Import "SDL/src/libm/s_tan.c"
+

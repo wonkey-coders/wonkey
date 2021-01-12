@@ -166,7 +166,7 @@
 
 /* Enable various video drivers */
 #define SDL_VIDEO_DRIVER_COCOA  1
-#define SDL_VIDEO_DRIVER_DUMMY  1
+#define SDL_VIDEO_DRIVER_DUMMY  0 //!\\ sey was here! (from 1 to 0)
 #undef SDL_VIDEO_DRIVER_X11
 #define SDL_VIDEO_DRIVER_X11_DYNAMIC "/opt/X11/lib/libX11.6.dylib"
 #define SDL_VIDEO_DRIVER_X11_DYNAMIC_XEXT "/opt/X11/lib/libXext.6.dylib"
@@ -199,7 +199,7 @@
 #endif
 
 #ifndef SDL_VIDEO_RENDER_OGL_ES2
-#define SDL_VIDEO_RENDER_OGL_ES2 1
+#define SDL_VIDEO_RENDER_OGL_ES2 0 //!\\ sey was here! (from 1 to 0)
 #endif
 
 /* Metal only supported on 64-bit architectures with 10.11+ */
@@ -225,7 +225,7 @@
 #define SDL_VIDEO_OPENGL_ES2    1
 #endif
 #ifndef SDL_VIDEO_OPENGL_EGL
-#define SDL_VIDEO_OPENGL_EGL    1
+#define SDL_VIDEO_OPENGL_EGL    0 //!\\ sey was here! (from 1 to 0)
 #endif
 #ifndef SDL_VIDEO_OPENGL_CGL
 #define SDL_VIDEO_OPENGL_CGL    1

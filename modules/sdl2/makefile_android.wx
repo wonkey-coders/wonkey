@@ -3,8 +3,17 @@ Namespace sdl2
 
 #Import "<libdl.a>"
 
-'main
-#Import "SDL/src/main/android/SDL_android_main.c"
+'src
+#Import "SDL/src/SDL.c"
+#Import "SDL/src/SDL_assert.c"
+#Import "SDL/src/SDL_dataqueue.c" 'v2.0.9
+#Import "SDL/src/SDL_error.c"
+#Import "SDL/src/SDL_hints.c"
+#Import "SDL/src/SDL_log.c"
+
+'atomic
+#Import "SDL/src/atomic/SDL_atomic.c"
+#Import "SDL/src/atomic/SDL_spinlock.c"
 
 'audio
 #Import "SDL/src/audio/SDL_audio.c"
@@ -15,10 +24,6 @@ Namespace sdl2
 #Import "SDL/src/audio/SDL_wave.c"
 #Import "SDL/src/audio/android/SDL_androidaudio.c"
 #Import "SDL/src/audio/dummy/SDL_dummyaudio.c"
-
-'atomic
-#Import "SDL/src/atomic/SDL_atomic.c"
-#Import "SDL/src/atomic/SDL_spinlock.c"
 
 'core
 #Import "SDL/src/core/android/SDL_android.c"
@@ -49,26 +54,44 @@ Namespace sdl2
 
 'haptic
 #Import "SDL/src/haptic/SDL_haptic.c"
-
 #Import "SDL/src/haptic/android/SDL_syshaptic.c" 'v2.0.9
 #Import "SDL/src/haptic/dummy/SDL_syshaptic.c"
 
 'hidapi
+#import "SDL/src/hidapi/SDL_hidapi.c" 'v2.0.14
 #import "SDL/src/hidapi/android/hid.cpp" 'v2.0.9
 
 'joystick
 #Import "SDL/src/joystick/SDL_gamecontroller.c"
 #Import "SDL/src/joystick/SDL_joystick.c"
 #Import "SDL/src/joystick/android/SDL_sysjoystick.c"
-
-#import "SDL/src/joystick/hidapi/SDL_hidapijoystick.c" 'v2.0.9'
+#import "SDL/src/joystick/hidapi/SDL_hidapi_gamecube.c" 'v2.0.14
 #import "SDL/src/joystick/hidapi/SDL_hidapi_ps4.c" 'v2.0.9'
+#import "SDL/src/joystick/hidapi/SDL_hidapi_ps5.c" 'v2.0.14
+#import "SDL/src/joystick/hidapi/SDL_hidapi_rumble.c" 'v2.0.14
+#import "SDL/src/joystick/hidapi/SDL_hidapi_steam.c" 'v2.0.14
 #import "SDL/src/joystick/hidapi/SDL_hidapi_switch.c" 'v2.0.9'
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xbox360.c" 'v2.0.9'
+#import "SDL/src/joystick/hidapi/SDL_hidapi_xbox360w.c" 'v2.0.14
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xboxone.c" 'v2.0.9'
+#import "SDL/src/joystick/hidapi/SDL_hidapijoystick.c" 'v2.0.9'
+
+'libm (v2.0.14)
+'?
 
 'loadso
 #Import "SDL/src/loadso/dlopen/SDL_sysloadso.c"
+
+'locale (v2.0.14)
+#Import "SDL/src/locale/SDL_locale.c" 'v2.0.14
+#Import "SDL/src/locale/android/SDL_syslocale.c" 'v2.0.14
+
+'main
+#Import "SDL/src/main/android/SDL_android_main.c"
+
+'misc (v2.0.14)
+#import "SDL/src/misc/SDL_url.c" 'v2.0.14
+#import "SDL/src/misc/android/SDL_sysurl.c" 'v2.0.14
 
 'power
 #Import "SDL/src/power/SDL_power.c"
@@ -92,12 +115,14 @@ Namespace sdl2
 #Import "SDL/src/sensor/dummy/SDL_dummysensor.c"
 
 'stdlib
+#Import "SDL/src/stdlib/SDL_crc32.c" 'v2.0.14
 #Import "SDL/src/stdlib/SDL_getenv.c"
 #Import "SDL/src/stdlib/SDL_iconv.c"
 #Import "SDL/src/stdlib/SDL_malloc.c"
 #Import "SDL/src/stdlib/SDL_qsort.c"
 #Import "SDL/src/stdlib/SDL_stdlib.c"
 #Import "SDL/src/stdlib/SDL_string.c"
+#Import "SDL/src/stdlib/SDL_strtokr.c" 'v2.0.14
 
 'thread
 #Import "SDL/src/thread/SDL_thread.c"
@@ -147,10 +172,5 @@ Namespace sdl2
 #Import "SDL/src/video/android/SDL_androidvulkan.c" 'v2.0.9
 #Import "SDL/src/video/android/SDL_androidwindow.c"
 
-'src
-#Import "SDL/src/SDL_assert.c"
-#Import "SDL/src/SDL_error.c"
-#Import "SDL/src/SDL_hints.c"
-#Import "SDL/src/SDL_log.c"
-#Import "SDL/src/SDL_dataqueue.c" 'v2.0.9
-#Import "SDL/src/SDL.c"
+
+
