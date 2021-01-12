@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2018 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -33,9 +33,6 @@
 #endif
 #define _begin_code_h
 
-//!\\ Mark was here! Prevents SDL generating dll funcs.
-#define DECLSPEC
-
 #ifndef SDL_DEPRECATED
 #  if (__GNUC__ >= 4)  /* technically, this arrived in gcc 3.1, but oh well. */
 #    define SDL_DEPRECATED __attribute__((deprecated))
@@ -54,15 +51,11 @@
 
 /* Some compilers use a special export keyword */
 #ifndef DECLSPEC
-# if defined(__WIN32__) || defined(__WINRT__)
-#  ifdef __BORLANDC__
-#   ifdef BUILD_SDL
-#    define DECLSPEC
-#   else
-#    define DECLSPEC    __declspec(dllimport)
-#   endif
-#  else
+# if defined(__WIN32__) || defined(__WINRT__) || defined(__CYGWIN__)
+#  ifdef DLL_EXPORT
 #   define DECLSPEC __declspec(dllexport)
+#  else
+#   define DECLSPEC
 #  endif
 # elif defined(__OS2__)
 #   ifdef BUILD_SDL
@@ -107,6 +100,9 @@
 #if defined(_MSC_VER) || defined(__MWERKS__) || defined(__BORLANDC__)
 #ifdef _MSC_VER
 #pragma warning(disable: 4103)
+#endif
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wpragma-pack"
 #endif
 #ifdef __BORLANDC__
 #pragma nopackwarning

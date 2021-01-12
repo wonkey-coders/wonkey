@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2018 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -24,9 +24,7 @@
  *
  *  This is a simple file to encapsulate the EGL API headers.
  */
-//!\\ Mark was here! #ifndef _MSC_VER, but we don't want mingw to be dependant on egl.h
-//#if !defined(_MSC_VER) && !defined(__ANDROID__)
-#ifndef _WIN32
+#if !defined(_MSC_VER) && !defined(__ANDROID__)
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -391,6 +389,9 @@ typedef enum {
 #if defined(_WIN32) || defined(__VC32__) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__) /* Win32 and WinCE */
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
+#endif
+#ifndef NOMINMAX   /* don't define min() and max(). */
+#define NOMINMAX
 #endif
 #include <windows.h>
 

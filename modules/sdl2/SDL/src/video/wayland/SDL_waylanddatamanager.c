@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2018 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -29,7 +29,6 @@
 #include <signal.h>
 
 #include "SDL_stdinc.h"
-#include "SDL_assert.h"
 #include "../../core/unix/SDL_poll.h"
 
 #include "SDL_waylandvideo.h"
@@ -53,7 +52,11 @@ write_pipe(int fd, const void* buffer, size_t total_length, size_t *pos)
     sigemptyset(&sig_set);
     sigaddset(&sig_set, SIGPIPE);  
 
-    pthread_sigmask(SIG_BLOCK, &sig_set, &old_sig_set); 
+#if SDL_THREADS_DISABLED
+    sigprocmask(SIG_BLOCK, &sig_set, &old_sig_set);
+#else
+    pthread_sigmask(SIG_BLOCK, &sig_set, &old_sig_set);
+#endif
 
     if (ready == 0) {
         bytes_written = SDL_SetError("Pipe timeout");
@@ -70,7 +73,12 @@ write_pipe(int fd, const void* buffer, size_t total_length, size_t *pos)
     }
 
     sigtimedwait(&sig_set, 0, &zerotime);
+
+#if SDL_THREADS_DISABLED
+    sigprocmask(SIG_SETMASK, &old_sig_set, NULL);
+#else
     pthread_sigmask(SIG_SETMASK, &old_sig_set, NULL);
+#endif
 
     return bytes_written;
 }
@@ -172,12 +180,20 @@ mime_data_list_find(struct wl_list* list,
 static int
 mime_data_list_add(struct wl_list* list, 
                    const char* mime_type,
-                   void* buffer, size_t length)
+                   const void* buffer, size_t length)
 {
     int status = 0;
     size_t mime_type_length = 0;
-
     SDL_MimeDataList *mime_data = NULL;
+    void *internal_buffer = NULL;
+
+    if (buffer != NULL) {
+        internal_buffer = SDL_malloc(length);
+        if (internal_buffer == NULL) {
+            return SDL_OutOfMemory();
+        }
+        SDL_memcpy(internal_buffer, buffer, length);
+    }
 
     mime_data = mime_data_list_find(list, mime_type);
 
@@ -202,8 +218,10 @@ mime_data_list_add(struct wl_list* list,
         if (mime_data->data != NULL) {
             SDL_free(mime_data->data);
         }
-        mime_data->data = buffer;
+        mime_data->data = internal_buffer;
         mime_data->length = length;
+    } else {
+        SDL_free(internal_buffer);
     }
 
     return status;
@@ -255,18 +273,7 @@ int Wayland_data_source_add_data(SDL_WaylandDataSource *source,
                                  const void *buffer,
                                  size_t length) 
 {
-    int status = 0;
-    if (length > 0) {
-        void *internal_buffer = SDL_malloc(length);
-        if (internal_buffer == NULL) {
-            status = SDL_OutOfMemory();
-        } else {
-            SDL_memcpy(internal_buffer, buffer, length);
-            status = mime_data_list_add(&source->mimes, mime_type, 
-                                        internal_buffer, length);
-        }
-    }
-    return status;
+    return mime_data_list_add(&source->mimes, mime_type, buffer, length);
 }
 
 SDL_bool 

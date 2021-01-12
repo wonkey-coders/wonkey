@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2018 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -27,19 +27,13 @@
 #include "SDL_cocoavideo.h"
 #include "SDL_cocoashape.h"
 #include "SDL_cocoavulkan.h"
-#include "SDL_assert.h"
+#include "SDL_cocoametalview.h"
 
 /* Initialization/Query functions */
 static int Cocoa_VideoInit(_THIS);
 static void Cocoa_VideoQuit(_THIS);
 
 /* Cocoa driver bootstrap functions */
-
-static int
-Cocoa_Available(void)
-{
-    return (1);
-}
 
 static void
 Cocoa_DeleteDevice(SDL_VideoDevice * device)
@@ -142,6 +136,13 @@ Cocoa_CreateDevice(int devindex)
     device->Vulkan_GetDrawableSize = Cocoa_Vulkan_GetDrawableSize;
 #endif
 
+#if SDL_VIDEO_METAL
+    device->Metal_CreateView = Cocoa_Metal_CreateView;
+    device->Metal_DestroyView = Cocoa_Metal_DestroyView;
+    device->Metal_GetLayer = Cocoa_Metal_GetLayer;
+    device->Metal_GetDrawableSize = Cocoa_Metal_GetDrawableSize;
+#endif
+
     device->StartTextInput = Cocoa_StartTextInput;
     device->StopTextInput = Cocoa_StopTextInput;
     device->SetTextInputRect = Cocoa_SetTextInputRect;
@@ -157,7 +158,7 @@ Cocoa_CreateDevice(int devindex)
 
 VideoBootStrap COCOA_bootstrap = {
     "cocoa", "SDL Cocoa video driver",
-    Cocoa_Available, Cocoa_CreateDevice
+    Cocoa_CreateDevice
 };
 
 
@@ -168,7 +169,9 @@ Cocoa_VideoInit(_THIS)
 
     Cocoa_InitModes(_this);
     Cocoa_InitKeyboard(_this);
-    Cocoa_InitMouse(_this);
+    if (Cocoa_InitMouse(_this) < 0) {
+        return -1;
+    }
 
     data->allow_spaces = ((floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) && SDL_GetHintBoolean(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES, SDL_TRUE));
 
@@ -250,6 +253,9 @@ Cocoa_CreateImage(SDL_Surface * surface)
  *
  * This doesn't really have aything to do with the interfaces of the SDL video
  *  subsystem, but we need to stuff this into an Objective-C source code file.
+ *
+ * NOTE: This is copypasted in src/video/uikit/SDL_uikitvideo.m! Be sure both
+ *  versions remain identical!
  */
 
 void SDL_NSLog(const char *text)

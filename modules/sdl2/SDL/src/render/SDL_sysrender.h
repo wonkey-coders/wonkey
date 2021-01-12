@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2018 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -32,27 +32,6 @@
 
 typedef struct SDL_RenderDriver SDL_RenderDriver;
 
-typedef enum
-{
-    SDL_ScaleModeNearest,
-    SDL_ScaleModeLinear,
-    SDL_ScaleModeBest
-} SDL_ScaleMode;
-
-typedef struct
-{
-    float x;
-    float y;
-} SDL_FPoint;
-
-typedef struct
-{
-    float x;
-    float y;
-    float w;
-    float h;
-} SDL_FRect;
-
 /* Define the SDL texture structure */
 struct SDL_Texture
 {
@@ -74,12 +53,57 @@ struct SDL_Texture
     void *pixels;
     int pitch;
     SDL_Rect locked_rect;
+    SDL_Surface *locked_surface;  /**< Locked region exposed as a SDL surface */
+
+    Uint32 last_command_generation; /* last command queue generation this texture was in. */
 
     void *driverdata;           /**< Driver specific texture representation */
 
     SDL_Texture *prev;
     SDL_Texture *next;
 };
+
+typedef enum
+{
+    SDL_RENDERCMD_NO_OP,
+    SDL_RENDERCMD_SETVIEWPORT,
+    SDL_RENDERCMD_SETCLIPRECT,
+    SDL_RENDERCMD_SETDRAWCOLOR,
+    SDL_RENDERCMD_CLEAR,
+    SDL_RENDERCMD_DRAW_POINTS,
+    SDL_RENDERCMD_DRAW_LINES,
+    SDL_RENDERCMD_FILL_RECTS,
+    SDL_RENDERCMD_COPY,
+    SDL_RENDERCMD_COPY_EX
+} SDL_RenderCommandType;
+
+typedef struct SDL_RenderCommand
+{
+    SDL_RenderCommandType command;
+    union {
+        struct {
+            size_t first;
+            SDL_Rect rect;
+        } viewport;
+        struct {
+            SDL_bool enabled;
+            SDL_Rect rect;
+        } cliprect;
+        struct {
+            size_t first;
+            size_t count;
+            Uint8 r, g, b, a;
+            SDL_BlendMode blend;
+            SDL_Texture *texture;
+        } draw;
+        struct {
+            size_t first;
+            Uint8 r, g, b, a;
+        } color;
+    } data;
+    struct SDL_RenderCommand *next;
+} SDL_RenderCommand;
+
 
 /* Define the SDL renderer structure */
 struct SDL_Renderer
@@ -90,12 +114,20 @@ struct SDL_Renderer
     int (*GetOutputSize) (SDL_Renderer * renderer, int *w, int *h);
     SDL_bool (*SupportsBlendMode)(SDL_Renderer * renderer, SDL_BlendMode blendMode);
     int (*CreateTexture) (SDL_Renderer * renderer, SDL_Texture * texture);
-    int (*SetTextureColorMod) (SDL_Renderer * renderer,
-                               SDL_Texture * texture);
-    int (*SetTextureAlphaMod) (SDL_Renderer * renderer,
-                               SDL_Texture * texture);
-    int (*SetTextureBlendMode) (SDL_Renderer * renderer,
-                                SDL_Texture * texture);
+    int (*QueueSetViewport) (SDL_Renderer * renderer, SDL_RenderCommand *cmd);
+    int (*QueueSetDrawColor) (SDL_Renderer * renderer, SDL_RenderCommand *cmd);
+    int (*QueueDrawPoints) (SDL_Renderer * renderer, SDL_RenderCommand *cmd, const SDL_FPoint * points,
+                             int count);
+    int (*QueueDrawLines) (SDL_Renderer * renderer, SDL_RenderCommand *cmd, const SDL_FPoint * points,
+                            int count);
+    int (*QueueFillRects) (SDL_Renderer * renderer, SDL_RenderCommand *cmd, const SDL_FRect * rects,
+                            int count);
+    int (*QueueCopy) (SDL_Renderer * renderer, SDL_RenderCommand *cmd, SDL_Texture * texture,
+                       const SDL_Rect * srcrect, const SDL_FRect * dstrect);
+    int (*QueueCopyEx) (SDL_Renderer * renderer, SDL_RenderCommand *cmd, SDL_Texture * texture,
+                        const SDL_Rect * srcquad, const SDL_FRect * dstrect,
+                        const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip);
+    int (*RunCommandQueue) (SDL_Renderer * renderer, SDL_RenderCommand *cmd, void *vertices, size_t vertsize);
     int (*UpdateTexture) (SDL_Renderer * renderer, SDL_Texture * texture,
                           const SDL_Rect * rect, const void *pixels,
                           int pitch);
@@ -107,21 +139,8 @@ struct SDL_Renderer
     int (*LockTexture) (SDL_Renderer * renderer, SDL_Texture * texture,
                         const SDL_Rect * rect, void **pixels, int *pitch);
     void (*UnlockTexture) (SDL_Renderer * renderer, SDL_Texture * texture);
+    void (*SetTextureScaleMode) (SDL_Renderer * renderer, SDL_Texture * texture, SDL_ScaleMode scaleMode);
     int (*SetRenderTarget) (SDL_Renderer * renderer, SDL_Texture * texture);
-    int (*UpdateViewport) (SDL_Renderer * renderer);
-    int (*UpdateClipRect) (SDL_Renderer * renderer);
-    int (*RenderClear) (SDL_Renderer * renderer);
-    int (*RenderDrawPoints) (SDL_Renderer * renderer, const SDL_FPoint * points,
-                             int count);
-    int (*RenderDrawLines) (SDL_Renderer * renderer, const SDL_FPoint * points,
-                            int count);
-    int (*RenderFillRects) (SDL_Renderer * renderer, const SDL_FRect * rects,
-                            int count);
-    int (*RenderCopy) (SDL_Renderer * renderer, SDL_Texture * texture,
-                       const SDL_Rect * srcrect, const SDL_FRect * dstrect);
-    int (*RenderCopyEx) (SDL_Renderer * renderer, SDL_Texture * texture,
-                       const SDL_Rect * srcquad, const SDL_FRect * dstrect,
-                       const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip);
     int (*RenderReadPixels) (SDL_Renderer * renderer, const SDL_Rect * rect,
                              Uint32 format, void * pixels, int pitch);
     void (*RenderPresent) (SDL_Renderer * renderer);
@@ -170,6 +189,13 @@ struct SDL_Renderer
     /* The pixel to point coordinate scale */
     SDL_FPoint dpi_scale;
 
+    /* Whether or not to scale relative mouse motion */
+    SDL_bool relative_scaling;
+
+    /* Remainder from scaled relative motion */
+    float xrel;
+    float yrel;
+
     /* The list of textures */
     SDL_Texture *textures;
     SDL_Texture *target;
@@ -177,6 +203,24 @@ struct SDL_Renderer
 
     Uint8 r, g, b, a;                   /**< Color for drawing operations values */
     SDL_BlendMode blendMode;            /**< The drawing blend mode */
+
+    SDL_bool always_batch;
+    SDL_bool batching;
+    SDL_RenderCommand *render_commands;
+    SDL_RenderCommand *render_commands_tail;
+    SDL_RenderCommand *render_commands_pool;
+    Uint32 render_command_generation;
+    Uint32 last_queued_color;
+    SDL_Rect last_queued_viewport;
+    SDL_Rect last_queued_cliprect;
+    SDL_bool last_queued_cliprect_enabled;
+    SDL_bool color_queued;
+    SDL_bool viewport_queued;
+    SDL_bool cliprect_queued;
+
+    void *vertex_data;
+    size_t vertex_data_used;
+    size_t vertex_data_allocation;
 
     void *driverdata;
 };
@@ -208,6 +252,11 @@ extern SDL_BlendOperation SDL_GetBlendModeColorOperation(SDL_BlendMode blendMode
 extern SDL_BlendFactor SDL_GetBlendModeSrcAlphaFactor(SDL_BlendMode blendMode);
 extern SDL_BlendFactor SDL_GetBlendModeDstAlphaFactor(SDL_BlendMode blendMode);
 extern SDL_BlendOperation SDL_GetBlendModeAlphaOperation(SDL_BlendMode blendMode);
+
+/* drivers call this during their Queue*() methods to make space in a array that are used
+   for a vertex buffer during RunCommandQueue(). Pointers returned here are only valid until
+   the next call, because it might be in an array that gets realloc()'d. */
+extern void *SDL_AllocateRenderVertices(SDL_Renderer *renderer, const size_t numbytes, const size_t alignment, size_t *offset);
 
 #endif /* SDL_sysrender_h_ */
 
