@@ -2324,11 +2324,7 @@ Class Parser
 						If Not ExtractExt( path ) path+=WX_FILE_EXT
 						
 					Endif
-					
-					If path.StartsWith( "WX_LD_OPTS_") Or path.StartsWith( "WX_CC_OPTS_") Or path.StartsWith( "WX_CPP_OPTS_")
-						Return
-					End
-						
+
 					path+="["+SrcPos+"]"
 						
 					_imports.Push( path )
