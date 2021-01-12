@@ -1,17 +1,28 @@
 
 Namespace sdl2
 
+#import "WX_CC_OPTS_MACOS=-fobjc-weak"
+#import "WX_CPP_OPTS_MACOS=-fobjc-weak"
+
 'frameworks
 #Import "<CoreVideo.framework>"
-#Import "<CoreFoundation.framework>"
-#Import "<Carbon.framework>"
-#Import "<AudioToolbox.framework>"
-#Import "<AudioUnit.framework>"
-#Import "<Cocoa.framework>"
 #Import "<CoreAudio.framework>"
+#Import "<AudioToolbox.framework>"
+#Import "<AVFoundation.framework>"
+#Import "<CoreBluetooth.framework>" 'iOS|tvOS
+#Import "<CoreMotion.framework>" 'iOS
+#Import "<GameController.framework>" 'iOS|tvOS
 #Import "<IOKit.framework>"
 #Import "<ForceFeedback.framework>"
+#Import "<CoreHaptics.framework>"
+#Import "<CoreGraphics.framework>" 'iOS|tvOS
+#Import "<QuartzCore.framework>" 'iOS|tvOS
+'#Import "<UIKit.framework>" 'iOS|tvOS
 #import "<Metal.framework>"
+#Import "<Foundation.framework>"
+#Import "<Carbon.framework>"
+#Import "<AudioUnit.framework>"
+#Import "<Cocoa.framework>"
 
 'src
 #Import "SDL/src/SDL.c"
@@ -86,6 +97,8 @@ Namespace sdl2
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xbox360w.c" 'v2.0.14
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xboxone.c" 'v2.0.9'
 #import "SDL/src/joystick/hidapi/SDL_hidapijoystick.c" 'v2.0.9'
+#import "SDL/src/joystick/iphoneos/SDL_mfijoystick.m" 'v2.0.14
+#Import "SDL/src/joystick/virtual/SDL_virtualjoystick.c" 'v2.0.14
 
 'libm - really?!?...
 '#Import "SDL/src/libm/e_atan2.c"
