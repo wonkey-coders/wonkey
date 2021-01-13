@@ -14,6 +14,13 @@ Const A_TANGENT:=5
 Const A_WEIGHTS:=6
 Const A_BONES:=7
 
+'jl added
+'------------------------------------------------------------
+Const A_COLOR2:=8
+Const A_XYZPOSITION:=9
+Const A_COLOR3:=10
+'------------------------------------------------------------
+
 Private
 
 Class GLUniform
@@ -305,7 +312,41 @@ Class Shader
 		
 		Return GetShader( name,defs )
 	End
-	
+
+'jl added
+'------------------------------------------------------------
+	#rem wonkeydoc Loads a shader with a given name.
+	#end	
+	Function Load:Shader( name:String, defs:String="" )
+'		Return GetShader( name, defs )
+		local nm:string = StripExt( StripDir(name) )
+'		Print "nm:"+nm 
+		Local tag := nm+";"+defs
+		
+		If _cache.Contains( tag ) Return _cache[tag]
+		
+		local source:String = LoadString( name )
+		If not source Then
+			Print "Shader: Can't load "+name
+			return Null
+		End if
+			
+'		Print name
+'		Print source
+		
+'		Local shader:=source ? New Shader( name,source,defs ) Else Null
+		local shader:Shader = New Shader( nm, source, defs )
+		If not shader Then
+			Print "Shader: Can't create"
+			return Null
+		End if
+		
+		_cache[tag]=shader
+		
+		Return shader
+	End
+'------------------------------------------------------------
+
 	Private
 	
 	Global _cache:=New StringMap<Shader>
@@ -444,6 +485,13 @@ Class Shader
 			glBindAttribLocation( glprogram,A_TANGENT,"a_Tangent" )
 			glBindAttribLocation( glprogram,A_WEIGHTS,"a_Weights" )
 			glBindAttribLocation( glprogram,A_BONES,"a_Bones" )
+
+'jl added
+'------------------------------------------------------------			
+			glBindAttribLocation( glprogram,A_COLOR2,"a_Color2" )
+			glBindAttribLocation( glprogram,A_COLOR3,"a_Color3" )
+			glBindAttribLocation( glprogram,A_XYZPOSITION,"a_XYZPosition" )
+'------------------------------------------------------------
 			
 			glLink( glprogram )
 			
