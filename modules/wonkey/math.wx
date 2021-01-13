@@ -3,6 +3,61 @@ Namespace wonkey.math
 
 Using wonkey.types
 
+'jl added
+'------------------------------------------------------------
+#rem wonkeydoc The value _Pi_ times 2.
+#end
+Const Pi2:Double = Pi * 2
+
+#rem wonkeydoc The value _Pi_ times 4.
+#end
+Const Pi4:Double = Pi * 4
+
+#rem wonkeydoc The value _Pi_ halved.
+#end
+const PiHalf:double = Pi * 0.5
+
+#rem wonkeydoc The value _Pi_ / 180.
+#end
+const Pi180:double = Pi / 180
+
+#rem wonkeydoc Converts degrees in angles. E.G. 90 degrees to radians
+Degrees start from 0 pointing East and then go counterclockwise.
+So:
+90 degrees is up (north)
+180 degrees is pointing left (west)
+280 degrees is pointing down (south)
+See Also [[RadianToDegrees]]
+#end
+function DegreesToRadian:float( degrees:float )
+	return degrees * Pi180' ) / 180.0
+End function
+
+#rem wonkeydoc Converts radians to degrees in angles.
+Degrees start from 0 pointing East and then go counterclockwise.
+So:
+90 degrees is up (north)
+180 degrees is pointing left (west)
+280 degrees is pointing down (south)
+See Also [[DegreesToRadian]]
+#end
+function RadianToDegrees:float( radian:float )
+	return radian / Pi180
+End function
+
+#rem wonkeydoc Liniear Interp
+#end
+function Lerp:Double( a:double, b:double, t:double )
+	return (1.0-t) * a + t*b
+End function
+
+#rem wonkeydoc Linear Interp
+#end
+function Slerp:Double( a:double, b:double, t:double )
+	return (1.0-t) * a + t*b
+End function
+'------------------------------------------------------------
+
 #rem wonkeydoc The value _Pi_.
 #end
 Const Pi:Double=3.1415926535897931
@@ -218,6 +273,17 @@ Function Clamp<T>:T( value:T,min:T,max:T )
 	If value>=max Return max
 	Return value
 End
+
+'jl added
+'------------------------------------------------------------
+Function Clamp:float( value:float, min:float, max:float )
+	If value <= min Return min
+	If value >= max Return max
+	
+'	Print "b "+value+"   min "+min+"   max "+max
+	Return value
+End
+'------------------------------------------------------------
 
 #rem wonkeydoc Gets the absolute value of a number.
 

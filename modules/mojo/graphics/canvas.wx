@@ -1,6 +1,24 @@
 
 Namespace mojo.graphics
 
+'jl added
+'------------------------------------------------------------
+'
+' Note: jl math functions moved to wonkey.math
+
+#rem wonkeydoc Converts 4 byts or ints to a packed integer color
+Get an integer packed color from rgba inputs (0..255)
+#end
+function ICol:Uint( r:int, g:int, b:int, a:int = 255 )
+	r = Clamp(r, 0, 255)
+	g = Clamp(g, 0, 255)
+	b = Clamp(b, 0, 255)
+	a = Clamp(a, 0, 255)
+	Return UInt(a) Shl 24 | UInt(b) Shl 16 | UInt(g) Shl 8 | UInt(r)
+End function
+'------------------------------------------------------------
+
+
 #rem wonkeydoc Outline modes.
 
 Outline modes are used with the [[Canvas.OutlineMode]] property and control the style
@@ -82,7 +100,13 @@ Class Canvas
 		PointSize=0
 		LineWidth=0
 		LineSmoothing=False
-		TextureFilteringEnabled=true
+		
+'jl changed
+'------------------------------------------------------------
+'		TextureFilteringEnabled=True
+		TextureFilteringEnabled = _textureFilter2
+'------------------------------------------------------------
+		
 		OutlineMode=OutlineMode.None
 		OutlineColor=Color.Yellow
 		OutlineWidth=0
@@ -101,6 +125,1566 @@ Class Canvas
 		_rbounds=_rboundsStack.Pop()
 		_rmatrix=_rmatrixStack.Pop()
 	End
+
+
+'jl added
+'------------------------------------------------------------
+	'start of jl jeanluc additions
+	Field RenderAmbient:void( device:GraphicsDevice )
+	
+	Method SetCol( color:UInt )
+		_pmcolor = color
+	End
+
+	Method SetCol( r:int, g:int, b:int, a:int = 255 )
+		r = Clamp(r, 0, 255)
+		g = Clamp(g, 0, 255)
+		b = Clamp(b, 0, 255)
+		a = Clamp(a, 0, 255)
+		_pmcolor = UInt(a) Shl 24 | UInt(b) Shl 16 | UInt(g) Shl 8 | UInt(r)
+	End
+
+
+	Method SetViewport( x:float, y:float, w:float, h:float )
+		If _lighting return
+
+		Flush()
+			
+		_viewport = New Rectf( x,y,x+w,y+h )
+		
+		_dirty |= Dirty.Viewport | Dirty.Scissor
+	End
+	
+	
+	Method DrawTextVSize( text:String, tx:Float, ty:Float, xSize:float = 1, ySize:float = 1 )
+		If Not text.Length Return
+	
+'		tx-=_font.TextWidth( text ) * handleX
+'		ty-=_font.Height * handleY
+		
+		Local gpage:=_font.GetGlyphPage( text[0] )
+		If Not gpage gpage=_font.GetGlyphPage( 0 )
+
+		Local sx:Float
+		Local sy:Float
+		Local tw:Float
+		Local th:Float
+		
+		Local i0:=0
+		
+		while i0 < text.Length
+			Local i1:=i0+1
+			Local page:Image'GlyphPage
+			
+			While i1<text.Length
+				page=_font.GetGlyphPage( text[i1] )
+				If page And page<>gpage Exit
+				
+				i1+=1
+			Wend
+
+			Local image:Image = gpage
+			sx = image.Rect.min.x
+			sy = image.Rect.min.y
+			tw = image.Texture.Width
+			th = image.Texture.Height
+			AddDrawOp( image.Shader,image.Material,image.BlendMode,4,i1-i0 )
+			
+			For Local i:=i0 Until i1
+				Local g:=_font.GetGlyph( text[i] )
+			
+				Local s0:float = Float( g.rect.min.x + sx ) / tw
+				Local t0:float = Float( g.rect.min.y + sy ) / th
+				Local s1:float = Float( g.rect.max.x + sx ) / tw
+				Local t1:float = Float( g.rect.max.y + sy ) / th
+				
+				Local x0:float = Round( tx + g.offset.y )
+				Local y0:float = Round( ty + g.offset.x )
+				Local x1:float = x0 + g.rect.Height * ySize
+				Local y1:float = y0 + g.rect.Width * xSize
+	
+				AddVertex( x0,y0, s0,t1 )
+				AddVertex( x1,y0, s0,t0 )
+				AddVertex( x1,y1, s1,t0 )
+				AddVertex( x0,y1, s1,t1 )
+				
+				ty += g.rect.Width * xSize
+			Next
+			
+			gpage=page
+			
+			i0=i1
+		Wend
+	End
+
+
+	Method DrawTextSize( text:String, tx:Float, ty:Float, xSize:float = 1, ySize:float = 1 )
+		If Not text.Length Return
+	
+'		tx-=_font.TextWidth( text ) * handleX
+'		ty-=_font.Height * handleY
+		
+		Local gpage:=_font.GetGlyphPage( text[0] )
+		If Not gpage gpage=_font.GetGlyphPage( 0 )
+
+		Local sx:Float
+		local sy:Float
+		Local tw:Float
+		Local th:Float
+		
+		Local i0:=0
+		
+		while i0 < text.Length
+			Local i1:=i0+1
+			Local page:Image'GlyphPage
+			
+			While i1<text.Length
+				page=_font.GetGlyphPage( text[i1] )
+				If page And page<>gpage Exit
+				
+				i1+=1
+			Wend
+
+			Local image:=gpage
+			sx = image.Rect.min.x
+			sy = image.Rect.min.y
+			tw = image.Texture.Width
+			th = image.Texture.Height
+			AddDrawOp( image.Shader, image.Material, image.BlendMode, 4, i1-i0 )
+			
+			For Local i:=i0 Until i1
+				Local g:=_font.GetGlyph( text[i] )
+			
+				Local s0:float = Float( g.rect.min.x + sx ) / tw
+				Local t0:float = Float( g.rect.min.y + sy ) / th
+				Local s1:float = Float( g.rect.max.x + sx ) / tw
+				Local t1:float = Float( g.rect.max.y + sy ) / th
+				
+				Local x0 := Round( tx+g.offset.x )
+				Local y0 := Round( ty+g.offset.y )
+				Local x1 := x0 + g.rect.Width * xSize
+				Local y1 := y0 + g.rect.Height * ySize
+	
+				AddVertex( x0, y0, s0, t0 )
+				AddVertex( x1, y0, s1, t0 )
+				AddVertex( x1, y1, s1, t1 )
+				AddVertex( x0, y1, s0, t1 )
+				
+				tx += g.advance * xSize
+			Next
+			
+			gpage=page
+			
+			i0=i1
+		Wend
+	End
+
+
+	Method DrawTextBold( text:String, tx:Float, ty:Float )
+		If Not text.Length Return
+
+		DrawText( text, tx, ty )
+		DrawText( text, tx+1, ty )
+	End
+
+
+	Method DrawTextBold( text:String, tx:Float, ty:Float, bold:float, handleX:Float=0,handleY:Float=0 )
+		If Not text.Length Return
+		
+		bold /= 10
+		Local bold2:float = bold + bold
+	
+		tx-=_font.TextWidth( text ) * handleX
+		ty-=_font.Height * handleY
+		
+		Local gpage:=_font.GetGlyphPage( text[0] )
+		If Not gpage gpage=_font.GetGlyphPage( 0 )
+
+		Local sx:Float
+		local sy:Float
+		Local tw:Float
+		Local th:Float
+		
+		Local i0:=0
+		
+		while i0<text.Length
+			Local i1:=i0+1
+			Local page:Image'GlyphPage
+			
+			While i1<text.Length
+				page=_font.GetGlyphPage( text[i1] )
+				If page And page<>gpage Exit
+				
+				i1+=1
+			Wend
+
+			Local image:=gpage
+			sx=image.Rect.min.x;sy=image.Rect.min.y
+			tw=image.Texture.Width;th=image.Texture.Height
+			AddDrawOp( image.Shader,image.Material,image.BlendMode,4,i1-i0 )
+			
+			For Local i:=i0 Until i1
+				Local g:=_font.GetGlyph( text[i] )
+			
+				Local s0:=(Float(g.rect.min.x+sx)/tw)
+				Local t0:=(Float(g.rect.min.y+sy)/th)
+				Local s1:=(Float(g.rect.max.x+sx)/tw)
+				Local t1:=(Float(g.rect.max.y+sy)/th)
+				
+				Local x0:=Round( tx+g.offset.x ) - bold
+				Local y0:=Round( ty+g.offset.y ) - bold
+				Local x1:=(x0+g.rect.Width) + bold2
+				Local y1:=(y0+g.rect.Height) + bold2
+	
+				AddVertex( x0,y0,s0,t0 )
+				AddVertex( x1,y0,s1,t0 )
+				AddVertex( x1,y1,s1,t1 )
+				AddVertex( x0,y1,s0,t1 )
+				
+				tx+=g.advance
+			Next
+			
+			gpage=page
+			
+			i0=i1
+		Wend
+
+	End
+	
+
+	Method DrawTextV( text:String,tx:Float,ty:Float,handleX:Float=0,handleY:Float=0 )
+		If Not text.Length Return
+	
+		tx-=_font.TextWidth( text ) * handleX
+		ty-=_font.Height * handleY
+		
+		Local gpage:=_font.GetGlyphPage( text[0] )
+		If Not gpage gpage=_font.GetGlyphPage( 0 )
+
+		Local sx:Float
+		Local sy:Float
+		Local tw:Float
+		Local th:Float
+		
+		Local i0:=0
+		
+		while i0 < text.Length
+			Local i1:=i0+1
+			Local page:Image'GlyphPage
+			
+			While i1<text.Length
+				page=_font.GetGlyphPage( text[i1] )
+				If page And page<>gpage Exit
+				
+				i1+=1
+			Wend
+
+			Local image:Image = gpage
+			sx = image.Rect.min.x
+			sy = image.Rect.min.y
+			tw = image.Texture.Width
+			th = image.Texture.Height
+			AddDrawOp( image.Shader,image.Material,image.BlendMode,4,i1-i0 )
+			
+			For Local i:=i0 Until i1
+				Local g:=_font.GetGlyph( text[i] )
+			
+				Local s0:float = Float( g.rect.min.x + sx ) / tw
+				Local t0:float = Float( g.rect.min.y + sy ) / th
+				Local s1:float = Float( g.rect.max.x + sx ) / tw
+				Local t1:float = Float( g.rect.max.y + sy ) / th
+				
+'				Local x0:float = Round( tx + g.offset.y )
+'				Local y0:float = Round( ty - g.offset.x )
+'				Local x1:float = x0 + g.rect.Height
+'				Local y1:float = y0 - g.rect.Width
+'	
+'				AddVertex( x0,y0, s0,t0 )
+'				AddVertex( x1,y0, s0,t1 )
+'				AddVertex( x1,y1, s1,t1 )
+'				AddVertex( x0,y1, s1,t0 )
+'				
+'				ty -= g.rect.Width
+
+				Local x0:float = Round( tx + g.offset.y )
+				Local y0:float = Round( ty + g.offset.x )
+				Local x1:float = x0 + g.rect.Height
+				Local y1:float = y0 + g.rect.Width
+	
+				AddVertex( x0,y0, s0,t1 )
+				AddVertex( x1,y0, s0,t0 )
+				AddVertex( x1,y1, s1,t0 )
+				AddVertex( x0,y1, s1,t1 )
+				
+				ty += g.rect.Width
+			Next
+			
+			gpage=page
+			
+			i0=i1
+		Wend
+	End
+
+
+	Method DrawTextSpacing( text:String, tx:Float, ty:Float, spacing:float, handleX:Float=0,handleY:Float=0 )
+		If Not text.Length Return
+		
+		If spacing < 0.1 Then spacing = 0.1
+	
+		tx-=_font.TextWidth( text ) * handleX
+		ty-=_font.Height * handleY
+		
+		Local gpage:=_font.GetGlyphPage( text[0] )
+		If Not gpage gpage=_font.GetGlyphPage( 0 )
+
+		Local sx:Float,sy:Float
+		Local tw:Float,th:Float
+		
+		Local i0:=0
+		
+		while i0 < text.Length
+			Local i1:=i0+1
+			Local page:Image'GlyphPage
+			
+			While i1<text.Length
+				page=_font.GetGlyphPage( text[i1] )
+				If page And page<>gpage Exit
+				
+				i1+=1
+			Wend
+
+			Local image:=gpage
+			sx=image.Rect.min.x;sy=image.Rect.min.y
+			tw=image.Texture.Width;th=image.Texture.Height
+			AddDrawOp( image.Shader,image.Material,image.BlendMode,4,i1-i0 )
+			
+			For Local i:=i0 Until i1
+				Local g:=_font.GetGlyph( text[i] )
+			
+				Local s0:=Float(g.rect.min.x+sx)/tw
+				Local t0:=Float(g.rect.min.y+sy)/th
+				Local s1:=Float(g.rect.max.x+sx)/tw
+				Local t1:=Float(g.rect.max.y+sy)/th
+				
+				Local x0:=Round( tx+g.offset.x )
+				Local y0:=Round( ty+g.offset.y )
+				Local x1:=x0+g.rect.Width
+				Local y1:=y0+g.rect.Height
+	
+				AddVertex( x0,y0,s0,t0 )
+				AddVertex( x1,y0,s1,t0 )
+				AddVertex( x1,y1,s1,t1 )
+				AddVertex( x0,y1,s0,t1 )
+				
+				tx += g.advance * spacing
+			Next
+			
+			gpage=page
+			
+			i0=i1
+		Wend
+
+	End
+
+	#rem wonkeydoc Draws a grid of cells (made from lines).
+	Draws a grid in the current [[Color]] using the current [[BlendMode]].
+	The rectangle vertex coordinates are also transform by the current [[Matrix]].
+	#end
+	Method DrawGrid( x:float, y:float, width:float, height:float, cell:float )
+		width -= 1
+		height -= 1
+		Local k:float
+		For k = x To x+width Step cell
+			DrawLine( k, y, k, y+height )
+		Next
+		If height < 0 Then cell = -cell
+		For k = y To y+height Step cell
+			DrawLine( x, k, x+width, k )
+		Next
+		DrawLine( x, y+height, x+width, y+height )
+		DrawLine( x+width, y, x+width, y+height )
+	End
+
+
+	Method DrawFrameCircle( x:Float, y:Float, width:Float )
+		DrawFrameOval( x, y, width, width )
+	End
+	
+	Method DrawFrameOval( x:Float, y:Float, width:Float, height:Float )
+		Local xr := width'/2
+		local yr := height'/2
+		
+		Local dx_x := xr*_matrix.i.x
+		Local dx_y := xr*_matrix.i.y
+		Local dy_x := yr*_matrix.j.x
+		Local dy_y := yr*_matrix.j.y
+		Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
+		Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+
+		Local n := (Max( Int( dx+dy ),13 ) & ~3)
+		
+		Local x0 := x'+xr
+		local y0 := y'+yr
+		
+		local th:float = .5*Pi*2/n
+		local px:float
+		local py:float
+		local pxo:float = x0+Cos( th ) * xr
+		local pyo:float = y0+Sin( th ) * yr
+		
+'		AddDrawOp( _shader, _material, _blendMode, n, 1 )
+		
+		For Local i:=1 to n
+			th = (i+.5)*Pi*2/n
+			px = x0+Cos( th ) * xr
+			py = y0+Sin( th ) * yr
+'			AddPointVertex( px,py,0,0 )
+			DrawLine( px, py, pxo, pyo )
+			pxo = px
+			pyo = py
+		Next
+	End
+
+	Method DrawFrameOval( x:Float, y:Float, width:Float, height:Float, fromAngle:float, toAngle:float )
+		Local xr := width'/2
+		local yr := height'/2
+		
+		Local dx_x := xr*_matrix.i.x
+		Local dx_y := xr*_matrix.i.y
+		Local dy_x := yr*_matrix.j.x
+		Local dy_y := yr*_matrix.j.y
+		Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
+		Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+
+		Local n := (Max( Int( dx+dy ),13 ) & ~3)*0.2
+		
+		Local x0 := x'+xr
+		local y0 := y'+yr
+		
+		local th:float = .5*Pi*2/n
+		local px:float
+		local py:float
+		
+'		AddDrawOp( _shader, _material, _blendMode, n, 1 )
+		
+		local div:float = (toAngle - fromAngle) / n
+		th = fromAngle
+		local pxo:float = x0+Cos( th ) * xr
+		local pyo:float = y0+Sin( th ) * yr
+		th += div
+		For Local i:=1 to n
+			px = x0+Cos( th ) * xr
+			py = y0+Sin( th ) * yr
+			DrawLine( px, py, pxo, pyo )
+			pxo = px
+			pyo = py
+			th += div
+		Next
+	End
+
+	Method DrawFrameOvalDepth( x:Float, y:Float, width:Float, height:Float, depth:float, scale:float )
+		Local xr := width
+		local yr := height
+		
+		Local dx_x := xr
+		Local dx_y := xr
+		Local dy_x := yr
+		Local dy_y := yr
+		Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
+		Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+
+		Local n := (Max( Int( dx+dy ),13 ) & ~3) * 0.2
+		
+		Local x0 := x
+		local y0 := y
+		
+		local th:float = .5*Pi*2/n
+		local px:float
+		local py:float
+		
+		local div:float = (Pi*2) / n
+		th = -Pi*0.5
+		local pxo:float = x0+Cos( th ) * xr
+		local pyo:float = y0+Sin( th ) * yr
+		th += div
+		local offset:float
+		local scaleDepth:float = scale * depth
+		local cs:float
+		'right side
+		For Local i:=0 to n
+			cs = Cos( th )
+			offset = cs * scaleDepth
+			px = x0 + cs * xr
+			py = y0 + Sin( th ) * yr + offset
+			DrawLine( px, py, pxo, pyo )
+			pxo = px
+			pyo = py
+			th += div
+		Next
+	End
+
+
+	Method DrawRoundedRect( x:float, y:float, width:float, height:float, radius:float )
+		Local n:float = radius * 0.75
+		local pointX:float[] = New float[n]
+		local pointY:float[] = New float[n]
+		
+		local x0:float = x + radius
+		local y0:float = y + radius
+		local px:float
+		local py:float
+
+		local div:float = (Pi*0.5) / n
+		local theta:float = Pi
+		n -= 1
+		
+		local k:int
+		For k = 0 to n
+			pointX[k] = Cos( theta ) * radius
+			pointY[k] = Sin( theta ) * radius
+			theta += div
+		Next
+		
+		local x1:float = x + width
+		local x1r:float = x1 - radius
+		local y1:float = y + height
+		local y1r:float = y1 - radius
+
+		AddDrawOp( _shader, _material, _blendMode, n*4, 1 )
+
+		For k = 0 to n
+			AddPointVertex( x0+pointX[k], y0+pointY[k], 0,0 )
+		Next
+		
+		For k = n To 0 Step -1
+			AddPointVertex( x1r-pointX[k], y0+pointY[k], 0,0 )
+		Next
+
+		For k = 0 To n
+			AddPointVertex( x1r-pointX[k], y1r-pointY[k], 0,0 )
+		Next
+
+		For k = n to 0 Step -1
+			AddPointVertex( x0+pointX[k], y1r-pointY[k], 0,0 )
+		Next
+	End
+
+	
+	Method DrawFrameRoundedRect( x:float, y:float, width:float, height:float, radius:float )
+'		canvas.DrawRect( x, y, width, height )
+		Local n:float = radius * 0.75
+		local pointX:float[] = New float[n]
+		local pointY:float[] = New float[n]
+		
+		local x0:float = x + radius
+		local y0:float = y + radius
+		local px:float
+		local py:float
+
+		local div:float = (Pi*0.5) / n
+		local theta:float = Pi
+		n -= 1
+		
+		local k:int
+		local k1:int
+		For k = 0 to n
+			pointX[k] = Cos( theta ) * radius
+			pointY[k] = Sin( theta ) * radius
+			theta += div
+		Next
+		
+		local x1:float = x + width
+		local x1r:float = x1 - radius
+		local y1:float = y + height
+		local y1r:float = y1 - radius
+
+'		canvas.Color = Color.Yellow
+		k1 = 1
+		For k = 0 to n-1
+			DrawLine( x0+pointX[k], y0+pointY[k], x0+pointX[k1], y0+pointY[k1] )
+			k1 += 1
+		Next
+
+		k1 -= 1
+		DrawLine( x0+pointX[k1], y0+pointY[k1], x1r-pointX[k1], y0+pointY[k1] )
+
+		k1 = 1
+		For k = 0 To n-1
+			DrawLine( x1r-pointX[k], y0+pointY[k], x1r-pointX[k1], y0+pointY[k1] )
+			k1 += 1
+		Next
+
+		k1 -= 1
+		DrawLine( x1r-pointX[0], y0+pointY[0], x1r-pointX[0], y1r-pointY[0] )
+
+		k1 = 1
+		For k = 0 To n-1
+			DrawLine( x1r-pointX[k], y1r-pointY[k], x1r-pointX[k1], y1r-pointY[k1] )
+			k1 += 1
+		Next
+
+		k1 -= 1
+		DrawLine( x0+pointX[k1], y1r-pointY[k1], x1r-pointX[k1], y1r-pointY[k1] )
+
+		k1 = 1
+		For k = 0 to n-1
+			DrawLine( x0+pointX[k], y1r-pointY[k], x0+pointX[k1], y1r-pointY[k1] )
+			k1 += 1
+		Next
+
+		k1 -= 1
+		DrawLine( x0+pointX[0], y1r-pointY[0], x0+pointX[0], y0-pointY[0] )
+	End
+
+	
+	Method DrawChamferRect( x:Float, y:Float, w:Float, h:Float, c:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x+w
+		Local y1:float = y+h
+		
+		Local cx0:float = x0 + c
+		Local cx1:float = x1 - c
+		Local cy0:float = y0 + c
+		Local cy1:float = y1 - c
+		
+		Local u0:float = w / c
+		Local v0:float = h / c
+		Local u1:float = w - u0
+		Local v1:float = h - v0
+		
+		AddDrawOp( _shader, _material, _blendMode, 8, 1 )
+		
+		AddVertex( cx0, y0, u0, 0 )
+		AddVertex( cx1, y0, u1, 0 )
+		AddVertex( x1, cy0, 1, v0 )
+		AddVertex( x1, cy1, 1, v1 )
+		AddVertex( cx1, y1, u1, 1 )
+		AddVertex( cx0, y1, u0, 1 )
+		AddVertex( x0, cy1, 0, v1 )
+		AddVertex( x0, cy0, 0, v0 )
+
+'		AddVertex( x0, y0, 0, 0 )
+'		AddVertex( x1, y0, 1, 0 )
+'		AddVertex( x1, y1, 1, 1 )
+'		AddVertex( x0, y1, 0, 1 )
+	End
+
+	Method DrawFrameChamferRect( x:Float, y:Float, w:Float, h:Float, c:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x+w
+		Local y1:float = y+h
+		
+		Local cx0:float = x0 + c
+		Local cx1:float = x1 - c
+		Local cy0:float = y0 + c
+		Local cy1:float = y1 - c
+		
+'		local u0:float = w / c
+'		local v0:float = h / c
+'		local u1:float = w - u0
+'		local v1:float = h - v0
+		
+		DrawLine( cx0, y0, cx1, y0 )
+		DrawLine( cx1, y0, x1, cy0 )
+		DrawLine( x1, cy0, x1, cy1 )
+		DrawLine( x1, cy1, cx1, y1 )
+		DrawLine( cx1, y1, cx0, y1 )
+		DrawLine( cx0, y1, x0, cy1 )
+		DrawLine( x0, cy1, x0, cy0 )
+		DrawLine( x0, cy0, cx0, y0 )
+				
+		
+'		AddDrawOp( _shader,_material,_blendMode,4,1 )
+		
+'		AddVertex( cx0, y0, u0, 0 )
+'		AddVertex( cx1, y0, u1, 0 )
+'		AddVertex( x1, cy0, 1, v0 )
+'		AddVertex( x1, cy1, 1, v1 )
+'		AddVertex( cx1, y1, u1, 1 )
+'		AddVertex( cx0, y1, u0, 1 )
+'		AddVertex( x0, cy1, 0, v1 )
+'		AddVertex( x0, cy0, 0, v0 )
+
+'		AddVertex( x0, y0, 0, 0 )
+'		AddVertex( x1, y0, 1, 0 )
+'		AddVertex( x1, y1, 1, 1 )
+'		AddVertex( x0, y1, 0, 1 )
+	End
+
+	Method DrawCross( x:Float, y:Float, w:Float )
+		Local x0 := x-w
+		Local y0 := y-w
+		Local x1 := x+w
+		Local y1 := y+w
+		
+		DrawLine( x0, y, x1, y )
+		DrawLine( x, y0, x, y1 )
+	End
+
+	Method DrawX( x:Float, y:Float, w:Float )
+		Local x0 := x-w
+		Local y0 := y-w
+		Local x1 := x+w
+		Local y1 := y+w
+		
+		DrawLine( x0, y0, x1, y1 )
+		DrawLine( x1, y0, x0, y1 )
+	End
+
+	Method DrawTarget( x:Float, y:Float, w1:Float, w2:float )
+		Local x0 := x-w1
+		Local y0 := y-w1
+		Local x1 := x+w1
+		Local y1 := y+w1
+		
+		Local x2 := x-w2
+		Local y2 := y-w2
+		Local x3 := x+w2
+		Local y3 := y+w2
+
+		DrawLine( x2, y, x0, y )
+		DrawLine( x3, y, x1, y )
+		DrawLine( x, y2, x, y0 )
+		DrawLine( x, y3, x, y1 )
+	End
+
+	Method DrawTriangle( x:Float, y:Float, w:Float, angle:float = 0 )
+		Local x0:float = x + Sin(angle) * w
+		Local y0:float = y + Cos(angle) * w
+		angle += Pi * .666666
+		Local x1:float = x + Sin(angle) * w
+		Local y1:float = y + Cos(angle) * w
+		angle += Pi * .666666
+		Local x2:float = x + Sin(angle) * w
+		Local y2:float = y + Cos(angle) * w
+		
+		AddDrawOp( _shader, _material, _blendMode, 3, 1 )
+		AddVertex( x0,y0,0,0 )
+		AddVertex( x1,y1,1,0 )
+		AddVertex( x2,y2,1,1 )
+	End
+
+	Method DrawFrameTriangle( x:Float, y:Float, w:Float, angle:float = 0 )
+		Local x0:float = x + Sin(angle) * w
+		Local y0:float = y + Cos(angle) * w
+		angle += Pi * .666666
+		Local x1:float = x + Sin(angle) * w
+		Local y1:float = y + Cos(angle) * w
+		angle += Pi * .666666
+		Local x2:float = x + Sin(angle) * w
+		Local y2:float = y + Cos(angle) * w
+		
+		DrawLine( x0, y0, x1, y1)
+		DrawLine( x1, y1, x2, y2)
+		DrawLine( x2, y2, x0, y0)
+	End
+
+	Method DrawFrameDiamond( x:Float, y:Float, w:Float )
+		Local x0 := x-w
+		Local y0 := y-w
+		Local x1 := x+w
+		Local y1 := y+w
+		
+		DrawLine( x0, y, x, y0 )
+		DrawLine( x, y0, x1, y )
+		DrawLine( x1, y, x, y1 )
+		DrawLine( x, y1, x0, y )
+		DrawPoint(x0, y)
+	End
+
+	Method DrawDiamond( x:Float, y:Float, w:Float )
+		Local x0 := x-w
+		Local y0 := y-w
+		Local x1 := x+w
+		Local y1 := y+w
+		
+		AddDrawOp( _shader,_material,_blendMode,4,1 )
+		
+		AddVertex( x0, y, 0,0 )
+		AddVertex( x, y0, 1,0 )
+		AddVertex( x1,y,  1,1 )
+		AddVertex( x,y1,  0,1 )
+	End
+
+	Method DrawFrameSquare( x:Float, y:Float, w:Float )
+		Local x0 := x-w
+		Local y0 := y-w
+		Local x1 := x+w
+		Local y1 := y+w
+		
+		DrawLine( x0, y0, x1, y0 )
+		DrawLine( x1, y0, x1, y1 )
+		DrawLine( x1, y1, x0, y1 )
+		DrawLine( x0, y1, x0, y0 )
+		DrawPoint(x0, y0)
+	End
+
+	Method DrawSquare( x:Float, y:Float, w:Float )
+		Local x0 := x-w
+		Local y0 := y-w
+		Local x1 := x+w
+		Local y1 := y+w
+		
+		AddDrawOp( _shader,_material,_blendMode,4,1 )
+		
+		AddVertex( x0, y0, 0,0 )
+		AddVertex( x1, y0, 1,0 )
+		AddVertex( x1, y1,  1,1 )
+		AddVertex( x0, y1,  0,1 )
+	End
+
+	Method DrawSquare( x:Float, y:Float, w:Float, srcImage:Image, shader:Shader, material:UniformBlock )
+		If Not shader Then
+			DrawSquare( x, y, w )
+			Return
+		End If
+
+		Local x0 := x-w
+		Local y0 := y-w
+'		Local x1 := x+w
+'		Local y1 := y+w
+		w += w
+		
+		DrawRect( x0, y0, w, w, srcImage, shader, material )
+	End
+
+	#rem wonkeydoc Draws a rectangle frame (made from lines).
+	Draws a rectangleline in the current [[Color]] using the current [[BlendMode]].
+	The rectangle vertex coordinates are also transform by the current [[Matrix]].
+	#end
+	Method DrawFrame( x:Float, y:Float, w:Float, h:Float )
+	
+		Local x0 := x
+		Local y0 := y
+		Local x1 := x+w-1
+		Local y1 := y+h-1
+		
+		DrawLine( x0, y0, x1, y0 )
+		DrawLine( x0, y0, x0, y1 )
+		DrawLine( x1, y0, x1, y1 )
+		DrawLine( x0, y1, x1, y1 )
+		DrawPoint(x1, y1)
+	End
+
+	Method DrawFrame3d( x:Float, y:Float, w:Float, h:Float )
+		Local x0 := x
+		Local y0 := y
+		Local x1 := x+w-1
+		Local y1 := y+h-1
+		
+		Local colStore:Color = _color
+		
+		Color = Color.White * 0.5
+		DrawLine( x0, y0, x1, y0 )
+		DrawLine( x0, y0, x0, y1 )
+		Color = Color.Black * 0.5
+		DrawLine( x1, y0, x1, y1 )
+		DrawLine( x0, y1, x1, y1 )
+		DrawPoint(x1, y1)
+		
+		Color = colStore
+	End
+
+	Method DrawColorRect( x:Float,y:Float,w:Float,h:Float )
+		Local colStore:Color = _color
+
+		Color = Color.Black
+		DrawFrame( x, y, w, h )
+
+		Color = Color.White
+		DrawFrame( x+1, y+1, w-2, h-2 )
+
+		Color = colStore
+		DrawRect( x+2, y+2, w-4, h-4 )
+	End
+
+	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, color0:Uint, color1:Uint, color2:Uint )
+		AddDrawOp( _shader, _material, _blendMode,3,1 )
+
+		AddVertex( x0,y0, 0,0, color0 )
+		AddVertex( x1,y1, 1,0, color1 )
+		AddVertex( x2,y2, 1,1, color2 )
+	End
+
+	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, color0:Color, color1:Color, color2:Color )
+		AddDrawOp( _shader, _material, _blendMode,3,1 )
+
+'		local pmcolor:UInt = _pmcolor
+		Local col0:uint = UInt(color0.a*255) Shl 24 | UInt(color0.b*255) Shl 16 | UInt(color0.g*255) Shl 8 | UInt(color0.r*255)
+		Local col1:uint = UInt(color1.a*255) Shl 24 | UInt(color1.b*255) Shl 16 | UInt(color1.g*255) Shl 8 | UInt(color1.r*255)
+		Local col2:uint = UInt(color2.a*255) Shl 24 | UInt(color2.b*255) Shl 16 | UInt(color2.g*255) Shl 8 | UInt(color2.r*255)
+
+		AddVertex( x0,y0, 0,0, col0 )
+		AddVertex( x1,y1, 1,0, col1 )
+		AddVertex( x2,y2, 1,1, col2 )
+
+'		_pmcolor = pmcolor
+	End
+
+	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
+						 col0:UInt, col1:UInt, col2:Uint,
+						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float )
+		AddDrawOp( _shader, _material, _blendMode, 3,1 )
+
+		AddVertex( x0,y0, u0,v0, col0 )
+		AddVertex( x1,y1, u1,v1, col1 )
+		AddVertex( x2,y2, u2,v2, col2 )
+	End
+
+	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
+						 col0:UInt, col1:UInt, col2:Uint,
+						 srcImage:Image, shader:Shader, material:UniformBlock )
+		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
+
+		AddVertex( x0,y0, 0,0, col0 )
+		AddVertex( x1,y1, 1,0, col1 )
+		AddVertex( x2,y2, 1,1, col2 )
+	End
+
+	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
+						 col0:UInt, col1:UInt, col2:Uint,
+						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
+						 srcImage:Image, shader:Shader, material:UniformBlock )
+		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
+
+		AddVertex( x0,y0, u0,v0, col0 )
+		AddVertex( x1,y1, u1,v1, col1 )
+		AddVertex( x2,y2, u2,v2, col2 )
+	End
+
+	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
+						 col0:UInt, col1:UInt, col2:Uint,
+						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
+						 srcImage:Image, shader:Shader )
+		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode,3,1 )
+
+		AddVertex( x0,y0, u0,v0, col0 )
+		AddVertex( x1,y1, u1,v1, col1 )
+		AddVertex( x2,y2, u2,v2, col2 )
+	End
+
+	Method DrawTriangleXYZ( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
+						 col0:UInt, col1:UInt, col2:Uint,
+						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
+						 srcImage:Image, shader:Shader, material:UniformBlock, 
+						 xp0:float, yp0:float, zp0:float, 
+						 xp1:float, yp1:float, zp1:float, 
+						 xp2:float, yp2:float, zp2:float  )
+		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
+
+		AddVertex( x0,y0,  u0,v0,  col0,  xp0,yp0,zp0 )
+		AddVertex( x1,y1,  u1,v1,  col1,  xp1,yp1,zp1 )
+		AddVertex( x2,y2,  u2,v2,  col2,  xp2,yp2,zp2 )
+	End
+
+	Method DrawTriangleXYZNormal( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
+						 col0:UInt, col1:UInt, col2:Uint,
+						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
+						 srcImage:Image, shader:Shader, material:UniformBlock, 
+						 xp0:float, yp0:float, zp0:float,
+						 xp1:float, yp1:float, zp1:float,
+						 xp2:float, yp2:float, zp2:float,
+						 nx:float, ny:float, nz:float )
+		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
+
+		AddVertexNormal( x0,y0,  u0,v0,  col0,  xp0,yp0,zp0,  nx,ny,nz )
+		AddVertexNormal( x1,y1,  u1,v1,  col1,  xp1,yp1,zp1,  nx,ny,nz )
+		AddVertexNormal( x2,y2,  u2,v2,  col2,  xp2,yp2,zp2,  nx,ny,nz )
+	End
+
+	Method DrawTriangleXYZNormal2( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
+						 col0:UInt, col1:UInt, col2:Uint,
+						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
+						 u10:float, v10:float, u11:float, v11:float, u12:float, v12:float, 
+						 srcImage:Image, shader:Shader, material:UniformBlock, 
+						 xp0:float, yp0:float, zp0:float,
+						 xp1:float, yp1:float, zp1:float,
+						 xp2:float, yp2:float, zp2:float,
+						 nx:float, ny:float, nz:float )
+		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
+
+		AddVertexNormal2( x0,y0,  u0,v0,  u10,v10,  col0,  xp0,yp0,zp0,  nx,ny,nz )
+		AddVertexNormal2( x1,y1,  u1,v1,  u11,v11,  col1,  xp1,yp1,zp1,  nx,ny,nz )
+		AddVertexNormal2( x2,y2,  u2,v2,  u12,v12,  col2,  xp2,yp2,zp2,  nx,ny,nz )
+	End
+
+
+	Method DrawRect( rect:Rectf, srcImage:Image, shader:Shader )
+		If Not shader Then
+			DrawRect( rect, srcImage )
+			Return
+		End If
+		Local tc := srcImage.TexCoords
+		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode, 4, 1 )
+		AddVertex( rect.min.x, rect.min.y, tc.min.x, tc.min.y )
+		AddVertex( rect.max.x, rect.min.y, tc.max.x, tc.min.y )
+		AddVertex( rect.max.x, rect.max.y, tc.max.x, tc.max.y )
+		AddVertex( rect.min.x, rect.max.y, tc.min.x, tc.max.y )
+	End
+
+	Method DrawRect( x:Float,y:Float,width:Float,height:Float, srcImage:Image, shader:Shader )
+		If Not shader Then
+			DrawRect( New Rectf( x,y,x+width,y+height ), srcImage )
+			Return
+		End If
+		DrawRect( New Rectf( x,y,x+width,y+height ), srcImage, shader )
+	End
+
+
+	Method DrawRect( rect:Rectf, srcImage:Image, shader:Shader, material:UniformBlock )
+		If Not shader Then
+			DrawRect( rect, srcImage )
+			Return
+		End If
+		Local tc:=srcImage.TexCoords
+		AddDrawOp( shader, material, srcImage.BlendMode, 4, 1 )
+		AddVertex( rect.min.x,rect.min.y,tc.min.x,tc.min.y )
+		AddVertex( rect.max.x,rect.min.y,tc.max.x,tc.min.y )
+		AddVertex( rect.max.x,rect.max.y,tc.max.x,tc.max.y )
+		AddVertex( rect.min.x,rect.max.y,tc.min.x,tc.max.y )
+	End
+
+	Method DrawRect( x:Float,y:Float,width:Float,height:Float, srcImage:Image, shader:Shader, material:UniformBlock )
+		If Not shader Then
+			DrawRect( New Rectf( x,y,x+width,y+height ), srcImage )
+			Return
+		End If
+		DrawRect( New Rectf( x,y,x+width,y+height ), srcImage, shader, material )
+	End
+
+
+	Method DrawHFadeRect( x:Float, y:Float, w:Float, h:Float, colLeft:Color, colRight:Color )
+		Local x0 := x
+		Local y0 := y
+		Local x1 := x+w
+		Local y1 := y+h
+	
+		AddDrawOp( _shader, _material, _blendMode, 4, 1 )
+
+		local pmcolor:UInt = _pmcolor
+		
+		local colL:uint = UInt(colLeft.a*255) Shl 24 | UInt(colLeft.b*255) Shl 16 | UInt(colLeft.g*255) Shl 8 | UInt(colLeft.r*255)
+		local colR:uint = UInt(colRight.a*255) Shl 24 | UInt(colRight.b*255) Shl 16 | UInt(colRight.g*255) Shl 8 | UInt(colRight.r*255)
+		
+		_pmcolor = colL
+		AddVertex( x0,y0, 0,0 )
+		_pmcolor = colR
+		AddVertex( x1,y0, 1,0 )
+		AddVertex( x1,y1, 1,1 )
+		_pmcolor = colL
+		AddVertex( x0,y1, 0,1 )
+
+		_pmcolor = pmcolor
+	End
+
+	Method DrawVFadeRect( x:Float, y:Float, w:Float, h:Float, colTop:Color, colBottom:Color )
+		Local x0 := x
+		Local y0 := y
+		Local x1 := x+w
+		Local y1 := y+h
+	
+		AddDrawOp( _shader, _material, _blendMode, 4, 1 )
+
+		local pmcolor:UInt = _pmcolor
+
+		local colT:uint = UInt(colTop.a*255) Shl 24 | UInt(colTop.b*255) Shl 16 | UInt(colTop.g*255) Shl 8 | UInt(colTop.r*255)
+		local colB:uint = UInt(colBottom.a*255) Shl 24 | UInt(colBottom.b*255) Shl 16 | UInt(colBottom.g*255) Shl 8 | UInt(colBottom.r*255)
+		
+		AddVertex( x0,y0, 0,0, colT )
+		AddVertex( x1,y0, 1,0, colT )
+		AddVertex( x1,y1, 1,1, colB )
+		AddVertex( x0,y1, 0,1, colB )
+
+		_pmcolor = pmcolor
+	End
+
+	#rem wonkeydoc Draws a quad from a source image.
+
+	The source image is used and drawn at the given quad position in the current [[Color]] using the current [[BlendMode]].
+	
+	The quad vertex coordinates are also transformed by the current [[Matrix]].
+
+	#end
+	Method DrawQuadImage( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image )
+'		Local vs:=image.Vertices
+'		Local ts:=image.TexCoords
+'		
+'		AddDrawOp( image.Shader,image.Material,image.BlendMode,4,1 )
+'		
+'		AddVertex( vs.min.x+tx,vs.min.y+ty,ts.min.x,ts.min.y )
+'		AddVertex( vs.max.x+tx,vs.min.y+ty,ts.max.x,ts.min.y )
+'		AddVertex( vs.max.x+tx,vs.max.y+ty,ts.max.x,ts.max.y )
+'		AddVertex( vs.min.x+tx,vs.max.y+ty,ts.min.x,ts.max.y )
+		
+'		If _lighting And image.ShadowCaster
+'			AddShadowCaster( image.ShadowCaster,tx,ty )
+'		Endif
+
+
+'		AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
+'		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, srcImage.TextureFilter, 4,1 )
+		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 4,1 )
+'		AddDrawOp( srcImage.Material, 4, 1 )
+		AddVertex( x0,y0,0,0 )
+		AddVertex( x1,y1,1,0 )
+		AddVertex( x2,y2,1,1 )
+		AddVertex( x3,y3,0,1 )
+	End
+
+	Method DrawQuadImage( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, shader:Shader )
+		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode, 4,1 )
+
+		AddVertex( x0,y0,0,0 )
+		AddVertex( x1,y1,1,0 )
+		AddVertex( x2,y2,1,1 )
+		AddVertex( x3,y3,0,1 )
+	End method
+
+	Method DrawQuadIntersectImage( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image )
+		LineIntersect( x0, y0, x2, y2,  x1, y1, x3, y3 )
+
+		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 3,1 )
+		AddVertex( x0,y0, 0,0 )
+		AddVertex( x1,y1, 1,0 )
+		AddVertex( _iX,_iY, 0.5,0.5 )
+
+		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 3,1 )
+		AddVertex( x1,y1, 1,0 )
+		AddVertex( x2,y2, 1,1 )
+		AddVertex( _iX,_iY, 0.5,0.5 )
+
+		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 3,1 )
+		AddVertex( x2,y2, 1,1 )
+		AddVertex( x3,y3, 0,1 )
+		AddVertex( _iX,_iY, 0.5,0.5 )
+
+		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 3,1 )
+		AddVertex( x3,y3, 0,1 )
+		AddVertex( x0,y0, 0,0 )
+		AddVertex( _iX,_iY, 0.5,0.5 )
+	End
+
+	Method DrawQuadIntersectImage( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, shader:Shader )
+		LineIntersect( x0, y0, x2, y2,  x1, y1, x3, y3 )
+
+		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode, 3,1 )
+		AddVertex( x0,y0, 0,0 )
+		AddVertex( x1,y1, 1,0 )
+		AddVertex( _iX,_iY, 0.5,0.5 )
+
+		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode, 3,1 )
+		AddVertex( x1,y1, 1,0 )
+		AddVertex( x2,y2, 1,1 )
+		AddVertex( _iX,_iY, 0.5,0.5 )
+
+		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode, 3,1 )
+		AddVertex( x2,y2, 1,1 )
+		AddVertex( x3,y3, 0,1 )
+		AddVertex( _iX,_iY, 0.5,0.5 )
+
+		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode, 3,1 )
+		AddVertex( x3,y3, 0,1 )
+		AddVertex( x0,y0, 0,0 )
+		AddVertex( _iX,_iY, 0.5,0.5 )
+	End
+
+	'line intersection
+	Field _iX:double
+	Field _iY:double
+	
+	Method LineIntersect( ax1:float, ay1:float, ax2:float, ay2:float, bx1:float, by1:float, bx2:float, by2:float )
+		Local dx:double = ax2 - ax1
+		Local dy:double = ay2 - ay1
+		
+		Local m1:double = dy / dx
+		' y = mx + c
+		' intercept c = y - mx
+		Local c1:double = ay1 - m1 * ax1 ' which is same as y2 - slope * x2
+		
+		dx = bx2 - bx1
+		dy = by2 - by1
+		
+		Local m2:double = dy / dx
+		Local c2:double = by2 - m2 * bx2 'which is same as y2 - slope * x2
+
+		If m1 - m2 = 0 Then
+			_iX = -1
+			_iY = -1
+'			Print "No Intersection between the lines"
+		Else
+			_iX = (c2 - c1) / (m1 - m2)
+			_iY = m1 * _iX + c1
+'			Print "intersection:"+ iX+" "+iY
+		End If
+	End
+	
+	#rem wonkeydoc Draws a quad from a source image.
+
+	The source image is used and drawn at the given quad position in the current [[Color]] using the current [[BlendMode]].
+	
+	The quad vertex coordinates are also transformed by the current [[Matrix]].
+
+	#end
+	Method DrawQuadImageIcon( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, iconNumber:Int, iconCount:Int )
+		If iconCount < 0 Then Return
+    
+		Local vs := srcImage.Vertices
+		Local wd:double = (vs.max.x - vs.min.x) / iconCount
+		'vs.max.x = vs.min.x + wd
+
+		Local tc := srcImage.TexCoords
+		wd = (tc.max.x - tc.min.x) / iconCount
+		tc.min.x = tc.min.x + (iconNumber * wd)
+		tc.max.x = tc.min.x + wd
+
+
+		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 4,1 )
+'		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, srcImage.TextureFilter, 4,1 )
+'		AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
+'		AddDrawOp( srcImage.Material, 4, 1 )
+		AddVertex( x0, y0,  tc.min.x, tc.min.y )
+		AddVertex( x1, y1,  tc.max.x, tc.min.y )
+		AddVertex( x2, y2,  tc.max.x, tc.max.y )
+		AddVertex( x3, y3,  tc.min.x, tc.max.y )
+
+'		AddVertex( x0,y0,0,0 )
+'		AddVertex( x1,y1,1,0 )
+'		AddVertex( x2,y2,1,1 )
+'		AddVertex( x3,y3,0,1 )
+	End
+
+	
+	#rem wonkeydoc Draws a quad from a source image slice.
+
+	The source image is used and drawn at the given quad position in the current [[Color]] using the current [[BlendMode]].
+	
+	The quad vertex coordinates are also transformed by the current [[Matrix]].
+
+	#end
+	Method DrawQuadImageSlice( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcVoxImage:ImageSlice, sliceNumber:Int, FrameNumber:Int )
+		If Not srcVoxImage Then Return
+		
+		If Not srcVoxImage._sliceLive[ FrameNumber, sliceNumber ] Then Return
+
+		
+'		Local tc:Rectf = srcVoxImage.Image.TexCoords
+'		local frameWidth:double = (tc.max.x - tc.min.x) / srcVoxImage.FrameCount
+'		Local wd:double = frameWidth / srcVoxImage.SliceXCount
+'		Local ht:double = 1.0 / srcVoxImage.SliceYCount
+
+'		tc.min.x = tc.min.x + ((sliceNumber Mod srcVoxImage.SliceXCount) * wd) + (frameWidth * FrameNumber)
+'		tc.max.x = tc.min.x + wd
+
+'		tc.min.y = tc.min.y + (int(sliceNumber / srcVoxImage.SliceXCount) * ht)
+'		tc.max.y = tc.min.y + ht
+
+'		tc.min.x += 0.0001
+'		tc.max.x -= 0.0001
+'		tc.min.y += 0.0001
+'		tc.max.y -= 0.0001
+
+		Local tc:Rectf = srcVoxImage._sliceTexCoords[ FrameNumber, sliceNumber ]
+		
+		AddDrawOp( srcVoxImage.Image.Shader, srcVoxImage.Image.Material, srcVoxImage.Image.BlendMode, 4,1 )
+'		AddDrawOp( srcVoxImage.Image.Shader, srcVoxImage.Image.Material, srcVoxImage.Image.BlendMode, srcVoxImage.Image.TextureFilter, 4,1 )
+
+		AddVertex( x0, y0,  tc.min.x, tc.min.y )
+		AddVertex( x1, y1,  tc.max.x, tc.min.y )
+		AddVertex( x2, y2,  tc.max.x, tc.max.y )
+		AddVertex( x3, y3,  tc.min.x, tc.max.y )
+	End
+	
+
+	#rem wonkeydoc Draws an image icon frame.
+	Draws an image using the current [[Color]], [[BlendMode]] and [[Matrix]].
+
+	@param tx X coordinate to draw image at.
+
+	@param ty Y coordinate to draw image at.
+
+	@param tx1 X1 coordinate to draw image to.
+
+	@param ty1 Y1 coordinate to draw image to.
+
+	@param iconNumber number from 0 of the icon frame to draw (frames start from 0 and go left to right in equal pixel amounts).
+
+	@param iconCount how many icon frames are packed into the image
+
+	@param sx X axis scale factor for drawing.
+
+	@param sy Y axis scale factor for drawing.
+
+	@param rotate (in radians) of the icon. 0 = no rotation
+  #end
+	Method DrawImageIcon( image:Image, tx:Float, ty:Float, iconNumber:Int, iconCount:Int, rotate:float = 0 )
+		If iconCount < 0 Then Return
+    
+		Local vs:=image.Vertices
+		Local wd:double = (vs.max.x - vs.min.x) / iconCount
+		vs.max.x = vs.min.x + wd
+
+		Local tc:=image.TexCoords
+		wd = (tc.max.x - tc.min.x) / iconCount
+		tc.min.x = tc.min.x + (iconNumber * wd)
+		tc.max.x = tc.min.x + wd
+		
+		If rotate <> 0 Then
+			Local x:float = vs.min.x
+			Local x1:float = vs.max.x
+			Local y:float = vs.min.y
+			Local y1:float = vs.max.y
+
+			Local xm:float = (x1 + x) * .5
+			Local ym:float = (y1 + y) * .5
+			
+			x -= xm
+			y -= ym
+			x1 -= xm
+			y1 -= ym
+
+			Local x2:float = x1
+			Local y2:float = y1
+			Local x3:float = x
+			Local y3:float = y1
+			x1 = x1
+			y1 = y
+			
+			AddDrawOp( image.Shader, image.Material, image.BlendMode, 4,1 )
+'			AddDrawOp( image.Shader, image.Material, image.BlendMode, image.TextureFilter, 4,1 )
+'			AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
+'			AddDrawOp( image.Material,4,1 )
+			AddVertex( x + tx, y + ty,  tc.min.x, tc.min.y )
+			AddVertex( x1 + tx, y1 + ty,  tc.max.x, tc.min.y )
+			AddVertex( x2 + tx, y2 + ty,  tc.max.x, tc.max.y )
+			AddVertex( x3 + tx, y3 + ty,  tc.min.x, tc.max.y )
+
+		Else	
+			Local x:float = vs.min.x + tx
+			Local x1:float = vs.max.x + tx
+			Local y:float = vs.min.y + ty
+			Local y1:float = vs.max.y + ty
+
+			AddDrawOp( image.Shader, image.Material, image.BlendMode, 4,1 )
+'			AddDrawOp( image.Shader, image.Material, image.BlendMode, image.TextureFilter, 4,1 )
+'			AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
+'			AddDrawOp( image.Material,4,1 )
+			AddVertex( x, y,  tc.min.x, tc.min.y )
+			AddVertex( x1, y,  tc.max.x, tc.min.y )
+			AddVertex( x1, y1,  tc.max.x, tc.max.y )
+			AddVertex( x, y1,  tc.min.x, tc.max.y )
+		End If
+		
+	End
+
+
+	Method DrawImageIconSize( image:Image, tx:Float, ty:Float, tx1:int, ty1:int, iconNumber:Int, iconCount:Int )
+		If iconCount < 0 Then Return
+    
+		Local vs:=image.Vertices
+		Local wd:double = (vs.max.x - vs.min.x) / iconCount
+		vs.max.x = vs.min.x + wd
+
+		Local tc:=image.TexCoords
+		wd = (tc.max.x - tc.min.x) / iconCount
+		tc.min.x = tc.min.x + (iconNumber * wd)
+		tc.max.x = tc.min.x + wd
+		
+		Local x:float = vs.min.x + tx
+		Local x1:float = tx1 + tx
+		Local y:float = vs.min.y + ty
+		Local y1:float = ty1 + ty
+
+		AddDrawOp( image.Shader, image.Material, image.BlendMode, 4,1 )
+'		AddDrawOp( image.Shader, image.Material, image.BlendMode, image.TextureFilter, 4,1 )
+'		AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
+'		AddDrawOp( image.Material,4,1 )
+		AddVertex( x, y,  tc.min.x, tc.min.y )
+		AddVertex( x1, y,  tc.max.x, tc.min.y )
+		AddVertex( x1, y1,  tc.max.x, tc.max.y )
+		AddVertex( x, y1,  tc.min.x, tc.max.y )
+		
+	End
+
+
+	Method DrawImageIcon( image:Image, tx:Float, ty:Float, iconNumber:Int, iconCount:Int, sx:Float, sy:float )
+		Local matrix := _matrix
+		Translate( tx, ty )
+		Scale( sx, sy )
+		Rotate( 0 )
+		
+		DrawImageIcon( image, 0,0, iconNumber, iconCount )
+		
+		_matrix = matrix
+	End
+
+	Method DrawImageIconRotate( image:Image, tx:Float, ty:Float, iconNumber:Int, iconCount:Int, rot:float, sx:Float, sy:float )
+		If iconCount < 0 Then Return
+
+		Local matrix := _matrix
+		Translate( tx, ty )
+		Scale( sx, sy )
+		Rotate( rot )
+		
+		DrawImageIcon( image, 0,0, iconNumber, iconCount, rot )
+		
+		_matrix = matrix
+	End
+
+	Method DrawImageRect( x:Float, y:Float, x1:Float, y1:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int )
+		Local srcRect := New Recti( srcX, srcY, srcX1, srcY1 )
+		Local s0 := Float( srcImage.Rect.min.x + srcRect.min.x ) / srcImage.Texture.Width
+		Local t0 := Float( srcImage.Rect.min.y + srcRect.min.y ) / srcImage.Texture.Height
+		Local s1 := Float( srcImage.Rect.min.x + srcRect.max.x ) / srcImage.Texture.Width
+		Local t1 := Float( srcImage.Rect.min.y + srcRect.max.y ) / srcImage.Texture.Height
+
+		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 4,1 )
+'		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, srcImage.TextureFilter, 4,1 )
+'		AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
+'		AddDrawOp( srcImage.Material, 4, 1 )
+		AddVertex( x, y, s0, t0 )
+		AddVertex( x1, y, s1, t0 )
+		AddVertex( x1, y1, s1, t1 )
+		AddVertex( x, y1, s0, t1 )
+	End
+
+	Method DrawImageQuad( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int, inset:float = 0.0015 )
+		Local wd:double = 1.0 / float(srcImage.Width)
+		Local ht:double = 1.0 / float(srcImage.Height)
+		
+		Local tx0:double = (wd * srcX) +inset
+		Local ty0:double = (ht * srcY) +inset
+		Local tx1:double = (wd * srcX1) -inset
+		Local ty1:double = (ht * srcY1) -inset
+		
+		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 4,1 )
+
+		AddVertex( x0, y0,  tx0, ty0 )
+		AddVertex( x1, y1,  tx1, ty0 )
+		AddVertex( x2, y2,  tx1, ty1 )
+		AddVertex( x3, y3,  tx0, ty1 )
+	End
+
+	Method DrawImageQuad( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int, shader:Shader, inset:float = 0.0015 )
+		Local wd:double = 1.0 / float(srcImage.Width)
+		Local ht:double = 1.0 / float(srcImage.Height)
+		
+		Local tx0:double = (wd * srcX) +inset
+		Local ty0:double = (ht * srcY) +inset
+		Local tx1:double = (wd * srcX1) -inset
+		Local ty1:double = (ht * srcY1) -inset
+		
+		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode, 4,1 )
+
+		AddVertex( x0, y0,  tx0, ty0 )
+		AddVertex( x1, y1,  tx1, ty0 )
+		AddVertex( x2, y2,  tx1, ty1 )
+		AddVertex( x3, y3,  tx0, ty1 )
+	End
+
+	Method DrawImageQuad( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int, shader:Shader, mat:UniformBlock, inset:float = 0.0015 )
+		Local wd:double = 1.0 / float(srcImage.Width)
+		Local ht:double = 1.0 / float(srcImage.Height)
+		
+		Local tx0:double = (wd * srcX) +inset
+		Local ty0:double = (ht * srcY) +inset
+		Local tx1:double = (wd * srcX1) -inset
+		Local ty1:double = (ht * srcY1) -inset
+		
+		AddDrawOp( shader, mat, srcImage.BlendMode, 4,1 )
+
+		AddVertex( x0, y0,  tx0, ty0 )
+		AddVertex( x1, y1,  tx1, ty0 )
+		AddVertex( x2, y2,  tx1, ty1 )
+		AddVertex( x3, y3,  tx0, ty1 )
+	End
+
+	Method DrawImageQuadPure( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int )
+		Local wd:double = 1.0 / float(srcImage.Width)
+		Local ht:double = 1.0 / float(srcImage.Height)
+		
+		Local tx0:double = (wd * srcX)
+		Local ty0:double = (ht * srcY)
+		Local tx1:double = (wd * srcX1)
+		Local ty1:double = (ht * srcY1)
+		
+		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 4,1 )
+'		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, srcImage.TextureFilter, 4,1 )
+
+		AddVertex( x0, y0,  tx0, ty0 )
+		AddVertex( x1, y1,  tx1, ty0 )
+		AddVertex( x2, y2,  tx1, ty1 )
+		AddVertex( x3, y3,  tx0, ty1 )
+	End
+
+	Method DrawImageQuadPure( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int, fx:Shader )
+		Local wd:double = 1.0 / float(srcImage.Width)
+		Local ht:double = 1.0 / float(srcImage.Height)
+		
+		Local tx0:double = (wd * srcX)
+		Local ty0:double = (ht * srcY)
+		Local tx1:double = (wd * srcX1)
+		Local ty1:double = (ht * srcY1)
+		
+		AddDrawOp( fx, srcImage.Material, srcImage.BlendMode, 4,1 )
+'		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, srcImage.TextureFilter, 4,1 )
+
+		AddVertex( x0, y0,  tx0, ty0 )
+		AddVertex( x1, y1,  tx1, ty0 )
+		AddVertex( x2, y2,  tx1, ty1 )
+		AddVertex( x3, y3,  tx0, ty1 )
+	End
+
+	Method DrawImageQuadPure( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int, fx:Shader, mat:UniformBlock )
+		Local wd:double = 1.0 / float(srcImage.Width)
+		Local ht:double = 1.0 / float(srcImage.Height)
+		
+		Local tx0:double = (wd * srcX)
+		Local ty0:double = (ht * srcY)
+		Local tx1:double = (wd * srcX1)
+		Local ty1:double = (ht * srcY1)
+		
+		AddDrawOp( fx, mat, srcImage.BlendMode, 4,1 )
+'		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, srcImage.TextureFilter, 4,1 )
+
+		AddVertex( x0, y0,  tx0, ty0 )
+		AddVertex( x1, y1,  tx1, ty0 )
+		AddVertex( x2, y2,  tx1, ty1 )
+		AddVertex( x3, y3,  tx0, ty1 )
+	End
+
+	Method SetUserUniformCallback(callback:Void(canvas:Canvas, uniforms:UniformBlock))
+		_userUniformCallback = callback
+	End
+	
+	Method SetCol2( r:uint, g:uint, b:uint, a:uint = 255 )
+		_pmcolor2 = UInt(a) Shl 24 | UInt(b) Shl 16 | UInt(g) Shl 8 | UInt(r)
+	End
+
+	Method SetCol2( color:Color )
+		_pmcolor2 = UInt(_color2.a) Shl 24 | UInt(_color2.b) Shl 16 | UInt(_color2.g) Shl 8 | UInt(_color2.r)
+	End
+
+	Method SetXYZ( x:float,  y:float,  z:float )
+		_xyzPosition.x = x
+		_xyzPosition.y = y
+		_xyzPosition.z = z
+	End
+	
+	
+	Property Color2:Color()
+		Return _color2
+	
+	Setter( color2:Color )
+		_color2=color2
+		
+		_pmcolor2=UInt(_color2.a) Shl 24 | UInt(_color2.b) Shl 16 | UInt(_color2.g) Shl 8 | UInt(_color2.r)
+	End
+
+'end of jeanluc additions
+'------------------------------------------------------------
+
 	
 	#rem wonkeydoc The current render target.
 	#end	
@@ -209,6 +1793,18 @@ Class Canvas
 
 		_device.RetroMode=rmode
 	End
+
+'jl added
+'------------------------------------------------------------
+	Field _textureFilter2:bool = True
+	
+	Property TextureFiltering:Bool()
+		Return _textureFilter2
+	Setter( enabled:Bool )
+		_textureFilter2 = enabled
+	End
+
+'------------------------------------------------------------
 	
 	#rem wonkeydoc The current point size for use with DrawPoint.
 	#end
@@ -994,25 +2590,70 @@ Class Canvas
 		Endif
 	End
 	
+'jl modified
+'------------------------------------------------------------
 	#rem wonkeydoc Draws an image.
-
 	Draws an image using the current [[Color]], [[BlendMode]] and [[Matrix]].
-
 	@param tx X coordinate to draw image at.
-
 	@param ty Y coordinate to draw image at.
-
 	@param tv X/Y coordinates to draw image at.
-
 	@param rz Rotation angle, in radians, for drawing.
-
 	@param sx X axis scale factor for drawing.
-
 	@param sy Y axis scale factor for drawing.
-
 	@param sv X/Y scale factor for drawing.
- 
 	#end	
+	Method DrawImage( image:Image, tx:Float, ty:Float, shader:Shader = null )
+	
+		Local vs:=image.Vertices
+		Local ts:=image.TexCoords
+		
+		If shader Then
+			AddDrawOp( shader, image.Material, image.BlendMode,4,1 )
+		Else
+			AddDrawOp( image.Shader, image.Material, image.BlendMode,4,1 )
+		End If
+		
+		AddVertex( vs.min.x+tx,vs.min.y+ty,ts.min.x,ts.min.y )
+		AddVertex( vs.max.x+tx,vs.min.y+ty,ts.max.x,ts.min.y )
+		AddVertex( vs.max.x+tx,vs.max.y+ty,ts.max.x,ts.max.y )
+		AddVertex( vs.min.x+tx,vs.max.y+ty,ts.min.x,ts.max.y )
+		
+		If _lighting And image.ShadowCaster
+			AddShadowCaster( image.ShadowCaster,tx,ty )
+		Endif
+	End
+	
+	Method DrawImage( image:Image, tx:Float, ty:Float, rz:Float, shader:Shader = null )
+		Local matrix:=Matrix
+		Matrix=matrix.Translate( tx,ty ).Rotate( rz )
+		DrawImage( image, 0,0, shader )
+'		DrawImage( image, 0,0 )
+		Matrix=matrix
+	End
+
+	Method DrawImage( image:Image, tx:Float, ty:Float, rz:Float, sx:Float, sy:Float, shader:Shader = null )
+		Local matrix:=Matrix
+		Matrix=matrix.Translate( tx,ty ).Rotate( rz ).Scale( sx,sy )
+		DrawImage( image, 0,0, shader )
+'		DrawImage( image, 0,0 )
+		Matrix=matrix
+	End
+
+	Method DrawImage( image:Image, tv:Vec2f, shader:Shader = null )
+		DrawImage( image, tv.x, tv.y, shader )
+'		DrawImage( image, tv.x,tv.y )
+	End
+	
+	Method DrawImage( image:Image, tv:Vec2f, rz:Float, shader:Shader = null )
+		DrawImage( image, tv.x, tv.y, rz, shader )
+'		DrawImage( image, tv.x, tv.y, rz )
+	End
+	
+	Method DrawImage( image:Image, tv:Vec2f, rz:Float, sv:Vec2f, shader:Shader = null )
+		DrawImage( image, tv.x, tv.y, rz, sv.x, sv.y, shader )
+'		DrawImage( image, tv.x,tv.y,rz, sv.x,sv.y )
+	End
+#rem
 	Method DrawImage( image:Image,tx:Float,ty:Float )
 	
 		Local vs:=image.Vertices
@@ -1055,7 +2696,9 @@ Class Canvas
 	Method DrawImage( image:Image,tv:Vec2f,rz:Float,sv:Vec2f )
 		DrawImage( image,tv.x,tv.y,rz,sv.x,sv.y )
 	End
-	
+#end rem
+'------------------------------------------------------------
+
 	#rem wonkeydoc Draws text.
 
 	Draws text using the current [[Color]], [[BlendMode]] and [[Matrix]].
@@ -1541,6 +3184,14 @@ Class Canvas
 	Global _gbuffers:=New Texture[2]
 	Global _gbrtargets:=New RenderTarget[2]
 
+'jl added
+'------------------------------------------------------------	
+	Field _userUniformCallback:Void(canvas:Canvas, uniform:UniformBlock)
+	Field _pmcolor2:UInt=~0
+	Field _color2:Color
+	Field _xyzPosition:Vec3f = new Vec3f()
+'------------------------------------------------------------
+
 	Field _rtarget:RenderTarget
 	Field _device:GraphicsDevice
 	Field _uniforms:UniformBlock
@@ -1678,7 +3329,13 @@ Class Canvas
 		_outlineColor=Color.Yellow
 		_outlinepmcolor=$ffffffff
 		_outlineWidth=0
-		
+
+'jl added
+'------------------------------------------------------------
+		_color2=Color.White
+		_pmcolor2=$ffffffff
+'------------------------------------------------------------
+
 		_matrix=New AffineMat3f
 	End
 
@@ -1705,6 +3362,12 @@ Class Canvas
 		_vp->texCoord1.x=s1
 		_vp->texCoord1.y=t1
 		_vp->color=color
+
+'jl added
+'------------------------------------------------------------		
+		_vp->color2 = _pmcolor2
+		_vp->xyzPosition = _xyzPosition
+'------------------------------------------------------------
 		_vp+=1
 	End
 
@@ -1716,18 +3379,16 @@ Class Canvas
 		_vp->texCoord1.x=_tanvec.x
 		_vp->texCoord1.y=_tanvec.y
 		_vp->color=color
+
+'jl added
+'------------------------------------------------------------		
+		_vp->color2 = _pmcolor2
+		_vp->xyzPosition = _xyzPosition
+'------------------------------------------------------------
+
 		_vp+=1
 	End
-	
-	Method AddPointVertex( tx:Float,ty:Float,s0:Float,t0:Float )
-		_vp->position.x=_matrix.i.x * tx + _matrix.j.x * ty + _matrix.t.x + .5
-		_vp->position.y=_matrix.i.y * tx + _matrix.j.y * ty + _matrix.t.y + .5
-		_vp->texCoord0.x=s0
-		_vp->texCoord0.y=t0
-		_vp->color=_pmcolor
-		_vp+=1
-	End
-	
+
 	Method AddVertex( tx:Float,ty:Float,s0:Float,t0:Float )
 		_vp->position.x=_matrix.i.x * tx + _matrix.j.x * ty + _matrix.t.x
 		_vp->position.y=_matrix.i.y * tx + _matrix.j.y * ty + _matrix.t.y
@@ -1736,9 +3397,87 @@ Class Canvas
 		_vp->texCoord1.x=_tanvec.x
 		_vp->texCoord1.y=_tanvec.y
 		_vp->color=_pmcolor
+'jladded
+'------------------------------------------------------------		
+		_vp->color2 = _pmcolor2
+		_vp->xyzPosition = _xyzPosition
+'------------------------------------------------------------
 		_vp+=1
 	End
-	
+
+
+'jl added
+'------------------------------------------------------------
+	Method AddVertex( tx:Float,ty:Float, s0:Float,t0:Float, color:UInt, xp:float, yp:float, zp:float )
+		_vp->position.x=_matrix.i.x * tx + _matrix.j.x * ty + _matrix.t.x
+		_vp->position.y=_matrix.i.y * tx + _matrix.j.y * ty + _matrix.t.y
+		_vp->texCoord0.x=s0
+		_vp->texCoord0.y=t0
+		_vp->texCoord1.x=_tanvec.x
+		_vp->texCoord1.y=_tanvec.y
+		_vp->color=color
+'jl added
+		_vp->color2 = _pmcolor2
+		_vp->xyzPosition.x = xp
+		_vp->xyzPosition.y = yp
+		_vp->xyzPosition.z = zp
+		_vp+=1
+	End
+
+	Method AddVertexNormal( tx:Float,ty:Float,s0:Float,t0:Float, color:UInt, xp:float, yp:float, zp:float, nx:float, ny:float, nz:float )
+		_vp->position.x=_matrix.i.x * tx + _matrix.j.x * ty + _matrix.t.x
+		_vp->position.y=_matrix.i.y * tx + _matrix.j.y * ty + _matrix.t.y
+		_vp->texCoord0.x=s0
+		_vp->texCoord0.y=t0
+		_vp->texCoord1.x=s0
+		_vp->texCoord1.y=t0
+		_vp->color=color
+'jl added
+		_vp->color2 = _pmcolor2
+		_vp->xyzPosition.x = xp
+		_vp->xyzPosition.y = yp
+		_vp->xyzPosition.z = zp
+		_vp->Normal.x = nx
+		_vp->Normal.y = ny
+		_vp->Normal.z = nz
+		_vp+=1
+	End
+
+	Method AddVertexNormal2( tx:Float,ty:Float,s0:Float,t0:Float, s1:float, t1:float, color:UInt, xp:float, yp:float, zp:float, nx:float, ny:float, nz:float )
+		_vp->position.x=_matrix.i.x * tx + _matrix.j.x * ty + _matrix.t.x
+		_vp->position.y=_matrix.i.y * tx + _matrix.j.y * ty + _matrix.t.y
+		_vp->texCoord0.x=s0
+		_vp->texCoord0.y=t0
+		_vp->texCoord1.x=s1
+		_vp->texCoord1.y=t1
+		_vp->color=color
+'jl added
+		_vp->color2 = _pmcolor2
+		_vp->xyzPosition.x = xp
+		_vp->xyzPosition.y = yp
+		_vp->xyzPosition.z = zp
+		_vp->Normal.x = nx
+		_vp->Normal.y = ny
+		_vp->Normal.z = nz
+		_vp+=1
+	End
+'------------------------------------------------------------
+
+	Method AddPointVertex( tx:Float,ty:Float,s0:Float,t0:Float )
+		_vp->position.x=_matrix.i.x * tx + _matrix.j.x * ty + _matrix.t.x + .5
+		_vp->position.y=_matrix.i.y * tx + _matrix.j.y * ty + _matrix.t.y + .5
+		_vp->texCoord0.x=s0
+		_vp->texCoord0.y=t0
+		_vp->color=_pmcolor
+
+'jladded
+'------------------------------------------------------------		
+		_vp->color2 = _pmcolor2
+		_vp->xyzPosition = _xyzPosition
+'------------------------------------------------------------
+		_vp+=1
+	End
+
 	'Drawing
 	'	
 	Method AddDrawOp( shader:Shader,material:UniformBlock,blendMode:BlendMode,primOrder:int,primCount:Int )
@@ -1804,7 +3543,16 @@ Class Canvas
 			
 			_device.Viewport=_rviewport
 		Endif
-		
+
+'jl added
+'------------------------------------------------------------
+		If Not UserUniforms.Empty
+			For Local useruniform:=Eachin UserUniforms
+				useruniform.callback(useruniform, _uniforms)
+			Next
+		End If 
+'------------------------------------------------------------
+
 		If _dirty & Dirty.Scissor
 
 			_rscissor=TransformRecti( _scissor+_viewport.Origin,_rmatrix ) & _rviewport
