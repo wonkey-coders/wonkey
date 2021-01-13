@@ -412,11 +412,6 @@ Class AudioData Extends Resource
 		Return Null
 	End method
 
-	Method GetSampleMono8:ubyte( index:Int )
-		return _data[index]
-	End method
-
-
 	Method Clear()
 		Select _format
 			Case AudioFormat.Mono8
@@ -447,6 +442,9 @@ Class AudioData Extends Resource
 		End
 	End method
 
+	Method GetSampleMono8:ubyte( index:Int )
+		return _data[index]
+	End method
 
 	Method GetSampleStereo8:ubyte( index:Int, channel:int )
 		return _data[index*2+(channel&1)]
