@@ -233,7 +233,7 @@ namespace wxGC{
 	}
 	
 	void retain( wxGCNode *node ){
-		BBGC_VALIDATE( node );
+		WXGC_VALIDATE( node );
 
 		if( !node ) return;
 		
