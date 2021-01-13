@@ -62,6 +62,7 @@ Namespace sdl2
 #Import "SDL/src/joystick/SDL_gamecontroller.c"
 #Import "SDL/src/joystick/SDL_joystick.c"
 #Import "SDL/src/joystick/iphoneos/SDL_mfijoystick.m"	'***** IOS *****
+#Import "SDL/src/joystick/virtual/SDL_virtualjoystick.c" 'v2.0.14 '***** IOS *****
 '#import "SDL/src/joystick/hidapi/SDL_hidapi_gamecube.c" 'v2.0.14
 '#import "SDL/src/joystick/hidapi/SDL_hidapi_ps4.c" 'v2.0.9'
 '#import "SDL/src/joystick/hidapi/SDL_hidapi_ps5.c" 'v2.0.14
