@@ -542,6 +542,76 @@ Class Sound Extends Resource
 		Return 0
 	End	
 
+	Method Draw( canvas:Canvas, x:float, y:float, width:float, height:float, showText:bool = True )
+		Local halfHeight:float = height * .5
+		Local x1:int = x + 4
+
+		If showText Then
+			canvas.Color = Color.LightGrey
+			canvas.DrawText( _file, x1, y+height-16 )
+		End if
+
+		Local last:float = y+halfHeight
+		Local curr:float
+		Local xp:float = float(width) / 255
+		
+		Local k:int
+		If _stereo Then
+
+			Local quarterHeight:float = height * .25
+			last = y+quarterHeight
+			Local height2:float = height - quarterHeight
+			Local last2:float = y+height2
+
+			canvas.Color = Color.DarkGrey
+			canvas.DrawLine( x, y+halfHeight, x+width, y+halfHeight )
+
+			canvas.Color = Color.White*0.6
+			canvas.DrawLine( x, y+quarterHeight, x+width, y+quarterHeight )
+			canvas.DrawLine( x, y+height2, x+width, y+height2 )
+
+			If showText Then
+				canvas.Color = Color.Grey
+				canvas.DrawText( "Left", x1, y )
+				canvas.DrawText( "Right", x1, y+halfHeight )
+			End if
+
+			canvas.Color = Color.LightGrey
+
+			Local wd:float = width / 256
+			Local x1:float = x+1
+			For k = 1 To 255
+				If k Mod 2 =  0 Then
+					curr = y+quarterHeight - ( _data[k] * quarterHeight )
+					canvas.DrawLine( x, last, x1+wd, curr )
+					last = curr
+				Else
+					curr = y+height2 - ( _data[k] * quarterHeight )
+					canvas.DrawLine( x, last2, x1+wd, curr )
+					last2 = curr
+				End If
+				x = x1
+				x1 += wd
+			Next
+		Else
+			canvas.Color = Color.White*0.6
+			canvas.DrawLine( x, y+halfHeight, x+width, y+halfHeight )
+
+			canvas.Color = Color.LightGrey
+
+			Local wd:float = width / 256
+			Local x1:float = x+1
+			For k = 1 To 255
+				curr = y+halfHeight - ( _data[k] * halfHeight )
+				canvas.DrawLine( x, last, x1, curr )
+				last = curr
+				x = x1
+				x1 += wd
+			Next
+			canvas.DrawLine( x, last, x1, y+halfHeight )
+		End If
+	End
+
 	Property Loop:bool()
 		Return _looped
 	Setter( loop:bool )
