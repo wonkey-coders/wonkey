@@ -194,6 +194,10 @@ Class AppInstance
 #Endif
 
 		_defaultFont=_res.OpenFont( "DejaVuSans",16 )
+'jl added
+'------------------------------------------------------------
+		_defaultMonoFont = Font.Load( DefaultMonoFontName,16 )
+'------------------------------------------------------------
 		
 		_theme=New Theme
 		
@@ -218,6 +222,27 @@ Class AppInstance
 		RequestRender()
 	End
 	
+'jl added
+'------------------------------------------------------------
+	#rem wonkeydoc @hidden
+	#end
+	Property DefaultFontName:String()
+		Return "asset::DejaVuSans.ttf"
+	End
+	
+	#rem wonkeydoc @hidden
+	#end
+	Property DefaultMonoFontName:String()
+		Return "asset::DejaVuSansMono.ttf"
+	End
+	
+	#rem wonkeydoc @hidden
+	#end
+	Property DefaultMonoFont:Font()
+		Return _defaultMonoFont
+	End
+'------------------------------------------------------------
+
 	#rem wonkeydoc Fallback font.
 	#end
 	Property DefaultFont:Font()
@@ -654,6 +679,11 @@ Class AppInstance
 	
 	Field _res:=New ResourceManager
 	Field _defaultFont:Font
+'jl added
+'------------------------------------------------------------
+	Field _defaultMonoFont:Font
+'------------------------------------------------------------
+
 	Field _theme:Theme
 
 	Field _active:Bool
