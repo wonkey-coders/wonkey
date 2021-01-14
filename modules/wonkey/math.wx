@@ -27,9 +27,9 @@ So:
 90 degrees is up (north)
 180 degrees is pointing left (west)
 280 degrees is pointing down (south)
-See Also [[RadianToDegrees]]
+See Also [[Rad2Deg]]
 #end
-function DegreesToRadian:float( degrees:float )
+Function Deg2Rad:float( degrees:float )
 	return degrees * Pi180' ) / 180.0
 End function
 
@@ -39,9 +39,9 @@ So:
 90 degrees is up (north)
 180 degrees is pointing left (west)
 280 degrees is pointing down (south)
-See Also [[DegreesToRadian]]
+See Also [[Deg2Rad]]
 #end
-function RadianToDegrees:float( radian:float )
+Function Rad2Deg:float( radian:float )
 	return radian / Pi180
 End function
 
