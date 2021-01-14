@@ -580,12 +580,24 @@ Function ParseOpts:String[]( opts:BuildOpts,args:String[] )
 		
 	Case "ios"
 		
-		opts.arch="armv7 arm64"
-		
-		If Int( GetEnv( "WX_IOS_USE_SIMULATOR" ) ) 
+		local ios_archs:=GetEnv( "WX_IOS_ARCHS" )
+
+		if ios_archs.Contains(" armv7 ")
+			opts.arch="armv7"
+		elseif ios_archs.Contains(" armv7s ")
+			opts.arch="armv7s"
+		elseif ios_archs.Contains(" arm64 ")
+			opts.arch="arm64"
+		elseif ios_archs.Contains(" arm64e ")
+			opts.arch="arm64e"
+		elseif ios_archs.Contains(" i386 ") and Int( GetEnv( "WX_IOS_USE_SIMULATOR" ) )
+			opts.arch="x86"
+		elseif ios_archs.Contains(" x86_64 ") and Int( GetEnv( "WX_IOS_USE_SIMULATOR" ) )
 			opts.arch="x64"
-			opts.threads=0 'Don't support threads
-		End
+		else
+			opts.arch="arm64"
+			If Int( GetEnv( "WX_IOS_USE_SIMULATOR" ) ) opts.arch="x64"
+		end
 		
 	Default
 		
