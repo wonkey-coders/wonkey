@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2018 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -24,7 +24,6 @@
 
 #include "../../core/windows/SDL_windows.h"
 
-#include "SDL_assert.h"
 #include "../SDL_sysvideo.h"
 #include "../SDL_pixels_c.h"
 #include "../../events/SDL_keyboard_c.h"
@@ -33,6 +32,7 @@
 #include "SDL_windowsvideo.h"
 #include "SDL_windowswindow.h"
 #include "SDL_hints.h"
+#include "SDL_timer.h"
 
 /* Dropfile support */
 #include <shellapi.h>
@@ -93,9 +93,14 @@ GetWindowStyle(SDL_Window * window)
             style |= STYLE_NORMAL;
         }
 
-        /* You can have a borderless resizable window */
         if (window->flags & SDL_WINDOW_RESIZABLE) {
-            style |= STYLE_RESIZABLE;
+            /* You can have a borderless resizable window, but Windows doesn't always draw it correctly,
+               see https://bugzilla.libsdl.org/show_bug.cgi?id=4466
+             */
+            if (!(window->flags & SDL_WINDOW_BORDERLESS) ||
+                SDL_GetHintBoolean("SDL_BORDERLESS_RESIZABLE_STYLE", SDL_FALSE)) {
+                style |= STYLE_RESIZABLE;
+            }
         }
 
         /* Need to set initialize minimize style, or when we call ShowWindow with WS_MINIMIZE it will activate a random window */
@@ -182,6 +187,7 @@ SetupWindowData(_THIS, SDL_Window * window, HWND hwnd, HWND parent, SDL_bool cre
     data->hinstance = (HINSTANCE) GetWindowLongPtr(hwnd, GWLP_HINSTANCE);
     data->created = created;
     data->mouse_button_flags = 0;
+    data->last_pointer_update = (LPARAM)-1;
     data->videodata = videodata;
     data->initializing = SDL_TRUE;
 
@@ -380,12 +386,13 @@ WIN_CreateWindowFrom(_THIS, SDL_Window * window, const void *data)
     HWND hwnd = (HWND) data;
     LPTSTR title;
     int titleLen;
+    SDL_bool isstack;
 
     /* Query the title from the existing window */
     titleLen = GetWindowTextLength(hwnd);
-    title = SDL_stack_alloc(TCHAR, titleLen + 1);
+    title = SDL_small_alloc(TCHAR, titleLen + 1, &isstack);
     if (title) {
-        titleLen = GetWindowText(hwnd, title, titleLen);
+        titleLen = GetWindowText(hwnd, title, titleLen + 1);
     } else {
         titleLen = 0;
     }
@@ -393,7 +400,7 @@ WIN_CreateWindowFrom(_THIS, SDL_Window * window, const void *data)
         window->title = WIN_StringToUTF8(title);
     }
     if (title) {
-        SDL_stack_free(title);
+        SDL_small_free(title, isstack);
     }
 
     if (SetupWindowData(_this, window, hwnd, GetParent(hwnd), SDL_FALSE) < 0) {
@@ -443,14 +450,15 @@ WIN_SetWindowIcon(_THIS, SDL_Window * window, SDL_Surface * icon)
     BYTE *icon_bmp;
     int icon_len, mask_len, y;
     SDL_RWops *dst;
+    SDL_bool isstack;
 
     /* Create temporary buffer for ICONIMAGE structure */
     mask_len = (icon->h * (icon->w + 7)/8);
     icon_len = 40 + icon->h * icon->w * sizeof(Uint32) + mask_len;
-    icon_bmp = SDL_stack_alloc(BYTE, icon_len);
+    icon_bmp = SDL_small_alloc(BYTE, icon_len, &isstack);
     dst = SDL_RWFromMem(icon_bmp, icon_len);
     if (!dst) {
-        SDL_stack_free(icon_bmp);
+        SDL_small_free(icon_bmp, isstack);
         return;
     }
 
@@ -481,7 +489,7 @@ WIN_SetWindowIcon(_THIS, SDL_Window * window, SDL_Surface * icon)
     hicon = CreateIconFromResource(icon_bmp, icon_len, TRUE, 0x00030000);
 
     SDL_RWclose(dst);
-    SDL_stack_free(icon_bmp);
+    SDL_small_free(icon_bmp, isstack);
 
     /* Set the icon for the window */
     SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM) hicon);
@@ -801,9 +809,8 @@ WIN_GetWindowWMInfo(_THIS, SDL_Window * window, SDL_SysWMinfo * info)
     }
 }
 
-
 /*
- * Creates a HelperWindow used for DirectInput events.
+ * Creates a HelperWindow used for DirectInput.
  */
 int
 SDL_HelperWindowCreate(void)
@@ -902,47 +909,64 @@ WIN_UpdateClipCursor(SDL_Window *window)
 {
     SDL_WindowData *data = (SDL_WindowData *) window->driverdata;
     SDL_Mouse *mouse = SDL_GetMouse();
-    RECT rect;
+    RECT rect, clipped_rect;
 
     if (data->in_title_click || data->focus_click_pending) {
         return;
     }
     if (data->skip_update_clipcursor) {
-        data->skip_update_clipcursor = SDL_FALSE;
+        return;
+    }
+    if (!GetClipCursor(&clipped_rect)) {
         return;
     }
 
     if ((mouse->relative_mode || (window->flags & SDL_WINDOW_INPUT_GRABBED)) &&
         (window->flags & SDL_WINDOW_INPUT_FOCUS)) {
         if (mouse->relative_mode && !mouse->relative_mode_warp) {
-            LONG cx, cy;
-            GetWindowRect(data->hwnd, &rect);
+            if (GetWindowRect(data->hwnd, &rect)) {
+                LONG cx, cy;
 
-            cx = (rect.left + rect.right) / 2;
-            cy = (rect.top + rect.bottom) / 2;
+                cx = (rect.left + rect.right) / 2;
+                cy = (rect.top + rect.bottom) / 2;
 
-            /* Make an absurdly small clip rect */
-            rect.left = cx - 1;
-            rect.right = cx + 1;
-            rect.top = cy - 1;
-            rect.bottom = cy + 1;
+                /* Make an absurdly small clip rect */
+                rect.left = cx - 1;
+                rect.right = cx + 1;
+                rect.top = cy - 1;
+                rect.bottom = cy + 1;
 
-            if (ClipCursor(&rect)) {
-                data->cursor_clipped_rect = rect;
+                if (SDL_memcmp(&rect, &clipped_rect, sizeof(rect)) != 0) {
+                    if (ClipCursor(&rect)) {
+                        data->cursor_clipped_rect = rect;
+                    }
+                }
             }
         } else {
             if (GetClientRect(data->hwnd, &rect) && !IsRectEmpty(&rect)) {
                 ClientToScreen(data->hwnd, (LPPOINT) & rect);
                 ClientToScreen(data->hwnd, (LPPOINT) & rect + 1);
-                if (ClipCursor(&rect)) {
-                    data->cursor_clipped_rect = rect;
+                if (SDL_memcmp(&rect, &clipped_rect, sizeof(rect)) != 0) {
+                    if (ClipCursor(&rect)) {
+                        data->cursor_clipped_rect = rect;
+                    }
                 }
             }
         }
-    } else if (GetClipCursor(&rect) && SDL_memcmp(&rect, &data->cursor_clipped_rect, sizeof(rect)) == 0) {
-        ClipCursor(NULL);
-        SDL_zero(data->cursor_clipped_rect);
+    } else {
+        POINT first, second;
+
+        first.x = clipped_rect.left;
+        first.y = clipped_rect.top;
+        second.x = clipped_rect.right - 1;
+        second.y = clipped_rect.bottom - 1;
+        if (PtInRect(&data->cursor_clipped_rect, first) &&
+            PtInRect(&data->cursor_clipped_rect, second)) {
+            ClipCursor(NULL);
+            SDL_zero(data->cursor_clipped_rect);
+        }
     }
+    data->last_updated_clipcursor = SDL_GetTicks();
 }
 
 int
