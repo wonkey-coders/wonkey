@@ -4,12 +4,16 @@ Namespace sdl2
 '#Import "SDL/iosLibs/libSDL2.a"
 
 'src
+#Import "SDL/src/SDL.c"
 #Import "SDL/src/SDL_assert.c"
+#Import "SDL/src/SDL_dataqueue.c" 'v2.0.9
 #Import "SDL/src/SDL_error.c"
 #Import "SDL/src/SDL_hints.c"
 #Import "SDL/src/SDL_log.c"
-#Import "SDL/src/SDL_dataqueue.c" 'v2.0.9
-#Import "SDL/src/SDL.c"
+
+'atomic
+#Import "SDL/src/atomic/SDL_atomic.c"
+#Import "SDL/src/atomic/SDL_spinlock.c"
 
 'audio
 #Import "SDL/src/audio/SDL_audio.c"
@@ -18,14 +22,8 @@ Namespace sdl2
 #Import "SDL/src/audio/SDL_audiotypecvt.c"
 #Import "SDL/src/audio/SDL_mixer.c"
 #Import "SDL/src/audio/SDL_wave.c"
-
 #Import "SDL/src/audio/dummy/SDL_dummyaudio.c"
-
 #Import "SDL/src/audio/coreaudio/SDL_coreaudio.m"		'***** IOS *****
-
-'atomic
-#Import "SDL/src/atomic/SDL_atomic.c"
-#Import "SDL/src/atomic/SDL_spinlock.c"
 
 'cpuinfo
 #Import "SDL/src/cpuinfo/SDL_cpuinfo.c"
@@ -47,30 +45,58 @@ Namespace sdl2
 
 'file
 #Import "SDL/src/file/SDL_rwops.c"
-
 #Import "SDL/src/file/cocoa/SDL_rwopsbundlesupport.m"	'***** IOS *****
+
+'filesystem
+#Import "SDL/src/filesystem/cocoa/SDL_sysfilesystem.m"
 
 'haptic
 #Import "SDL/src/haptic/SDL_haptic.c"
 #Import "SDL/src/haptic/dummy/SDL_syshaptic.c"
 
+'hidapi (Only enable SDL_JOYSTICK_HIDAPI support if you want to support Steam Controllers on iOS and tvOS)
+'#import "SDL/src/hidapi/SDL_hidapi.c" 'v2.0.14
+'#import "SDL/src/hidapi/ios/hid.m" 'v2.0.9
+
 'joystick
 #Import "SDL/src/joystick/SDL_gamecontroller.c"
 #Import "SDL/src/joystick/SDL_joystick.c"
+#Import "SDL/src/joystick/iphoneos/SDL_mfijoystick.m"	'***** IOS *****
+#Import "SDL/src/joystick/virtual/SDL_virtualjoystick.c" 'v2.0.14 '***** IOS *****
+'#import "SDL/src/joystick/hidapi/SDL_hidapi_gamecube.c" 'v2.0.14
+'#import "SDL/src/joystick/hidapi/SDL_hidapi_ps4.c" 'v2.0.9'
+'#import "SDL/src/joystick/hidapi/SDL_hidapi_ps5.c" 'v2.0.14
+'#import "SDL/src/joystick/hidapi/SDL_hidapi_rumble.c" 'v2.0.14
+'#import "SDL/src/joystick/hidapi/SDL_hidapi_steam.c" 'v2.0.14
+'#import "SDL/src/joystick/hidapi/SDL_hidapi_switch.c" 'v2.0.9'
+'#import "SDL/src/joystick/hidapi/SDL_hidapi_xbox360.c" 'v2.0.9'
+'#import "SDL/src/joystick/hidapi/SDL_hidapi_xbox360w.c" 'v2.0.14
+'#import "SDL/src/joystick/hidapi/SDL_hidapi_xboxone.c" 'v2.0.9'
+'#import "SDL/src/joystick/hidapi/SDL_hidapijoystick.c" 'v2.0.9'
 
-#Import "SDL/src/joystick/iphoneos/SDL_sysjoystick.m"	'***** IOS *****
+'libm (v2.0.14)
+'?
 
 'loadso
 #Import "SDL/src/loadso/dlopen/SDL_sysloadso.c"
 
+'locale (v2.0.14)
+#Import "SDL/src/locale/SDL_locale.c" 'v2.0.14
+#Import "SDL/src/locale/dummy/SDL_syslocale.c" 'v2.0.14
+
+'main (v2.0.14)
+#import "SDL/src/main/uikit/SDL_uikit_main.c" 'v2.0.14 (iOS/tvOS)
+
+'misc (v2.0.14)
+#import "SDL/src/misc/SDL_url.c" 'v2.0.14
+#import "SDL/src/misc/ios/SDL_sysurl.m" 'v2.0.14
+
 'power
 #Import "SDL/src/power/SDL_power.c"
-
 #Import "SDL/src/power/uikit/SDL_syspower.m"			'***** IOS *****
 
 'render
 #Import "SDL/src/render/SDL_render.c"
-'#Import "SDL/src/render/SDL_yuv_mmx.c"
 #Import "SDL/src/render/SDL_yuv_sw.c"
 #Import "SDL/src/render/software/SDL_blendfillrect.c"
 #Import "SDL/src/render/software/SDL_blendline.c"
@@ -79,7 +105,6 @@ Namespace sdl2
 #Import "SDL/src/render/software/SDL_drawpoint.c"
 #Import "SDL/src/render/software/SDL_render_sw.c"
 #Import "SDL/src/render/software/SDL_rotate.c"
-
 #Import "SDL/src/render/opengl/SDL_render_gl.c"
 #Import "SDL/src/render/opengl/SDL_shaders_gl.c"
 #Import "SDL/src/render/opengles/SDL_render_gles.c"
@@ -93,12 +118,14 @@ Namespace sdl2
 #Import "SDL/src/sensor/coremotion/SDL_coremotionsensor.m" 'v2.0.9
 
 'stdlib
+#Import "SDL/src/stdlib/SDL_crc32.c"
 #Import "SDL/src/stdlib/SDL_getenv.c"
 #Import "SDL/src/stdlib/SDL_iconv.c"
 #Import "SDL/src/stdlib/SDL_malloc.c"
 #Import "SDL/src/stdlib/SDL_qsort.c"
 #Import "SDL/src/stdlib/SDL_stdlib.c"
 #Import "SDL/src/stdlib/SDL_string.c"
+#Import "SDL/src/stdlib/SDL_strtokr.c"
 
 'thread
 #Import "SDL/src/thread/SDL_thread.c"
@@ -110,7 +137,6 @@ Namespace sdl2
 
 'timer
 #Import "SDL/src/timer/SDL_timer.c"
-
 #Import "SDL/src/timer/unix/SDL_systimer.c"				'***** IOS *****
 
 'video

@@ -1,6 +1,6 @@
 
-#ifndef BB_OPENGL_H
-#define BB_OPENGL_H
+#ifndef WX_OPENGL_H
+#define WX_OPENGL_H
 
 #include <stddef.h>
 
@@ -55,15 +55,15 @@ extern "C"{
 #define GLFUN(X) (GLAPIENTRY*bb##X)
 #endif
 
-void bbglInit();
+void wxglInit();
 
-GLAPI int BBGL_ES;
+GLAPI int WXGL_ES;
 
-GLAPI int BBGL_draw_buffers;
-GLAPI int BBGL_depth_texture;
-GLAPI int BBGL_seamless_cube_map;
-GLAPI int BBGL_texture_filter_anisotropic;
-GLAPI int BBGL_standard_derivatives;
+GLAPI int WXGL_draw_buffers;
+GLAPI int WXGL_depth_texture;
+GLAPI int WXGL_seamless_cube_map;
+GLAPI int WXGL_texture_filter_anisotropic;
+GLAPI int WXGL_standard_derivatives;
 
 typedef unsigned int GLenum;
 typedef unsigned int GLbitfield;

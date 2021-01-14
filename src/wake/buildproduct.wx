@@ -379,9 +379,9 @@ Class GccBuildProduct Extends BuildProduct
 			Else If opts.target="ios"
 				
 				If src.Contains( "_arm64_" )
-					cmd+=" -arch arm64"
+					cmd+=" "+GetEnv( "WX_AS_OPTS_IOS_ARM64" )
 				Else
-					cmd+=" -arch armv7"
+					cmd+=" "+GetEnv( "WX_AS_OPTS_IOS_ARMV7" )
 				Endif
 				
 			Endif

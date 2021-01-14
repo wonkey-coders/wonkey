@@ -11,6 +11,7 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
+		71ECB19925AEFDF6005DF350 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71ECB19825AEFDF6005DF350 /* CoreHaptics.framework */; };
 		7C0CB24E1D7E57ED008ED201 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 7C0CB24D1D7E57ED008ED201 /* assets */; };
 		7C0CB2501D7E5817008ED201 /* libwx_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C0CB24F1D7E5817008ED201 /* libwx_main.a */; };
 		7C0CB2561D7E664E008ED201 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C0CB2551D7E664E008ED201 /* OpenAL.framework */; };
@@ -31,6 +32,7 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		71ECB19825AEFDF6005DF350 /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
 		7C0CB24D1D7E57ED008ED201 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		7C0CB24F1D7E5817008ED201 /* libwx_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwx_main.a; sourceTree = "<group>"; };
 		7C0CB2551D7E664E008ED201 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
@@ -51,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71ECB19925AEFDF6005DF350 /* CoreHaptics.framework in Frameworks */,
 				E4BAAF0A22B660D500C7000F /* Metal.framework in Frameworks */,
 				7C0CB2501D7E5817008ED201 /* libwx_main.a in Frameworks */,
 				7C0CB2561D7E664E008ED201 /* OpenAL.framework in Frameworks */,
@@ -111,6 +114,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				71ECB19825AEFDF6005DF350 /* CoreHaptics.framework */,
 				E4BAAF0922B660D500C7000F /* Metal.framework */,
 				7CF29F9F1DDD3CA70093C8FB /* AVFoundation.framework */,
 				7C0CB2551D7E664E008ED201 /* OpenAL.framework */,
@@ -211,7 +215,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -234,7 +238,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",

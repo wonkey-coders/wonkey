@@ -1,6 +1,6 @@
 
-#ifndef BB_COLLISIONDETECT_H
-#define BB_COLLISIONDETECT_H
+#ifndef WX_COLLISIONDETECT_H
+#define WX_COLLISIONDETECT_H
 
 #include "btBulletDynamicsCommon.h"
 

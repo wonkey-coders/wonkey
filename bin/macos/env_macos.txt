@@ -1,5 +1,7 @@
 
-'***** MACOS DESKTOP TARGET *****
+'--------------------------------------------------------------------------------------'
+'----- MACOS DESKTOP TARGET
+'--------------------------------------------------------------------------------------
 
 WX_THREADS=1
 
@@ -29,8 +31,9 @@ WX_CPP_OPTS_MACOS_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 'AS options
 WX_AS_OPTS=
 
-
-'***** EMSCRIPTEN TARGET *****
+'--------------------------------------------------------------------------------------
+'----- EMSCRIPTEN TARGET
+'--------------------------------------------------------------------------------------
 
 'Change this to the location of your emsdk:
 '
@@ -63,17 +66,22 @@ WX_CPP_OPTS_EMSCRIPTEN=-std=c++11 -s USE_SDL=2 -s TOTAL_MEMORY=268435456 -s DISA
 WX_CPP_OPTS_EMSCRIPTEN_DEBUG=-O2
 WX_CPP_OPTS_EMSCRIPTEN_RELEASE=-O3 -DNDEBUG
 
+'--------------------------------------------------------------------------------------
+'----- ANDROID TARGET
+'--------------------------------------------------------------------------------------
 
-'***** ANDROID TARGET *****
+WX_ANDROID_NDK=${HOME}/Library/Android/sdk/ndk/22.0.7026061
 
 'Add path to android NDK
 '
-PATH=${HOME}/Library/Android/sdk/ndk-bundle:${PATH}
+'PATH=${HOME}/Library/Android/sdk/ndk-bundle:${PATH}
+PATH=${WX_ANDROID_NDK}:${PATH}
 
 'Controls APP_ABI in Application.mk for NDK
 '
-WX_ANDROID_APP_ABI=armeabi-v7a x86
 'WX_ANDROID_APP_ABI=all
+'WX_ANDROID_APP_ABI=armeabi-v7a x86
+WX_ANDROID_APP_ABI=arm64-v8a x86_64
 
 'Controls APP_PLATFORM in Application.mk for NDK
 '
@@ -88,10 +96,20 @@ WX_ANDROID_APP_CPPFLAGS=-std=c++11 -fno-stack-protector -frtti -fexceptions -w
 '
 WX_ANDROID_APP_STL=c++_static
 
+'--------------------------------------------------------------------------------------
+'----- IOS TARGET
+'--------------------------------------------------------------------------------------
 
-'***** IOS TARGET *****
-
-WX_IOS_ARCHS=-arch arm64
+' iOS archs
+'
+' iOS simulator x86: -arch i386   -target i386-apple-ios-simulator
+' iOS simulator x64: -arch x86_64 -target x86_64-apple-ios-simulator
+' iOS armv7        : -arch armv7  -target armv7-apple-ios
+' iOS armv7s       : -arch armv7s -target armv7-apple-ios
+' iOS arm64        : -arch arm64  -target arm64-apple-ios (default)
+' iOS arm64e       : -arch arm64e -target arm64-apple-ios (to test)
+'
+WX_IOS_ARCHS=-arch arm64 -target arm64-apple-ios
 
 'Note: must appear BEFORE first use of WX_IOS_SDK
 '
@@ -99,9 +117,13 @@ WX_IOS_USE_SIMULATOR=0
 
 'This is now set for you by mx2cc.
 '
-'WX_IOS_SDK=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk
+'WX_IOS_SDK=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk (deprecated)
 
-WX_IOS_DEPLOYMENT_TARGET=8.0
+WX_IOS_DEPLOYMENT_TARGET=9.0
+
+'AS options
+WX_AS_OPTS_IOS_ARM64=${WX_IOS_ARCHS}
+WX_AS_OPTS_IOS_ARMV7=-arch armv7 -target armv7-apple-ios
 
 'LD options
 WX_LD_OPTS_IOS=${WX_IOS_ARCHS} -isysroot ${WX_IOS_SDK}
