@@ -1,6 +1,6 @@
 
-#ifndef BB_INTERNAL_EDGES_H
-#define BB_INTERNAL_EDGES_H
+#ifndef WX_INTERNAL_EDGES_H
+#define WX_INTERNAL_EDGES_H
 
 #include "btBulletDynamicsCommon.h"
 

@@ -181,7 +181,7 @@ namespace wxFileSystem{
 #endif
 	}
 	
-#if BB_ANDROID
+#if WX_ANDROID
 	int android_read( void *cookie,char *buf,int size ){
 	
 	  return AAsset_read( (AAsset*)cookie,buf,size );
@@ -213,7 +213,7 @@ namespace wxFileSystem{
 /*	
 	FILE *fopen( const char *path,const char *mode ){
 
-#if BB_ANDROID
+#if WX_ANDROID
 		if( !strncmp( path,"asset::",7 ) ){
 			
 			AAssetManager *assetManager=Android_JNI_GetAssetManager();
