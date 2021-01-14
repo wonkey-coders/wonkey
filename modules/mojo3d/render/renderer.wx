@@ -617,7 +617,7 @@ When a new renderer is created, the config setting `MOJO3D\_RENDERER` can be use
 
 		Global _vertices:=New VertexBuffer( New Vertex3f[](
 			New Vertex3f( 0,1,0,0,0 ),
-			New Vertex3f( 1,1,0,1,0, ),
+			New Vertex3f( 1,1,0,1,0 ),
 			New Vertex3f( 1,0,0,1,1 ),
 			New Vertex3f( 0,0,0,0,1 ) ) )
 			
