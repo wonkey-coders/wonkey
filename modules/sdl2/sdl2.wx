@@ -1219,4 +1219,18 @@ Function SDL_GetPrefPath:CString( org:CString,app:CString )
 
 Function SDL_BYTESPERPIXEL:Int( format:Int )
 
+'FILE="sdl2/SDL_version.h"
+
+Const SDL_MAJOR_VERSION:UInt
+Const SDL_MINOR_VERSION:UInt
+Const SDL_PATCHLEVEL:UInt
+
+Struct SDL_version
+	Field major:UByte
+	Field minor:UByte
+	Field patch:UByte
+End
+
+Function SDL_GetVersion(ver:SDL_version Ptr)
+
 '${END}
