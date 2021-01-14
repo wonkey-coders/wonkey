@@ -2,6 +2,7 @@
 Namespace sdl2
 
 #Import "<libdl.a>"
+#import "<libOpenSLES.a>" 'v2.0.14
 
 'src
 #Import "SDL/src/SDL.c"
@@ -24,6 +25,7 @@ Namespace sdl2
 #Import "SDL/src/audio/SDL_wave.c"
 #Import "SDL/src/audio/android/SDL_androidaudio.c"
 #Import "SDL/src/audio/dummy/SDL_dummyaudio.c"
+#Import "SDL/src/audio/openslES/SDL_openslES.c" '2.0.14
 
 'core
 #Import "SDL/src/core/android/SDL_android.c"
@@ -58,7 +60,7 @@ Namespace sdl2
 #Import "SDL/src/haptic/dummy/SDL_syshaptic.c"
 
 'hidapi
-#import "SDL/src/hidapi/SDL_hidapi.c" 'v2.0.14
+'#import "SDL/src/hidapi/SDL_hidapi.c" 'v2.0.14
 #import "SDL/src/hidapi/android/hid.cpp" 'v2.0.9
 
 'joystick
@@ -75,6 +77,7 @@ Namespace sdl2
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xbox360w.c" 'v2.0.14
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xboxone.c" 'v2.0.9'
 #import "SDL/src/joystick/hidapi/SDL_hidapijoystick.c" 'v2.0.9'
+#Import "SDL/src/joystick/virtual/SDL_virtualjoystick.c" 'v2.0.14
 
 'libm (v2.0.14)
 '?
