@@ -223,6 +223,24 @@ Class Stream Extends std.resource.Resource
 		
 		Return Self
 	End
+
+'jl added
+'------------------------------------------------------------	
+	#rem wonkeydoc Reads an unsigned byte as a bool from the stream.
+	@return The Bool read (True or False).
+	#end
+	Method ReadBool:Bool()
+		Local n:UByte
+		Read( Varptr n,1 )
+		If n > 0 Then Return True
+
+'		If Read( _tmpbuf.Data,1 )=1 Return _tmpbuf.PeekUByte( 0 ) = 1
+		
+		Return false
+	End
+
+'jl end
+''------------------------------------------------------------
 	
 	#rem wonkeydoc Reads a byte from the stream.
 	
@@ -410,6 +428,21 @@ Class Stream Extends std.resource.Resource
 		Wend
 		Return String.FromCString( buf.Data.Data,buf.Length )
 	End
+
+'jl added
+'------------------------------------------------------------	
+	#rem wonkeydoc Write a bool as an unsigned byte to the stream.
+	@param data The Bool to write.
+	#end
+	Method WriteBool( data:Bool )
+		Local out:UByte = 0
+		If data Then out = 1
+		
+'		_tmpbuf.PokeUByte( 0,out )
+'		Write( _tmpbuf.Data,1 )
+		Write( Varptr data,1 )
+	End
+'------------------------------------------------------------
 	
 	#rem wonkeydoc Writes a byte to the stream.
 	
