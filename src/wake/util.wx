@@ -5,6 +5,8 @@ Namespace wx
 Const HostOS:="windows"
 #Else If __TARGET__="macos"
 Const HostOS:="macos"
+#Else If __TARGET__="macos-arm64"
+Const HostOS:="macos-arm64"
 #Else If __TARGET__="linux"
 Const HostOS:="linux"
 #Else If __TARGET__="raspbian"

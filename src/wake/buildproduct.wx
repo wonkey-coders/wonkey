@@ -203,7 +203,7 @@ Class BuildProduct
 			
 			'FIXME! Hack for copying frameworks on macos!
 			'		
-#If __HOSTOS__="macos"
+#If __HOSTOS__="macos" or __HOSTOS__="macos-arm64"
 			If ExtractExt( src ).ToLower()=".framework"
 				CreateDir( ExtractDir( dst ) )
 				If Not Exec( "rm -f -R "+dst ) Throw New BuildEx( "rm failed" )
@@ -383,7 +383,9 @@ Class GccBuildProduct Extends BuildProduct
 				Else
 					cmd+=" "+GetEnv( "WX_AS_OPTS_IOS_ARMV7" )
 				Endif
-				
+
+			Else If opts.target="macos-arm64"
+				cmd+=" "+GetEnv( "WX_AS_OPTS_MACOS" )
 			Endif
 			
 			isasm=True
@@ -609,7 +611,7 @@ Class GccBuildProduct Extends BuildProduct
 				If opts.appType="gui" cmd+=" -mwindows"
 			Endif
 			
-		Case "macos"
+		Case "macos", "macos-arm64"
 		
 			If opts.appType="gui"
 			

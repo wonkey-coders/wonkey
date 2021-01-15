@@ -477,10 +477,10 @@ Function ParseOpts:String[]( opts:BuildOpts,args:String[] )
 					opts.appType=val
 				Case "-target"
 					Select val
-					Case "desktop","windows","macos","linux","raspbian","emscripten","android","ios"
+					Case "desktop","windows","macos","linux","raspbian","emscripten","android","ios","macos-arm64"
 						opts.target=val
 					Default
-						Fail( "Invalid value for 'target' option: '"+val+"' - must be 'desktop', 'raspbian', 'emscripten', 'android' or 'ios'" )
+						Fail( "Invalid value for 'target' option: '"+val+"' - must be 'desktop', 'raspbian', 'emscripten', 'android' or 'ios' or 'macos-arm64'" )
 					End
 				Case "-config"
 					Select val
@@ -557,6 +557,12 @@ Function ParseOpts:String[]( opts:BuildOpts,args:String[] )
 		If Not opts.appType opts.appType="gui"
 		
 		opts.arch="x64"
+
+	Case "macos-arm64"
+
+		If Not opts.appType opts.appType="gui"
+
+		opts.arch="arm64"
 		
 	Case "raspbian"
 
@@ -609,7 +615,7 @@ Function ParseOpts:String[]( opts:BuildOpts,args:String[] )
 	Case "console","gui"
 		
 		Select opts.target
-		Case "windows","macos","linux","raspbian"
+		Case "windows","macos","linux","raspbian", "macos-arm64"
 		Default
 			Fail( "apptype '"+opts.appType+"' is only valid for desktop targets" )
 		End

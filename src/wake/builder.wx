@@ -59,7 +59,7 @@ Class BuilderInstance
 		ppsyms["__COMPILER__"]="~q"+opts.toolchain+"~q" '//new! maybe '__TOOL_CHAIN__' ? = 'msvc' or 'gcc'
 		
 		Select opts.target
-		Case "windows","macos","linux","raspbian"
+		Case "windows","macos","linux","raspbian", "macos-arm64"
 			
 			ppsyms["__DESKTOP_TARGET__"]="true"
 			ppsyms["__MOBILE_TARGET__"]="false"
@@ -100,6 +100,10 @@ Class BuilderInstance
 		Elseif opts.target="ios"
 			
 			If opts.arch="x64" profileName+="_x64"
+
+		ElseIf opts.target="macos-arm64"
+
+			profileName+="_arm64"
 				
 		Endif
 		
