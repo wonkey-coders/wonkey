@@ -186,6 +186,7 @@ End
 | Control		| LeftControl | RightControl mask.
 | Alt			| LeftAlt | RightAlt mask.
 | Gui			| LeftGui | RightGui mask.
+| Command		| LeftGui | RightGui mask.
 | LeftMenu		| LeftGui on Mac target, LeftControl on other targets.
 | RightMenu		| RightGui on Mac target, RightControl on other targets.
 | Menu			| Gui on Mac target, Control on other targets.
@@ -210,6 +211,11 @@ Enum Modifier
 	Control=		LeftControl|RightControl
 	Alt=			LeftAlt|RightAlt
 	Gui=			LeftGui|RightGui
+
+'jl added
+'------------------------------------------------------------
+	Command=		LeftGui|RightGui
+'------------------------------------------------------------
 	
 #if __HOSTOS__="macos"
 	LeftMenu=		LeftGui
