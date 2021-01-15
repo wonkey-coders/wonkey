@@ -219,7 +219,7 @@ typedef unsigned int uintptr_t;
 #define SDL_JOYSTICK_DINPUT 1
 #define SDL_JOYSTICK_HIDAPI 1
 #ifndef __WINRT__
-#define SDL_JOYSTICK_RAWINPUT   1
+#define SDL_JOYSTICK_RAWINPUT   0 //!\\ sey was here! (from 1 to 0)
 #endif
 #define SDL_JOYSTICK_VIRTUAL    1
 #ifdef SDL_WINDOWS10_SDK

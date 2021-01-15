@@ -84,7 +84,7 @@ Namespace sdl2
 #import "SDL/src/joystick/SDL_joystick.c"
 #import "SDL/src/joystick/windows/SDL_dinputjoystick.c"
 #import "SDL/src/joystick/windows/SDL_mmjoystick.c" 'v2.0.9'
-#import "SDL/src/joystick/windows/SDL_rawinputjoystick.c" 'v2.0.14'
+'#import "SDL/src/joystick/windows/SDL_rawinputjoystick.c" 'v2.0.14'
 #import "SDL/src/joystick/windows/SDL_windowsjoystick.c"
 #import "SDL/src/joystick/windows/SDL_xinputjoystick.c"
 #import "SDL/src/joystick/hidapi/SDL_hidapi_gamecube.c" 'v2.0.14
@@ -153,7 +153,7 @@ Namespace sdl2
 #Import "SDL/src/render/direct3d/SDL_render_d3d.c"
 #Import "SDL/src/render/direct3d/SDL_shaders_d3d.c"
 #Import "SDL/src/render/direct3d11/SDL_render_d3d11.c"
-#Import "SDL/src/render/direct3d11/SDL_render_winrt.cpp"
+'#Import "SDL/src/render/direct3d11/SDL_render_winrt.cpp"
 #Import "SDL/src/render/direct3d11/SDL_shaders_d3d11.c"
 
 
