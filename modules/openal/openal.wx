@@ -19,7 +19,7 @@
 	#Import "<AL/al.h>"
 	#Import "<AL/alc.h>"
 	
-#else if __TARGET__="macos"
+#else if __TARGET__="macos" or __TARGET__="macos-arm64"
 	
 '	#Import "<OpenAL.framework>"	'built-in openal on macos is borked.
 		
