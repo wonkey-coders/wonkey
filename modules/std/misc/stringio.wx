@@ -116,6 +116,17 @@ Function StringToULong:ULong( str:String,base:UInt )
 	Return value
 End
 
+'jl added
+'------------------------------------------------------------
+Function Asc:Int( input:String, index:UInt = 0 )
+	Return input[index]
+End
+
+Function Chr:String( character:Int )
+    Return String.FromChar(character)
+End
+'------------------------------------------------------------
+
 #rem wonkeydoc Converts a ulong value to a binary string.
 #end
 Function Bin:String( value:ULong )
