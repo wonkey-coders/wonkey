@@ -96,6 +96,19 @@ Class View
 		_acceptsMouseEvents=acceptsMouseEvents
 	End
 	
+'jl added
+'------------------------------------------------------------
+#rem
+	#rem wonkeydoc Whether the view accepts touch events.
+	#end
+	Property AcceptsTouchEvents:Bool()
+		Return _acceptsTouchEvents
+	Setter( acceptsTouchEvents:Bool )
+		_acceptsTouchEvents = acceptsTouchEvents
+	End
+#end
+'------------------------------------------------------------
+
 	#rem wonkeydoc View style.
 	#end
 	Property Style:Style()
@@ -318,6 +331,52 @@ Class View
 		Return _window
 	End
 	
+'jl added
+'------------------------------------------------------------	
+	#rem wonkeydoc @hidden
+	#end
+	Property Container:View() Virtual
+		Return Self
+	End
+
+#rem
+	#rem wonkeydoc @hidden
+	#end
+	Method AddChild( view:View )
+		If Not view Return
+		
+		Assert( Not view._parent )
+		
+		_children.Add( view )
+		
+		view._parent=Self
+	End
+
+
+	#rem wonkeydoc @hidden
+	#end
+	Method RemoveChild( view:View )
+		If Not view Return
+		
+		Assert( view._parent=Self )
+		
+		_children.Remove( view )
+		
+		view._parent=Null
+	End
+#end
+
+	#rem wonkeydoc @hidden
+	#end
+#rem
+	Method FindWindow:Window() Virtual
+		If _parent Return _parent.FindWindow()
+		
+		Return Null
+	End
+#end
+'------------------------------------------------------------
+
 	#rem wonkeydoc Gets a style.
 	
 	This is a convenience method equivalent to App.Theme.GetStyle( name ).
@@ -581,6 +640,14 @@ Class View
 	
 	Protected
 	
+'jl added
+'------------------------------------------------------------
+	Field _shiftDown:bool = False
+	Field _altDown:bool = False
+	Field _controlDown:bool = False
+	Field _commandDown:bool = False
+'------------------------------------------------------------
+
 	#rem wonkeydoc @hidden
 	#end
 	Method Measure()
@@ -788,22 +855,239 @@ Class View
 	Method OnKeyViewChanged( oldKeyView:View,newKeyView:View ) Virtual
 	End
 	
+'jl added/modified
+'------------------------------------------------------------	
 	#rem wonkeydoc Keyboard event handler.
 	
 	Called when a keyboard event is sent to this view.
 	
 	#end
-	Method OnKeyEvent( event:KeyEvent ) Virtual
-	End
+'	Method OnKeyEvent( event:KeyEvent ) Virtual
+'	End
 	
 	#rem wonkeydoc Mouse event handler.
 	
 	Called when a mouse event is sent to this view.
 	
 	#end
-	Method OnMouseEvent( event:MouseEvent ) Virtual
-	End
+'	Method OnMouseEvent( event:MouseEvent ) Virtual
+'	End
 	
+	#rem wonkeydoc Keyboard event handler.
+	Called when a keyboard event is sent to this view.
+	#end
+	Method OnKeyEvent( event:KeyEvent ) Virtual
+		_shiftDown = event.Modifiers & Modifier.Shift
+		_altDown = event.Modifiers & Modifier.Alt
+		_controlDown = event.Modifiers & Modifier.Control
+		_commandDown = event.Modifiers & Modifier.Gui
+
+		Select event.Type
+			Case EventType.KeyUp
+				OnKeyUp( event.Key )
+			Case EventType.KeyDown
+				OnKeyDown( event.Key )
+			Case EventType.KeyRepeat
+				OnKeyRepeat( event.Key )
+			Case EventType.KeyChar
+				OnKeyChar( event.Key )
+		End Select
+	End
+
+	#rem wonkeydoc Keyboard up event handler.
+	Called when a KeyUp event is sent to this view.
+	#end
+	Method OnKeyUp(  KeyUp:Key ) Virtual
+	End
+
+	#rem wonkeydoc Keyboard down event handler.
+	Called when a KeyDown event is sent to this view.
+	#end
+	Method OnKeyDown(  KeyDown:Key ) Virtual
+	End
+
+	#rem wonkeydoc Keyboard repeat event handler.
+	Called when a KeyRepeat event is sent to this view.
+	#end
+	Method OnKeyRepeat(  KeyRepeat:Key ) Virtual
+	End
+
+	#rem wonkeydoc Keyboard char event handler.
+	Called when a KeyChar event is sent to this view.
+	#end
+	Method OnKeyChar(  KeyChar:Key ) Virtual
+	End
+
+	Field _mouseX:Int
+	Field _mouseY:Int
+	Field _oldMouseX:Int
+	Field _oldMouseY:Int
+	Field _mouseDown:Bool ' MouseButton.Left down?
+	Field _clickMouse:Bool
+	Field _clickMouseX:Int
+	Field _clickMouseY:Int
+	
+	#rem wonkeydoc Mouse event handler.
+	Called when a mouse event is sent to this view.
+	#end
+	Method OnMouseEvent( event:MouseEvent ) Virtual
+		_oldMouseX = _mouseX
+		_oldMouseY = _mouseY
+		_mouseX = event.Location.X
+		_mouseY = event.Location.Y
+		
+		If Not Mouse.ButtonDown( MouseButton.Left ) Then _mouseDown = False
+
+		Select event.Type
+			Case EventType.MouseUp
+				If _clickMouse Then
+					local abx:int = Abs(_mouseX - _clickMouseX)
+					local aby:int = Abs(_mouseY - _clickMouseY)
+'					Print abx+" "+aby
+					If (abx + aby) < 3 Then
+						_mouseX = _clickMouseX
+						_mouseY = _clickMouseY
+					End if
+				End If
+				_clickMouse = false
+			Case EventType.MouseClick
+				_clickMouse = True
+				_clickMouseX = _mouseX
+				_clickMouseY = _mouseY
+			Case EventType.MouseMove
+				If _clickMouse Then
+					local abx:int = Abs(_mouseX - _clickMouseX)
+					local aby:int = Abs(_mouseY - _clickMouseY)
+'					Print abx+" "+aby
+					If (abx + aby) < 3 then Return
+				End If
+			Default
+				_clickMouse = false
+		End Select
+
+		Select event.Type
+			Case EventType.MouseWheel
+				OnMouseWheel( event.Wheel.X, event.Wheel.Y)
+			Case EventType.MouseUp
+				_mouseDown = false
+				OnMouseUp()
+			Case EventType.MouseDown
+				_mouseDown = True
+				OnMouseDown()
+			Case EventType.MouseEnter
+				_mouseDown = False
+				OnMouseEnter()
+			Case EventType.MouseLeave
+				_mouseDown = False
+				OnMouseLeave()
+			Case EventType.MouseMove
+				OnMouseMove()
+			Case EventType.MouseClick
+				OnMouseClick()
+			Case EventType.MouseRightClick
+				OnMouseRightClick()
+			Case EventType.MouseDoubleClick
+				OnMouseDoubleClick()
+		End Select
+	End
+
+	
+	#rem wonkeydoc Mouse X position in the view.
+	#end
+	Property MouseX:Int()
+		Return _mouseX
+	End
+
+
+	#rem wonkeydoc Mouse Y position in the view.
+	#end
+	Property MouseY:Int()
+		Return _mouseY
+	End
+
+
+	#rem wonkeydoc Mouse X position (from 0 to 1).
+	#end
+	Property MouseFX:float()
+		Return float(_mouseX) / Width
+	End
+
+
+	#rem wonkeydoc Mouse Y position (from 0 to 1).
+	#end
+	Property MouseFY:float()
+		Return float(_mouseY) / Height
+	End
+
+
+	#rem wonkeydoc the status of the main mouse button.
+	#end
+	Property MouseDown:bool()
+		Return _mouseDown
+	End
+
+
+	#rem wonkeydoc Mouse wheel event handler.
+		Called when a mouse wheel event is sent to this view.
+	#end
+	Method OnMouseWheel( x:float, y:float) Virtual
+	End
+
+
+	#rem wonkeydoc MouseUp event handler.
+		Called when a mouseup event is sent to this view.
+	#end
+	Method OnMouseUp() Virtual
+	End
+
+
+	#rem wonkeydoc MouseDown event handler.
+		Called when a mousedown event is sent to this view.
+	#end
+	Method OnMouseDown() Virtual
+	End
+
+
+	#rem wonkeydoc MouseEnter event handler.
+		Called when a MouseEnter event is sent to this view.
+	#end
+	Method OnMouseEnter() Virtual
+	End
+
+
+	#rem wonkeydoc MouseLeave event handler.
+		Called when a MouseLeave event is sent to this view.
+	#end
+	Method OnMouseLeave() Virtual
+	End
+
+
+	#rem wonkeydoc MouseMove event handler.
+		Called when a MouseMove event is sent to this view.
+	#end
+	Method OnMouseMove() Virtual
+	End
+
+	#rem wonkeydoc MouseClick event handler.
+		Called when a MouseClick event is sent to this view.
+	#end
+	Method OnMouseClick() Virtual
+	End
+
+	#rem wonkeydoc MouseRightClick event handler.
+		Called when a MouseRightClick event is sent to this view.
+	#end
+	Method OnMouseRightClick() Virtual
+	End
+
+	#rem wonkeydoc MouseDoubleClick event handler.
+		Called when a MouseDoubleClick event is sent to this view.
+	#end
+	Method OnMouseDoubleClick() Virtual
+	End
+
+'------------------------------------------------------------	
+
 	#rem wonkeydoc The last size returned by OnMeasure.
 	#end
 	Property MeasuredSize:Vec2i()
@@ -898,6 +1182,12 @@ Class View
 	Field _active:Bool=False
 	Field _acceptsKeyEvents:Bool=True
 	Field _acceptsMouseEvents:Bool=True
+'jl added
+'------------------------------------------------------------
+#rem
+	Field _acceptsTouchEvents:Bool=True
+#end
+'------------------------------------------------------------
 	
 	Field _style:Style
 	Field _styleState:String
