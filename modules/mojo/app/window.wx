@@ -167,6 +167,120 @@ Class Window Extends View
 		
 	End
 	
+'jl added
+'------------------------------------------------------------
+	#rem wonkeydoc Resize the current window
+	#end	
+	Method WindowResize( x:int, y:int,  width:int, height:int)
+		SDL_SetWindowPosition( _sdlWindow, x, y )
+		SDL_SetWindowSize( _sdlWindow, width, height )
+		
+		_frame = GetFrame()
+		Frame = _frame
+		_weirdHack = True
+	End 
+
+
+	Method SetMinSize( minX:int, minY:int )
+'		Local w:Int,h:Int
+		SDL_SetWindowMinimumSize( _sdlWindow, minX, minY )
+	End
+
+
+	Property DesktopWidth:int()
+		Return App.DesktopSize.X
+	End
+
+
+	Property DesktopHeight:int()
+		Return App.DesktopSize.Y
+	End
+
+
+	Property WindowWidth:int()
+		Return Frame.Width
+
+'		If Not _sdlWindow Then Return -1
+'
+'		Local x:Int
+'		Local y:Int
+'		SDL_GetWindowSize( _sdlWindow, Varptr x, Varptr y )
+'		Return x
+	End
+
+
+	Property WindowHeight:int()
+		Return Frame.Height
+'		If Not _sdlWindow Then Return -1
+'
+'		Local x:Int
+'		Local y:Int
+'		SDL_GetWindowSize( _sdlWindow, Varptr x, Varptr y )
+'		Return y
+	End
+
+
+	Property WindowX:int()
+		Return Frame.X
+'		If Not _sdlWindow Then Return -1
+'
+'		Local x:Int
+'		Local y:Int
+'		SDL_GetWindowPosition( _sdlWindow, Varptr x, Varptr y )
+'		Return x
+	End
+
+
+	Property WindowY:int()
+		Return Frame.Y
+'		If Not _sdlWindow Then Return -1
+'
+'		Local x:Int
+'		Local y:Int
+'		SDL_GetWindowPosition( _sdlWindow, Varptr x, Varptr y )
+'		Return y
+	End
+
+
+	Property WindowXY:Vec2i()
+		Local ret:Vec2i = New Vec2i( Frame.X, Frame.Y )
+		Return ret
+
+'		Local ret:Vec2i = New Vec2i( -1, -1 )
+'		If Not _sdlWindow Then Return ret
+'		
+'		Local x:Int
+'		Local y:Int
+'		SDL_GetWindowMinimumSize( _sdlWindow, Varptr x, Varptr y )
+'
+'		Return ret
+	End
+
+
+	Property IsFullscreen:bool()
+		Local ds:Vec2i = New Vec2i( 0, 0 )
+		ds = App.DesktopSize
+
+		Return Frame.X = 0 And Frame.Y = 0 And Frame.Width = ds.X And Frame.Height = ds.Y
+
+'		If Not _sdlWindow Then Return false
+'
+'		Local x:Int
+'		Local y:Int
+'		SDL_GetWindowMinimumSize( _sdlWindow, Varptr x, Varptr y )
+'		Local w:Int
+'		Local h:Int
+'		SDL_GetWindowSize( _sdlWindow, Varptr w, Varptr h )
+'		
+'		Local ds:Vec2i = New Vec2i( 0, 0 )
+'		ds = App.DesktopSize
+'
+'		return x = 0 And y = 0 And w = ds.X And h = ds.Y
+''		Return Cast<SDL_WindowFlags>( SDL_GetWindowFlags( _sdlWindow ) ) & SDL_WINDOW_FULLSCREEN
+	End
+
+'------------------------------------------------------------
+
 	Method ResizeWindow( rect:Recti )
 		
 		Local x:Int=rect.Left/_mouseScale.x
