@@ -250,6 +250,25 @@ Function AssetsDir:String()
 	Return _assetsDir
 End
 
+'JL Added
+''------------------------------------------------------------
+#rem wonkeydoc Gets the filesystem directory of the development assets directory.
+Note that assets are only stored in the filesystem on the desktop and emscripten targets. Other targets will return an empty string.
+@return The directory app assets are stored in.
+#end
+#rem
+Function DevAssetsDir:String()
+#If __TARGET__="macos"
+	Return AppDir()+"../../../../../assets/"
+#Else If __DESKTOP_TARGET__ Or __TARGET__="emscripten"
+	Return AppDir()+"assets/"
+#Else
+	Return ""
+#Endif
+End
+#rem
+''------------------------------------------------------------
+
 #rem wonkeydoc Changes the assets dir.
 
 Set to an empty string to use the default assets dir.
@@ -325,6 +344,137 @@ Function ExternalDir:String()
 	
 	Return GetSpecialDir( "external" )
 End
+
+'jl added
+'------------------------------------------------------------
+#rem wonkeydoc Gets the filesystem directory of the Applications directory.
+Note that only the desktop targets have a user directory. Other targets will return an empty string.
+@return The Applications directory.
+#end
+Function ApplicationsDir:String()
+#If __TARGET__="windows"
+	Return (String.FromCString( getenv( "HOMEDRIVE" ) )+String.FromCString( getenv( "HOMEPATH" ) )).Replace( "\","/" )+"/Programs/"
+#Else If __DESKTOP_TARGET__
+	Return String.FromCString( getenv( "HOME" ) )+"/Applications/"
+#Endif
+	Return ""
+End
+
+#rem wonkeydoc Gets the filesystem directory of the user.
+Note that only the desktop targets have a user directory. Other targets will return an empty string.
+@return The current user directory.
+#end
+Function UserDir:String()
+#If __TARGET__="windows"
+	Return (String.FromCString( getenv( "HOMEDRIVE" ) )+String.FromCString( getenv( "HOMEPATH" ) )).Replace( "\","/" )+"/"
+#Else If __DESKTOP_TARGET__
+	Return String.FromCString( getenv( "HOME" ) )+"/"
+#Endif
+	Return ""
+End
+
+#rem wonkeydoc Gets the filesystem directory of the user Documents.
+Note that only the desktop targets have a user directory. Other targets will return an empty string.
+@return The current Documents directory.
+#end
+Function DocumentsDir:String()
+#If __TARGET__="windows"
+	Return (String.FromCString( getenv( "HOMEDRIVE" ) )+String.FromCString( getenv( "HOMEPATH" ) )).Replace( "\","/" )+"/Documents/"
+#Else If __DESKTOP_TARGET__
+	Return String.FromCString( getenv( "HOME" ) )+"/Documents/"
+#Endif
+	Return ""
+End
+
+#rem wonkeydoc Gets the filesystem directory of the user Downloads.
+Note that only the desktop targets have a user directory. Other targets will return an empty string.
+@return The current Downloads directory.
+#end
+Function DownloadsDir:String()
+#If __TARGET__="windows"
+	Return (String.FromCString( getenv( "HOMEDRIVE" ) )+String.FromCString( getenv( "HOMEPATH" ) )).Replace( "\","/" )+"/Downloads/"
+#Else If __DESKTOP_TARGET__
+	Return String.FromCString( getenv( "HOME" ) )+"/Downloads/"
+#Endif
+	Return ""
+End
+
+#rem wonkeydoc Gets the filesystem directory of the user Movies.
+Note that only the desktop targets have a user directory. Other targets will return an empty string.
+@return The current Movies directory.
+#end
+Function MoviesDir:String()
+#If __TARGET__="windows"
+	Return (String.FromCString( getenv( "HOMEDRIVE" ) )+String.FromCString( getenv( "HOMEPATH" ) )).Replace( "\","/" )+"/Movies/"
+#Else If __DESKTOP_TARGET__
+	Return String.FromCString( getenv( "HOME" ) )+"/Movies/"
+#Endif
+	Return ""
+End
+
+#rem wonkeydoc Gets the filesystem directory of the user Pictures.
+Note that only the desktop targets have a user directory. Other targets will return an empty string.
+@return The current Pictures directory.
+#end
+Function PicturesDir:String()
+#If __TARGET__="windows"
+	Return (String.FromCString( getenv( "HOMEDRIVE" ) )+String.FromCString( getenv( "HOMEPATH" ) )).Replace( "\","/" )+"/Pictures/"
+#Else If __DESKTOP_TARGET__
+	Return String.FromCString( getenv( "HOME" ) )+"/Pictures/"
+#Endif
+	Return ""
+End
+
+#rem wonkeydoc Gets the filesystem directory of the user Data.
+Note that only the desktop targets have a user directory. Other targets will return an empty string.
+@return The current Data directory.
+#end
+Function DataDir:String()
+#If __TARGET__="windows"
+	Return GetEnv("appdata")+"/"
+#Else If __TARGET__="macos"
+	Return UserDir() + "Library/Preferences/"
+#Else If __TARGET__="android"
+	Local env:=sdl2.Android_JNI_GetEnv()
+	
+	Local cls:=env.FindClass( "com/monkey2/lib/Monkey2FileSystem" )
+	
+	Local mth:=env.GetStaticMethodID( cls,"getInternalDir","()Ljava/lang/String;" )
+	
+	Local dir:=env.CallStaticStringMethod( cls,mth,Null )
+	
+	Return dir
+	
+#Elseif __TARGET__="ios"
+ 
+	Return GetSpecialDir( "assets" )
+'	local dir:=getInternalDir()
+'	
+'	Return dir
+	
+#Endif
+
+	Return ""
+End
+
+
+#rem wonkeydoc Removes the last directory from a path.
+@return The new directory.
+#end
+#rem
+function RemoveDir:string( path:String )
+	If path.Right(1) = "/" Then
+		path = path.Left( path.Length - 1 )
+	End If
+	While path.Length > 0 and path.Right(1) <> "/"
+		path = path.Left( path.Length - 1 )
+	Wend
+		
+	Return path
+End function
+#end
+'------------------------------------------------------------
+
 
 #rem wonkeydoc Extracts the root directory from a file system path.
 
