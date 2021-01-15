@@ -144,7 +144,7 @@ WX_IOS_DEPLOYMENT_TARGET=9.0
 
 'AS options
 WX_AS_OPTS_IOS_ARM64=${WX_IOS_ARCHS}
-WX_AS_OPTS_IOS_ARMV7=-arch armv7 -target arm64-apple-ios
+WX_AS_OPTS_IOS_ARMV7=-arch armv7 -target armv7-apple-ios
 
 'LD options
 WX_LD_OPTS_IOS=${WX_IOS_ARCHS} -isysroot ${WX_IOS_SDK}
