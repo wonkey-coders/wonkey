@@ -56,6 +56,109 @@ End function
 function Slerp:Double( a:double, b:double, t:double )
 	return (1.0-t) * a + t*b
 End function
+
+
+' from std:
+
+
+'Function  Lerp:float( fromValue:float, toValue:float, position:float )
+'	Local value:float = toValue - fromValue
+'	If value = 0 Then return fromValue
+'	Return fromValue + (value * position)
+'End
+'
+'Function  Lerp:double( fromValue:double, toValue:double, position:double )
+'	Local value:double = toValue - fromValue
+'	If value = 0 Then return fromValue
+'	Return fromValue + (value * position)
+'End
+
+'very efficiant and order independant!!!
+Function PointInTriangle:bool( px:float,  py:float, p0x:float, p0y:float, p1x:float, p1y:float, p2x:float, p2y:float )
+	Local dX:float = px - p2x
+	Local dY:float = py - p2y
+	Local dX21:float = p2x - p1x
+	Local dY12:float = p1y - p2y
+	Local D:float = dY12 * (p0x - p2x) + dX21 * (p0y - p2y)
+	Local s:float = dY12 * dX + dX21 * dY
+	Local t:float = (p2y - p0y) * dX + (p0x - p2x) * dY
+	
+	If D < 0 Then
+		Return s <= 0 And t <= 0 And s + t >= D
+	End If
+	
+	Return s >= 0 And t >= 0 And s + t <= D
+End
+
+Function PointInQuad:bool( px:float,  py:float, p0x:float, p0y:float, p1x:float, p1y:float, p2x:float, p2y:float, p3x:float, p3y:float )
+	Local tri1:bool = PointInTriangle( px, py,  p0x, p0y, p1x, p1y, p2x, p2y )
+	If tri1 Then Return True
+	Return PointInTriangle( px, py,  p2x, p2y, p3x, p3y, p0x, p0y )
+End
+
+Function Length:float( x:float,  y:float,  z:float,  x1:float,  y1:float, z1:float )
+	x -= x1
+	y -= y1
+	z -= z1
+	Return Sqrt( x*x + y*y + z*z )
+End
+	
+Function Length:float( x:float,  y:float,  x1:float,  y1:float )
+	x -= x1
+	y -= y1
+	Return Sqrt( x*x + y*y )
+End
+
+Function Length:float( x:int,  y:int,  z:int,  x1:int,  y1:int, z1:int )
+	x -= x1
+	y -= y1
+	z -= z1
+	Return Sqrt( x*x + y*y + z*z )
+End
+	
+Function Length:float( x:int,  y:int,  x1:int,  y1:int )
+	x -= x1
+	y -= y1
+	Return Sqrt( x*x + y*y )
+End
+
+Function Length:float( x:double,  y:double,  z:double,  x1:double,  y1:double, z1:double )
+	x -= x1
+	y -= y1
+	z -= z1
+	Return Sqrt( x*x + y*y + z*z )
+End
+	
+Function Length:float( x:double,  y:double,  x1:double,  y1:double )
+	x -= x1
+	y -= y1
+	Return Sqrt( x*x + y*y )
+End
+
+Function Length:float( x:int, y:int )
+	Return Sqrt( x*x + y*y )
+End
+
+Function Length:float( x:float, y:float )
+	Return Sqrt( x*x + y*y )
+End
+
+Function Length:Double( x:double, y:double )
+	Return Sqrt( x*x + y*y )
+End
+
+Function Length:float( x:int, y:int, z:int )
+	Return Sqrt( x*x + y*y + z*z )
+End
+
+Function Length:float( x:float, y:float, z:float )
+	Return Sqrt( x*x + y*y + z*z )
+End
+
+Function Length:Double( x:double, y:double, z:double )
+	Return Sqrt( x*x + y*y + z*z )
+End
+
 '------------------------------------------------------------
 
 #rem wonkeydoc The value _Pi_.
