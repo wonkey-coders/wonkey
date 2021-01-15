@@ -266,7 +266,7 @@ Function DevAssetsDir:String()
 	Return ""
 #Endif
 End
-#rem
+#end
 ''------------------------------------------------------------
 
 #rem wonkeydoc Changes the assets dir.
