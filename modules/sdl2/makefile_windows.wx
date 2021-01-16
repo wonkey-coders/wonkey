@@ -76,7 +76,7 @@ Namespace sdl2
 #import "SDL/src/haptic/windows/SDL_xinputhaptic.c"
 
 'hidapi
-#import "SDL/src/hidapi//SDL_hidapi.c" 'v2.0.14
+#import "SDL/src/hidapi/SDL_hidapi.c" 'v2.0.14
 #import "SDL/src/hidapi/windows/hid.c" 'v2.0.9
 
 'joystick
@@ -154,7 +154,7 @@ Namespace sdl2
 #Import "SDL/src/render/direct3d/SDL_render_d3d.c"
 #Import "SDL/src/render/direct3d/SDL_shaders_d3d.c"
 #Import "SDL/src/render/direct3d11/SDL_render_d3d11.c"
-#Import "SDL/src/render/direct3d11/SDL_render_winrt.cpp"
+'#Import "SDL/src/render/direct3d11/SDL_render_winrt.cpp"
 #Import "SDL/src/render/direct3d11/SDL_shaders_d3d11.c"
 
 
@@ -224,3 +224,12 @@ Namespace sdl2
 #import "SDL/src/video/windows/SDL_windowsvulkan.c" 'v2.0.9
 #import "SDL/src/video/windows/SDL_windowswindow.c"
 
+'uncomments if enabled "SDL/src/render/direct3d11/SDL_render_winrt.cpp"
+'#import "SDL/src/video/winrt/SDL_winrtevents.cpp"
+'#import "SDL/src/video/winrt/SDL_winrtgamebar.cpp"
+'#import "SDL/src/video/winrt/SDL_winrtkeyboard.cpp"
+'#import "SDL/src/video/winrt/SDL_winrtmessagebox.cpp"
+'#import "SDL/src/video/winrt/SDL_winrtmouse.cpp"
+'#import "SDL/src/video/winrt/SDL_winrtopengles.cpp"
+'#import "SDL/src/video/winrt/SDL_winrtpointerinput.cpp"
+'#import "SDL/src/video/winrt/SDL_winrtvideo.cpp"
