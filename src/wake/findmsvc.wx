@@ -5,7 +5,15 @@ Namespace wake
 
 Function FindMSVC:Bool()
 
-	Local msvcs:=GetEnv( "ProgramFiles(x86)" )+"\Microsoft Visual Studio\2017"
+	'Local msvcs:=GetEnv( "ProgramFiles(x86)" )+"\Microsoft Visual Studio\2017"
+	'If GetFileType( msvcs )<>FileType.Directory Return False
+
+	Local msvcs:=""
+	Local msvcs_versions:=GetEnv("WX_MSVC_VERSIONS")
+	For Local ver:=Eachin msvcs_versions.Split(",")
+		msvcs=GetEnv( "ProgramFiles(x86)" )+"\Microsoft Visual Studio\" + ver.Trim()
+		If GetFileType( msvcs )=FileType.Directory Exit
+	Next
 	If GetFileType( msvcs )<>FileType.Directory Return False
 	
 	Local wkits:=GetEnv( "ProgramFiles(x86)" )+"\Windows Kits\10"
@@ -38,19 +46,26 @@ Function FindMSVC:Bool()
 '	Print toolsDir
 '	Print incsDir
 '	Print libsDir
-	Print "~nMSVC installation auto-detected:"
+	Print "~nMSVC installation auto-detected: '"+msvcs+"'"
+	Print ""
 	Print "Tools='"+toolsDir+"'"
 	Print "Include='"+incsDir+"'"
 	Print "Lib='"+libsDir+"'"
+	Print ""
 	
 	SetEnv( "WX_MSVC_PATH_X86",toolsDir+"\bin\Hostx86\x86" )
-	SetEnv( "WX_MSVC_INCLUDE_X86",toolsDir+"\include;"+incsDir+"\ucrt;"+incsDir+"\shared;"+incsDir+"\um" )
+	SetEnv( "WX_MSVC_INCLUDE_X86",toolsDir+"\include;"+incsDir+"\ucrt;"+incsDir+"\shared;"+incsDir+"\um;"+incsDir+"\winrt" )
 	SetEnv( "WX_MSVC_LIB_X86",toolsDir+"\lib\x86;"+libsDir+"\ucrt\x86;"+libsDir+"\um\x86" )
 	
 	SetEnv( "WX_MSVC_PATH_X64",toolsDir+"\bin\Hostx64\x64" )
-	SetEnv( "WX_MSVC_INCLUDE_X64",toolsDir+"\include;"+incsDir+"\ucrt;"+incsDir+"\shared;"+incsDir+"\um" )
+	SetEnv( "WX_MSVC_INCLUDE_X64",toolsDir+"\include;"+incsDir+"\ucrt;"+incsDir+"\shared;"+incsDir+"\um;"+incsDir+"\winrt" )
 	SetEnv( "WX_MSVC_LIB_X64",toolsDir+"\lib\x64;"+libsDir+"\ucrt\x64;"+libsDir+"\um\x64" )
 	
+	Local arch:=GetEnv("WX_ARCH_WINDOWS").ToUpper()
+	Print "WX_MSVC_PATH_"+arch+"='"+GetEnv("WX_MSVC_PATH_"+arch)+"'"
+	Print "WX_MSVC_INCLUDE_"+arch+"='"+GetEnv("WX_MSVC_INCLUDE_"+arch)+"'"
+	Print "WX_MSVC_LIB_"+arch+"='"+GetEnv("WX_MSVC_LIB_"+arch)+"'"
+
 	Return True
 End
 
