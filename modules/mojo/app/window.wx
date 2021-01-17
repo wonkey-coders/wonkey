@@ -24,7 +24,9 @@ Public
 | Center		| Center window.
 | Hidden		| Window is initally hidden.
 | Resizable		| Window is resizable.
+| Borderless		| Window has no border.
 | Fullscreen	| Window is a fullscreen window.
+| HighDPI	| Window has a High DPI (Mac only).
 | Maximized     | Window is maximized.
 | Minimized     | Window is minimized.
 
