@@ -28,7 +28,7 @@
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D6058910D05DD3D006BFB54 /* ${APPLICATION_NAME}.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ${APPLICATION_NAME}.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* "${APPLICATION_NAME}.app" */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "${APPLICATION_NAME}.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -76,7 +76,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* ${APPLICATION_NAME}.app */,
+				1D6058910D05DD3D006BFB54 /* "${APPLICATION_NAME}.app" */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -134,7 +134,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* ${APPLICATION_NAME} */ = {
+		1D6058900D05DD3D006BFB54 /* "${APPLICATION_NAME}" */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "${APPLICATION_NAME}" */;
 			buildPhases = (
@@ -146,9 +146,9 @@
 			);
 			dependencies = (
 			);
-			name = ${APPLICATION_NAME};
+			name = "${APPLICATION_NAME}";
 			productName = "___PROJECTNAME___";
-			productReference = 1D6058910D05DD3D006BFB54 /* ${APPLICATION_NAME}.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* "${APPLICATION_NAME}.app" */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -173,7 +173,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* ${APPLICATION_NAME} */,
+				1D6058900D05DD3D006BFB54 /* "${APPLICATION_NAME}" */,
 			);
 		};
 /* End PBXProject section */
@@ -221,7 +221,7 @@
 					"$(PROJECT_DIR)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.WonkeyGame;
-				PRODUCT_NAME = ${APPLICATION_NAME};
+				PRODUCT_NAME = "${APPLICATION_NAME}";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = ../../../include;
 			};
@@ -244,7 +244,7 @@
 					"$(PROJECT_DIR)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.WonkeyGame;
-				PRODUCT_NAME = ${APPLICATION_NAME};
+				PRODUCT_NAME = "${APPLICATION_NAME}";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = ../../../include;
 			};
