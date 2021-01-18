@@ -38,8 +38,8 @@ jobs:
         run: |
           pwd
           cd scripts
-          ./rebuildwake.sh
           ./rebuildmods.sh
+          ./rebuildwake.sh
           ./rebuildwide.sh
           ./makedocs.sh
   # This workflow contains a single job called "build-windows"
@@ -74,7 +74,7 @@ jobs:
         run: |
           pwd
           cd scripts
-          ./rebuildwake.sh
           ./rebuildmods.sh
+          ./rebuildwake.sh
           ./rebuildwide.sh
           ./makedocs.sh
