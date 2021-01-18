@@ -159,9 +159,11 @@ Class BuilderInstance
 				Local name:=WX_LIBS.Pop()
 				Local srcPath:=""
 				For Local moddir:=Eachin module.Dirs
-					srcPath=moddir+name+"/"+name+WX_FILE_EXT
-					If GetFileType( srcPath )=FileType.File Exit
-					srcPath=""
+					For Local ext:=Eachin New String[](WX_FILE_EXT, MX2_FILE_EXT)
+						srcPath=moddir+name+"/"+name+ext
+						If GetFileType( srcPath )=FileType.File Exit
+						srcPath=""
+					Next
 				Next
 				If Not srcPath
 					New BuildEx( "Can't find module '"+name+"'" )
@@ -621,7 +623,7 @@ Class BuilderInstance
 
 		Local name:=StripExt( path )
 		
-		If ext=WX_FILE_EXT parsingModule.moduleDeps[name]=True 
+		If ext=WX_FILE_EXT or ext=MX2_FILE_EXT parsingModule.moduleDeps[name]=True 
 		
 		If imported.Contains( path ) Return
 		
@@ -669,7 +671,7 @@ Class BuilderInstance
 		
 '			STD_INCLUDES.Push( "<"+path+">" )
 			
-		Case WX_FILE_EXT 
+		Case WX_FILE_EXT, MX2_FILE_EXT
 
 			WX_LIBS.Push( name )
 		
@@ -787,7 +789,7 @@ Class BuilderInstance
 		Endif
 		
 		Select ext
-		Case WX_FILE_EXT
+		Case WX_FILE_EXT, MX2_FILE_EXT
 			
 			WX_SRCS.Push( path )
 			

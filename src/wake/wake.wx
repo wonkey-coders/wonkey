@@ -29,6 +29,7 @@ Global profileName:String
 Const TestArgs:="wake mods"
 
 Const WX_FILE_EXT:=".wx"
+Const MX2_FILE_EXT:=".monkey2"
 
 'Const TestArgs:="wake app src/mx2cc/test.wx"
 
@@ -314,9 +315,11 @@ Function MakeMods:Bool( args:String[] )
 			
 			Local path:=""
 			For Local moddir:=Eachin Module.Dirs
-				path=moddir+modid+"/"+modid+WX_FILE_EXT
-				If GetFileType( path )=FileType.File Exit
-				path=""
+				For Local ext:=Eachin New String[](WX_FILE_EXT, MX2_FILE_EXT)
+					path=moddir+modid+"/"+modid+ext
+					If GetFileType( path )=FileType.File Exit
+					path=""
+				Next
 			Next
 			If Not path Fail( "Module '"+modid+"' not found" )
 		
@@ -383,9 +386,11 @@ Function MakeDocs:Bool( args:String[] )
 		
 		Local path:=""
 		For Local moddir:=Eachin Module.Dirs
-			path=moddir+modid+"/"+modid+WX_FILE_EXT
-			If GetFileType( path )=FileType.File Exit
-			path=""
+			For Local ext:=Eachin New String[](WX_FILE_EXT, MX2_FILE_EXT)
+				path=moddir+modid+"/"+modid+ext
+				If GetFileType( path )=FileType.File Exit
+				path=""
+			Next
 		Next
 		If Not path Fail( "Module '"+modid+"' not found" )
 	

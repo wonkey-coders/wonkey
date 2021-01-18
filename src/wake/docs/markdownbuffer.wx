@@ -142,7 +142,7 @@ Class MarkdownBuffer
 				Endif
 				
 				Select ExtractExt( arg ).ToLower()
-				Case WX_FILE_EXT
+				Case WX_FILE_EXT, MX2_FILE_EXT
 				
 					_buf.Push( "<a href=~q${CD}/"+arg+"~q class=~qnostyle~q>~n" )
 					_buf.Push( "```" )

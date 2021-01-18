@@ -50,4 +50,5 @@ Const WAKE_VERSION:= "1.0.0" '"1.1.16"
 Const WAKE_VERSION_EXT:=""
 
 Const WX_FILE_EXT := ".wx"
+Const MX2_FILE_EXT:=".monkey2"
 
