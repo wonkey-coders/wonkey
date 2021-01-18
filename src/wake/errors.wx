@@ -11,7 +11,7 @@ Class ErrorEx Extends Throwable
 	End
 	
 	Method ToString:String() Virtual
-		Return "?[?]: error: "+msg
+		Return "?[?:?]: error: "+msg
 	End
 End
 
@@ -29,7 +29,7 @@ Class ParseEx Extends ErrorEx
 	End
 	
 	Method ToString:String() Override
-		Return srcfile+" ["+(srcpos Shr 12)+"]: parsing error: "+msg
+		Return srcfile+" ["+(srcpos Shr 12)+":"+(srcpos & $fff)+"]: parsing error: "+msg
 	End
 End
 
@@ -56,8 +56,8 @@ Class SemantEx Extends ErrorEx
 	Method ToString:String() Override
 		If Not pnode Return "? [?]: error : "+msg
 		Local fdecl:=pnode.srcfile
-		If Not fdecl Return "????? ["+(pnode.srcpos Shr 12)+"]: error: "+msg
-		Return fdecl.path+" ["+(pnode.srcpos Shr 12)+"]: semanting error: "+msg
+		If Not fdecl Return "????? ["+(pnode.srcpos Shr 12)+":"+(pnode.srcpos & $fff)+"]: error: "+msg
+		Return fdecl.path+" ["+(pnode.srcpos Shr 12)+":"+(pnode.srcpos & $fff)+"]: semanting error: "+msg
 	End
 	
 End
@@ -75,7 +75,7 @@ Class BuildEx Extends ErrorEx
 	
 	Method ToString:String() Override
 		
-		If srcpath Return srcpath+" ["+(srcpos Shr 12)+"]: building error : "+msg
+		If srcpath Return srcpath+" ["+(srcpos Shr 12)+":"+(srcpos & $fff)+"]: building error : "+msg
 			
 		Return "~nbuilding error: "+msg
 	End
@@ -134,7 +134,7 @@ Function SemantError( func:String )
 	DebugStop()
 #endif
 	Print "~n".Join( GetDebugStack() )
-	Throw New SemantEx( func+" Internal Error" )
+	Throw New SemantEx( func+" internal error" )
 End
 
 Function TransError( func:String )
@@ -142,5 +142,5 @@ Function TransError( func:String )
 	DebugStop()
 #endif
 	Print "~n".Join( GetDebugStack() )
-	Throw New SemantEx( func+" Internal Error" )
+	Throw New SemantEx( func+" internal error" )
 End

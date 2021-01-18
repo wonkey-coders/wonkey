@@ -38,7 +38,7 @@ Function Main()
 	GCSetTrigger( 64*1024*1024 )
 	
 	Print ""
-	Print "wake version " + WAKE_VERSION+WAKE_VERSION_EXT
+	Print "wake " + WAKE_VERSION+WAKE_VERSION_EXT
 	
 	StartDir=CurrentDir()
 	
@@ -767,9 +767,10 @@ End
 Function Fail( msg:String )
 
 	Print ""
-	Print "wake: fatal error: " + msg
+	Print "wake: "+(String.FromChar(27)+"[31m")+"fatal error"+(String.FromChar(27)+"[0m")+": " + msg
 	Print ""
 
+	Print String.FromChar(7) 'Ringbell
 		
 	exit_( 1 )
 End
