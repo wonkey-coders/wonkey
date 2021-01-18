@@ -42,7 +42,6 @@ Class BuilderInstance
 	Field semantMembers:=New List<ClassType>
 	Field imported:=New StringMap<Bool>
 	Field currentDir:String
-	Field builtModsErrors:Bool=False
 	Field WX_SRCS:=New StringStack
 	Field WX_LIBS:=New StringStack
 	
@@ -113,19 +112,6 @@ Class BuilderInstance
 		rootNamespace=New NamespaceScope( Null,Null )
 		
 		wonkeyNamespace=GetNamespace( "wonkey" )
-		
-		'// check that all modules are built for this target
-		Local cd:=CurrentDir()
-		cd=cd.Replace( "\","/" )
-		Local target:=opts.target+" "+opts.config+" "+opts.arch+" "+opts.toolchain+(opts.threads ? " mx" Else "")
-		For Local module:=Eachin wake.EnumModules()
-			Local builddir:=cd+"modules/"+module+"/"+module+".buildv"+WAKE_VERSION+"/"+profileName
-			If GetFileType(builddir)<>FileType.Directory
-				Print "wake: warning: '"+module+"' module was not built for this target. Use 'wake mods -clean -target="+opts.target+" -config="+opts.config+" "+module+"' command before."
-				builtModsErrors = True
-			End
-		Next
-		If builtModsErrors Then wake.Fail("missing built modules for target '("+target+")'.")
 	End
 	
 	Method Parse()
