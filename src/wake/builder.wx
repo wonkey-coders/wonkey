@@ -214,15 +214,15 @@ Class BuilderInstance
 				'// ***** Experimental *****
 				If path.StartsWith( "WX_LD_OPTS_") Or path.StartsWith( "WX_CC_OPTS_") Or path.StartsWith( "WX_CPP_OPTS_")
 					Local name:=StripExt( path )
-					local f:= name.Find("=")
+					local f:= path.Find("=")
 					If f <> -1
 						'// FIXME: Need some controls
-						If name.StartsWith( "WX_LD_OPTS_" + HostOS.ToUpper()) Then product.LD_OPTS += " " + name.Slice(f+1)
-						If name.StartsWith( "WX_CC_OPTS_" + HostOS.ToUpper()) Then product.CC_OPTS += " " + name.Slice(f+1)
-						If name.StartsWith( "WX_CPP_OPTS_" + HostOS.ToUpper()) Then product.CPP_OPTS += " " + name.Slice(f+1)
+						If path.StartsWith( "WX_LD_OPTS_" + HostOS.ToUpper()) Then product.LD_OPTS += " " + path.Slice(f+1)
+						If path.StartsWith( "WX_CC_OPTS_" + HostOS.ToUpper()) Then product.CC_OPTS += " " + path.Slice(f+1)
+						If path.StartsWith( "WX_CPP_OPTS_" + HostOS.ToUpper()) Then product.CPP_OPTS += " " + path.Slice(f+1)
 					Else
-						'Failed to parse MX2 build options
-						Throw New BuildEx( "Failed to parse additionnal WX build options : '"+path+"'" )
+						'Failed to parse additional WX build options
+						Throw New BuildEx( "Failed to parse additional WX build options : '"+path+"'" )
 					End
 					
 					Continue

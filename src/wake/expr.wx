@@ -1034,7 +1034,7 @@ Class LiteralExpr Extends Expr
 			
 		Else If ptype=Type.StringType
 		
-			t=DequoteMx2String( t )
+			t=DequoteWxString( t )
 		Endif
 		
 		Return New LiteralValue( type,t )

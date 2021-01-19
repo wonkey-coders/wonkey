@@ -119,7 +119,7 @@ Class Parser
 			Case TOKE_INTLIT,TOKE_FLOATLIT
 				value=Parse()
 			Case TOKE_STRINGLIT
-				value=DequoteMx2String( Parse() )
+				value=DequoteWxString( Parse() )
 				If value.Contains( "~~~n" ) Error( "Invalid meta data value!" )
 			Default
 				Error( "Expecting literal meta value" )
@@ -2325,7 +2325,7 @@ Class Parser
 						
 					Endif
 
-					path+="["+SrcPos+"]"
+					If not(path.StartsWith( "WX_LD_OPTS_") Or path.StartsWith( "WX_CC_OPTS_") Or path.StartsWith( "WX_CPP_OPTS_")) path+="["+SrcPos+"]"
 						
 					_imports.Push( path )
 				Endif
