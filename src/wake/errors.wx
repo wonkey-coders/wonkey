@@ -29,7 +29,7 @@ Class ParseEx Extends ErrorEx
 	End
 	
 	Method ToString:String() Override
-		Return srcfile+" ["+(srcpos Shr 12)+":"+(srcpos & $fff)+"]: parsing error: "+msg
+		Return srcfile+" ["+(srcpos Shr 12)+":"+(srcpos & $fff)+"]: error: parse: "+msg
 	End
 End
 
@@ -54,10 +54,10 @@ Class SemantEx Extends ErrorEx
 	End
 	
 	Method ToString:String() Override
-		If Not pnode Return "? [?]: error : "+msg
+		If Not pnode Return "? [?]: error: "+msg
 		Local fdecl:=pnode.srcfile
 		If Not fdecl Return "????? ["+(pnode.srcpos Shr 12)+":"+(pnode.srcpos & $fff)+"]: error: "+msg
-		Return fdecl.path+" ["+(pnode.srcpos Shr 12)+":"+(pnode.srcpos & $fff)+"]: semanting error: "+msg
+		Return fdecl.path+" ["+(pnode.srcpos Shr 12)+":"+(pnode.srcpos & $fff)+"]: error: semant: "+msg
 	End
 	
 End
@@ -75,9 +75,9 @@ Class BuildEx Extends ErrorEx
 	
 	Method ToString:String() Override
 		
-		If srcpath Return srcpath+" ["+(srcpos Shr 12)+":"+(srcpos & $fff)+"]: building error : "+msg
+		If srcpath Return srcpath+" ["+(srcpos Shr 12)+":"+(srcpos & $fff)+"]: error: build: "+msg
 			
-		Return "~nbuilding error: "+msg
+		Return "~nerror: build: "+msg
 	End
 
 End
@@ -91,7 +91,7 @@ Class TransEx Extends BuildEx
 	End
 	
 	Method ToString:String() Override
-		Return "translating error: "+msg
+		Return "error: translate: "+msg
 	End
 	
 End

@@ -116,7 +116,7 @@ Class WonkeyParser Extends CodeParserPlugin
 			
 			If Not str Return "#" ' it's special kind of error
 			
-			Local hasErrors:=(str.Find( "] : Error : " ) > 0)
+			Local hasErrors:=(str.Find( "]: error: " ) > 0)
 			
 			If hasErrors
 				errorMessage=str
