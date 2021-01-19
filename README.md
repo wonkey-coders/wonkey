@@ -9,6 +9,36 @@
 
 Wonkey is a fork of Monkey2 programming language designed by Mark Sibly, creator of the 'Blitz' range of languages.
 
+### Multi-target products
+
+Wonkey works on a wide range of targets: Windows, Macos, Linux, Emscripten, Android and iOS.
+
+#### Desktop targets
+
+| Windows                                | MacOS                                | Linux                                | Raspbian                                 |
+| -------------------------------------- | ------------------------------------ | ------------------------------------ | ---------------------------------------- |
+| ![](./docs/img/icons/logo-windows.svg) | ![](./docs/img/icons/logo-apple.svg) | ![](./docs/img/icons/logo-linux.svg) | ![](./docs/img/icons/logo-raspberry.png) |
+
+#### Mobile targets
+
+| Android                                | iOS                                  |
+| -------------------------------------- | ------------------------------------ |
+| ![](./docs/img/icons/logo-android.svg) | ![](./docs/img/icons/logo-apple.svg) |
+
+#### Web targets
+
+| Emscripten                                                   |
+| ------------------------------------------------------------ |
+| ![](./docs/img/icons/logo-html5.svg)![](./docs/img/icons/logo-javascript.svg) |
+
+### More information
+
+![](./docs/img/icons/logo-github.svg) Github page: https://github.com/wonkey-coders
+
+![](./docs/img/icons/logo-discord.svg) Discord channel : https://discord.gg/awfuRtZay7
+
+
+
 ## How to build from source
 
 If you are reading this on Github, please note there are prebuilt versions of wonkey (with complete source code) available from https://github.com/wonkey-coders/wonkey/releases.
@@ -239,32 +269,3 @@ Function Main()
 End
 
 ```
-
-### Multi-target products
-
-Wonkey works on a wide range of targets: Windows, Macos, Linux, Emscripten, Android and iOS.
-
-#### Desktop targets
-
-| Windows                                | MacOS                                | Linux                                | Raspbian                                 |
-| -------------------------------------- | ------------------------------------ | ------------------------------------ | ---------------------------------------- |
-| ![](./docs/img/icons/logo-windows.svg) | ![](./docs/img/icons/logo-apple.svg) | ![](./docs/img/icons/logo-linux.svg) | ![](./docs/img/icons/logo-raspberry.png) |
-
-#### Mobile targets
-
-| Android                                | iOS                                  |
-| -------------------------------------- | ------------------------------------ |
-| ![](./docs/img/icons/logo-android.svg) | ![](./docs/img/icons/logo-apple.svg) |
-
-#### Web targets
-
-| Emscripten                                                   |
-| ------------------------------------------------------------ |
-| ![](./docs/img/icons/logo-html5.svg)![](./docs/img/icons/logo-javascript.svg) |
-
-### More information
-
-![](./docs/img/icons/logo-github.svg) Github page: https://github.com/wonkey-coders
-
-![](./docs/img/icons/logo-discord.svg) Discord channel : https://discord.gg/awfuRtZay7
-
