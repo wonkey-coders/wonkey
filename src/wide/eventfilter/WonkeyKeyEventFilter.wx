@@ -68,7 +68,7 @@ Class WonkeyKeyEventFilter Extends TextViewKeyEventFilter
 	
 	Method New()
 		Super.New()
-		_types=New String[]( ".wx" )
+		_types=New String[]( ".wx", ".monkey2" )
 	End
 	 
 	Global _instance:=New WonkeyKeyEventFilter

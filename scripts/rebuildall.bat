@@ -1,10 +1,10 @@
 
 echo off
 
-call rebuildwake
+call rebuildmods
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-call rebuildmods
+call rebuildwake
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 call rebuildwide

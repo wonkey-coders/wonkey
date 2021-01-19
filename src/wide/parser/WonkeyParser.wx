@@ -177,11 +177,13 @@ Class WonkeyParser Extends CodeParserPlugin
 			For Local jfile:=Eachin imports
 				Local file:=jfile.ToString()
 				If file.StartsWith( "<" ) Continue 'skip modules
-				If Not file.EndsWith( ".wx" )
+				If Not file.EndsWith( ".wx" ) And Not file.EndsWith( ".monkey2" )
 					If FileExists( folder+file+".wx") 
 						file+=".wx"
+					Elseif FileExists( folder+file+".monkey2") 
+						file+=".monkey2"
 					Else
-						Continue 'skip not .wx
+						Continue 'skip not .wx or .monkey2
 					Endif
 				Endif
 				file=folder+file
@@ -488,7 +490,7 @@ Class WonkeyParser Extends CodeParserPlugin
 	Method New()
 	
 		Super.New()
-		_types=New String[](".wx")
+		_types=New String[](".wx", ".monkey2")
 	End
 	
 	Method GetItemsInternal( options:ParserRequestOptions,resultLimit:Int=-1 )

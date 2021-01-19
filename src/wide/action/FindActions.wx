@@ -255,7 +255,7 @@ Class FindActions
 		
 	End
 	
-	Const DEFAULT_FILES_FILTER:="wx" ',txt,htm,html,h,cpp,json,xml,ini"
+	Const DEFAULT_FILES_FILTER:="wx,monkey2" ',txt,htm,html,h,cpp,json,xml,ini"
 	
 	Method FindInProject:FindResults( what:String,projectPath:String,caseSensitive:Bool,filesFilter:String=DEFAULT_FILES_FILTER )
 		
