@@ -230,10 +230,10 @@ Function AllTypesGeneric:Bool( types:Type[] )
 	Return True
 End
 
-Function DequoteMx2String:String( str:String )
+Function DequoteWxString:String( str:String )
 
 	If str.Length<2 Or str[0]<>CHAR_QUOTE Or str[str.Length-1]<>CHAR_QUOTE
-		Print "MX2 string error:"+str
+		Print "wonkey string error:"+str
 		Return str
 	Endif
 	

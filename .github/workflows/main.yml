@@ -41,6 +41,7 @@ jobs:
           ./rebuildmods.sh
           ./rebuildwake.sh
           ./rebuildwide.sh
+          ./rebuildlauncher.sh
           ./makedocs.sh
   # This workflow contains a single job called "build-windows"
   build-windows:
@@ -77,4 +78,5 @@ jobs:
           ./rebuildmods.sh
           ./rebuildwake.sh
           ./rebuildwide.sh
+          ./rebuildlauncher.sh
           ./makedocs.sh
