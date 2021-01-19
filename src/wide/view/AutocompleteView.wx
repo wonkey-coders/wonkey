@@ -569,7 +569,7 @@ Class AutocompleteDialog Extends NoTitleDialog
 	Function GetPreprocessorDirectives:String( fileType: String )
 		
 		Select fileType
-			Case ".wx"
+			Case ".wx", ".monkey2"
 				Return "#If ,#Rem,#End,#Endif,#Else,#Else If ,#Import ,#Reflect ,wonkeydoc,__TARGET__,__MOBILE_TARGET__,__DESKTOP_TARGET__,__WEB_TARGET__,__HOSTOS__,__ARCH__,__DEBUG__,__RELEASE__,__CONFIG__,__MAKEDOCS__"
 			Case ".cpp",".h",".hpp",".c"
 				Return "#if ,#end,#endif,#else,#elif ,#define ,#undef ,#ifdef ,#ifndef "

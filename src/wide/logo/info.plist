@@ -15,6 +15,7 @@
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>wx</string>
+				<string>monkey2</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Wonkey Source Code</string>

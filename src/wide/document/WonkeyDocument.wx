@@ -510,7 +510,7 @@ Class WonkeyDocumentType Extends WideDocumentType
 	Method New()
 		AddPlugin( Self )
 		
-		Extensions=New String[]( ".wx" )
+		Extensions=New String[]( ".wx", ".monkey2" )
 	End
 	
 	Method OnCreateDocument:WideDocument( path:String ) Override

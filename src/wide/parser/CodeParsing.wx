@@ -6,7 +6,11 @@ Class CodeParsing
 	
 	Function IsFileBuildable:Bool( path:String )
 		
-		Return ExtractExt( path )=".wx"
+		Local _ext := ExtractExt( path )
+
+		If _ext = ".wx" Or _ext = ".monkey2" Then Return True
+
+		Return False
 	End
 	
 	Function DeleteTempFiles()

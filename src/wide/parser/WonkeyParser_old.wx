@@ -277,7 +277,7 @@ Class WonkeyParser_old Extends CodeParserPlugin
 	
 	Method New()
 		Super.New()
-		_types=New String[](".wx")
+		_types=New String[](".wx", ".monkey2")
 	End
 	
 	Method GetAllItems( item:CodeItem,target:List<CodeItem> )

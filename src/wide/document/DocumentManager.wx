@@ -131,7 +131,8 @@ Class DocumentManager
 		
 		Local label:=StripDir( doc.Path )
 	
-		If ExtractExt( doc.Path ).ToLower()=".wx"  label=StripExt( label )
+		Local _ext := ExtractExt( doc.Path ).ToLower()
+		If _ext = ".wx" Or _ext = ".monkey2" Then label=StripExt( label )
 	
 		label=doc.State+label
 	

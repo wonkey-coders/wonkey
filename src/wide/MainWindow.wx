@@ -754,7 +754,7 @@ Class MainWindowInstance Extends Window
 	
 		Local future:=New Future<String>
 		
-		If Not filter Then filter="Wonkey files:wx;Text files:txt;Image files:png,jpg,jpeg;All files:*"
+		If Not filter Then filter="Wonkey files:wx,monkey2;Text files:txt;Image files:png,jpg,jpeg;All files:*"
 		
 		App.Idle+=Lambda()
 			

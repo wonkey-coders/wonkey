@@ -1077,7 +1077,7 @@ Class CodeDocument Extends WideDocument
 	' not multipurpose method, need to move into plugin
 	Method PrepareForInsert:String( ident:String,text:String,addSpace:Bool,textLine:String,cursorPosInLine:Int,item:CodeItem )
 		
-		If FileExtension <> ".wx" Return ident
+		If FileExtension <> ".wx" And FileExtension <> ".monkey2" Then Return ident
 		
 		If ident<>text And item And item.IsLikeFunc 'not a keyword
 			
