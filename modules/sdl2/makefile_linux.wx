@@ -31,6 +31,15 @@ Namespace sdl2
 
 'core
 #import "SDL/src/core/unix/SDL_poll.c" 'v2.0.9
+#import "SDL/src/core/linux/SDL_dbus.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_evdev_capabilities.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_evdev_kbd.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_evdev.c" 'v2.0.14
+'#import "SDL/src/core/linux/SDL_fcitx.c" 'v2.0.14 -- need libdbus
+#import "SDL/src/core/linux/SDL_ibus.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_ime.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_threadprio.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_udev.c" 'v2.0.14
 
 'cpuinfo
 #Import "SDL/src/cpuinfo/SDL_cpuinfo.c"
