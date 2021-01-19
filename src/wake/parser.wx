@@ -2316,16 +2316,14 @@ Class Parser
 					p.ParseEol()
 					
 					If path.StartsWith( "<" ) And path.EndsWith( ">" )
-					
 						If Not ExtractExt( path ) path=path.Slice( 0,-1 )+WX_FILE_EXT+">"
-						
-					Else If Not path.Contains( "@/" ) And Not path.EndsWith( "/" )
-					
-						If Not ExtractExt( path ) path+=WX_FILE_EXT
-						
-					Endif
+						path+="["+SrcPos+"]"
 
-					If not(path.StartsWith( "WX_LD_OPTS_") Or path.StartsWith( "WX_CC_OPTS_") Or path.StartsWith( "WX_CPP_OPTS_")) path+="["+SrcPos+"]"
+					Else If Not path.Contains( "@/" ) And Not path.EndsWith( "/" ) and not(path.StartsWith( "WX_LD_OPTS_") Or path.StartsWith( "WX_CC_OPTS_") Or path.StartsWith( "WX_CPP_OPTS_"))
+						If Not ExtractExt( path ) path+=WX_FILE_EXT
+						path+="["+SrcPos+"]"
+
+					Endif
 						
 					_imports.Push( path )
 				Endif
