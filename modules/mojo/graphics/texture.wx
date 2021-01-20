@@ -270,6 +270,10 @@ Class Texture Extends Resource
 			Init( pixmap.Width,pixmap.Height,pixmap.Format,flags,Null )
 			PastePixmap( pixmap,0,0 )
 		Endif
+'jl added
+'-----------------------------------------------------
+		_filePath = pixmap.FilePath
+'-----------------------------------------------------
 	End
 	
 	Property Size:Vec2i()
@@ -320,6 +324,17 @@ Class Texture Extends Resource
 		Return _managed
 	End
 	
+'jl added
+'------------------------------------------------------------	
+	#rem wonkeydoc Image filepath.
+	#end
+	Property FilePath:String()
+		Return _filePath
+	Setter( filePath:String )
+		_filePath = filePath
+	End
+'------------------------------------------------------------
+
 	Method PastePixmap( pixmap:Pixmap,x:Int,y:Int )
 		
 		If _managed
@@ -630,6 +645,11 @@ Class Texture Extends Resource
 	'Global _boundSeq:Int
 	'Global _bound:=New GLuint[8]
 
+'jl added
+'------------------------------------------------------------	
+	Field _filePath:String
+'------------------------------------------------------------
+
 	Field _size:Vec2i
 	Field _format:PixelFormat
 	Field _flags:TextureFlags
@@ -690,8 +710,11 @@ Class ResourceManager Extension
 		Local slug:="Texture:name="+StripDir( StripExt( path ) )+"&flags="+Int( flags )
 		
 		Local texture:=Cast<Texture>( OpenResource( slug ) )
-		If texture Return texture
-		
+		If texture
+			texture.FilePath = path
+			Return texture
+		Endif
+
 		Local pixmap:=OpenPixmap( path,Null,True )
 		If Not pixmap Return Null
 		
