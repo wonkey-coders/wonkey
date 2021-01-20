@@ -281,6 +281,30 @@ Struct @String ="wxString"
 	
 	#end
 	Method Dup:String( count:Int )="dup"
+
+	#rem wonkeydoc Returns a new string of a specified length in which the beginning of the current string.
+
+	Returns a new string of a specified length in which the beginning of the current string is padded with spaces or with a specified character.
+
+	@param width The number of characters in the resulting string, equal to the number of original characters plus any additional padding characters.
+
+	@param ch A padding character (first character only).
+
+	#end
+	Method PadLeft:String( width:Int )="padLeft"
+	Method PadLeft:String( width:Int, ch:String )="padLeft"
+
+	#rem wonkeydoc Returns a new string of a specified length in which the end of the current string.
+
+	Returns a new string of a specified length in which the end of the current string is padded with spaces or with a specified character.
+
+	@param width The number of characters in the resulting string, equal to the number of original characters plus any additional padding characters.
+
+	@param ch A padding character (first character only).
+
+	#end
+	Method PadRight:String( width:Int )="padRight"
+	Method PadRight:String( width:Int, ch:String )="padRight"
 	
 	#rem wonkeydoc Replace all occurances of a substring with another string.
 

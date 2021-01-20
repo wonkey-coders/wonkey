@@ -236,6 +236,14 @@ class wxString{
 	wxString trimEnd()const;
 	
 	wxString dup( int n )const;
+
+	wxString padLeft( int w )const;
+
+	wxString padLeft( int w, const wxString ch )const;
+
+	wxString padRight( int w )const;
+
+	wxString padRight( int w, const wxString ch )const;
 	
 	wxString replace( const wxString &str,const wxString &repl )const;
 	

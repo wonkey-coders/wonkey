@@ -607,6 +607,68 @@ wxString wxString::dup( int n )const{
 	return rep;
 }
 
+wxString wxString::padLeft( int w )const {
+	if(length()>w) w=length();
+	int pad=w-length();
+	Rep *rep=Rep::alloc(w);
+	wxChar *p=rep->data;
+	for( int i=0;i<w;++i ){
+		if(i<pad){
+			*p++=' ';
+		}else{
+			*p++=data()[i-pad];
+		}
+	}
+	return rep;
+}
+
+wxString wxString::padLeft( int w, const wxString ch )const {
+	if(length()>w) w=length();
+	int pad=w-length();
+	wxChar c= !ch.length()?' ':ch.data()[0];
+	Rep *rep=Rep::alloc(w);
+	wxChar *p=rep->data;
+	for( int i=0;i<w;++i ){
+		if(i<pad){
+			*p++=c;
+		}else{
+			*p++=data()[i-pad];
+		}
+	}
+	return rep;
+}
+
+wxString wxString::padRight( int w )const {
+	if(length()>w) w=length();
+	int pad=w-length();
+	Rep *rep=Rep::alloc(w);
+	wxChar *p=rep->data;
+	for( int i=0;i<w;++i ){
+		if(i<pad){
+			*p++=data()[i];
+		}else{
+			*p++=' ';
+		}
+	}
+	return rep;
+}
+
+wxString wxString::padRight( int w, const wxString ch )const {
+	if(length()>w) w=length();
+	int pad=w-length();
+	wxChar c= !ch.length()?' ':ch.data()[0];
+	Rep *rep=Rep::alloc(w);
+	wxChar *p=rep->data;
+	for( int i=0;i<w;++i ){
+		if(i<pad){
+			*p++=data()[i];
+		}else{
+			*p++=c;
+		}
+	}
+	return rep;
+}
+
 wxString wxString::replace( const wxString &str,const wxString &repl )const{
 
 	int n=0;
