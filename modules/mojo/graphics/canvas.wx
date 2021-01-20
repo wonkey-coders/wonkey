@@ -968,7 +968,7 @@ Class Canvas
 		DrawPoint(x1, y1)
 	End
 
-	Method DrawFrame3d( x:Float, y:Float, w:Float, h:Float )
+	Method DrawFrame3d( x:Float, y:Float, w:Float, h:Float, color1:Color=Color.White * 0.5, color2:Color=Color.Black * 0.5 )
 		Local x0 := x
 		Local y0 := y
 		Local x1 := x+w-1
@@ -976,10 +976,10 @@ Class Canvas
 		
 		Local colStore:Color = _color
 		
-		Color = Color.White * 0.5
+		Color = color1
 		DrawLine( x0, y0, x1, y0 )
 		DrawLine( x0, y0, x0, y1 )
-		Color = Color.Black * 0.5
+		Color = color2
 		DrawLine( x1, y0, x1, y1 )
 		DrawLine( x0, y1, x1, y1 )
 		DrawPoint(x1, y1)
@@ -987,13 +987,13 @@ Class Canvas
 		Color = colStore
 	End
 
-	Method DrawColorRect( x:Float,y:Float,w:Float,h:Float )
+	Method DrawColorRect( x:Float,y:Float,w:Float,h:Float, color1:Color=Color.Black, color2:Color=Color.White )
 		Local colStore:Color = _color
 
-		Color = Color.Black
+		Color = color1
 		DrawFrame( x, y, w, h )
 
-		Color = Color.White
+		Color = color2
 		DrawFrame( x+1, y+1, w-2, h-2 )
 
 		Color = colStore
