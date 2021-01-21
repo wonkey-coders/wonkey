@@ -25,15 +25,27 @@ using libc..
 
 #import "native/sokol_app.h"
 #import "native/sokol_gfx.h"
+#import "native/sokol_glue.h"
 
 #if __HOSTOS__="macos"
-#import "native/sokol_glue.m"
+    #import "native/sokol.m" 'ObjC
+    #import "native/sokol.mm" 'ObjC++
 #else
-#import "native/sokol_glue.c"
+    #import "native/sokol.c" 'C
+    #import "native/sokol.cpp" 'C++
 #end
 
-
 extern
+
+'//=================================================================================================================================
+'//
+'//
+'// sokol_glue.h
+'//
+'//
+'//=================================================================================================================================
+
+function sapp_sgcontext:sg_context_desc()
 
 '//=================================================================================================================================
 '//
@@ -49,40 +61,49 @@ extern
     Project URL: https://github.com/floooh/sokol
 
     Do this:
-        #define SOKOL_IMPL
+        #define SOKOL_IMPL or
+        #define SOKOL_APP_IMPL
     before you include this file in *one* C or C++ file to create the
     implementation.
 
+    In the same place define one of the following to select the 3D-API
+    which should be initialized by sokol_app.h (this must also match
+    the backend selected for sokol_gfx.h if both are used in the same
+    project):
+
+        #define SOKOL_GLCORE33
+        #define SOKOL_GLES2
+        #define SOKOL_GLES3
+        #define SOKOL_D3D11
+        #define SOKOL_METAL
+        #define SOKOL_WGPU
+
     Optionally provide the following defines with your own implementations:
 
-    SOKOL_ASSERT(c)     - your own assert macro (default: assert(c))
-    SOKOL_LOG(msg)      - your own logging function (default: puts(msg))
-    SOKOL_UNREACHABLE() - a guard macro for unreachable code (default: assert(false))
-    SOKOL_ABORT()       - called after an unrecoverable error (default: abort())
-    SOKOL_WIN32_FORCE_MAIN  - define this on Win32 to use a main() entry point instead of WinMain
-    SOKOL_NO_ENTRY      - define this if sokol_app.h shouldn't "hijack" the main() function
-    SOKOL_API_DECL      - public function declaration prefix (default: extern)
-    SOKOL_API_IMPL      - public function implementation prefix (default: -)
-    SOKOL_CALLOC        - your own calloc function (default: calloc(n, s))
-    SOKOL_FREE          - your own free function (default: free(p))
+        SOKOL_ASSERT(c)     - your own assert macro (default: assert(c))
+        SOKOL_LOG(msg)      - your own logging function (default: puts(msg))
+        SOKOL_UNREACHABLE() - a guard macro for unreachable code (default: assert(false))
+        SOKOL_ABORT()       - called after an unrecoverable error (default: abort())
+        SOKOL_WIN32_FORCE_MAIN  - define this on Win32 to use a main() entry point instead of WinMain
+        SOKOL_NO_ENTRY      - define this if sokol_app.h shouldn't "hijack" the main() function
+        SOKOL_APP_API_DECL  - public function declaration prefix (default: extern)
+        SOKOL_API_DECL      - same as SOKOL_APP_API_DECL
+        SOKOL_API_IMPL      - public function implementation prefix (default: -)
+        SOKOL_CALLOC        - your own calloc function (default: calloc(n, s))
+        SOKOL_FREE          - your own free function (default: free(p))
 
     Optionally define the following to force debug checks and validations
     even in release mode:
 
-    SOKOL_DEBUG         - by default this is defined if _DEBUG is defined
+        SOKOL_DEBUG         - by default this is defined if _DEBUG is defined
 
     If sokol_app.h is compiled as a DLL, define the following before
     including the declaration or implementation:
 
-    SOKOL_DLL
+        SOKOL_DLL
 
-    On Windows, SOKOL_DLL will define SOKOL_API_DECL as __declspec(dllexport)
+    On Windows, SOKOL_DLL will define SOKOL_APP_API_DECL as __declspec(dllexport)
     or __declspec(dllimport) as needed.
-
-    Portions of the Windows and Linux GL initialization and event code have been
-    taken from GLFW (http://www.glfw.org/)
-
-    iOS onscreen keyboard support 'inspired' by libgdx.
 
     If you use sokol_app.h together with sokol_gfx.h, include both headers
     in the implementation source file, and include sokol_app.h before
@@ -94,7 +115,34 @@ extern
     GL header-generator/loader instead, define SOKOL_WIN32_NO_GL_LOADER
     before including the implementation part of sokol_app.h.
 
+    To make use of the integrated GL loader, simply include the sokol_app.h
+    implementation before the sokol_gfx.h implementation.
+
     For example code, see https://github.com/floooh/sokol-samples/tree/master/sapp
+
+    Portions of the Windows and Linux GL initialization and event code have been
+    taken from GLFW (http://www.glfw.org/)
+
+    iOS onscreen keyboard support 'inspired' by libgdx.
+
+    Link with the following system libraries:
+
+    - on macOS with Metal: Cocoa, QuartzCore, Metal, MetalKit
+    - on macOS with GL: Cocoa, QuartzCore, OpenGL
+    - on iOS with Metal: Foundation, UIKit, Metal, MetalKit
+    - on iOS with GL: Foundation, UIKit, OpenGLES, GLKit
+    - on Linux: X11, Xi, Xcursor, GL, dl, pthread, m(?)
+    - on Android: GLESv3, EGL, log, android
+    - on Windows: no action needed, libs are defined in-source via pragma-comment-lib
+
+    On Linux, you also need to use the -pthread compiler and linker option, otherwise weird
+    things will happen, see here for details: https://github.com/floooh/sokol/issues/376
+
+    Building for UWP requires a recent Visual Studio toolchain and Windows SDK
+    (at least VS2019 and Windows SDK 10.0.19041.0). When the UWP backend is
+    selected, the sokol_app.h implementation must be compiled as C++17.
+
+    On macOS and iOS, the implementation must be compiled as Objective-C.
 
     FEATURE OVERVIEW
     ================
@@ -105,48 +153,58 @@ extern
     - creates a window and 3D-API context/device with a 'default framebuffer'
     - makes the rendered frame visible
     - provides keyboard-, mouse- and low-level touch-events
-    - platforms: MacOS, iOS, HTML5, Win32, Linux, Android (RaspberryPi)
+    - platforms: MacOS, iOS, HTML5, Win32, Linux, Android (TODO: RaspberryPi)
     - 3D-APIs: Metal, D3D11, GL3.2, GLES2, GLES3, WebGL, WebGL2
 
     FEATURE/PLATFORM MATRIX
     =======================
-                        | Windows | macOS | Linux |  iOS  | Android | Raspi | HTML5
-    --------------------+---------+-------+-------+-------+---------+-------+-------
-    gl 3.x              | YES     | YES   | YES   | ---   | ---     | ---   | ---
-    gles2/webgl         | ---     | ---   | ---   | YES   | YES     | TODO  | YES
-    gles3/webgl2        | ---     | ---   | ---   | YES   | YES     | ---   | YES
-    metal               | ---     | YES   | ---   | YES   | ---     | ---   | ---
-    d3d11               | YES     | ---   | ---   | ---   | ---     | ---   | ---
-    KEY_DOWN            | YES     | YES   | YES   | SOME  | TODO    | TODO  | YES
-    KEY_UP              | YES     | YES   | YES   | SOME  | TODO    | TODO  | YES
-    CHAR                | YES     | YES   | YES   | YES   | TODO    | TODO  | YES
-    MOUSE_DOWN          | YES     | YES   | YES   | ---   | ---     | TODO  | YES
-    MOUSE_UP            | YES     | YES   | YES   | ---   | ---     | TODO  | YES
-    MOUSE_SCROLL        | YES     | YES   | YES   | ---   | ---     | TODO  | YES
-    MOUSE_MOVE          | YES     | YES   | YES   | ---   | ---     | TODO  | YES
-    MOUSE_ENTER         | YES     | YES   | YES   | ---   | ---     | TODO  | YES
-    MOUSE_LEAVE         | YES     | YES   | YES   | ---   | ---     | TODO  | YES
-    TOUCHES_BEGAN       | ---     | ---   | ---   | YES   | YES     | ---   | YES
-    TOUCHES_MOVED       | ---     | ---   | ---   | YES   | YES     | ---   | YES
-    TOUCHES_ENDED       | ---     | ---   | ---   | YES   | YES     | ---   | YES
-    TOUCHES_CANCELLED   | ---     | ---   | ---   | YES   | YES     | ---   | YES
-    RESIZED             | YES     | YES   | YES   | YES   | YES     | ---   | YES
-    ICONIFIED           | YES     | YES   | YES   | ---   | ---     | ---   | ---
-    RESTORED            | YES     | YES   | YES   | ---   | ---     | ---   | ---
-    SUSPENDED           | ---     | ---   | ---   | YES   | YES     | ---   | TODO
-    RESUMED             | ---     | ---   | ---   | YES   | YES     | ---   | TODO
-    QUIT_REQUESTED      | YES     | YES   | YES   | ---   | ---     | TODO  | ---
-    UPDATE_CURSOR       | YES     | YES   | TODO  | ---   | ---     | ---   | TODO
-    IME                 | TODO    | TODO? | TODO  | ???   | TODO    | ???   | ???
-    key repeat flag     | YES     | YES   | YES   | ---   | ---     | TODO  | YES
-    windowed            | YES     | YES   | YES   | ---   | ---     | TODO  | YES
-    fullscreen          | YES     | YES   | TODO  | YES   | YES     | TODO  | ---
-    pointer lock        | TODO    | TODO  | TODO  | ---   | ---     | TODO  | TODO
-    screen keyboard     | ---     | ---   | ---   | YES   | TODO    | ---   | YES
-    swap interval       | YES     | YES   | YES   | YES   | TODO    | TODO  | YES
-    high-dpi            | YES     | YES   | TODO  | YES   | YES     | TODO  | YES
+                        | Windows | macOS | Linux |  iOS  | Android | UWP  | Raspi | HTML5
+    --------------------+---------+-------+-------+-------+---------+------+-------+-------
+    gl 3.x              | YES     | YES   | YES   | ---   | ---     | ---  | ---   | ---
+    gles2/webgl         | ---     | ---   | ---   | YES   | YES     | ---  | TODO  | YES
+    gles3/webgl2        | ---     | ---   | ---   | YES   | YES     | ---  | ---   | YES
+    metal               | ---     | YES   | ---   | YES   | ---     | ---  | ---   | ---
+    d3d11               | YES     | ---   | ---   | ---   | ---     | YES  | ---   | ---
+    KEY_DOWN            | YES     | YES   | YES   | SOME  | TODO    | YES  | TODO  | YES
+    KEY_UP              | YES     | YES   | YES   | SOME  | TODO    | YES  | TODO  | YES
+    CHAR                | YES     | YES   | YES   | YES   | TODO    | YES  | TODO  | YES
+    MOUSE_DOWN          | YES     | YES   | YES   | ---   | ---     | YES  | TODO  | YES
+    MOUSE_UP            | YES     | YES   | YES   | ---   | ---     | YES  | TODO  | YES
+    MOUSE_SCROLL        | YES     | YES   | YES   | ---   | ---     | YES  | TODO  | YES
+    MOUSE_MOVE          | YES     | YES   | YES   | ---   | ---     | YES  | TODO  | YES
+    MOUSE_ENTER         | YES     | YES   | YES   | ---   | ---     | YES  | TODO  | YES
+    MOUSE_LEAVE         | YES     | YES   | YES   | ---   | ---     | YES  | TODO  | YES
+    TOUCHES_BEGAN       | ---     | ---   | ---   | YES   | YES     | TODO | ---   | YES
+    TOUCHES_MOVED       | ---     | ---   | ---   | YES   | YES     | TODO | ---   | YES
+    TOUCHES_ENDED       | ---     | ---   | ---   | YES   | YES     | TODO | ---   | YES
+    TOUCHES_CANCELLED   | ---     | ---   | ---   | YES   | YES     | TODO | ---   | YES
+    RESIZED             | YES     | YES   | YES   | YES   | YES     | YES  | ---   | YES
+    ICONIFIED           | YES     | YES   | YES   | ---   | ---     | YES  | ---   | ---
+    RESTORED            | YES     | YES   | YES   | ---   | ---     | YES  | ---   | ---
+    SUSPENDED           | ---     | ---   | ---   | YES   | YES     | YES  | ---   | TODO
+    RESUMED             | ---     | ---   | ---   | YES   | YES     | YES  | ---   | TODO
+    QUIT_REQUESTED      | YES     | YES   | YES   | ---   | ---     | ---  | TODO  | YES
+    UPDATE_CURSOR       | YES     | YES   | TODO  | ---   | ---     | TODO | ---   | TODO
+    IME                 | TODO    | TODO? | TODO  | ???   | TODO    | ---  | ???   | ???
+    key repeat flag     | YES     | YES   | YES   | ---   | ---     | YES  | TODO  | YES
+    windowed            | YES     | YES   | YES   | ---   | ---     | YES  | TODO  | YES
+    fullscreen          | YES     | YES   | YES   | YES   | YES     | YES  | TODO  | ---
+    mouse hide          | YES     | YES   | YES   | ---   | ---     | YES  | TODO  | TODO
+    mouse lock          | YES     | YES   | YES   | ---   | ---     | TODO | TODO  | YES
+    screen keyboard     | ---     | ---   | ---   | YES   | TODO    | TODO | ---   | YES
+    swap interval       | YES     | YES   | YES   | YES   | TODO    | ---  | TODO  | YES
+    high-dpi            | YES     | YES   | TODO  | YES   | YES     | YES  | TODO  | YES
+    clipboard           | YES     | YES   | TODO  | ---   | ---     | TODO | ---   | YES
+    MSAA                | YES     | YES   | YES   | YES   | YES     | TODO | TODO  | YES
+    drag'n'drop         | YES     | YES   | YES   | ---   | ---     | TODO | TODO  | YES
 
-    - what about bluetooth keyboard / mouse on mobile platforms?
+    TODO
+    ====
+    - Linux:
+        - clipboard support
+    - UWP:
+        - clipboard, mouselock
+    - sapp_consume_event() on non-web platforms?
 
     STEP BY STEP
     ============
@@ -197,10 +255,10 @@ extern
             The cleanup callback is called once right before the application
             quits.
         .event_cb (void (*)(const sapp_event* event))
-            The event callback is mainly for input handling, but in the
-            future may also be used to communicate other types of events
-            to the application. Keep the event_cb struct member zero-initialized
-            if your application doesn't require event handling.
+            The event callback is mainly for input handling, but is also
+            used to communicate other types of events to the application. Keep the
+            event_cb struct member zero-initialized if your application doesn't require
+            event handling.
         .fail_cb (void (*)(const char* msg))
             The fail callback is called when a fatal error is encountered
             during start which doesn't allow the program to continue.
@@ -209,9 +267,9 @@ extern
 
         As you can see, those 'standard callbacks' don't have a user_data
         argument, so any data that needs to be preserved between callbacks
-        must live in global variables. If you're allergic to global variables
-        or cannot use them for other reasons, an alternative set of callbacks
-        can be defined in sapp_desc, together with a user_data pointer:
+        must live in global variables. If keeping state in global variables
+        is not an option, there's an alternative set of callbacks with
+        an additional user_data pointer argument:
 
         .user_data (void*)
             The user-data argument for the callbacks below
@@ -227,7 +285,7 @@ extern
         The function sapp_userdata() can be used to query the user_data
         pointer provided in the sapp_desc struct.
 
-        You can call sapp_query_desc() to get a copy of the
+        You can also call sapp_query_desc() to get a copy of the
         original sapp_desc structure.
 
         NOTE that there's also an alternative compile mode where sokol_app.h
@@ -240,10 +298,25 @@ extern
         at this point are:
 
         int sapp_width(void)
-            Returns the current width of the default framebuffer, this may change
-            from one frame to the next.
         int sapp_height(void)
-            Likewise, returns the current height of the default framebuffer.
+            Returns the current width and height of the default framebuffer in pixels,
+            this may change from one frame to the next, and it may be different
+            from the initial size provided in the sapp_desc struct.
+
+        int sapp_color_format(void)
+        int sapp_depth_format(void)
+            The color and depth-stencil pixelformats of the default framebuffer,
+            as integer values which are compatible with sokol-gfx's
+            sg_pixel_format enum (so that they can be plugged directly in places
+            where sg_pixel_format is expected). Possible values are:
+
+                23 == SG_PIXELFORMAT_RGBA8
+                27 == SG_PIXELFORMAT_BGRA8
+                41 == SG_PIXELFORMAT_DEPTH
+                42 == SG_PIXELFORMAT_DEPTH_STENCIL
+
+        int sapp_sample_count(void)
+            Return the MSAA sample count of the default framebuffer.
 
         bool sapp_gles2(void)
             Returns true if a GLES2 or WebGL context has been created. This
@@ -256,8 +329,8 @@ extern
             If the Metal backend has been selected, these functions return pointers
             to various Metal API objects required for rendering, otherwise
             they return a null pointer. These void pointers are actually
-            Objective-C ids converted with an ARC __bridge cast so that
-            they ids can be tunnel through C code. Also note that the returned
+            Objective-C ids converted with a (ARC) __bridge cast so that
+            the ids can be tunnel through C code. Also note that the returned
             pointers to the renderpass-descriptor and drawable may change from one
             frame to the next, only the Metal device object is guaranteed to
             stay the same.
@@ -265,28 +338,36 @@ extern
         const void* sapp_macos_get_window(void)
             On macOS, get the NSWindow object pointer, otherwise a null pointer.
             Before being used as Objective-C object, the void* must be converted
-            back with an ARC __bridge cast.
+            back with a (ARC) __bridge cast.
 
         const void* sapp_ios_get_window(void)
             On iOS, get the UIWindow object pointer, otherwise a null pointer.
             Before being used as Objective-C object, the void* must be converted
-            back with an ARC __bridge cast.
+            back with a (ARC) __bridge cast.
 
         const void* sapp_win32_get_hwnd(void)
             On Windows, get the window's HWND, otherwise a null pointer. The
             HWND has been cast to a void pointer in order to be tunneled
             through code which doesn't include Windows.h.
 
-        const void* sapp_d3d11_get_device(void);
-        const void* sapp_d3d11_get_device_context(void);
-        const void* sapp_d3d11_get_render_target_view(void);
-        const void* sapp_d3d11_get_depth_stencil_view(void);
+        const void* sapp_d3d11_get_device(void)
+        const void* sapp_d3d11_get_device_context(void)
+        const void* sapp_d3d11_get_render_target_view(void)
+        const void* sapp_d3d11_get_depth_stencil_view(void)
             Similar to the sapp_metal_* functions, the sapp_d3d11_* functions
             return pointers to D3D11 API objects required for rendering,
             only if the D3D11 backend has been selected. Otherwise they
             return a null pointer. Note that the returned pointers to the
             render-target-view and depth-stencil-view may change from one
             frame to the next!
+
+        const void* sapp_wgpu_get_device(void)
+        const void* sapp_wgpu_get_render_view(void)
+        const void* sapp_wgpu_get_resolve_view(void)
+        const void* sapp_wgpu_get_depth_stencil_view(void)
+            These are the WebGPU-specific functions to get the WebGPU
+            objects and values required for rendering. If sokol_app.h
+            is not compiled with SOKOL_WGPU, these functions return null.
 
         const void* sapp_android_get_native_activity(void);
             On Android, get the native activity ANativeActivity pointer, otherwise
@@ -311,13 +392,305 @@ extern
             - the application window was resized, iconified or restored
             - the application was suspended or restored (on mobile platforms)
             - the user or application code has asked to quit the application
+            - a string was pasted to the system clipboard
+
+        To explicitly 'consume' an event and prevent that the event is
+        forwarded for further handling to the operating system, call
+        sapp_consume_event() from inside the event handler (NOTE that
+        this behaviour is currently only implemented for some HTML5
+        events, support for other platforms and event types will
+        be added as needed, please open a github ticket and/or provide
+        a PR if needed).
+
+        NOTE: Do *not* call any 3D API rendering functions in the event
+        callback function, since the 3D API context may not be active when the
+        event callback is called (it may work on some platforms and 3D APIs,
+        but not others, and the exact behaviour may change between
+        sokol-app versions).
 
     --- Implement the cleanup-callback function, this is called once
         after the user quits the application (see the section
         "APPLICATION QUIT" for detailed information on quitting
-        behaviour, and how to intercept a pending quit (for instance to show a
+        behaviour, and how to intercept a pending quit - for instance to show a
         "Really Quit?" dialog box). Note that the cleanup-callback isn't
-        called on the web and mobile platforms.
+        guaranteed to be called on the web and mobile platforms.
+
+    MOUSE LOCK (AKA POINTER LOCK, AKA MOUSE CAPTURE)
+    ================================================
+    In normal mouse mode, no mouse movement events are reported when the
+    mouse leaves the windows client area or hits the screen border (whether
+    it's one or the other depends on the platform), and the mouse move events
+    (SAPP_EVENTTYPE_MOUSE_MOVE) contain absolute mouse positions in
+    framebuffer pixels in the sapp_event items mouse_x and mouse_y, and
+    relative movement in framebuffer pixels in the sapp_event items mouse_dx
+    and mouse_dy.
+
+    To get continuous mouse movement (also when the mouse leaves the window
+    client area or hits the screen border), activate mouse-lock mode
+    by calling:
+
+        sapp_lock_mouse(true)
+
+    When mouse lock is activated, the mouse pointer is hidden, the
+    reported absolute mouse position (sapp_event.mouse_x/y) appears
+    frozen, and the relative mouse movement in sapp_event.mouse_dx/dy
+    no longer has a direct relation to framebuffer pixels but instead
+    uses "raw mouse input" (what "raw mouse input" exactly means also
+    differs by platform).
+
+    To deactivate mouse lock and return to normal mouse mode, call
+
+        sapp_lock_mouse(false)
+
+    And finally, to check if mouse lock is currently active, call
+
+        if (sapp_mouse_locked()) { ... }
+
+    On native platforms, the sapp_lock_mouse() and sapp_mouse_locked()
+    functions work as expected (mouse lock is activated or deactivated
+    immediately when sapp_lock_mouse() is called, and sapp_mouse_locked()
+    also immediately returns the new state after sapp_lock_mouse()
+    is called.
+
+    On the web platform, sapp_lock_mouse() and sapp_mouse_locked() behave
+    differently, as dictated by the limitations of the HTML5 Pointer Lock API:
+
+        - sapp_lock_mouse(true) can be called at any time, but it will
+          only take effect in a 'short-lived input event handler of a specific
+          type', meaning when one of the following events happens:
+            - SAPP_EVENTTYPE_MOUSE_DOWN
+            - SAPP_EVENTTYPE_MOUSE_UP
+            - SAPP_EVENTTYPE_MOUSE_SCROLL
+            - SAPP_EVENTYTPE_KEY_UP
+            - SAPP_EVENTTYPE_KEY_DOWN
+        - The mouse lock/unlock action on the web platform is asynchronous,
+          this means that sapp_mouse_locked() won't immediately return
+          the new status after calling sapp_lock_mouse(), instead the
+          reported status will only change when the pointer lock has actually
+          been activated or deactivated in the browser.
+        - On the web, mouse lock can be deactivated by the user at any time
+          by pressing the Esc key. When this happens, sokol_app.h behaves
+          the same as if sapp_lock_mouse(false) is called.
+
+    For things like camera manipulation it's most straightforward to lock
+    and unlock the mouse right from the sokol_app.h event handler, for
+    instance the following code enters and leaves mouse lock when the
+    left mouse button is pressed and released, and then uses the relative
+    movement information to manipulate a camera (taken from the
+    cgltf-sapp.c sample in the sokol-samples repository
+    at https://github.com/floooh/sokol-samples):
+
+        static void input(const sapp_event* ev) {
+            switch (ev->type) {
+                case SAPP_EVENTTYPE_MOUSE_DOWN:
+                    if (ev->mouse_button == SAPP_MOUSEBUTTON_LEFT) {
+                        sapp_lock_mouse(true);
+                    }
+                    break;
+
+                case SAPP_EVENTTYPE_MOUSE_UP:
+                    if (ev->mouse_button == SAPP_MOUSEBUTTON_LEFT) {
+                        sapp_lock_mouse(false);
+                    }
+                    break;
+
+                case SAPP_EVENTTYPE_MOUSE_MOVE:
+                    if (sapp_mouse_locked()) {
+                        cam_orbit(&state.camera, ev->mouse_dx * 0.25f, ev->mouse_dy * 0.25f);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+    CLIPBOARD SUPPORT
+    =================
+    Applications can send and receive UTF-8 encoded text data from and to the
+    system clipboard. By default, clipboard support is disabled and
+    must be enabled at startup via the following sapp_desc struct
+    members:
+
+        sapp_desc.enable_clipboard  - set to true to enable clipboard support
+        sapp_desc.clipboard_size    - size of the internal clipboard buffer in bytes
+
+    Enabling the clipboard will dynamically allocate a clipboard buffer
+    for UTF-8 encoded text data of the requested size in bytes, the default
+    size is 8 KBytes. Strings that don't fit into the clipboard buffer
+    (including the terminating zero) will be silently clipped, so it's
+    important that you provide a big enough clipboard size for your
+    use case.
+
+    To send data to the clipboard, call sapp_set_clipboard_string() with
+    a pointer to an UTF-8 encoded, null-terminated C-string.
+
+    NOTE that on the HTML5 platform, sapp_set_clipboard_string() must be
+    called from inside a 'short-lived event handler', and there are a few
+    other HTML5-specific caveats to workaround. You'll basically have to
+    tinker until it works in all browsers :/ (maybe the situation will
+    improve when all browsers agree on and implement the new
+    HTML5 navigator.clipboard API).
+
+    To get data from the clipboard, check for the SAPP_EVENTTYPE_CLIPBOARD_PASTED
+    event in your event handler function, and then call sapp_get_clipboard_string()
+    to obtain the pasted UTF-8 encoded text.
+
+    NOTE that behaviour of sapp_get_clipboard_string() is slightly different
+    depending on platform:
+
+        - on the HTML5 platform, the internal clipboard buffer will only be updated
+          right before the SAPP_EVENTTYPE_CLIPBOARD_PASTED event is sent,
+          and sapp_get_clipboard_string() will simply return the current content
+          of the clipboard buffer
+        - on 'native' platforms, the call to sapp_get_clipboard_string() will
+          update the internal clipboard buffer with the most recent data
+          from the system clipboard
+
+    Portable code should check for the SAPP_EVENTTYPE_CLIPBOARD_PASTED event,
+    and then call sapp_get_clipboard_string() right in the event handler.
+
+    The SAPP_EVENTTYPE_CLIPBOARD_PASTED event will be generated by sokol-app
+    as follows:
+
+        - on macOS: when the Cmd+V key is pressed down
+        - on HTML5: when the browser sends a 'paste' event to the global 'window' object
+        - on all other platforms: when the Ctrl+V key is pressed down
+
+    DRAG AND DROP SUPPORT
+    =====================
+    PLEASE NOTE: the drag'n'drop feature works differently on WASM/HTML5
+    and on the native desktop platforms (Win32, Linux and macOS) because
+    of security-related restrictions in the HTML5 drag'n'drop API. The
+    WASM/HTML5 specifics are described at the end of this documentation
+    section:
+
+    Like clipboard support, drag'n'drop support must be explicitly enabled
+    at startup in the sapp_desc struct.
+
+        sapp_desc sokol_main() {
+            return (sapp_desc) {
+                .enable_dragndrop = true,   // default is false
+                ...
+            };
+        }
+
+    You can also adjust the maximum number of files that are accepted
+    in a drop operation, and the maximum path length in bytes if needed:
+
+        sapp_desc sokol_main() {
+            return (sapp_desc) {
+                .enable_dragndrop = true,               // default is false
+                .max_dropped_files = 8,                 // default is 1
+                .max_dropped_file_path_length = 8192,   // in bytes, default is 2048
+                ...
+            };
+        }
+
+    When drag'n'drop is enabled, the event callback will be invoked with an
+    event of type SAPP_EVENTTYPE_FILES_DROPPED whenever the user drops files on
+    the application window.
+
+    After the SAPP_EVENTTYPE_FILES_DROPPED is received, you can query the
+    number of dropped files, and their absolute paths by calling separate
+    functions:
+
+        void on_event(const sapp_event* ev) {
+            if (ev->type == SAPP_EVENTTYPE_FILES_DROPPED) {
+
+                // the mouse position where the drop happened
+                float x = ev->mouse_x;
+                float y = ev->mouse_y;
+
+                // get the number of files and their paths like this:
+                const int num_dropped_files = sapp_get_num_dropped_files();
+                for (int i = 0; i < num_dropped_files; i++) {
+                    const char* path = sapp_get_dropped_file_path(i);
+                    ...
+                }
+            }
+        }
+
+    The returned file paths are UTF-8 encoded strings.
+
+    You can call sapp_get_num_dropped_files() and sapp_get_dropped_file_path()
+    anywhere, also outside the event handler callback, but be aware that the
+    file path strings will be overwritten with the next drop operation.
+
+    In any case, sapp_get_dropped_file_path() will never return a null pointer,
+    instead an empty string "" will be returned if the drag'n'drop feature
+    hasn't been enabled, the last drop-operation failed, or the file path index
+    is out of range.
+
+    Drag'n'drop caveats:
+
+        - if more files are dropped in a single drop-action
+          than sapp_desc.max_dropped_files, the additional
+          files will be silently ignored
+        - if any of the file paths is longer than
+          sapp_desc.max_dropped_file_path_length (in number of bytes, after UTF-8
+          encoding) the entire drop operation will be silently ignored (this
+          needs some sort of error feedback in the future)
+        - no mouse positions are reported while the drag is in
+          process, this may change in the future
+
+    Drag'n'drop on HTML5/WASM:
+
+    The HTML5 drag'n'drop API doesn't return file paths, but instead
+    black-box 'file objects' which must be used to load the content
+    of dropped files. This is the reason why sokol_app.h adds two
+    HTML5-specific functions to the drag'n'drop API:
+
+        uint32_t sapp_html5_get_dropped_file_size(int index)
+            Returns the size in bytes of a dropped file.
+
+        void sapp_html5_fetch_dropped_file(const sapp_html5_fetch_request* request)
+            Asynchronously loads the content of a dropped file into a
+            provided memory buffer (which must be big enough to hold
+            the file content)
+
+    To start loading the first dropped file after an SAPP_EVENTTYPE_FILES_DROPPED
+    event is received:
+
+        sapp_html5_fetch_dropped_file(&(sapp_html5_fetch_request){
+            .dropped_file_index = 0,
+            .callback = fetch_cb
+            .buffer_ptr = buf,
+            .buffer_size = buf_size,
+            .user_data = ...
+        });
+
+    Make sure that the memory pointed to by 'buf' stays valid until the
+    callback function is called!
+
+    As result of the asynchronous loading operation (no matter if succeeded or
+    failed) the 'fetch_cb' function will be called:
+
+        void fetch_cb(const sapp_html5_fetch_response* response) {
+            // IMPORTANT: check if the loading operation actually succeeded:
+            if (response->succeeded) {
+                // the size of the loaded file:
+                const uint32_t num_bytes = response->fetched_size;
+                // and the pointer to the data (same as 'buf' in the fetch-call):
+                const void* ptr = response->buffer_ptr;
+            }
+            else {
+                // on error check the error code:
+                switch (response->error_code) {
+                    case SAPP_HTML5_FETCH_ERROR_BUFFER_TOO_SMALL:
+                        ...
+                        break;
+                    case SAPP_HTML5_FETCH_ERROR_OTHER:
+                        ...
+                        break;
+                }
+            }
+        }
+
+    Check the droptest-sapp example for a real-world example which works
+    both on native platforms and the web:
+
+    https://github.com/floooh/sokol-samples/blob/master/sapp/droptest-sapp.c
 
     HIGH-DPI RENDERING
     ==================
@@ -360,36 +733,16 @@ extern
 
     APPLICATION QUIT
     ================
-    Without special quit handling, a sokol_app.h application will exist
-    'gracefully' when the user clicks the window close-button. 'Graceful
-    exit' means that the application-provided cleanup callback will be
-    called.
+    Without special quit handling, a sokol_app.h application will quit
+    'gracefully' when the user clicks the window close-button unless a
+    platform's application model prevents this (e.g. on web or mobile).
+    'Graceful exit' means that the application-provided cleanup callback will
+    be called before the application quits.
 
-    This 'graceful exit' is only supported on native desktop platforms, on
-    the web and mobile platforms an application may be terminated at any time
-    by the user or browser/OS runtime environment without a chance to run
-    custom shutdown code.
-
-    On the web platform, you can call the following function to let the
-    browser open a standard popup dialog before the user wants to leave a site:
-
-        sapp_html5_ask_leave_site(bool ask);
-
-    The initial state of the associated internal flag can be provided
-    at startup via sapp_desc.html5_ask_leave_site.
-
-    This feature should only be used sparingly in critical situations - for
-    instance when the user would loose data - since popping up modal dialog
-    boxes is considered quite rude in the web world. Note that there's no way
-    to customize the content of this dialog box or run any code as a result
-    of the user's decision. Also note that the user must have interacted with
-    the site before the dialog box will appear. These are all security measures
-    to prevent fishing.
-
-    On native desktop platforms, sokol_app.h provides more control over the
+    On native desktop platforms sokol_app.h provides more control over the
     application-quit-process. It's possible to initiate a 'programmatic quit'
-    from the application code, and a quit initiated by the application user
-    can be intercepted (for instance to show a custom dialog box).
+    from the application code, and a quit initiated by the application user can
+    be intercepted (for instance to show a custom dialog box).
 
     This 'programmatic quit protocol' is implemented trough 3 functions
     and 1 event:
@@ -416,6 +769,37 @@ extern
           this event by calling sapp_cancel_quit() to cancel the quit.
           If the event is ignored, the application will quit as usual.
 
+    On the web platform, the quit behaviour differs from native platforms,
+    because of web-specific restrictions:
+
+    A `programmatic quit` initiated by calling sapp_quit() or
+    sapp_request_quit() will work as described above: the cleanup callback is
+    called, platform-specific cleanup is performed (on the web
+    this means that JS event handlers are unregisters), and then
+    the request-animation-loop will be exited. However that's all. The
+    web page itself will continue to exist (e.g. it's not possible to
+    programmatically close the browser tab).
+
+    On the web it's also not possible to run custom code when the user
+    closes a brower tab, so it's not possible to prevent this with a
+    fancy custom dialog box.
+
+    Instead the standard "Leave Site?" dialog box can be activated (or
+    deactivated) with the following function:
+
+        sapp_html5_ask_leave_site(bool ask);
+
+    The initial state of the associated internal flag can be provided
+    at startup via sapp_desc.html5_ask_leave_site.
+
+    This feature should only be used sparingly in critical situations - for
+    instance when the user would loose data - since popping up modal dialog
+    boxes is considered quite rude in the web world. Note that there's no way
+    to customize the content of this dialog box or run any code as a result
+    of the user's decision. Also note that the user must have interacted with
+    the site before the dialog box will appear. These are all security measures
+    to prevent fishing.
+
     The Dear ImGui HighDPI sample contains example code of how to
     implement a 'Really Quit?' dialog box with Dear ImGui (native desktop
     platforms only), and for showing the hardwired "Leave Site?" dialog box
@@ -440,6 +824,11 @@ extern
     the resolution of the fullscreen canvas (however the provided size
     might still be used for the non-fullscreen window, in case the user can
     switch back from fullscreen- to windowed-mode).
+
+    To toggle fullscreen mode programmatically, call sapp_toggle_fullscreen().
+
+    To check if the application window is currently in fullscreen mode,
+    call sapp_is_fullscreen().
 
     ONSCREEN KEYBOARD
     =================
@@ -490,7 +879,6 @@ extern
     - sapp_desc needs a bool whether to initialize depth-stencil surface
     - GL context initialization needs more control (at least what GL version to initialize)
     - application icon
-    - mouse pointer visibility(?)
     - the UPDATE_CURSOR event currently behaves differently between Win32 and OSX
       (Win32 sends the event each frame when the mouse moves and is inside the window
       client area, OSX sends it only once when the mouse enters the client area)
@@ -499,8 +887,9 @@ extern
       on Android Honeycomb and later (it can't be done at the moment as the app may be started
       again after onStop and the sokol lifecycle does not yet handle context teardown/bringup)
 
-    FIXME: ERROR HANDLING (this will need an error callback function)
 
+    LICENSE
+    =======
     zlib/libpng license
 
     Copyright (c) 2018 Andre Weissflog
@@ -553,6 +942,8 @@ const SAPP_EVENTTYPE_SUSPENDED:sapp_event_type
 const SAPP_EVENTTYPE_RESUMED:sapp_event_type
 const SAPP_EVENTTYPE_UPDATE_CURSOR:sapp_event_type
 const SAPP_EVENTTYPE_QUIT_REQUESTED:sapp_event_type
+const SAPP_EVENTTYPE_CLIPBOARD_PASTED:sapp_event_type
+const SAPP_EVENTTYPE_FILES_DROPPED:sapp_event_type
 const _SAPP_EVENTTYPE_NUM:sapp_event_type
 const _SAPP_EVENTTYPE_FORCE_U32:sapp_event_type
 
@@ -690,10 +1081,10 @@ end
 
 enum sapp_mousebutton
 end
-const SAPP_MOUSEBUTTON_INVALID:sapp_mousebutton
 const SAPP_MOUSEBUTTON_LEFT:sapp_mousebutton
 const SAPP_MOUSEBUTTON_RIGHT:sapp_mousebutton
 const SAPP_MOUSEBUTTON_MIDDLE:sapp_mousebutton
+const SAPP_MOUSEBUTTON_INVALID:sapp_mousebutton
 
 'enum
 const SAPP_MODIFIER_SHIFT:int '(1 << 0)
@@ -708,8 +1099,11 @@ struct sapp_event = "const sapp_event"
 	field char_code:uint
 	field key_repeat:bool
 	field modifiers:uint
+    field mouse_button:sapp_mousebutton
 	field mouse_x:float
 	field mouse_y:float
+	field mouse_dx:float
+	field mouse_dy:float
 	field scroll_x:float
 	field scroll_y:float
 	field num_touches:int
@@ -743,8 +1137,13 @@ struct sapp_desc
 	field high_dpi:bool							'/* whether the rendering canvas is full-resolution on HighDPI displays */
 	field fullscreen:bool						'/* whether the window should be created in fullscreen mode */
 	field alpha:bool							'/* whether the framebuffer should have an alpha channel (ignored on some platforms) */
-	field window_title:const_char_t ptr	'/* the window title as UTF-8 encoded string */
+	field window_title:const_char_t ptr	        '/* the window title as UTF-8 encoded string */
 	field user_cursor:bool						'/* if true, user is expected to manage cursor image in SAPP_EVENTTYPE_UPDATE_CURSOR */
+    field enable_clipboard:bool                 '/* enable clipboard access, default is false */
+    field clipboard_size:int                    '/* max size of clipboard content in bytes */
+    field enable_dragndrop:bool                 '/* enable file dropping (drag'n'drop), default is false */
+    field max_dropped_files:int                 '/* max number of dropped files to process (default: 1) */
+    field max_dropped_file_path_length:int      '/* max length in bytes of a dropped UTF-8 file path (default: 2048) */
 
 	field html5_canvas_name:const_char_t ptr '/* the name (id) of the HTML5 canvas element, default is "canvas" */
 	field html5_canvas_resize:bool				'/* if true, the HTML5 canvas size is set to sapp_desc.width/height, otherwise canvas size is tracked */
@@ -753,6 +1152,33 @@ struct sapp_desc
 	field html5_ask_leave_site:bool				'/* initial state of the internal html5_ask_leave_site flag (see sapp_html5_ask_leave_site()) */
 	field ios_keyboard_resizes_canvas:bool		'/* if true, showing the iOS keyboard shrinks the canvas */
 	field gl_force_gles2:bool					'/* if true, setup GLES2/WebGL even if GLES3/WebGL2 is available */
+end
+
+'/* HTML5 specific: request and response structs for
+'   asynchronously loading dropped-file content.
+'*/
+enum sapp_html5_fetch_error
+end
+const SAPP_HTML5_FETCH_ERROR_NO_ERROR:sapp_html5_fetch_error
+const SAPP_HTML5_FETCH_ERROR_BUFFER_TOO_SMALL:sapp_html5_fetch_error
+const SAPP_HTML5_FETCH_ERROR_OTHER:sapp_html5_fetch_error
+
+struct sapp_html5_fetch_response="const sapp_html5_fetch_response"
+    field succeeded:bool        '/* true if the loading operation has succeeded */
+    field error_code:sapp_html5_fetch_error
+    field file_index:int        '/* index of the dropped file (0..sapp_get_num_dropped_filed()-1) */
+    field fetched_size:uint     '/* size in bytes of loaded data */
+    field buffer_ptr:void ptr   '/* pointer to user-provided buffer which contains the loaded data */
+    field buffer_size:uint      '/* size of user-provided buffer (buffer_size >= fetched_size) */
+    field user_data:void ptr    '/* user-provided user data pointer */
+end
+
+struct sapp_html5_fetch_request="const sapp_html5_fetch_request"
+    field dropped_file_index:int                        '/* 0..sapp_get_num_dropped_files()-1 */
+    field callback:void(sapp_html5_fetch_response ptr)  '/* response callback function pointer (required) */
+    field buffer_ptr:void ptr                           '/* pointer to buffer to load data into */
+    field buffer_size:uint                              '/* size in bytes of buffer */
+    field user_data:void ptr                            '/* optional userdata pointer */
 end
 
 #rem wonkeydoc User-provided functions
@@ -764,62 +1190,87 @@ function sokol_main:sapp_desc(argc:int, argv:char_t ptr ptr)
 #rem wonkeydoc Returns true after sokol-app has been initialized
 #end
 function sapp_isvalid:bool()
-
 #rem wonkeydoc Returns the current framebuffer width in pixels
 #end
 function sapp_width:int()
-
 #rem wonkeydoc returns the current framebuffer height in pixels
 #end
 function sapp_height:int()
-
+#rem wonkeydoc get default framebuffer color pixel format
+#end
+function sapp_color_format:int()
+#rem wonkeydoc  get default framebuffer depth pixel format
+#end
+function sapp_depth_format:int()
+#rem wonkeydoc  get default framebuffer sample count
+#end
+function sapp_sample_count:int()
 #rem wonkeydoc Returns true when high_dpi was requested and actually running in a high-dpi scenario
 #end
 function sapp_high_dpi:bool()
-
 #rem wonkeydoc Returns the dpi scaling factor (window pixels to framebuffer pixels)
 #end
 function sapp_dpi_scale:float()
-
 #rem wonkeydoc show or hide the mobile device onscreen keyboard
 #end
 function sapp_show_keyboard(visible:bool)
-
 #rem wonkeydoc return true if the mobile device onscreen keyboard is currently shown
 #end
 function sapp_keyboard_shown:bool()
-
+#rem wonkeydoc  query fullscreen mode
+#end
+function sapp_is_fullscreen:bool()
+#rem wonkeydoc  toggle fullscreen mode
+#end
+function sapp_toggle_fullscreen:void()
 #rem wonkeydoc show or hide the mouse cursor
 #end
 function sapp_show_mouse(visible:bool)
-
 #rem wonkeydoc show or hide the mouse cursor
 #end
 function sapp_mouse_shown:bool()
-
+#rem wonkeydoc enable/disable mouse-pointer-lock mode
+#end
+function sapp_lock_mouse(lock:bool)
+#rem wonkeydoc return true if in mouse-pointer-lock mode (this may toggle a few frames later)
+#end
+function sapp_mouse_locked()
 #rem wonkeydoc return the userdata pointer optionally provided in sapp_desc
 #end
 function sapp_userdata:void ptr()
-
 #rem wonkeydoc return a copy of the sapp_desc structure
 #end
 function sapp_query_desc:sapp_desc()
-
 #rem wonkeydoc initiate a "soft quit" (sends SAPP_EVENTTYPE_QUIT_REQUESTED)
 #end
 function sapp_request_quit()
-
 #rem wonkeydoc cancel a pending quit (when SAPP_EVENTTYPE_QUIT_REQUESTED has been received)
 #end
 function sapp_cancel_quit()
-
 #rem wonkeydoc intiate a "hard quit" (quit application without sending SAPP_EVENTTYPE_QUIT_REQUSTED)
 #end
 function sapp_quit()
-
+#rem wonkeydoc call from inside event callback to consume the current event (don't forward to platform)
+#end
+function sapp_consume_event()
 #rem wonkeydoc get the current frame counter (for comparison with sapp_event.frame_count)
 #end
 function sapp_frame_count:ulong()
+#rem wonkeydoc write string into clipboard
+#end
+function sapp_set_clipboard_string(str:const_char_t ptr)
+#rem wonkeydoc read string from clipboard (usually during SAPP_EVENTTYPE_CLIPBOARD_PASTED)
+#end
+function sapp_get_clipboard_string:const_char_t ptr()
+#rem wonkeydoc set the window title (only on desktop platforms)
+#end
+function sapp_set_window_title(str:const_char_t ptr)
+#rem wonkeydoc gets the total number of dropped files (after an SAPP_EVENTTYPE_FILES_DROPPED event)
+#end
+function sapp_get_num_dropped_files:int()
+#rem wonkeydoc gets the dropped file paths
+#end
+function sapp_get_dropped_file_path:const_char_t ptr(index:int)
 
 
 
@@ -838,22 +1289,28 @@ function sapp_gles2:bool()
 #rem wonkeydoc HTML5: enable or disable the hardwired "Leave Site?" dialog box
 #end
 function sapp_html5_ask_leave_site(ask:bool)
+#rem wonkeydoc HTML5: get byte size of a dropped file
+#end
+function sapp_html5_get_dropped_file_size:uint(index:int)
+#rem wonkeydoc HTML5: asynchronously load the content of a dropped file
+#end
+function sapp_html5_fetch_dropped_file(request:sapp_html5_fetch_request ptr)
 
 
 
-#rem wonkeydoc Metal: get ARC-bridged pointer to Metal device object
+#rem wonkeydoc Metal: get bridged pointer to Metal device object
 #end
 function sapp_metal_get_device:void ptr()
-#rem wonkeydoc Metal: get ARC-bridged pointer to this frame's renderpass descriptor
+#rem wonkeydoc Metal: get bridged pointer to this frame's renderpass descriptor
 #end
 function sapp_metal_get_renderpass_descriptor:void ptr()
-#rem wonkeydoc Metal: get ARC-bridged pointer to current drawable
+#rem wonkeydoc Metal: get bridged pointer to current drawable
 #end
 function sapp_metal_get_drawable:void ptr()
-#rem wonkeydoc macOS: get ARC-bridged pointer to macOS NSWindow
+#rem wonkeydoc macOS: get bridged pointer to macOS NSWindow
 #end
 function sapp_macos_get_window:void ptr()
-#rem wonkeydoc iOS: get ARC-bridged pointer to iOS UIWindow
+#rem wonkeydoc iOS: get bridged pointer to iOS UIWindow
 #end
 function sapp_ios_get_window:void ptr()
 
@@ -877,6 +1334,21 @@ function sapp_win32_get_hwnd:void ptr()
 
 
 
+#rem wonkeydoc WebGPU: get WGPUDevice handle
+#end
+function sapp_wgpu_get_device:void ptr()
+#rem wonkeydoc WebGPU: get swapchain's WGPUTextureView handle for rendering
+#end
+function sapp_wgpu_get_render_view:void ptr()
+#rem wonkeydoc WebGPU: get swapchain's MSAA-resolve WGPUTextureView (may return null)
+#end
+function sapp_wgpu_get_resolve_view:void ptr()
+#rem wonkeydoc WebGPU: get swapchain's WGPUTextureView for the depth-stencil surface
+#end
+function sapp_wgpu_get_depth_stencil_view:void ptr()
+
+
+
 #rem wonkeydoc Android: get native activity handle
 #end
 function sapp_android_get_native_activity:void ptr()
@@ -895,7 +1367,8 @@ function sapp_android_get_native_activity:void ptr()
     Project URL: https://github.com/floooh/sokol
 
     Do this:
-        #define SOKOL_IMPL
+        #define SOKOL_IMPL or
+        #define SOKOL_GFX_IMPL
     before you include this file in *one* C or C++ file to create the
     implementation.
 
@@ -906,6 +1379,7 @@ function sapp_android_get_native_activity:void ptr()
         #define SOKOL_GLES3
         #define SOKOL_D3D11
         #define SOKOL_METAL
+        #define SOKOL_WGPU
         #define SOKOL_DUMMY_BACKEND
 
     I.e. for the GL 3.3 Core Profile it should look like this:
@@ -927,7 +1401,8 @@ function sapp_android_get_native_activity:void ptr()
     SOKOL_FREE(p)       - your own free function (default: free(p))
     SOKOL_LOG(msg)      - your own logging function (default: puts(msg))
     SOKOL_UNREACHABLE() - a guard macro for unreachable code (default: assert(false))
-    SOKOL_API_DECL      - public function declaration prefix (default: extern)
+    SOKOL_GFX_API_DECL  - public function declaration prefix (default: extern)
+    SOKOL_API_DECL      - same as SOKOL_GFX_API_DECL
     SOKOL_API_IMPL      - public function implementation prefix (default: -)
     SOKOL_TRACE_HOOKS   - enable trace hook callbacks (search below for TRACE HOOKS)
 
@@ -936,7 +1411,7 @@ function sapp_android_get_native_activity:void ptr()
 
     SOKOL_DLL
 
-    On Windows, SOKOL_DLL will define SOKOL_API_DECL as __declspec(dllexport)
+    On Windows, SOKOL_DLL will define SOKOL_GFX_API_DECL as __declspec(dllexport)
     or __declspec(dllimport) as needed.
 
     If you want to compile without deprecated structs and functions,
@@ -944,20 +1419,10 @@ function sapp_android_get_native_activity:void ptr()
 
     SOKOL_NO_DEPRECATED
 
-    API usage validation macros:
-
-    SOKOL_VALIDATE_BEGIN()      - begin a validation block (default:_sg_validate_begin())
-    SOKOL_VALIDATE(cond, err)   - like assert but for API validation (default: _sg_validate(cond, err))
-    SOKOL_VALIDATE_END()        - end a validation block, return true if all checks in block passed (default: bool _sg_validate())
-
-    If you don't want validation errors to be fatal, define SOKOL_VALIDATE_NON_FATAL,
-    be aware though that this may spam SOKOL_LOG messages.
-
     Optionally define the following to force debug checks and validations
     even in release mode:
 
     SOKOL_DEBUG         - by default this is defined if _DEBUG is defined
-
 
     sokol_gfx DOES NOT:
     ===================
@@ -1024,6 +1489,11 @@ function sapp_android_get_native_activity:void ptr()
     --- kick off a draw call with:
 
             sg_draw(int base_element, int num_elements, int num_instances)
+
+        In the case of no instancing: num_instances should be set to 1 and base_element/num_elements are
+        amounts of vertices. In the case of instancing (meaning num_instances > 1), num elements is the
+        number of vertices in one instance, while base_element remains unchanged. base_element is the index
+        of the first vertex to begin drawing from.
 
     --- finish the current rendering pass with:
 
@@ -1118,6 +1588,14 @@ function sapp_android_get_native_activity:void ptr()
 
             bool sg_query_buffer_overflow(sg_buffer buf)
 
+        NOTE: Due to restrictions in underlying 3D-APIs, appended chunks of
+        data will be 4-byte aligned in the destination buffer. This means
+        that there will be gaps in index buffers containing 16-bit indices
+        when the number of indices in a call to sg_append_buffer() is
+        odd. This isn't a problem when each call to sg_append_buffer()
+        is associated with one draw call, but will be problematic when
+        a single indexed draw call spans several appended chunks of indices.
+
     --- to check at runtime for optional features, limits and pixelformat support,
         call:
 
@@ -1165,6 +1643,40 @@ function sapp_android_get_native_activity:void ptr()
         will be replaced with their concrete values in the returned desc
         struct.
 
+    ON INITIALIZATION:
+    ==================
+    When calling sg_setup(), a pointer to an sg_desc struct must be provided
+    which contains initialization options. These options provide two types
+    of information to sokol-gfx:
+
+        (1) upper bounds and limits needed to allocate various internal
+            data structures:
+                - the max number of resources of each type that can
+                  be alive at the same time, this is used for allocating
+                  internal pools
+                - the max overall size of uniform data that can be
+                  updated per frame, including a worst-case alignment
+                  per uniform update (this worst-case alignment is 256 bytes)
+                - the max size of all dynamic resource updates (sg_update_buffer,
+                  sg_append_buffer and sg_update_image) per frame
+                - the max number of entries in the texture sampler cache
+                  (how many unique texture sampler can exist at the same time)
+            Not all of those limit values are used by all backends, but it is
+            good practice to provide them none-the-less.
+
+        (2) 3D-API "context information" (sometimes also called "bindings"):
+            sokol_gfx.h doesn't create or initialize 3D API objects which are
+            closely related to the presentation layer (this includes the "rendering
+            device", the swapchain, and any objects which depend on the
+            swapchain). These API objects (or callback functions to obtain
+            them, if those objects might change between frames), must
+            be provided in a nested sg_context_desc struct inside the
+            sg_desc struct. If sokol_gfx.h is used together with
+            sokol_app.h, have a look at the sokol_glue.h header which provides
+            a convenience function to get a sg_context_desc struct filled out
+            with context information provided by sokol_app.h
+
+    See the documention block of the sg_desc struct below for more information.
 
     BACKEND-SPECIFIC TOPICS:
     ========================
@@ -1231,6 +1743,25 @@ function sapp_android_get_native_activity:void ptr()
 
         The provided semantic information will be used later in sg_create_pipeline()
         to match the vertex layout to vertex shader inputs.
+
+    --- on D3D11, and when passing HLSL source code (instead of byte code) to shader
+        creation, you can optionally define the shader model targets on the vertex
+        stage:
+
+            sg_shader_Desc desc = {
+                .vs = {
+                    ...
+                    .d3d11_target = "vs_5_0"
+                },
+                .fs = {
+                    ...
+                    .d3d11_target = "ps_5_0"
+                }
+            };
+
+        The default targets are "ps_4_0" and "fs_4_0". Note that those target names
+        are only used when compiling shaders from source. They are ignored when
+        creating a shader from bytecode.
 
     --- on Metal, GL 3.3 or GLES3/WebGL2, you don't need to provide an attribute
         name or semantic name, since vertex attributes can be bound by their slot index
@@ -1336,10 +1867,9 @@ function sapp_android_get_native_activity:void ptr()
         - SG_VERTEXFORMAT_SHORT4N
         - SG_VERTEXFORMAT_USHORT4N
 
-      D3D11 will not convert *non-normalized* vertex formats
-      to floating point vertex shader inputs, those can
-      only use the ivecn formats when D3D11 is used
-      as backend (GL and should Metal can use both formats)
+      D3D11 will not convert *non-normalized* vertex formats to floating point
+      vertex shader inputs, those can only be uses with the *ivecn* vertex shader
+      input types when D3D11 is used as backend (GL and Metal can use both formats)
 
         - SG_VERTEXFORMAT_BYTE4,
         - SG_VERTEXFORMAT_UBYTE4
@@ -1470,6 +2000,7 @@ const SG_BACKEND_D3D11:sg_backend
 const SG_BACKEND_METAL_IOS:sg_backend
 const SG_BACKEND_METAL_MACOS:sg_backend
 const SG_BACKEND_METAL_SIMULATOR:sg_backend
+const SG_BACKEND_WGPU:sg_backend
 const SG_BACKEND_DUMMY:sg_backend
 
 
@@ -1616,24 +2147,24 @@ end
 	returned by sg_query_features().
 #end
 struct sg_features
-	field instancing:bool
-	field origin_top_left:bool
-	field multiple_render_targets:bool
-	field msaa_render_targets:bool
-	field imagetype_3d:bool			'/* creation of SG_IMAGETYPE_3D images is supported */
-	field imagetype_array:bool		'/* creation of SG_IMAGETYPE_ARRAY images is supported */
-	field image_clamp_to_border:bool '/* border color and clamp-to-border UV-wrap mode is supported */
+	field instancing:bool               '/* hardware instancing supported */
+	field origin_top_left:bool          '/* framebuffer and texture origin is in top left corner */
+	field multiple_render_targets:bool  '/* offscreen render passes can have multiple render targets attached */
+	field msaa_render_targets:bool      '/* offscreen render passes support MSAA antialiasing */
+	field imagetype_3d:bool			    '/* creation of SG_IMAGETYPE_3D images is supported */
+	field imagetype_array:bool		    '/* creation of SG_IMAGETYPE_ARRAY images is supported */
+	field image_clamp_to_border:bool    '/* border color and clamp-to-border UV-wrap mode is supported */
 end
 
 #rem 
 	Runtime information about resource limits, returned by sg_query_limit()
 #end
 struct sg_limits
-	field max_image_size_2d:uint			'/* max width/height of SG_IMAGETYPE_2D images */
+	field max_image_size_2d:uint		'/* max width/height of SG_IMAGETYPE_2D images */
 	field max_image_size_cube:uint		'/* max width/height of SG_IMAGETYPE_CUBE images */
-	field max_image_size_3d:uint			'/* max width/height/depth of SG_IMAGETYPE_3D images */
-	field max_image_size_array:uint
-	field max_image_array_layers:uint
+	field max_image_size_3d:uint		'/* max width/height/depth of SG_IMAGETYPE_3D images */
+	field max_image_size_array:uint     '/* max width/height of SG_IMAGETYPE_ARRAY images */
+	field max_image_array_layers:uint   '/* max number of layers in SG_IMAGETYPE_ARRAY images */
 	field max_vertex_attrs:uint			'/* <= SG_MAX_VERTEX_ATTRIBUTES (only on some GLES2 impls) */
 end
 
@@ -1761,12 +2292,28 @@ const _SG_IMAGETYPE_NUM:sg_image_type
 const _SG_IMAGETYPE_FORCE_U32:sg_image_type
 
 #rem
+    sg_sampler_type
+
+    Indicates the basic data type of a shader's texture sampler which
+    can be float , unsigned integer or signed integer. The sampler
+    type is used in the sg_shader_image_desc to describe the
+    sampler type of a shader's texture sampler binding.
+
+    The default sampler type is SG_SAMPLERTYPE_FLOAT.
+#end
+enum sg_sampler_type
+end
+const _SG_SAMPLERTYPE_DEFAULT:sg_sampler_type  '/* value 0 reserved for default-init */
+const SG_SAMPLERTYPE_FLOAT:sg_sampler_type
+const SG_SAMPLERTYPE_SINT:sg_sampler_type
+const SG_SAMPLERTYPE_UINT:sg_sampler_type
+
+#rem
     sg_cube_face
 
     The cubemap faces. Use these as indices in the sg_image_desc.content
     array.
 #end
-
 enum sg_cube_face
 end
 const SG_CUBEFACE_POS_X:sg_cube_face
@@ -2303,6 +2850,8 @@ struct sg_buffer_desc
 	field mtl_buffers:void ptr[] '[SG_NUM_INFLIGHT_FRAMES]
 	'/* D3D11 specific */
 	field d3d11_buffer:void ptr
+    '/* WebGPU specific */
+    field wgpu_buffer:void ptr
 	
 	field _end_canary:uint
 end
@@ -2395,10 +2944,10 @@ struct sg_image_desc
 	
 	field width:int
 	field height:int
-	
-	field depth_layers:int 'union { int depth, int layers }
-	
+
+    field num_slices:int
 	field num_mipmaps:int
+
 	field usage:sg_usage
 	field pixel_format:sg_pixel_format
 	field sample_count:int
@@ -2427,6 +2976,9 @@ struct sg_image_desc
 	field mtl_textures:void ptr[] '[SG_NUM_INFLIGHT_FRAMES]
 	'/* D3D11 specific */
 	field d3d11_texture:void ptr
+    field d3d11_shader_resource_view:void ptr
+    '/* WebGPU specific */
+    field wgpu_texture:void ptr
 	
 	field _end_canary:uint
 end
@@ -2484,6 +3036,7 @@ end
 struct sg_shader_image_desc
 	field name:const_char_t ptr
 	field type:sg_image_type
+    field sampler_type:sg_sampler_type
 end
 
 '// struct: sg_shader_stage_desc
@@ -2492,6 +3045,7 @@ struct sg_shader_stage_desc
 	field byte_code:ubyte ptr
 	field byte_code_size:int
 	field entry:const_char_t ptr
+	field d3d11_target:const_char_t ptr
 	field uniform_blocks:sg_shader_uniform_block_desc[] '[SG_MAX_SHADERSTAGE_UBS]
 	field images:sg_shader_image_desc[] '[SG_MAX_SHADERSTAGE_IMAGES]
 end
@@ -2648,7 +3202,7 @@ struct sg_rasterizer_state
 	field face_winding:sg_face_winding
 	field sample_count:int
 	field depth_bias:float
-	field depth_bias_slpoe_scale:float
+	field depth_bias_slope_scale:float
 	field depth_bias_clamp:float
 end
 
@@ -2755,11 +3309,21 @@ struct sg_trace_hooks
 	field alloc_shader:void(result:sg_shader, user_data:void ptr)
 	field alloc_pipeline:void(result:sg_pipeline, user_data:void ptr)
 	field alloc_pass:void(result:sg_pass, user_data:void ptr)
+    field dealloc_buffer:void(buf_id:sg_buffer, user_data:void ptr)
+    field dealloc_image:void(img_id:sg_image, user_data:void ptr)
+    field dealloc_shader:void(shd_id:sg_shader, user_data:void ptr)
+    field dealloc_pipeline:void(pip_id:sg_pipeline, user_data:void ptr)
+    field dealloc_pass:void(pass_id:sg_pass, user_data:void ptr)
 	field init_buffer:void(buf_id:sg_buffer, desc:sg_buffer_desc ptr, user_data:void ptr)
 	field init_image:void(img_id:sg_image, desc:sg_image_desc ptr, user_data:void ptr)
 	field init_shader:void(shd_id:sg_shader, desc:sg_shader_desc ptr, user_data:void ptr)
 	field init_pipeline:void(pip_id:sg_pipeline, desc:sg_pipeline_desc ptr, user_data:void ptr)
 	field init_pass:void(pass_id:sg_pass, desc:sg_pass_desc ptr, user_data:void ptr)
+    field uninit_buffer:void(buf_id:sg_buffer, user_data:void ptr)
+    field uninit_image:void(img_id:sg_image, user_data:void ptr)
+    field uninit_shader:void(shd_id:sg_shader, user_data:void ptr)
+    field uninit_pipeline:void(pip_id:sg_pipeline, user_data:void ptr)
+    field uninit_pass:void(pass_id:sg_pass, user_data:void ptr)
 	field fail_buffer:void(buf_id:sg_buffer, user_data:void ptr)
 	field fail_image:void(img_id:sg_image, user_data:void ptr)
 	field fail_shader:void(shd_id:sg_shader, user_data:void ptr)
@@ -2824,6 +3388,8 @@ struct sg_image_info
 	field upd_frame_index:uint			'/* frame index of last sg_update_image() */
 	field num_slots:int					'/* number of renaming-slots for dynamically updated images */
 	field active_slot:int				'/* currently active write-slot for dynamically updated images */
+    field width:int                     '/* image width */
+    field height:int                    '/* image height */
 end
 
 '// struct: sg_shader_info
@@ -2847,20 +3413,37 @@ end
     The sg_desc struct contains configuration values for sokol_gfx,
     it is used as parameter to the sg_setup() call.
 
+    NOTE that all callback function pointers come in two versions, one without
+    a userdata pointer, and one with a userdata pointer. You would
+    either initialize one or the other depending on whether you pass data
+    to your callbacks.
+
+    FIXME: explain the various configuration options
+
     The default configuration is:
 
-    .buffer_pool_size:      128
-    .image_pool_size:       128
-    .shader_pool_size:      32
-    .pipeline_pool_size:    64
-    .pass_pool_size:        16
-    .context_pool_size:     16
+    .buffer_pool_size       128
+    .image_pool_size        128
+    .shader_pool_size       32
+    .pipeline_pool_size     64
+    .pass_pool_size         16
+    .context_pool_size      16
+    .sampler_cache_size     64
+    .uniform_buffer_size    4 MB (4*1024*1024)
+    .staging_buffer_size    8 MB (8*1024*1024)
+
+    .context.color_format: default value depends on selected backend:
+        all GL backends:    SG_PIXELFORMAT_RGBA8
+        Metal and D3D11:    SG_PIXELFORMAT_BGRA8
+        WGPU:               *no default* (must be queried from WGPU swapchain)
+    .context.depth_format   SG_PIXELFORMAT_DEPTH_STENCIL
+    .context.sample_count   1
 
     GL specific:
-    .gl_force_gles2
-        if this is true the GL backend will act in "GLES2 fallback mode" even
-        when compiled with SOKOL_GLES3, this is useful to fall back
-        to traditional WebGL if a browser doesn't support a WebGL2 context
+        .context.gl.force_gles2
+            if this is true the GL backend will act in "GLES2 fallback mode" even
+            when compiled with SOKOL_GLES3, this is useful to fall back
+            to traditional WebGL if a browser doesn't support a WebGL2 context
 
     Metal specific:
         (NOTE: All Objective-C object references are transferred through
@@ -2870,42 +3453,114 @@ end
         must hold a strong reference to the Objective-C object for the
         duration of the sokol_gfx call!
 
-    .mtl_device
-        a pointer to the MTLDevice object
-    .mtl_renderpass_descriptor_cb
-        a C callback function to obtain the MTLRenderPassDescriptor for the
-        current frame when rendering to the default framebuffer, will be called
-        in sg_begin_default_pass()
-    .mtl_drawable_cb
-        a C callback function to obtain a MTLDrawable for the current
-        frame when rendering to the default framebuffer, will be called in
-        sg_end_pass() of the default pass
-    .mtl_global_uniform_buffer_size
-        the size of the global uniform buffer in bytes, this must be big
-        enough to hold all uniform block updates for a single frame,
-        the default value is 4 MByte (4 * 1024 * 1024)
-    .mtl_sampler_cache_size
-        the number of slots in the sampler cache, the Metal backend
-        will share texture samplers with the same state in this
-        cache, the default value is 64
+        .context.metal.device
+            a pointer to the MTLDevice object
+        .context.metal.renderpass_descriptor_cb
+        .context.metal_renderpass_descriptor_userdata_cb
+            A C callback function to obtain the MTLRenderPassDescriptor for the
+            current frame when rendering to the default framebuffer, will be called
+            in sg_begin_default_pass().
+        .context.metal.drawable_cb
+        .context.metal.drawable_userdata_cb
+            a C callback function to obtain a MTLDrawable for the current
+            frame when rendering to the default framebuffer, will be called in
+            sg_end_pass() of the default pass
+        .context.metal.user_data
+            optional user data pointer passed to the userdata versions of
+            callback functions
 
     D3D11 specific:
-    .d3d11_device
-        a pointer to the ID3D11Device object, this must have been created
-        before sg_setup() is called
-    .d3d11_device_context
-        a pointer to the ID3D11DeviceContext object
-    .d3d11_render_target_view_cb
-        a C callback function to obtain a pointer to the current
-        ID3D11RenderTargetView object of the default framebuffer,
-        this function will be called in sg_begin_pass() when rendering
-        to the default framebuffer
-    .d3d11_depth_stencil_view_cb
-        a C callback function to obtain a pointer to the current
-        ID3D11DepthStencilView object of the default framebuffer,
-        this function will be called in sg_begin_pass() when rendering
-        to the default framebuffer
+        .context.d3d11.device
+            a pointer to the ID3D11Device object, this must have been created
+            before sg_setup() is called
+        .context.d3d11.device_context
+            a pointer to the ID3D11DeviceContext object
+        .context.d3d11.render_target_view_cb
+        .context.d3d11.render_target_view_userdata_cb
+            a C callback function to obtain a pointer to the current
+            ID3D11RenderTargetView object of the default framebuffer,
+            this function will be called in sg_begin_pass() when rendering
+            to the default framebuffer
+        .context.d3d11.depth_stencil_view_cb
+        .context.d3d11.depth_stencil_view_userdata_cb
+            a C callback function to obtain a pointer to the current
+            ID3D11DepthStencilView object of the default framebuffer,
+            this function will be called in sg_begin_pass() when rendering
+            to the default framebuffer
+        .context.metal.user_data
+            optional user data pointer passed to the userdata versions of
+            callback functions
+
+    WebGPU specific:
+        .context.wgpu.device
+            a WGPUDevice handle
+        .context.wgpu.render_format
+            WGPUTextureFormat of the swap chain surface
+        .context.wgpu.render_view_cb
+        .context.wgpu.render_view_userdata_cb
+            callback to get the current WGPUTextureView of the swapchain's
+            rendering attachment (may be an MSAA surface)
+        .context.wgpu.resolve_view_cb
+        .context.wgpu.resolve_view_userdata_cb
+            callback to get the current WGPUTextureView of the swapchain's
+            MSAA-resolve-target surface, must return 0 if not MSAA rendering
+        .context.wgpu.depth_stencil_view_cb
+        .context.wgpu.depth_stencil_view_userdata_cb
+            callback to get current default-pass depth-stencil-surface WGPUTextureView
+            the pixel format of the default WGPUTextureView must be WGPUTextureFormat_Depth24Plus8
+        .context.metal.user_data
+            optional user data pointer passed to the userdata versions of
+            callback functions
+
+    When using sokol_gfx.h and sokol_app.h together, consider using the
+    helper function sapp_sgcontext() in the sokol_glue.h header to
+    initialize the sg_desc.context nested struct. sapp_sgcontext() returns
+    a completely initialized sg_context_desc struct with information
+    provided by sokol_app.h.
 #end
+struct sg_gl_context_desc
+    field force_gles2:bool
+end
+
+struct sg_metal_context_desc
+    field device:void ptr
+    field renderpass_descriptor_cb:void()
+    field renderpass_descriptor_userdata_cb:void()
+    field drawable_cb:void()
+    field drawable_userdata_cb:void()
+    field user_data:void ptr
+end
+
+struct sg_d3d11_context_desc
+    field device:void ptr
+    field device_context:void ptr
+    field render_target_view_cb:void()
+    field render_target_view_userdata_cb:void(void ptr)
+    field depth_stencil_view_cb:void()
+    field depth_stencil_view_userdata_cb:void(void ptr)
+    field user_data:void ptr
+end
+
+struct sg_wgpu_context_desc
+    field device:void ptr
+    field render_view_cb:void()
+    field render_view_userdata_cb:void(void ptr)
+    field resolve_view_cb:void()
+    field resolve_view_userdata_cb:void(void ptr)
+    field depth_stencil_view_cb:void()
+    field depth_stencil_view_userdata_cb:void(void ptr)
+    field user_data:void ptr
+end
+
+struct sg_context_desc
+    field color_format:sg_pixel_format
+    field depth_format:sg_pixel_format
+    field sample_count:int
+    field gl:sg_gl_context_desc
+    field metal:sg_metal_context_desc
+    field d3d11:sg_d3d11_context_desc
+    field wgpu:sg_wgpu_context_desc
+end
 
 struct sg_desc
 	field _start_canary:uint
@@ -2916,20 +3571,11 @@ struct sg_desc
 	field pipeline_pool_size:int
 	field pass_pool_size:int
 	field context_pool_size:int
-	'/* GL specific */
-	field gl_force_gles2:bool
-	'/* Metal-specific */
-	field mtl_device:void ptr
-	field mtl_renderpass_descriptor_cb:void ptr()
-	field mtl_drawable_cb:void ptr()
-	field mtl_global_uniform_buffer_size:int
-	field mtl_sampler_cache_size:int
-	'/* D3D11-specific */
-	field d3d11_device:void ptr
-	field d3d11_device_context:void ptr
-	field d3d11_render_target_view_cb:void ptr()
-	field d3d11_depth_stencil_view_cb:void ptr()
-	
+    field uniform_buffer_size:int
+    field staging_buffer_size:int
+	field sampler_cache_size:int
+    field context:sg_context_desc
+
 	field _end_canary:uint
 end
 
@@ -3003,11 +3649,21 @@ function sg_alloc_image:sg_image()
 function sg_alloc_shader:sg_shader()
 function sg_alloc_pipeline:sg_pipeline()
 function sg_alloc_pass:sg_pass()
+function sg_dealloc_buffer:void(buf_id:sg_buffer)
+function sg_dealloc_image:void(img_id:sg_image)
+function sg_dealloc_shader:void(shd_id:sg_shader)
+function sg_dealloc_pipeline:void(pip_id:sg_pipeline)
+function sg_dealloc_pass:void(pass_id:sg_pass)
 function sg_init_buffer:void(buf_id:sg_buffer, desc:sg_buffer_desc ptr)
 function sg_init_image:void(img_id:sg_image, desc:sg_image_desc ptr)
 function sg_init_shader:void(shd_id:sg_shader, desc:sg_shader_desc ptr)
 function sg_init_pipeline:void(pip_id:sg_pipeline, desc:sg_pipeline_desc ptr)
 function sg_init_pass:void(pass_id:sg_pass, desc:sg_pass_desc ptr)
+function sg_uninit_buffer:void(buf_id:sg_buffer)
+function sg_uninit_image:void(img_id:sg_image)
+function sg_uninit_shader:void(shd_id:sg_shader)
+function sg_uninit_pipeline:void(pip_id:sg_pipeline)
+function sg_uninit_pass:void(pass_id:sg_pass)
 function sg_fail_buffer:void(buf_id:sg_buffer)
 function sg_fail_image:void(img_id:sg_image)
 function sg_fail_shader:void(shd_id:sg_shader)
@@ -3019,6 +3675,20 @@ function sg_setup_context:sg_context()
 function sg_activate_context:void(ctx_id:sg_context)
 function sg_discard_context:void(ctx_id:sg_context)
 
+#rem
+   Backend-specific helper functions, these may come in handy for mixing
+   sokol-gfx rendering with 'native backend' rendering functions.
 
+   This group of functions will be expanded as needed.
+#end
+
+'/* D3D11: return ID3D11Device */
+function sg_d3d11_device:void ptr()
+
+'/* Metal: return __bridge-casted MTLDevice */
+function sg_mtl_device:void ptr()
+
+'/* Metal: return __bridge-casted MTLRenderCommandEncoder in current pass (or zero if outside pass) */
+function sg_mtl_render_command_encoder:void ptr()
 
 
