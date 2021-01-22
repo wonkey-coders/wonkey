@@ -2812,3 +2812,139 @@ function stm_ns:double(ticks:ulong)
 '//
 '//
 '//=================================================================================================================================
+
+'/* a 4x4 matrix wrapper struct */
+struct sshape_mat4_t
+    field m:float[][] '[4][4]
+end
+
+'/* vertex layout of the generated geometry */
+struct sshape_vertex_t
+    field x:float
+    field y:float
+    field z:float
+    field normal:uint   '// packed normal as BYTE4N
+    field u:ushort      '// packed uv coords as USHORT2N
+    field v:ushort      '// packed uv coords as USHORT2N
+    field color:uint    '// packed color as UBYTE4N (r,g,b,a);
+end
+
+'/* a range of draw-elements (sg_draw(int base_element, int num_element, ...)) */
+struct sshape_element_range_t
+    field base_element:int
+    field num_elements:int
+end
+
+'/* number of elements and byte size of build actions */
+struct sshape_sizes_item_t
+    field num:uint       '// number of elements
+    field size:uint      '// the same as size in bytes
+end
+
+struct sshape_sizes_t
+    field vertices:sshape_sizes_item_t
+    field indices:sshape_sizes_item_t
+end
+
+'/* in/out struct to keep track of mesh-build state */
+struct sshape_buffer_item_t
+    field buffer_ptr:void ptr   '// pointer to start of output buffer
+    field buffer_size:uint      '// size in bytes of output buffer
+    field data_size:uint        '// size in bytes of valid data in buffer
+    field shape_offset:uint     '// data offset of the most recent shape
+end
+
+struct sshape_buffer_t="const sshape_buffer_t"
+    field valid:bool
+    field vertices:sshape_buffer_item_t
+    field indices:sshape_buffer_item_t
+end
+
+'/* creation parameters for the different shape types */
+struct sshape_plane_t="const sshape_plane_t"
+    field width:float                   '// default: 1.0
+    field depth:float                   '// default: 1.0
+    field tiles:ushort                  '// default: 1
+    field color:uint                    '// default: white
+    field random_colors:bool            '// default: false
+    field merge:bool                    '// if true merge with previous shape (default: false)
+    field transform:sshape_mat4_t       '// default: identity matrix
+end
+
+struct sshape_box_t="const sshape_box_t"
+    field width:float                   '// default: 1.0
+    field height:float                  '// default: 1.0
+    field depth:float                   '// default: 1.0
+    field tiles:ushort                  '// default: 1
+    field color:uint                    '// default: white
+    field random_colors:bool            '// default: false
+    field merge:bool                    '// if true merge with previous shape (default: false)
+    field transform:sshape_mat4_t       '// default: identity matrix
+end
+
+struct sshape_sphere_t="const sshape_sphere_t"
+    field radius:float                  '// default: 0.5
+    field slices:ushort                 '// default: 5
+    field stacks:ushort                 '// default: 4
+    field color:uint                    '// default: white
+    field random_colors:bool            '// default: false
+    field merge:bool                    '// if true merge with previous shape (default: false)
+    field transform:sshape_mat4_t       '// default: identity matrix
+end
+
+struct sshape_cylinder_t="const sshape_cylinder_t"
+    field radius:float                  '// default: 0.5
+    field height:float                  '// default: 1.0
+    field slices:ushort                 '// default: 5
+    field stacks:ushort                 '// default: 1
+    field color:uint                    '// default: white
+    field random_colors:bool            '// default: false
+    field merge:bool                    '// if true merge with previous shape (default: false)
+    field transform:sshape_mat4_t       '// default: identity matrix
+end
+
+struct sshape_torus_t="const sshape_torus_t"
+    field radius:float                  '// default: 0.5f
+    field ring_radius:float             '// default: 0.2f
+    field sides:ushort                  '// default: 5
+    field rings:ushort                  '// default: 5
+    field color:uint                    '// default: white
+    field random_colors:bool            '// default: false
+    field merge:bool                    '// if true merge with previous shape (default: false)
+    field transform:sshape_mat4_t       '// default: identity matrix
+end
+
+'/* shape builder functions */
+function sshape_build_plane:sshape_buffer_t(buf:sshape_buffer_t ptr, params:sshape_plane_t ptr)
+function sshape_build_box:sshape_buffer_t(buf:sshape_buffer_t ptr, params:sshape_box_t ptr)
+function sshape_build_sphere:sshape_buffer_t(buf:sshape_buffer_t ptr, params:sshape_sphere_t ptr)
+function sshape_build_cylinder:sshape_buffer_t(buf:sshape_buffer_t ptr, params:sshape_cylinder_t ptr)
+function sshape_build_torus:sshape_buffer_t(buf:sshape_buffer_t ptr, params:sshape_torus_t ptr)
+
+'/* query required vertex- and index-buffer sizes in bytes */
+function sshape_plane_sizes:sshape_sizes_t(tiles:uint)
+function sshape_box_sizes:sshape_sizes_t(tiles:uint)
+function sshape_sphere_sizes:sshape_sizes_t(slices:uint, stacks:uint)
+function sshape_cylinder_sizes:sshape_sizes_t(slices:uint, stacks:uint)
+function sshape_torus_sizes:sshape_sizes_t(sides:uint, rings:uint)
+
+'/* extract sokol-gfx desc structs and primitive ranges from build state */
+function sshape_element_range:sshape_element_range_t(buf:sshape_buffer_t ptr)
+function sshape_vertex_buffer_desc:sg_buffer_desc(buf:sshape_buffer_t ptr)
+function sshape_index_buffer_desc:sg_buffer_desc(buf:sshape_buffer_t ptr)
+function sshape_buffer_layout_desc:sg_buffer_layout_desc()
+function sshape_position_attr_desc:sg_vertex_attr_desc()
+function sshape_normal_attr_desc:sg_vertex_attr_desc()
+function sshape_texcoord_attr_desc:sg_vertex_attr_desc()
+function sshape_color_attr_desc:sg_vertex_attr_desc()
+
+'/* helper functions to build packed color value from floats or bytes */
+function sshape_color_4f:uint(r:float, g:float, b:float, a:float)
+function sshape_color_3f:uint(r:float, g:float, b:float)
+function sshape_color_4b:uint(r:ubyte, g:ubyte, b:ubyte, a:ubyte)
+function sshape_color_3b:uint(r:ubyte, g:ubyte, b:ubyte)
+
+'/* adapter function for filling matrix struct from generic float[16] array */
+function sshape_mat4:sshape_mat4_t(m:float ptr)
+function sshape_mat4_transpose:sshape_mat4_t(m:float ptr)
+
