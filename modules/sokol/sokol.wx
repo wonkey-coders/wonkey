@@ -5,47 +5,45 @@ namespace sokol
 using libc..
 
 #if __HOSTOS__="windows"
-
-#import "<libgdi32.a>"
-
+    #import "<libgdi32.a>"
 #elseif __HOSTOS__="macos"
+    #import "WX_CC_OPTS_MACOS=-fobjc-arc"
+    #import "WX_CPP_OPTS_MACOS=-fobjc-arc"
 
-#import "WX_CC_OPTS_MACOS=-fobjc-arc"
-#import "WX_CPP_OPTS_MACOS=-fobjc-arc"
-
-#import "<CoreFoundation.framework>"
-#import "<Metal.framework>"
-#import "<Cocoa.framework>"
-#import "<MetalKit.framework>"
-#import "<Quartz.framework>"
-
+    #import "<CoreFoundation.framework>"
+    #import "<Metal.framework>"
+    #import "<Cocoa.framework>"
+    #import "<MetalKit.framework>"
+    #import "<Quartz.framework>"
 #endif
 
 #import "native/*.h"
 
 #import "native/sokol_app.h"
+#import "native/sokol_args.h"
 #import "native/sokol_gfx.h"
 #import "native/sokol_glue.h"
+#import "native/sokol_time.h"
+#import "native/sokol_audio.h"
+#import "native/sokol_fetch.h"
+
+#import "native/util/sokol_debugtext.h"
+#import "native/util/sokol_gl.h"
+#import "native/util/sokol_memtrack.h"
+#import "native/util/sokol_shape.h"
+'#import "native/util/sokol_fontstash.h"
+'#import "native/util/sokol_imgui.h"
+'#import "native/util/sokol_gfx_imgui.h"
 
 #if __HOSTOS__="macos"
     #import "native/sokol.m" 'ObjC
     #import "native/sokol.mm" 'ObjC++
 #else
     #import "native/sokol.c" 'C
-    #import "native/sokol.cpp" 'C++
+    #import "native/sokol.cc" 'C++
 #end
 
 extern
-
-'//=================================================================================================================================
-'//
-'//
-'// sokol_glue.h
-'//
-'//
-'//=================================================================================================================================
-
-function sapp_sgcontext:sg_context_desc()
 
 '//=================================================================================================================================
 '//
@@ -2505,4 +2503,308 @@ function sg_mtl_device:void ptr()
 '/* Metal: return __bridge-casted MTLRenderCommandEncoder in current pass (or zero if outside pass) */
 function sg_mtl_render_command_encoder:void ptr()
 
+'//=================================================================================================================================
+'//
+'//
+'// sokol_glue.h
+'//
+'//
+'//=================================================================================================================================
 
+function sapp_sgcontext:sg_context_desc()
+
+'//=================================================================================================================================
+'//
+'//
+'// sokol_args.h
+'//
+'//
+'//=================================================================================================================================
+
+struct sargs_desc="const sargs_desc"
+    field argc:int
+    field argv:char_t ptr ptr
+    field max_args:int
+    field buf_size:int
+end
+
+#rem wonkeydoc setup sokol-args
+#end
+function sargs_setup(desc:sargs_desc ptr)
+#rem wonkeydoc shutdown sokol-args
+#end
+function sargs_shutdown()
+#rem wonkeydoc true between sargs_setup() and sargs_shutdown()
+#end
+function sargs_isvalid:bool()
+#rem wonkeydoc test if an argument exists by key name
+#end
+function sargs_exists:bool(key:const_char_t ptr)
+#rem wonkeydoc get value by key name, return empty string if key doesn't exist
+#end
+function sargs_value:const_char_t ptr(key:const_char_t ptr)
+#rem wonkeydoc get value by key name, return provided default if key doesn't exist
+#end
+function sargs_value_def:const_char_t ptr(key:const_char_t ptr, def:const_char_t ptr)
+#rem wonkeydoc return true if val arg matches the value associated with key
+#end
+function sargs_equals:bool(key:const_char_t ptr, val:const_char_t ptr)
+#rem wonkeydoc return true if key's value is "true", "yes" or "on"
+#end
+function sargs_boolean:bool(key:const_char_t ptr)
+#rem wonkeydoc get index of arg by key name, return -1 if not exists
+#end
+function sargs_find:int(key:const_char_t ptr)
+#rem wonkeydoc get number of parsed arguments
+#end
+function sargs_num_args:int()
+#rem wonkeydoc get key name of argument at index, or empty string
+#end
+function sargs_key_at:const_char_t ptr(index:int)
+#rem wonkeydoc get value string of argument at index, or empty string
+#end
+function sargs_value_at:const_char_t ptr(index:int)
+
+'//=================================================================================================================================
+'//
+'//
+'// sokol_audio.h
+'//
+'//
+'//=================================================================================================================================
+
+struct saudio_desc="const saudio_desc"
+    field sample_rate:int       '/* requested sample rate */
+    field num_channels:int      '/* number of channels, default: 1 (mono) */
+    field buffer_frames:int     '/* number of frames in streaming buffer */
+    field packet_frames:int     '/* number of frames in a packet */
+    field num_packets:int       '/* number of packets in packet queue */
+    field stream_cb:void(buffer:float ptr, num_frame:int, num_channels:int) '/* optional streaming callback (no user data) */
+    field stream_userdata_cb:void(buffer:float ptr, num_frame:int, num_channels:int, user_data:void ptr) '/*... and with user data */
+    field user_data:void ptr
+end
+
+#rem wonkeydoc setup sokol-audio
+#end
+function saudio_setup(desc:saudio_desc ptr)
+#rem wonkeydoc shutdown sokol-audio
+#end
+function saudio_shutdown()
+#rem wonkeydoc true after setup if audio backend was successfully initialized
+#end
+function saudio_isvalid:bool()
+#rem wonkeydoc return the saudio_desc.user_data pointer
+#end
+function saudio_userdata:void ptr()
+#rem wonkeydoc return a copy of the original saudio_desc struct
+#end
+function saudio_query_desc:saudio_desc()
+#rem wonkeydoc actual sample rate
+#end
+function saudio_sample_rate:int()
+#rem wonkeydoc return actual backend buffer size in number of frames
+#end
+function saudio_buffer_frames:int()
+#rem wonkeydoc actual number of channels
+#end
+function saudio_channels:int()
+#rem wonkeydoc get current number of frames to fill packet queue
+#end
+function saudio_expect:int()
+#rem wonkeydoc push sample frames from main thread, returns number of frames actually pushed
+#end
+function saudio_push:int(frames:float ptr, num_frames:int)
+
+'//=================================================================================================================================
+'//
+'//
+'// sokol_fetch.h
+'//
+'//
+'//=================================================================================================================================
+
+'/* configuration values for sfetch_setup() */
+struct sfetch_desc_t
+    field _start_canary:uint
+    
+    field max_requests:uint '/* max number of active requests across all channels, default is 128 */
+    field num_channels:uint '/* number of channels to fetch requests in parallel, default is 1 */
+    field num_lanes:uint    '/* max number of requests active on the same channel, default is 1 */
+
+    field _end_canary:uint
+end
+
+'/* a request handle to identify an active fetch request, returned by sfetch_send() */
+struct sfetch_handle_t
+    field id:uint
+end
+
+'/* error codes */
+enum sfetch_error_t
+end
+const SFETCH_ERROR_NO_ERROR:sfetch_error_t
+const SFETCH_ERROR_FILE_NOT_FOUND:sfetch_error_t
+const SFETCH_ERROR_NO_BUFFER:sfetch_error_t
+const SFETCH_ERROR_BUFFER_TOO_SMALL:sfetch_error_t
+const SFETCH_ERROR_UNEXPECTED_EOF:sfetch_error_t
+const SFETCH_ERROR_INVALID_HTTP_STATUS:sfetch_error_t
+const SFETCH_ERROR_CANCELLED:sfetch_error_t
+
+'/* the response struct passed to the response callback */
+struct sfetch_response_t="const sfetch_response_t"
+    field handle:sfetch_handle_t            '/* request handle this response belongs to */
+    field dispatched:bool                   '/* true when request is in DISPATCHED state (lane has been assigned) */
+    field fetched:bool                      '/* true when request is in FETCHED state (fetched data is available) */
+    field paused:bool                       '/* request is currently in paused state */
+    field finished:bool                     '/* this is the last response for this request */
+    field failed:bool                       '/* request has failed (always set together with 'finished') */
+    field cancelled:bool                    '/* request was cancelled (always set together with 'finished') */
+    field error_code:sfetch_error_t         '/* more detailed error code when failed is true */
+    field channel:uint                      '/* the channel which processes this request */
+    field lane:uint                         '/* the lane this request occupies on its channel */
+    field path:const_char_t ptr             '/* the original filesystem path of the request (FIXME: this is unsafe, wrap in API call?) */
+    field user_data:void ptr                '/* pointer to read/write user-data area (FIXME: this is unsafe, wrap in API call?) */
+    field fetched_offset:uint               '/* current offset of fetched data chunk in file data */
+    field fetched_size:uint                 '/* size of fetched data chunk in number of bytes */
+    field buffer_ptr:void ptr               '/* pointer to buffer with fetched data */
+    field buffer_size:uint                  '/* overall buffer size (may be >= than fetched_size!) */
+end
+
+'/* response callback function signature */
+alias sfetch_callback_t:void(sfetch_response_t ptr)
+
+'/* request parameters passed to sfetch_send() */
+struct sfetch_request_t="const sfetch_request_t"
+    field _start_canary:uint
+    field channel:uint                  '/* index of channel this request is assigned to (default: 0) */
+    field path:const_char_t ptr         '/* filesystem path or HTTP URL (required) */
+    field callback:sfetch_callback_t    '/* response callback function pointer (required) */
+    field buffer_ptr:void ptr           '/* buffer pointer where data will be loaded into (optional) */
+    field buffer_size:uint              '/* buffer size in number of bytes (optional) */
+    field chunk_size:uint               '/* number of bytes to load per stream-block (optional) */
+    field user_data_ptr:void ptr        '/* pointer to a POD user-data block which will be memcpy'd(!) (optional) */
+    field user_data_size:uint           '/* size of user-data block (optional) */
+    field _end_canary:uint
+end
+
+#rem wonkeydoc setup sokol-fetch (can be called on multiple threads)
+#end
+function sfetch_setup(desc:sfetch_desc_t ptr)
+#rem wonkeydoc discard a sokol-fetch context
+#end
+function sfetch_shutdown()
+#rem wonkeydoc return true if sokol-fetch has been setup
+#end
+function sfetch_valid:bool()
+#rem wonkeydoc get the desc struct that was passed to sfetch_setup()
+#end
+function sfetch_desc:sfetch_desc_t()
+#rem wonkeydoc return the max userdata size in number of bytes (SFETCH_MAX_USERDATA_UINT64 * sizeof(uint64_t))
+#end
+function sfetch_max_userdata_bytes:int()
+#rem wonkeydoc return the value of the SFETCH_MAX_PATH implementation config value
+#end
+function sfetch_max_path:int()
+
+
+#rem wonkeydoc send a fetch-request, get handle to request back
+#end
+function sfetch_send:sfetch_handle_t(request:sfetch_request_t ptr)
+#rem wonkeydoc return true if a handle is valid *and* the request is alive
+#end
+function sfetch_handle_valid:bool(h:sfetch_handle_t)
+#rem wonkeydoc do per-frame work, moves requests into and out of IO threads, and invokes response-callbacks
+#end
+function sfetch_dowork()
+
+
+#rem wonkeydoc bind a data buffer to a request (request must not currently have a buffer bound, must be called from response callback
+#end
+function sfetch_bind_buffer(h:sfetch_handle_t, buffer_ptr:void ptr, buffer_size:uint)
+#rem wonkeydoc clear the 'buffer binding' of a request, returns previous buffer pointer (can be 0), must be called from response callback
+#end
+function sfetch_unbind_buffer:void ptr(h:sfetch_handle_t)
+#rem wonkeydoc cancel a request that's in flight (will call response callback with .cancelled + .finished)
+#end
+function sfetch_cancel(h:sfetch_handle_t)
+#rem wonkeydoc pause a request (will call response callback each frame with .paused)
+#end
+function sfetch_pause(h:sfetch_handle_t)
+#rem wonkeydoc continue a paused request
+#end
+function sfetch_continue(h:sfetch_handle_t)
+
+'//=================================================================================================================================
+'//
+'//
+'// sokol_time.h
+'//
+'//
+'//=================================================================================================================================
+
+function stm_setup()
+function stm_now:ulong()
+function stm_diff:ulong(new_ticks:ulong, old_ticks:ulong)
+function stm_since:ulong(start_ticks:ulong)
+function stm_laptime:ulong(last_time:ulong ptr)
+function stm_round_to_common_refresh_rate:ulong(frame_ticks:ulong)
+function stm_sec:double(ticks:ulong)
+function stm_ms:double(ticks:ulong)
+function stm_us:double(ticks:ulong)
+function stm_ns:double(ticks:ulong)
+
+'//=================================================================================================================================
+'//
+'//
+'// util/sokol_debugtext.h
+'//
+'//
+'//=================================================================================================================================
+
+'//=================================================================================================================================
+'//
+'//
+'// util/sokol_fonstash.h
+'//
+'//
+'//=================================================================================================================================
+
+'//=================================================================================================================================
+'//
+'//
+'// util/sokol_gfx_imgui.h
+'//
+'//
+'//=================================================================================================================================
+
+'//=================================================================================================================================
+'//
+'//
+'// util/sokol_gl.h
+'//
+'//
+'//=================================================================================================================================
+
+'//=================================================================================================================================
+'//
+'//
+'// util/sokol_imgui.h
+'//
+'//
+'//=================================================================================================================================
+
+'//=================================================================================================================================
+'//
+'//
+'// util/sokol_memtrack.h
+'//
+'//
+'//=================================================================================================================================
+
+'//=================================================================================================================================
+'//
+'//
+'// util/sokol_shape.h
+'//
+'//
+'//=================================================================================================================================

@@ -18,8 +18,17 @@
 #define SOKOL_METAL
 
 #include "sokol_app.h"
+#include "sokol_args.h"
 #include "sokol_gfx.h"
-//#include "sokol_time.h"
-//#include "sokol_audio.h"
-//#include "sokol_fetch.h"
 #include "sokol_glue.h"
+#include "sokol_time.h"
+#include "sokol_audio.h"
+#include "sokol_fetch.h"
+
+#include "util/sokol_debugtext.h"
+#include "util/sokol_gl.h"
+#include "util/sokol_memtrack.h"
+#include "util/sokol_shape.h"
+//#include "util/sokol_fontstash.h"
+//#include "util/sokol_gfx_imgui.h"
+//#include "util/sokol_imgui.h"
