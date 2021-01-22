@@ -146,7 +146,7 @@ function init:void()
 	local opp:sg_pipeline_desc, shoff:sg_shader_desc
 	shoff.label = CStr("offscreen-shader")
 	
-#if __TARGET__="macos"
+#if __TARGET__="macos" or __TARGET__="ios"
 	'/* metal shader format */
 	shoff.vs.uniform_blocks[0].size = 64
 	shoff.vs.source = CStr(
@@ -240,7 +240,7 @@ function init:void()
 	'/* create default shader */
 	shdef.label = CStr("default-shader")
 	
-#if __TARGET__="macos"
+#if __TARGET__="macos" or __TARGET__="ios"
 	'/* metal shader format */
 	shdef.vs.uniform_blocks[0].size = 64
 	shdef.vs.source = CStr(

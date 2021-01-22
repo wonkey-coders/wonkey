@@ -66,7 +66,7 @@ function init:void()
 	local shdesc:sg_shader_desc
 	shdesc.label = CStr("quad-shader")
 	
-#if __TARGET__="macos"
+#if __TARGET__="macos" or __TARGET__="ios"
 	'/* metal shader format */
 	shdesc.vs.source = CStr(
 		"#include <metal_stdlib>~n"+

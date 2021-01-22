@@ -149,7 +149,7 @@ function init:void()
 	local shdesc:sg_shader_desc
 	shdesc.label = CStr("cube-shader")
 	
-#if __TARGET__="macos"
+#if __TARGET__="macos" or __TARGET__="ios"
 	'/* metal shader format */
 	shdesc.vs.entry = CStr("vs_main")
 	shdesc.vs.uniform_blocks[0].size = 64
