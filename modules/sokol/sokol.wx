@@ -15,6 +15,10 @@ using libc..
     #import "<Cocoa.framework>"
     #import "<MetalKit.framework>"
     #import "<Quartz.framework>"
+
+    'saudio
+    #import "<CoreAudio.framework>"
+    #import "<AudioToolbox.framework>"
 #endif
 
 #import "native/*.h"
@@ -567,7 +571,7 @@ function sapp_get_dropped_file_path:const_char_t ptr(index:int)
 
 #rem wonkeydoc special run-function for SOKOL_NO_ENTRY (in standard mode this is an empty stub)
 #end
-function sapp_run:int(desc:sapp_desc ptr)
+function sapp_run:void(desc:sapp_desc ptr)
 
 
 
