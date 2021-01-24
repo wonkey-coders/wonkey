@@ -284,16 +284,20 @@ Class DocWatcher
 				
 				Local arr:=str.Split( "~n" )
 				For Local s:=Eachin arr
-					Local i:=s.Find( "] : Error : " )
+					Local i:=s.Find( "]: error: " )
 					If i<>-1
 						Local j:=s.Find( " [" )
 						If j<>-1
-							Local path:=s.Slice( 0,j )
-							Local line:=Int( s.Slice( j+2,i ) )-1
-							Local msg:=s.Slice( i+12 )
-							path=path.Replace( tmpFolder,"" )
-							Local err:=New BuildError( path,line,msg )
-							_errors.Add( err )
+							Local k:=s.Find( ":", j )
+							If k<>-1
+								Local path:=s.Slice( 0,j )
+								Local line:=Int( s.Slice( j+2,k ) )-1
+								Local l:=s.Find( ":", i+10 )
+								Local msg:=s.Slice( l+2 )
+								path=path.Replace( tmpFolder,"" )
+								Local err:=New BuildError( path,line,msg )
+								_errors.Add( err )
+							End
 						Endif
 					Endif
 				Next
