@@ -17,7 +17,11 @@
     #define SOKOL_WGPU
 
 */
-#define SOKOL_GLCORE33
+#if __EMSCRIPTEN__
+	#define SOKOL_GLES3 // or GLES2
+#else
+	#define SOKOL_GLCORE33 // or D3D11 on Windows
+#endif
 
 #include "sokol_app.h"
 #include "sokol_args.h"

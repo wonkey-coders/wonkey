@@ -14,7 +14,11 @@
     #define SOKOL_WGPU
 
 */
-#define SOKOL_METAL
+#if __EMSCRIPTEN__
+	#define SOKOL_GLES3 // or GLES2
+#else
+	#define SOKOL_METAL
+#endif
 
 #include "sokol_app.h"
 #include "sokol_args.h"
