@@ -1,0 +1,257 @@
+
+Namespace mojo.graphics
+
+#rem wonkeydoc The ImageSlice class.
+
+An imageslice is a rectangular array of pixels that can be drawn by [Canvas.DrawQuadImageSlice] methods
+
+You can load an image from a file using one of the [[Load]] function.
+
+#End
+
+Class ImageSlice
+
+	Method New( )
+	End
+
+	Method New( image:string )
+		ImportPngSlices( image )
+	End
+
+	
+	Property ImagePath:string()
+		Return _imagePath
+	Setter( imagePath:string )
+		ImportPngSlices( imagePath )
+	End
+
+	Property Image:Image()
+		Return _image
+	End
+
+	Property Width:int()
+		Return _sliceX
+	End
+
+	Property Height:int()
+		Return _sliceY
+	End
+	
+	Property FrameCount:int()
+		Return _frames
+	End
+
+	Property SliceXCount:int()
+		Return _sliceXCount
+	End
+
+	Property SliceYCount:int()
+		Return _sliceYCount
+	End
+
+	Property SliceCount:int()
+		Return _sliceCount
+	End
+
+
+	Field _sliceLive:bool[, ] = New bool[ 12, 42 ]
+	Field _sliceTexCoords:Rectf[, ] = New Rectf[ 12, 42 ]
+	
+private
+	
+	method ImportPngSlices( filePath:string )
+		_imagePath = ""
+		If Not filePath Return
+		if ExtractExt( filePath ).ToLower() <> ".png" Then Return
+		
+		Local fStream:Stream = Stream.Open( filePath, "r" )
+		If not fStream Then
+			Print filePath + " not opened"
+			Return
+		End If
+		fStream.Close()
+		
+		Local file:string = StripDir(filePath)
+		If file.Find("_") < 0 Then Return
+
+'		Print file+" ok"
+		
+'		Print "png ok"
+		Local Split:String[] = file.Split("_")
+		Local SplitL:string = Split[Split.Length - 1]
+		If SplitL.Contains("x") And SplitL.Contains(".png") Then
+			_image = Image.Load( filePath )
+			If Not _image Then
+				Print "Can't load image"
+				Return
+			End If
+			_imagePath = filePath
+
+			Local hezKind:bool = SplitL.Mid( SplitL.Length-6, 1 ) = "x"
+
+			Local maxX:int = Int(SplitL.Split("x")[0])
+			Local maxY:int = Int(SplitL.Split("x")[1])
+
+			Local maxZ:int
+			Local mz:string = SplitL.Split("x")[2]
+			If hezKind Then
+				maxZ = int( mz.Split("x")[0] )
+'				Print "hezkind"
+			Else
+				maxZ = int( mz.Split("f")[0] )
+			End If
+
+'			_frames = int( SplitL.Mid( SplitL.Length-5, 1 ) )
+			Local f1:string = SplitL.Mid( SplitL.Length-6, 1 )
+			Local f2:string = SplitL.Mid( SplitL.Length-6, 2 )
+			_frames = int( f1 )
+			If f2.Right( 1 ) <> "." Then _frames = int( f2 )
+			If _frames = 0 Then _frames = int( SplitL.Mid( SplitL.Length-5, 1 ) )
+
+			if _frames < 1 Then _frames = 1
+			If maxZ < 1 Then maxZ = 1
+'			Print "contains  maxx="+maxX+" maxy="+maxY+" maxz(height)="+maxZ+" frames="+_frames
+			
+			_frameWidth = _image.Width / _frames
+'			Print "image width="+_image.Width+" height="+_image.Height+" frameWidth="+_frameWidth
+
+			Local pixImage:Pixmap = Pixmap.Load( filePath )
+			If Not pixImage Then
+				Print "Can't load pixmap"
+				Return
+			End If
+
+			
+			_sliceX = maxX
+			_sliceXCount = _frameWidth / maxX
+			_sliceY = maxY
+			_sliceYCount = _image.Height / maxY
+			_sliceCount = maxZ -1
+
+
+			Local x:int
+			Local y:int
+			Local xp:int
+			Local yp:int
+			Local slice:int
+			Local col:Color
+			Local sx:int
+			Local sy:int
+			Local frame:int
+			Local frameX:int
+			
+			Local liveSlice:bool
+			
+			If hezKind Then
+
+				For frame = 0 To _frames -1
+					For slice = 0 until maxZ
+
+						liveSlice = false
+
+						For y = 0 Until maxY
+							For x = 0 until maxX
+								col = pixImage.GetPixel( xp+x, yp+y )
+	'							Print col.r+" "+col.g+" "+col.b+" "+col.a
+								If col.a > 0 Then
+									If col.a > 0 Then
+										liveSlice = true
+									End If
+								End If
+							Next
+						Next
+
+						_sliceLive[frame, slice] = liveSlice
+'						If liveSlice Then
+'							Print "slice "+slice+" live"
+'						Else
+'							Print "slice "+slice+" -"
+'						End If
+
+						xp += maxX
+						If xp >= pixImage.Width Then
+							xp = 0
+							yp += maxY
+						End If
+					Next
+				Next
+
+			Else
+				frameX = 0
+				For frame = 0 To _frames -1
+				
+					sx = 0
+					sy = 0
+				
+					For slice = 0 until maxZ
+						yp = sy
+
+						liveSlice = false
+
+						For y = 0 Until maxY
+							xp = sx
+							For x = 0 until maxX
+								If xp + frameX < pixImage.Width And yp < pixImage.Height Then
+									col = pixImage.GetPixel( xp + frameX, yp )
+		'							Print col.r+" "+col.g+" "+col.b+" "+col.a
+									If col.a > 0 Then
+										liveSlice = true
+									End If
+								End if
+								xp += 1
+							Next
+							yp += 1
+						Next
+						
+						_sliceLive[frame, slice] = liveSlice
+'						If liveSlice Then
+'							Print "slice "+slice+" live"
+'						Else
+'							Print "slice "+slice+" -"
+'						End If
+
+						_sliceTexCoords[frame, slice] = Image.TexCoords
+						Local frameWidth:double = (_sliceTexCoords[frame, slice].max.x - _sliceTexCoords[frame, slice].min.x) / FrameCount
+						Local wd:double = frameWidth / SliceXCount
+						Local ht:double = 1.0 / SliceYCount
+				
+						_sliceTexCoords[frame, slice].min.x = _sliceTexCoords[frame, slice].min.x + ((slice Mod SliceXCount) * wd) + (frameWidth * frame)
+						_sliceTexCoords[frame, slice].max.x = _sliceTexCoords[frame, slice].min.x + wd
+				
+						_sliceTexCoords[frame, slice].min.y = _sliceTexCoords[frame, slice].min.y + (int(slice / SliceXCount) * ht)
+						_sliceTexCoords[frame, slice].max.y = _sliceTexCoords[frame, slice].min.y + ht
+				
+						_sliceTexCoords[frame, slice].min.x += 0.0001
+						_sliceTexCoords[frame, slice].max.x -= 0.0001
+						_sliceTexCoords[frame, slice].min.y += 0.0001
+						_sliceTexCoords[frame, slice].max.y -= 0.0001
+						
+						sx += maxX
+						If sx >= _frameWidth Then
+							sx = 0
+							sy += maxY
+						End If
+					Next
+					
+					frameX += _frameWidth
+				Next
+			End If
+			
+
+
+			pixImage.Discard()
+		End If
+	End method
+
+	Field _frames:int
+	Field _frameWidth:int
+	
+	Field _sliceX:int
+	Field _sliceXCount:int
+	Field _sliceY:int
+	Field _sliceYCount:int
+	Field _sliceCount:int
+
+	Field _image:Image
+	Field _imagePath:string
+End

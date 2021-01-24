@@ -278,6 +278,17 @@ Class Image Extends Resource
 		Return _texCoords
 	End
 
+'jl added
+'------------------------------------------------------------	
+	#rem wonkeydoc Image filepath.
+	#end
+	Property FilePath:string()
+		Return _filePath
+	Setter( filePath:string )
+		_filePath = filePath
+	End
+'------------------------------------------------------------
+
 	#rem wonkeydoc @hidden Sets an image texture.
 	#end	
 	Method SetTexture( index:Int,texture:Texture )
@@ -326,7 +337,11 @@ Class Image Extends Resource
 		If Not shader shader=mojo.graphics.Shader.GetShader( "sprite" )
 		
 		Local image:=New Image( pixmap,textureFlags,shader )
-		
+
+'jl added
+'------------------------------------------------------------
+		image.FilePath = path
+'------------------------------------------------------------		
 		Return image
 	End
 	
@@ -430,6 +445,11 @@ Class Image Extends Resource
 	
 	Private
 	
+'jl added
+'------------------------------------------------------------
+	Field _filePath:string
+'------------------------------------------------------------
+
 	Field _shader:Shader
 	Field _uniforms:UniformBlock
 	Field _textures:=New Texture[4]
@@ -484,6 +504,11 @@ Class Image Extends Resource
 		Color=Color.White
 		LightDepth=100
 
+'jl added
+'-------------------------------------------------
+		_filePath = texture.FilePath
+'-------------------------------------------------
+
 		UpdateTexCoords()
 		UpdateVertices()
 	End
@@ -504,6 +529,10 @@ Class Image Extends Resource
 		_handle=image._handle
 		_scale=image._scale
 		
+'jl added
+'-------------------------------------------------
+		_filePath = image.FilePath
+'-------------------------------------------------
 		UpdateTexCoords()
 		UpdateVertices()
 	End
@@ -517,12 +546,23 @@ Class ResourceManager Extension
 		Local slug:="Image:name="+StripDir( StripExt( path ) )+"&shader="+(shader ? shader.Name Else "null")
 		
 		Local image:=Cast<Image>( OpenResource( slug ) )
-		If image Return image
-		
+
+'jl changed
+'------------------------------------------------------------
+		If image Then
+			image.FilePath = path
+			Return image
+		End If
+'------------------------------------------------------------
 		Local texture:=OpenTexture( path,Null )
 		If Not texture Return Null
 		
 		image=New Image( texture,shader )
+
+'jl added
+'------------------------------------------------------------
+		image.FilePath = path
+'------------------------------------------------------------
 
 		AddResource( slug,image )
 

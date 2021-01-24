@@ -35,6 +35,15 @@ Class FileStream Extends Stream
 	Property Length:Int() Override
 		Return _end
 	End
+
+'jl added
+'------------------------------------------------------------	
+	#rem wonkeydoc stream filepath.
+	#end
+	Property FilePath:String()
+		Return _filePath
+	End
+'------------------------------------------------------------
 	
 	#rem wonkeydoc Seeks to a position in the filestream.
 	
@@ -112,7 +121,10 @@ Class FileStream Extends Stream
 		Local file:=OpenCFile( path,mode )
 		If Not file Return Null
 		
-		Return New FileStream( file )
+'jl modified
+'------------------------------------------------------------
+		Return New FileStream( file, path )
+'------------------------------------------------------------
 	End
 	
 	Protected
@@ -131,18 +143,24 @@ Class FileStream Extends Stream
 	End
 	
 	Private
+
+'jl added
+'------------------------------------------------------------
+	Field _filePath:String
+'------------------------------------------------------------
 	
 	Field _file:FILE Ptr
 	Field _pos:Int
 	Field _end:Int
 	
-	Method New( cfile:FILE Ptr )
+	Method New( cfile:FILE Ptr, path:String="" )
 		_file=cfile
 		_pos=ftell( _file )
 		fseek( _file,0,SEEK_END )
 		_end=ftell( _file )
 		fseek( _file,_pos,SEEK_SET )
 		DebugAssert( ftell( _file )=_pos )	'Sanity check...
+		_filePath = path
 	End
 	
 End

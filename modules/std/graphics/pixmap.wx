@@ -154,6 +154,17 @@ Class Pixmap Extends Resource
 		
 		Return _pitch
 	End
+
+'jl added
+'------------------------------------------------------------	
+	#rem wonkeydoc Image filepath.
+	#end
+	Property FilePath:String()
+		Return _filePath
+	Setter( filePath:String )
+		_filePath = filePath
+	End
+'------------------------------------------------------------
 	
 	#rem wonkeydoc Gets a pointer to a pixel in the pixmap.
 	
@@ -628,7 +639,12 @@ Class Pixmap Extends Resource
 		If Not pixmap And Not ExtractRootDir( path ) pixmap=pixmaploader.LoadPixmap( "image::"+path,format )
 		
 		If pixmap And pmAlpha pixmap.PremultiplyAlpha()
-		
+
+'jl added
+'---------------------------------------------------
+		If pixmap Then pixmap.FilePath = path
+'---------------------------------------------------
+
 		Return pixmap
 	End
 	
@@ -651,7 +667,12 @@ Class Pixmap Extends Resource
 	End
 
 	Private
-	
+
+'jl added
+'------------------------------------------------------------
+	Field _filePath:string
+'------------------------------------------------------------
+
 	Field _width:Int
 	Field _height:Int
 	Field _format:PixelFormat
@@ -668,7 +689,10 @@ Class ResourceManager Extension
 		Local slug:="Pixmap:name="+StripDir( StripExt( path ) )+"&format="+Int( format )+"&pmAlpha="+Int( pmAlpha )
 
 		Local pixmap:=Cast<Pixmap>( OpenResource( slug ) )
-		If pixmap Return pixmap
+		If pixmap
+			pixmap.FilePath = path
+			Return pixmap
+		Endif
 		
 		pixmap=Pixmap.Load( path,format,pmAlpha )
 		If Not pixmap Return Null

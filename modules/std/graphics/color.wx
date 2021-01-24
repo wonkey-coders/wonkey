@@ -3,11 +3,20 @@ Namespace std.graphics
 
 using std.geom
 
+'jl added
+''------------------------------------------------------------		
+#rem wonkeydoc Allows a colors to be defined using integer values 0..255 instead of 0..1
+#end
+Function ColorI:Color( red:Float, green:Float, blue:Float, alpha:float = 255 )
+	Return New Color( red / 255, green / 255, blue / 255, alpha / 255)
+End
+''------------------------------------------------------------		
+
 #rem wonkeydoc The Color type provides support for manipulating red, green blue, alpha colors.
 #end
 Struct Color
 		
-	#rem wonkeydoc Transparent black.
+	#rem wonkeydoc Transparent black. Equivalent to New Color( 0,0,0,0 ).
 	#end
 	Const None:=New Color( 0,0,0,0 )
 	
@@ -142,6 +151,747 @@ Struct Color
 	#rem wonkeydoc Platinum. Roughly equivalent to New Color( .84,.82,.78 ).
 	#end
 	Const Platinum:=New Color( 0.83493408973507777,0.81484503266020314,0.78399912482207756 )
+
+
+
+'jl added
+''------------------------------------------------------------		
+	#rem wonkeydoc C64Black. Equivalent to New Color( .10,.10,.10 ).
+	#end
+	Const C64Black        := New Color( .10,.10,.10 )
+	#rem wonkeydoc C64White. Equivalent to New Color( .98,.98,.98 ).
+	#end
+	Const C64White        := New Color( .98,.98,.98 )
+	#rem wonkeydoc C64Liver. Equivalent to New Color( .41,.20,.18 ).
+	#end
+	Const C64Liver        := New Color( .41,.20,.18 )
+	#rem wonkeydoc C64Cyan. Equivalent to New Color( .43,.23,.52 ).
+	#end
+	Const C64Cyan         := New Color( .43,.23,.52 )
+	#rem wonkeydoc C64Purple. Equivalent to New Color( .43,.23,.52 ).
+	#end
+	Const C64Purple       := New Color( .43,.23,.52 )
+	#rem wonkeydoc C64Green. Equivalent to New Color( .33,.56,.25 ).
+	#end
+	Const C64Green        := New Color( .33,.56,.25 )
+	#rem wonkeydoc C64Blue. Equivalent to New Color( .19,.16,.48 ).
+	#end
+	Const C64Blue         := New Color( .19,.16,.48 )
+	#rem wonkeydoc C64Yellow. Equivalent to New Color( .73,.76,.43 ).
+	#end
+	Const C64Yellow       := New Color( .73,.76,.43 )
+	#rem wonkeydoc C64Brown. Equivalent to New Color( .42,.31,.15 ).
+	#end
+	Const C64Brown        := New Color( .42,.31,.15 )
+	#rem wonkeydoc C64DarkBrown. Equivalent to New Color( .27,.21,.00 ).
+	#end
+	Const C64DarkBrown    := New Color( .27,.21,.00 )
+	#rem wonkeydoc C64Pink. Equivalent to New Color( .58,.40,.35 ).
+	#end
+	Const C64Pink         := New Color( .58,.40,.35 )
+	#rem wonkeydoc C64Charcoal. Equivalent to New Color( .26,.26,.26 ).
+	#end
+	Const C64Charcoal     := New Color( .26,.26,.26 )
+	#rem wonkeydoc C64Grey. Equivalent to New Color( .41,.42,.43 ).
+	#end
+	Const C64Grey         := New Color( .41,.42,.43 )
+	#rem wonkeydoc C64Lime. Equivalent to New Color( .59,.82,.52 ).
+	#end
+	Const C64Lime         := New Color( .59,.82,.52 )
+	#rem wonkeydoc C64Morello. Equivalent to New Color( .42,.36,.71 ).
+	#end
+	Const C64Morello      := New Color( .42,.36,.71 )
+	#rem wonkeydoc C64Silver. Equivalent to New Color( .58,.58,.58 ).
+	#end
+	Const C64Silver       := New Color( .58,.58,.58 )
+
+
+
+	#rem wonkeydoc LabWhite. Equivalent to New Color( .94,.94,.94 ).
+	#end
+	Const LabWhite        := New Color( .94,.94,.94 )
+	#rem wonkeydoc LabNeutral8. Equivalent to New Color( .78,.78,.78 ).
+	#end
+	Const LabNeutral8     := New Color( .78,.78,.78 )
+	#rem wonkeydoc LabNeutral65. Equivalent to New Color( .62,.62,.62 ).
+	#end
+	Const LabNeutral65    := New Color( .62,.62,.62 )
+	#rem wonkeydoc LabNeutral5. Equivalent to New Color( .47,.47,.47 ).
+	#end
+	Const LabNeutral5     := New Color( .47,.47,.47 )
+	#rem wonkeydoc LabNeutral36. Equivalent to New Color( .33,.33,.33 ).
+	#end
+	Const LabNeutral36    := New Color( .33,.33,.33 )
+	#rem wonkeydoc LabBlack. Equivalent to New Color( .20,.20,.20 ).
+	#end
+	Const LabBlack        := New Color( .20,.20,.20 )
+	#rem wonkeydoc LabBlue. Equivalent to New Color( .21,.23,.58 ).
+	#end
+	Const LabBlue         := New Color( .21,.23,.58 )
+	#rem wonkeydoc LabGreen. Equivalent to New Color( .27,.58,.28 ).
+	#end
+	Const LabGreen        := New Color( .27,.58,.28 )
+	#rem wonkeydoc LabRed. Equivalent to New Color( .68,.21,.23 ).
+	#end
+	Const LabRed          := New Color( .68,.21,.23 )
+	#rem wonkeydoc LabYellow. Equivalent to New Color( .90,.78,.12 ).
+	#end
+	Const LabYellow       := New Color( .90,.78,.12 )
+	#rem wonkeydoc LabMagenta. Equivalent to New Color( .73,.33,.76 ).
+	#end
+	Const LabMagenta      := New Color( .73,.33,.76 )
+	#rem wonkeydoc LabCyan. Equivalent to New Color( .03,.52,.63 ).
+	#end
+	Const LabCyan         := New Color( .03,.52,.63 )
+	#rem wonkeydoc LabOrange. Equivalent to New Color( .83,.49,.17 ).
+	#end
+	Const LabOrange       := New Color( .83,.49,.17 )
+	#rem wonkeydoc LabPurpleRed. Equivalent to New Color( .31,.35,.65 ).
+	#end
+	Const LabPurpleRed    := New Color( .31,.35,.65 )
+	#rem wonkeydoc LabModerateRed. Equivalent to New Color( .75,.35,.38 ).
+	#end
+	Const LabModerateRed  := New Color( .75,.35,.38 )
+	#rem wonkeydoc LabPurple. Equivalent to New Color( .36,.23,.42 ).
+	#end
+	Const LabPurple       := New Color( .36,.23,.42 )
+	#rem wonkeydoc LabYellowGreen. Equivalent to New Color( .61,.73,.25 ).
+	#end
+	Const LabYellowGreen  := New Color( .61,.73,.25 )
+	#rem wonkeydoc LabOrangeYellow. Equivalent to New Color( .87,.63,.18 ).
+	#end
+	Const LabOrangeYellow := New Color( .87,.63,.18 )
+	#rem wonkeydoc LabDarkSkin. Equivalent to New Color( .45,.32,.26 ).
+	#end
+	Const LabDarkSkin     := New Color( .45,.32,.26 )
+	#rem wonkeydoc LabLightSkin. Equivalent to New Color( .76,.58,.50 ).
+	#end
+	Const LabLightSkin    := New Color( .76,.58,.50 )
+	#rem wonkeydoc LabBlueSky. Equivalent to New Color( .38,.47,.61 ).
+	#end
+	Const LabBlueSky      := New Color( .38,.47,.61 )
+	#rem wonkeydoc LabFoliage. Equivalent to New Color( .34,.42,.26 ).
+	#end
+	Const LabFoliage      := New Color( .34,.42,.26 )
+	#rem wonkeydoc LabBlueFlower. Equivalent to New Color( .52,.50,.69 ).
+	#end
+	Const LabBlueFlower   := New Color( .52,.50,.69 )
+	#rem wonkeydoc LabBluishGreen. Equivalent to New Color( .40,.72,.66 ).
+	#end
+	Const LabBluishGreen  := New Color( .40,.72,.66 )
+
+
+
+	#rem wonkeydoc Blood. Equivalent to New Color( .4,0,0 ).
+	#end
+	Const Blood           := New Color( 0.4,0,0 )
+
+	#rem wonkeydoc Aluminium. Roughly equivalent to New Color( .91, .92, .92 ).
+	#end
+	Const Aluminium       :=New Color( .913183,.921494,.924524,1 )
+
+	#rem wonkeydoc Brass. Equivalent to ColorI( 250, 230, 150 ).
+	#end
+	Const Brass:Color = ColorI( 250, 230, 150 )
+
+	#rem wonkeydoc Iron. Equivalent to ColorI( 196, 200, 200 ).
+	#end
+	Const Iron:Color = ColorI( 196, 200, 200 )
+
+	#rem wonkeydoc Coal. Equivalent to ColorI( 50, 50, 50 ).
+	#end
+	Const Coal:Color = ColorI( 50, 50, 50 )
+
+	#rem wonkeydoc Rubber. Equivalent to ColorI( 53, 53, 53 ).
+	#end
+	Const Rubber:Color = ColorI( 53, 53, 53 )
+
+	#rem wonkeydoc Mud. Equivalent to ColorI( 85, 61, 49 ).
+	#end
+	Const Mud:Color = ColorI( 85, 61, 49 )
+
+	#rem wonkeydoc Grass. Equivalent to ColorI( 123, 130, 78 ).
+	#end
+	Const Grass:Color = ColorI( 123, 130, 78 )
+
+	#rem wonkeydoc Brick. Equivalent to ColorI( 148, 125, 117 ).
+	#end
+	Const Brick:Color = ColorI( 148, 125, 117 )
+
+	#rem wonkeydoc Wood. Equivalent to ColorI( 170, 153, 132 ).
+	#end
+	Const Wood:Color = ColorI( 170, 153, 132 )
+
+	#rem wonkeydoc Concrete. Equivalent to ColorI( 192, 192, 187 ).
+	#end
+	Const Concrete:Color = ColorI( 192, 192, 187 )
+
+	#rem wonkeydoc Asphalt. Equivalent to ColorI( 91, 91, 91 ).
+	#end
+	Const Asphalt:Color = ColorI( 91, 91, 91 )
+
+	#rem wonkeydoc ClayTile. Equivalent to ColorI( 200, 124, 101 ).
+	#end
+	Const ClayTile:Color = ColorI( 200, 124, 101 )
+
+	#rem wonkeydoc DrySand. Equivalent to ColorI( 177, 167, 132 ).
+	#end
+	Const DrySand:Color = ColorI( 177, 167, 132 )
+
+	#rem wonkeydoc Cement. Equivalent to ColorI( 192, 191, 187 ).
+	#end
+	Const Cement:Color = ColorI( 192, 191, 187 )
+
+	#rem wonkeydoc Paint. Equivalent to ColorI( 227, 227, 227 ).
+	#end
+	Const Paint:Color = ColorI( 227, 227, 227 )
+
+	#rem wonkeydoc Snow. Equivalent to ColorI( 243, 243, 243 ).
+	#end
+	Const Snow:Color = ColorI( 243, 243, 243 )
+
+	#rem wonkeydoc UIDarkGrey. Equivalent to New Color( .15,.15,.15 ).
+	#end
+	Const UIDarkGrey := New Color( .15,.15,.15 )
+
+	#rem wonkeydoc UICharcoal. Equivalent to New Color( .24,.23,.23 ).
+	#end
+	Const UICharcoal := New Color( .24,.23,.23 )
+
+	#rem wonkeydoc UISilver. Equivalent to New Color( .74,.73,.73 ).
+	#end
+	Const UISilver := New Color( .74,.73,.73 )
+
+	#rem wonkeydoc UIBlue. Equivalent to New Color( .0,.4,.9 ).
+	#end
+	Const UIBlue := New Color( .0,.4,.9 )
+
+	#rem wonkeydoc UIPaleBlue. Equivalent to New Color( .56,.78,.85 ).
+	#end
+	Const UIPaleBlue := New Color( .56,.78,.85 )
+
+	#rem wonkeydoc UIDarkBlue. Equivalent to New Color( .24,.35,.58 ).
+	#end
+	Const UIDarkBlue := New Color( .24,.35,.58 )
+
+	#rem wonkeydoc UIOrange. Equivalent to New Color( .86,.61,.13 ).
+	#end
+	Const UIOrange := New Color( .86,.61,.13 )
+
+	#rem wonkeydoc UIBurntOrange. Equivalent to New Color( .79,.31,0 ).
+	#end
+	Const UIBurntOrange := New Color( .79,.31,0 )
+
+	#rem wonkeydoc UIDarkOrange. Equivalent to New Color( .52,.26,.09 ).
+	#end
+	Const UIDarkOrange := New Color( .52,.26,.09 )
+
+	#rem wonkeydoc UIPurple. Equivalent to New Color( .61,.36,.72 ).
+	#end
+	Const UIPurple := New Color( .61,.36,.72 )
+
+	#rem wonkeydoc UICyan. Equivalent to New Color( .25,.60,.82 ).
+	#end
+	Const UICyan := New Color( .25,.60,.82 )
+
+	#rem wonkeydoc UILightGreen. Equivalent to New Color( .32,.80,.31 ).
+	#end
+	Const UILightGreen := New Color( .32,.80,.31 )
+
+	#rem wonkeydoc UILavender. Equivalent to New Color( .51,.58,.93 ).
+	#end
+	Const UILavender := New Color( .51,.58,.93 )
+
+	#rem wonkeydoc UIVibrantGreen. Equivalent to New Color( .09,.87,.07 ).
+	#end
+	Const UIVibrantGreen := New Color( .09,.87,.07 )
+
+	#rem wonkeydoc UIFontBlue. Equivalent to New Color( .11,.57,.96 ).
+	#end
+	Const UIFontBlue := New Color( .11,.57,.96 )
+
+	#rem wonkeydoc UIBrown. Equivalent to New Color( .62,.31,.01 ).
+	#end
+	Const UIBrown := New Color( .62,.31,.01 )
+
+	#rem wonkeydoc UIGreen. Equivalent to New Color( .2,.6,.19 ).
+	#end
+	Const UIGreen := New Color( .2,.6,.19 )
+
+	#rem wonkeydoc UILeaf. Equivalent to New Color( .21,.43,.17 ).
+	#end
+	Const UILeaf := New Color( .21,.43,.17 )
+
+	#rem wonkeydoc UILime. Equivalent to New Color( .54,.74,.14 ).
+	#end
+	Const UILime := New Color( .54,.74,.14 )
+
+	#rem wonkeydoc UIMagenta. Equivalent to New Color( .99,.01,.59 ).
+	#end
+	Const UIMagenta := New Color( .99,.01,.59 )
+
+	#rem wonkeydoc UIMango. Equivalent to New Color( .94,.58,.03 ).
+	#end
+	Const UIMango := New Color( .94,.58,.03 )
+
+	#rem wonkeydoc UIPink. Equivalent to New Color( .90,.44,.72 ).
+	#end
+	Const UIPink := New Color( .90,.44,.72 )
+
+	#rem wonkeydoc UIRed. Equivalent to New Color( .89,.07,.01 ).
+	#end
+	Const UIRed := New Color( .89,.07,.01 )
+
+	#rem wonkeydoc UIYellow. Equivalent to New Color( .89,.87,.01 ).
+	#end
+	Const UIYellow := New Color( .89,.87,.01 )
+
+	#rem wonkeydoc UITeal. Equivalent to New Color( .18,.65,.52 ).
+	#end
+	Const UITeal := New Color( .18,.65,.52 )
+
+
+	#rem wonkeydoc PicoBlack. Equivalent to New Color( .1,.1,.1 ).
+	#end
+	Const PicoBlack := New Color( .1,.1,.1 )
+
+	#rem wonkeydoc PicoBrown. Equivalent to New Color( .67,.32,.21 ).
+	#end
+	Const PicoBrown := New Color( .67,.32,.21 )
+
+	#rem wonkeydoc PicoRed. Equivalent to New Color( .92,.1,.31 ).
+	#end
+	Const PicoRed := New Color( .92,.1,.31 )
+
+	#rem wonkeydoc PicoCyan. Equivalent to New Color( .31,.65,.86 ).
+	#end
+	Const PicoCyan := New Color( .31,.65,.86 )
+
+	#rem wonkeydoc PicoBlue. Equivalent to New Color( .1,.16,.32 ).
+	#end
+	Const PicoBlue := New Color( .1,.16,.32 )
+
+	#rem wonkeydoc PicoDirt. Equivalent to New Color( .37,.34,.3 ).
+	#end
+	Const PicoDirt := New Color( .37,.34,.3 )
+
+	#rem wonkeydoc PicoOrange. Equivalent to New Color( .98,.63,.1 ).
+	#end
+	Const PicoOrange := New Color( .98,.63,.1 )
+
+	#rem wonkeydoc PicoPurple. Equivalent to New Color( .51,.46,.61 ).
+	#end
+	Const PicoPurple := New Color( .51,.46,.61 )
+
+	#rem wonkeydoc PicoMaroon. Equivalent to New Color( .49,.14,.32 ).
+	#end
+	Const PicoMaroon := New Color( .49,.14,.32 )
+
+	#rem wonkeydoc PicoSilver. Equivalent to New Color( .76,.76,.77 ).
+	#end
+	Const PicoSilver := New Color( .76,.76,.77 )
+
+	#rem wonkeydoc PicoYellow. Equivalent to New Color( .96,.92,.18 ).
+	#end
+	Const PicoYellow := New Color( .96,.92,.18 )
+
+	#rem wonkeydoc PicoPink. Equivalent to New Color( .94,.46,.65 ).
+	#end
+	Const PicoPink := New Color( .94,.46,.65 )
+
+	#rem wonkeydoc PicoGreen. Equivalent to New Color( 0,.52,.31 ).
+	#end
+	Const PicoGreen := New Color( 0,.52,.31 )
+
+	#rem wonkeydoc PicoWhite. Equivalent to New Color( .99,.94,.91 ).
+	#end
+	Const PicoWhite := New Color( .99,.94,.91 )
+
+	#rem wonkeydoc PicoLime. Equivalent to New Color( .36,.73,.3 ).
+	#end
+	Const PicoLime := New Color( .36,.73,.3 )
+
+	#rem wonkeydoc PicoSkin. Equivalent to New Color( .98,.8,.87 ).
+	#end
+	Const PicoSkin := New Color( .98,.8,.87 )
+
+
+	#rem wonkeydoc XamCoral. Equivalent to New Color( .95,.26,.21 ).
+	#end
+	Const XamCoral := New Color( .95,.26,.21 )
+
+	#rem wonkeydoc XamPink. Equivalent to New Color( .91,.11,.38 ).
+	#end
+	Const XamPink := New Color( .91,.11,.38 )
+
+	#rem wonkeydoc XamPurple. Equivalent to New Color( .61,.15,.69 ).
+	#end
+	Const XamPurple := New Color( .61,.15,.69 )
+
+	#rem wonkeydoc XamViolet. Equivalent to New Color( .4,.22,.71 ).
+	#end
+	Const XamViolet := New Color( .4,.22,.71 )
+
+	#rem wonkeydoc XamBlue. Equivalent to New Color( .24,.17,.7 ).
+	#end
+	Const XamBlue := New Color( .24,.17,.7 )
+
+	#rem wonkeydoc XamSky. Equivalent to New Color( .12,.58,.95 ).
+	#end
+	Const XamSky := New Color( .12,.58,.95 )
+
+	#rem wonkeydoc XamWater. Equivalent to New Color( .01,.66,.95 ).
+	#end
+	Const XamWater := New Color( .01,.66,.95 )
+
+	#rem wonkeydoc XamAqua. Equivalent to New Color( 0,.73,.83 ).
+	#end
+	Const XamAqua := New Color( 0,.73,.83 )
+
+	#rem wonkeydoc XamPine. Equivalent to New Color( 0,.58,.53 ).
+	#end
+	Const XamPine := New Color( 0,.58,.53 )
+
+	#rem wonkeydoc XamMint. Equivalent to New Color( .54,.76,.29 ).
+	#end
+	Const XamMint := New Color( .54,.76,.29 )
+
+	#rem wonkeydoc XamGreen. Equivalent to New Color( .29,.68,.31 ).
+	#end
+	Const XamGreen := New Color( .29,.68,.31 )
+
+	#rem wonkeydoc XamLime. Equivalent to New Color( .8,.86,.22 ).
+	#end
+	Const XamLime := New Color( .8,.86,.22 )
+
+	#rem wonkeydoc XamYellow. Equivalent to New Color( 1,.92,.23 ).
+	#end
+	Const XamYellow := New Color( 1,.92,.23 )
+
+	#rem wonkeydoc XamPeach. Equivalent to New Color( 1,.75,.03 ).
+	#end
+	Const XamPeach := New Color( 1,.75,.03 )
+
+	#rem wonkeydoc XamOrange. Equivalent to New Color( 1,.59,.01 ).
+	#end
+	Const XamOrange := New Color( 1,.59,.01 )
+
+	#rem wonkeydoc XamEmber. Equivalent to New Color( 1,.38,.13 ).
+	#end
+	Const XamEmber := New Color( 1,.38,.13 )
+
+	#rem wonkeydoc XamBrown. Equivalent to New Color( .47,.33,.28 ).
+	#end
+	Const XamBrown := New Color( .47,.33,.28 )
+
+	#rem wonkeydoc XamSilver. Equivalent to New Color( .61,.61,.61 ).
+	#end
+	Const XamSilver := New Color( .61,.61,.61 )
+
+	#rem wonkeydoc XamSteel. Equivalent to New Color( .37,.49,.54 ).
+	#end
+	Const XamSteel := New Color( .37,.49,.54 )
+
+
+	#rem wonkeydoc VicBlack. Equivalent to New Color( .1,.1,.1 ).
+	#end
+	Const VicBlack := New Color( .1,.1,.1 )
+
+	#rem wonkeydoc VicGrey. Equivalent to New Color( .61,.61,.61 ).
+	#end
+	Const VicGrey := New Color( .61,.61,.61 )
+
+	#rem wonkeydoc VicWhite. Equivalent to New Color( .96,.96,.96 ).
+	#end
+	Const VicWhite := New Color( .96,.96,.96 )
+
+	#rem wonkeydoc VicRed. Equivalent to New Color( .74,.14,.2 ).
+	#end
+	Const VicRed := New Color( .74,.14,.2 )
+
+	#rem wonkeydoc VicLiver. Equivalent to New Color( .45,.16,.18 ).
+	#end
+	Const VicLiver := New Color( .45,.16,.18 )
+
+	#rem wonkeydoc VicBlush. Equivalent to New Color( .87,.43,.54 ).
+	#end
+	Const VicBlush := New Color( .87,.43,.54 )
+
+	#rem wonkeydoc VicPink. Equivalent to New Color( .79,.26,.65 ).
+	#end
+	Const VicPink := New Color( .79,.26,.65 )
+
+	#rem wonkeydoc VicDirt. Equivalent to New Color( .28,.23,.16 ).
+	#end
+	Const VicDirt := New Color( .28,.23,.16 )
+
+	#rem wonkeydoc VicBrown. Equivalent to New Color( .64,.39,.13 ).
+	#end
+	Const VicBrown := New Color( .64,.39,.13 )
+
+	#rem wonkeydoc VicKhaki. Equivalent to New Color( .67,.61,.2 ).
+	#end
+	Const VicKhaki := New Color( .67,.61,.2 )
+
+	#rem wonkeydoc VicOrange. Equivalent to New Color( .92,.53,.19 ).
+	#end
+	Const VicOrange := New Color( .92,.53,.19 )
+
+	#rem wonkeydoc VicFire. Equivalent to New Color( .92,.27,0 ).
+	#end
+	Const VicFire := New Color( .92,.27,0 )
+
+	#rem wonkeydoc VicLemon. Equivalent to New Color( .96,.88,.41 ).
+	#end
+	Const VicLemon := New Color( .96,.88,.41 )
+
+	#rem wonkeydoc VicPeach. Equivalent to New Color( .98,.70,.4 ).
+	#end
+	Const VicPeach := New Color( .98,.70,.4 )
+
+	#rem wonkeydoc VicPine. Equivalent to New Color( .06,.36,.2 ).
+	#end
+	Const VicPine := New Color( .06,.36,.2 )
+
+	#rem wonkeydoc VicGreen. Equivalent to New Color( .26,.36,.1 ).
+	#end
+	Const VicGreen := New Color( .26,.36,.1 )
+
+	#rem wonkeydoc VicLime. Equivalent to New Color( .63,.80,.15 ).
+	#end
+	Const VicLime := New Color( .63,.80,.15 )
+
+	#rem wonkeydoc VicOil. Equivalent to New Color( .18,.28,.3 ).
+	#end
+	Const VicOil := New Color( .18,.28,.3 )
+
+	#rem wonkeydoc VicSea. Equivalent to New Color( .07,.5,.49 ).
+	#end
+	Const VicSea := New Color( .07,.5,.49 )
+
+	#rem wonkeydoc VicAqua. Equivalent to New Color( .08,.76,.64 ).
+	#end
+	Const VicAqua := New Color( .08,.76,.64 )
+
+	#rem wonkeydoc VicRoyal. Equivalent to New Color( .13,.35,.96 ).
+	#end
+	Const VicRoyal := New Color( .13,.35,.96 )
+
+	#rem wonkeydoc VicBlue. Equivalent to New Color( .15,.49,.66 ).
+	#end
+	Const VicBlue := New Color( .15,.49,.66 )
+
+	#rem wonkeydoc VicBlue. Equivalent to New Color( 0,.34,.52 ).
+	#end
+	Const VicBue := New Color( 0,.34,.52 )
+
+	#rem wonkeydoc VicSky. Equivalent to New Color( .19,.63,.94 ).
+	#end
+	Const VicSky := New Color( .19,.63,.94 )
+
+	#rem wonkeydoc VicSteel. Equivalent to New Color( .69,.86,.92 ).
+	#end
+	Const VicSteel := New Color( .69,.86,.92 )
+
+	#rem wonkeydoc VicPurple. Equivalent to New Color( .2,.16,.59 ).
+	#end
+	Const VicPurple := New Color( .2,.16,.59 )
+
+	#rem wonkeydoc VicViolet. Equivalent to New Color( .6,.39,.97 ).
+	#end
+	Const VicViolet := New Color( .6,.39,.97 )
+
+	#rem wonkeydoc VicCandy. Equivalent to New Color( .96,.55,.97 ).
+	#end
+	Const VicCandy := New Color( .96,.55,.97 )
+
+	#rem wonkeydoc VicSkin. Equivalent to New Color( .95,.72,.56 ).
+	#end
+	Const VicSkin := New Color( .95,.72,.56 )
+
+
+	#rem wonkeydoc ExLightGrey. Equivalent to New Color( .75,.75,.75 ).
+	#end
+	Const ExLightGrey := New Color( .75,.75,.75 )
+
+	#rem wonkeydoc ExDarkGrey. Equivalent to New Color( .25,.25,.25 ).
+	#end
+	Const ExDarkGrey := New Color( .25,.25,.25 )
+
+	#rem wonkeydoc ExBrown. Equivalent to New Color( .62,.31,0 ).
+	#end
+	Const ExBrown := New Color( .62,.31,0 )
+
+	#rem wonkeydoc ExTreeTrunk. Equivalent to New Color( .31,.23,.17 ).
+	#end
+	Const ExTreeTrunk := New Color( .31,.23,.17 )
+
+	#rem wonkeydoc ExLime. Equivalent to New Color( .54,.74,.14 ).
+	#end
+	Const ExLime := New Color( .54,.74,.14 )
+
+	#rem wonkeydoc ExMango. Equivalent to New Color( .94,.58,.03 ).
+	#end
+	Const ExMango := New Color( .94,.58,.03 )
+
+	#rem wonkeydoc ExOrange. Equivalent to New Color( .79,.32,0 ).
+	#end
+	Const ExOrange := New Color( .79,.32,0 )
+
+	#rem wonkeydoc ExPink. Equivalent to New Color( .79,.44,.72 ).
+	#end
+	Const ExPink := New Color( .79,.44,.72 )
+
+	#rem wonkeydoc ExPurple. Equivalent to New Color( .41,.13,.48 ).
+	#end
+	Const ExPurple := New Color( .41,.13,.48 )
+
+	#rem wonkeydoc ExLeaf. Equivalent to New Color( .2,.6,.2 ).
+	#end
+	Const ExLeaf := New Color( .2,.6,.2 )
+
+	#rem wonkeydoc ExYolk. Equivalent to New Color( 1,.65,0 ).
+	#end
+	Const ExYolk := New Color( 1,.65,0 )
+
+	#rem wonkeydoc ExPeach. Equivalent to New Color( 1,.8,.01 ).
+	#end
+	Const ExPeach := New Color( 1,.8,.01 )
+
+	#rem wonkeydoc ExSand. Equivalent to New Color( .94,.87,.7 ).
+	#end
+	Const ExSand := New Color( .94,.87,.7 )
+
+	#rem wonkeydoc ExWetSand. Equivalent to New Color( .73,.66,.48 ).
+	#end
+	Const ExWetSand := New Color( .73,.66,.48 )
+
+	#rem wonkeydoc ExNavy. Equivalent to New Color( .09,.15,.44 ).
+	#end
+	Const ExNavy := New Color( .09,.15,.44 )
+
+	#rem wonkeydoc ExMorello. Equivalent to New Color( .6,.34,.71 ).
+	#end
+	Const ExMorello := New Color( .6,.34,.71 )
+
+	#rem wonkeydoc ExTeal. Equivalent to New Color( .22,.43,.5 ).
+	#end
+	Const ExTeal := New Color( .22,.43,.5 )
+
+	#rem wonkeydoc ExSky. Equivalent to New Color( .2,.59,.85 ).
+	#end
+	Const ExSky := New Color( .2,.59,.85 )
+
+	#rem wonkeydoc ExSlime. Equivalent to New Color( .18,.8,.44 ).
+	#end
+	Const ExSlime := New Color( .18,.8,.44 )
+
+	#rem wonkeydoc ExMint. Equivalent to New Color( .08,.62,.52 ).
+	#end
+	Const ExMint := New Color( .08,.62,.52 )
+
+	#rem wonkeydoc ExSilver. Equivalent to New Color( .74,.76,.76 ).
+	#end
+	Const ExSilver := New Color( .74,.76,.76 )
+
+	#rem wonkeydoc ExGold. Equivalent to New Color( .83,.66,.29 ).
+	#end
+	Const ExGold := New Color( .83,.66,.29 )
+
+	#rem wonkeydoc ExForest. Equivalent to New Color( .17,.31,.21 ).
+	#end
+	Const ExForest := New Color( .17,.31,.21 )
+
+	#rem wonkeydoc ExPlum. Equivalent to New Color( .36,.2,.36 ).
+	#end
+	Const ExPlum := New Color( .36,.2,.36 )
+
+	#rem wonkeydoc ExWatermellon. Equivalent to New Color( .85,.32,.32 ).
+	#end
+	Const ExWatermellon := New Color( .85,.32,.32 )
+
+	#rem wonkeydoc ExAvocado. Equivalent to New Color( .55,.69,.12 ).
+	#end
+	Const ExAvocado := New Color( .55,.69,.12 )
+
+	#rem wonkeydoc ExBubblegum. Equivalent to New Color( .83,.36,.61 ).
+	#end
+	Const ExBubblegum := New Color( .83,.36,.61 )
+
+	#rem wonkeydoc ExMaroon. Equivalent to New Color( .47,.18,.16 ).
+	#end
+	Const ExMaroon := New Color( .47,.18,.16 )
+
+	#rem wonkeydoc ExCoffee. Equivalent to New Color( .55,.44,.36 ).
+	#end
+	Const ExCoffee := New Color( .55,.44,.36 )
+
+	#rem wonkeydoc ExLavender. Equivalent to New Color( .6,.67,.83 ).
+	#end
+	Const ExLavender := New Color( .6,.67,.83 )
+
+	#rem wonkeydoc ExPowder. Equivalent to New Color( .72,.78,.94 ).
+	#end
+	Const ExPowder := New Color( .72,.78,.94 )
+
+	#rem wonkeydoc ExPigeon. Equivalent to New Color( .22,.29,.5 ).
+	#end
+	Const ExPigeon := New Color( .22,.29,.5 )
+
+	#rem wonkeydoc ExUmber. Equivalent to New Color( .7,.53,0 ).
+	#end
+	Const ExUmber := New Color( .7,.53,0 )
+
+  #rem wonkeydoc ExBuff. Equivalent to New Color( .84,.77,.64 ).
+	#end
+	Const ExBuff := New Color( .84,.77,.64 )
+
+	#rem wonkeydoc ExCobble. Equivalent to New Color( .47,.38,.33 ).
+	#end
+	Const ExCobble := New Color( .47,.38,.33 )
+
+	#rem wonkeydoc ExAqua. Equivalent to New Color( .59,.67,.68 ).
+	#end
+	Const ExAqua := New Color( .59,.67,.68 )
+
+	#rem wonkeydoc ExSewer. Equivalent to New Color( .78,.78,.59 ).
+	#end
+	Const ExSewer := New Color( .78,.78,.59 )
+
+	#rem wonkeydoc ExDragon. Equivalent to New Color( .8,.38,.5 ).
+	#end
+	Const ExDragon := New Color( .8,.38,.5 )
+
+	#rem wonkeydoc ExEmber. Equivalent to New Color( .74,.47,.34 ).
+	#end
+	Const ExEmber := New Color( .74,.47,.34 )
+
+	#rem wonkeydoc ExOlive. Equivalent to New Color( .52,.6,.1 ).
+	#end
+	Const ExOlive := New Color( .52,.6,.1 )
+
+	#rem wonkeydoc ExCorn. Equivalent to New Color( .91,.8,.32 ).
+	#end
+	Const ExCorn := New Color( .91,.8,.32 )
+
+	#rem wonkeydoc ExHoney. Equivalent to New Color( .95,.48,.59 ).
+	#end
+	Const ExHoney := New Color( .95,.48,.59 )
+
+	#rem wonkeydoc ExPhlox. Equivalent to New Color( .52,.25,.51 ).
+	#end
+	Const ExPhlox := New Color( .52,.25,.51 )
+
+	#rem wonkeydoc ExKhaki. Equivalent to New Color( .59,.56,.39 ).
+	#end
+	Const ExKhaki := New Color( .59,.56,.39 )
+
+	#rem wonkeydoc ExNougat. Equivalent to New Color( .83,.73,.62 ).
+	#end
+	Const ExNougat := New Color( .83,.73,.62 )
+''------------------------------------------------------------		
+
+
 	
 	#rem wonkeydoc Red component of color.
 	#end
@@ -150,6 +900,7 @@ Struct Color
 	#rem wonkeydoc Green component of color.
 	#end
 	Field g:Float
+
 	#rem wonkeydoc Blue component of color.
 	#end
 	Field b:Float

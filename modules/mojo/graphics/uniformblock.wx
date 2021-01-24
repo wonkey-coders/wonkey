@@ -1,6 +1,29 @@
 
 Namespace mojo.graphics
 
+'jl added
+'------------------------------------------------------------
+Global UserUniforms:Stack<UserUniform> = New Stack<UserUniform>
+
+Class UserUniform
+	Field names:String[]
+	Field index:Int
+	Field callback:Void(useruniform:UserUniform, uniforms:UniformBlock)
+	
+	Method New(names:String[], index:Int, callback:Void(useruniform:UserUniform, uniforms:UniformBlock))
+		Self.names = names
+		Self.index = index
+		Self.callback = callback
+	End
+End
+
+Function AddUserUniform:UserUniform(names:String[], index:Int, callback:Void(useruniform:UserUniform, uniforms:UniformBlock) )
+	Local uni:=New UserUniform(names, index, callback)
+	UserUniforms.Add(uni)
+	Return uni
+End
+'------------------------------------------------------------
+
 #rem wonkeydoc The UniformBlock class.
 #end
 Class UniformBlock Extends Resource

@@ -90,7 +90,7 @@ Class AppInstance
 
 	Filter functions should check if the event has already been 'eaten' by checking the event's [[Event.Eaten]] property before processing the event.
 	
-	#end	
+	#end
 	Field MouseEventFilter:Void( event:MouseEvent )
 	
 	#rem wonkeydoc Raw SDL_Event filter.
@@ -150,7 +150,7 @@ Class AppInstance
 		End
 
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,gl_profile )
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION,Int( GetConfig( "MOJO_OPENGL_VERSION_MAJOR",gl_major ) ) ) 
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION,Int( GetConfig( "MOJO_OPENGL_VERSION_MAJOR",gl_major ) ) )
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION,Int( GetConfig( "MOJO_OPENGL_VERSION_MINOR",gl_minor ) ) )
 		
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER,1 )
@@ -183,7 +183,7 @@ Class AppInstance
 		Assert( _sdlGLContext,"FATAL ERROR: SDL_GL_CreateContext failed~n> SDL_ERROR: "+String.FromCString(SDL_GetError()) )
 		
 		SDL_GL_MakeCurrent( _sdlWindow,_sdlGLContext )
-#Endif	
+#Endif
 		
 #If __TARGET__="windows" Or __TARGET__="macos" Or __TARGET__="emscripten"
 		_captureMouse=True	'breaks on linux...
@@ -194,6 +194,10 @@ Class AppInstance
 #Endif
 
 		_defaultFont=_res.OpenFont( "DejaVuSans",16 )
+'jl added
+'------------------------------------------------------------
+		_defaultMonoFont = Font.Load( DefaultMonoFontName,16 )
+'------------------------------------------------------------
 		
 		_theme=New Theme
 		
@@ -212,12 +216,33 @@ Class AppInstance
 			UpdateWindows()
 		End
 
-#if __DESKTOP_TARGET__ 
+#if __DESKTOP_TARGET__
 		SDL_AddEventWatch( _EventFilter,Null )
 #Endif
 		RequestRender()
 	End
 	
+'jl added
+'------------------------------------------------------------
+	#rem wonkeydoc @hidden
+	#end
+	Property DefaultFontName:String()
+		Return "asset::DejaVuSans.ttf"
+	End
+	
+	#rem wonkeydoc @hidden
+	#end
+	Property DefaultMonoFontName:String()
+		Return "asset::DejaVuSansMono.ttf"
+	End
+	
+	#rem wonkeydoc @hidden
+	#end
+	Property DefaultMonoFont:Font()
+		Return _defaultMonoFont
+	End
+'------------------------------------------------------------
+
 	#rem wonkeydoc Fallback font.
 	#end
 	Property DefaultFont:Font()
@@ -252,9 +277,9 @@ Class AppInstance
 		
 		Local str:=String.FromCString( p )
 
-		'fix windows eols		
+		'fix windows eols
 		str=str.Replace( "~r~n","~n" )
-		str=str.Replace( "~r","~n" )		
+		str=str.Replace( "~r","~n" )
 		
 		SDL_free( p )
 		
@@ -306,7 +331,7 @@ Class AppInstance
 	End
 	
 	#rem wonkeydoc The desktop size.
-	#end	
+	#end
 	Property DesktopSize:Vec2i()
 		
 		Local mode:=DesktopMode
@@ -349,7 +374,7 @@ Class AppInstance
 	End
 	
 	#rem wonkeydoc Mouse location relative to the active window.
-	#end	
+	#end
 	Property MouseLocation:Vec2i()
 
 		Return _mouseLocation
@@ -494,7 +519,7 @@ Class AppInstance
 	End
 	
 	#rem wonkeydoc @hidden
-	#end	
+	#end
 	Method UpdateWindows()
 		
 		if Not Renderable Return
@@ -607,6 +632,19 @@ Class AppInstance
 		Return modes.ToArray()
 	End
 	
+'jl added
+'------------------------------------------------------------
+	Method DispatchEvents()
+		Local event:SDL_Event
+
+		While SDL_PollEvent( Varptr event )
+			Window.CreateNewWindows()
+			
+			DispatchEvent( Varptr event )
+		Wend
+	End
+'------------------------------------------------------------
+
 	Internal
 	
 	Method UpdateEvents()
@@ -641,6 +679,11 @@ Class AppInstance
 	
 	Field _res:=New ResourceManager
 	Field _defaultFont:Font
+'jl added
+'------------------------------------------------------------
+	Field _defaultMonoFont:Font
+'------------------------------------------------------------
+
 	Field _theme:Theme
 
 	Field _active:Bool
@@ -782,7 +825,7 @@ Class AppInstance
 		Case SDL_QUIT
 		
 			If _activeWindow _activeWindow.SendWindowEvent( New WindowEvent( EventType.WindowClose,_activeWindow ) )
-#Endif		
+#Endif
 		
 		Case SDL_KEYDOWN
 		
@@ -1102,7 +1145,7 @@ Class AppInstance
 
 		Case SDL_APP_LOWMEMORY
 			'You will get this when your app is paused and iOS wants more memory.
-			'Release as much memory as possible.		
+			'Release as much memory as possible.
 
 		Case SDL_APP_WILLENTERBACKGROUND
 			'Prepare your app to go into the background. Stop loops, etc.
@@ -1132,7 +1175,7 @@ Class AppInstance
 
 			RequestRender()
 #Endif
-     
+		
 		End
 			
 	End
