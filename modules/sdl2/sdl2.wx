@@ -144,22 +144,31 @@ Struct SDL_Window
 End
 Enum SDL_WindowFlags
 End
-Const SDL_WINDOW_FULLSCREEN:SDL_WindowFlags
-Const SDL_WINDOW_OPENGL:SDL_WindowFlags
-Const SDL_WINDOW_SHOWN:SDL_WindowFlags
-Const SDL_WINDOW_HIDDEN:SDL_WindowFlags
-Const SDL_WINDOW_BORDERLESS:SDL_WindowFlags
-Const SDL_WINDOW_RESIZABLE:SDL_WindowFlags
-Const SDL_WINDOW_MINIMIZED:SDL_WindowFlags
-Const SDL_WINDOW_MAXIMIZED:SDL_WindowFlags
-Const SDL_WINDOW_INPUT_GRABBED:SDL_WindowFlags
-Const SDL_WINDOW_INPUT_FOCUS:SDL_WindowFlags
-Const SDL_WINDOW_MOUSE_FOCUS:SDL_WindowFlags
+Const SDL_WINDOW_FULLSCREEN:SDL_WindowFlags			' fullscreen window
+Const SDL_WINDOW_OPENGL:SDL_WindowFlags				' window usable with OpenGL context
+Const SDL_WINDOW_SHOWN:SDL_WindowFlags				' window is visible
+Const SDL_WINDOW_HIDDEN:SDL_WindowFlags				' window is not visible
+Const SDL_WINDOW_BORDERLESS:SDL_WindowFlags			' no window decoration
+Const SDL_WINDOW_RESIZABLE:SDL_WindowFlags			' window can be resized
+Const SDL_WINDOW_MINIMIZED:SDL_WindowFlags			' window is minimized
+Const SDL_WINDOW_MAXIMIZED:SDL_WindowFlags			' window is maximized
+Const SDL_WINDOW_INPUT_GRABBED:SDL_WindowFlags		' window has grabbed input focus
+Const SDL_WINDOW_INPUT_FOCUS:SDL_WindowFlags		' window has input focus
+Const SDL_WINDOW_MOUSE_FOCUS:SDL_WindowFlags		' window has mouse focus
 Const SDL_WINDOW_FULLSCREEN_DESKTOP:SDL_WindowFlags
-Const SDL_WINDOW_FOREIGN:SDL_WindowFlags
-Const SDL_WINDOW_ALLOW_HIGHDPI:SDL_WindowFlags
-Const SDL_WINDOW_MOUSE_CAPTURE:SDL_WindowFlags
-Const SDL_WINDOW_FLOATING:SDL_WindowFlags
+Const SDL_WINDOW_FOREIGN:SDL_WindowFlags			' window not created by SDL
+Const SDL_WINDOW_ALLOW_HIGHDPI:SDL_WindowFlags		' window should be created in high-DPI mode if supported.
+                                                    ' On macOS NSHighResolutionCapable must be set true in the
+                                                    ' application's Info.plist for this to have any effect.
+Const SDL_WINDOW_MOUSE_CAPTURE:SDL_WindowFlags		' window has mouse captured (unrelated to INPUT_GRABBED)
+'Const SDL_WINDOW_FLOATING:SDL_WindowFlags
+Const SDL_WINDOW_ALWAYS_ON_TOP:SDL_WindowFlags		' window should always be above others
+Const SDL_WINDOW_SKIP_TASKBAR:SDL_WindowFlags		' window should not be added to the taskbar
+Const SDL_WINDOW_UTILITY:SDL_WindowFlags			' window should be treated as a utility window
+Const SDL_WINDOW_TOOLTIP:SDL_WindowFlags			' window should be treated as a tooltip
+Const SDL_WINDOW_POPUP_MENU:SDL_WindowFlags			' window should be treated as a popup menu
+Const SDL_WINDOW_VULKAN:SDL_WindowFlags				' window usable for Vulkan surface
+Const SDL_WINDOW_METAL:SDL_WindowFlags				' window usable for Metal view
 
 Const SDL_WINDOWPOS_UNDEFINED_MASK:Int
 Const SDL_WINDOWPOS_UNDEFINED_DISPLAY:Int
