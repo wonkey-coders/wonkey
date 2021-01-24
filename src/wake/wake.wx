@@ -38,9 +38,6 @@ Function Main()
 	'Set aside 64M for GC!
 	GCSetTrigger( 64*1024*1024 )
 	
-	Print ""
-	Print "wake " + WAKE_VERSION+WAKE_VERSION_EXT
-	
 	StartDir=CurrentDir()
 	
 	ChangeDir( AppDir() )
@@ -80,7 +77,8 @@ Function Main()
 	Module.Dirs=moddirs.ToArray()
 	
 	If args.Length<2
-
+		Print ""
+		Print "wake " + WAKE_VERSION+WAKE_VERSION_EXT
 		Print ""
 		Print "Usage: "
 		Print ""
@@ -90,6 +88,7 @@ Function Main()
 		Print "  app              Make an application."
 		Print "  mods             Make modules."
 		Print "  docs             Make docs."
+		Print "  version          Print wake version."
 		Print ""
 		Print "Options:"
 		Print "  -quiet           Emit less info when building."
@@ -101,7 +100,7 @@ Function Main()
 		Print "  -translate       Parse, semant and translate."
 		Print "  -build           Parse, semant, translate and build."
 		Print "  -run             The works! The default."
-		Print "  -apptype=        App type to make, one of : gui, console. (Defaults: gui)."
+		Print "  -apptype=        App type to make, one of: gui, console. (Defaults: gui)."
 		Print "  -target=         Build target, one of: windows, macos, linux, emscripten, wasm, android, ios, desktop. Desktop is an alias for current host. (Defaults: desktop)."
 		Print "  -config=         Build config, one of: all, debug, release. (Defaults: 'all' for modules else 'debug')."
 		Print "  -product=        Build product path."
@@ -113,8 +112,8 @@ Function Main()
 		Print ""
 
 #If __DESKTOP_TARGET__
-		If Int( GetEnv( "WX_USE_MSVC" ) ) And HostOS="windows"
-			system( "cl > tmp\_v.txt" )		'doesn't work?
+		If Int( GetEnv( "WX_USE_MSVC" ) ) Or GetEnv( "WX_USE_MSVC" )=""
+			system( "cl > tmp\_v.txt" )	
 			Print ""
 			Print "wake: using 'cl' version:"
 			Print ""
@@ -148,6 +147,8 @@ Function Main()
 			ok=MakeMods( args )
 		Case "docs"
 			ok=MakeDocs( args )
+		Case "version"
+			Print "wake " + WAKE_VERSION+WAKE_VERSION_EXT
 			
 		'********* TESTS *********
 		Case "enummods"
