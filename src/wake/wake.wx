@@ -112,17 +112,18 @@ Function Main()
 		Print ""
 
 #If __DESKTOP_TARGET__
-		If Int( GetEnv( "WX_USE_MSVC" ) ) Or GetEnv( "WX_USE_MSVC" )=""
-			system( "cl > tmp\_v.txt" )	
+		If (Int( GetEnv( "WX_USE_MSVC" ) ) Or GetEnv( "WX_USE_MSVC" )="") and HostOS="windows"
 			Print ""
 			Print "wake: using 'cl' version:"
 			Print ""
+			Local arch:=GetEnv("WX_ARCH_WINDOWS").ToUpper()	
+			system( "~q"+GetEnv( "WX_MSVC_PATH_"+arch )+"\cl.exe~q > tmp\_v.txt" )
 			Print LoadString( "tmp/_v.txt" )
 		Else
-			system( "g++ --version > tmp/_v.txt" )
 			Print ""
 			Print "wake: using 'g++' version:"
 			Print ""
+			system( "g++ --version > tmp/_v.txt" )
 			Print LoadString( "tmp/_v.txt" )
 		Endif
 #Endif
