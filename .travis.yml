@@ -4,6 +4,8 @@ os:
   - osx
   - windows
 
+osx_image: xcode12.2
+
 dist: bionic
 
 addons:

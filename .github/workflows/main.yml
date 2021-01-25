@@ -37,6 +37,8 @@ jobs:
       - name: Run rebuild scripts
         run: |
           pwd
+          g++ --version
+          ./bin/linux/wake
           cd scripts
           ./rebuildmods.sh
           ./rebuildwake.sh
@@ -58,6 +60,8 @@ jobs:
         shell: cmd
         run: |
           echo %CD%
+          cl.exe
+          %CD%\bin\windows\wake
           cd %CD%\scripts
           rebuildall.bat
   # This workflow contains a single job called "build-macos"
@@ -74,6 +78,8 @@ jobs:
       - name: Run rebuild scripts
         run: |
           pwd
+          g++ --version
+          ./bin/macos/wake
           cd scripts
           ./rebuildmods.sh
           ./rebuildwake.sh
