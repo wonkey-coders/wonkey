@@ -320,7 +320,13 @@ Class GccBuildProduct Extends BuildProduct
 				CC_CMD= "emcc -c"
 				CXX_CMD="em++ -c"
 				LD_CMD="em++"
-				AR_CMD="em++ -o"
+				
+				If Int(GetEnv("WX_USE_EMSC_VERSION"))=2
+					AR_CMD="emar rcs"
+				Else
+					AR_CMD="em++ -o"
+				End
+				
 			Case "raspbian"
 				CC_CMD= "arm-linux-gnueabihf-gcc -c"
 				CXX_CMD="arm-linux-gnueabihf-g++ -c"
@@ -548,7 +554,7 @@ Class GccBuildProduct Extends BuildProduct
 		
 		If opts.toolchain="msvc" 
 			output=StripExt( output )+".lib"
-		Else if opts.target="emscripten"
+		Else If opts.target="emscripten" And Int(GetEnv("WX_USE_EMSC_VERSION"))<>2
 			output=StripExt( output )+".bc"
 		Endif
 		
@@ -684,7 +690,7 @@ Class GccBuildProduct Extends BuildProduct
 		
 		For Local imp:=Eachin imports
 			Local afile:=imp.afile
-			If opts.target="emscripten"
+			If opts.target="emscripten" And Int(GetEnv("WX_USE_EMSC_VERSION"))<>2
 				afile=StripExt(afile)+".bc"
 			Else If opts.toolchain="msvc" 
 				afile=StripExt(afile)+".lib"
