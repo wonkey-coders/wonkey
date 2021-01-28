@@ -1,4 +1,4 @@
-
+﻿
 . ./common.sh
 
 echo ""
@@ -30,5 +30,6 @@ else
 
 	cp ../src/wide/logo/info.plist "$wide/Contents"
 	cp ../src/wide/logo/wide.icns "$wide/Contents/Resources"
+	cp ../src/wide/logo/wxproject.icns "$wide/Contents/Resources"
 
 fi
