@@ -1,5 +1,5 @@
 {
-	"assetsDir":"assets/",
+	"assetsDir":"modules/mojo3d/tests/assets/",
 	"instances":[{
 		"ctor":{
 			"args":[true],
