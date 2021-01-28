@@ -25,6 +25,6 @@ else
 	cp -R ./launcher.products/macos/Launcher.app "$launcher"
 	
 	cp ../src/launcher/info.plist "$launcher/Contents"
-	cp ../src/launcher/wide_logo.icns "$launcher/Contents/Resources"
+	cp ../src/launcher/wide.icns "$launcher/Contents/Resources"
 
 fi

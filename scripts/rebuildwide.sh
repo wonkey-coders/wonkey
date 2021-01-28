@@ -29,6 +29,6 @@ else
 	cp -R ./wide.products/macos/wide.app $wide
 
 	cp ../src/wide/logo/info.plist "$wide/Contents"
-	cp ../src/wide/logo/wide_logo.icns "$wide/Contents/Resources"
+	cp ../src/wide/logo/wide.icns "$wide/Contents/Resources"
 
 fi

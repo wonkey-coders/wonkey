@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 	<string>launcher</string>
 	<key>CFBundleIconFile</key>
-	<string>wide_logo</string>
+	<string>wide</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>NSHighResolutionCapable</key> <true/>

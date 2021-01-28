@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 	<string>wide</string>
 	<key>CFBundleIconFile</key>
-	<string>wide_logo</string>
+	<string>wide</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>NSHighResolutionCapable</key> <true/>
@@ -20,7 +20,7 @@
 			<key>CFBundleTypeName</key>
 			<string>Wonkey Source Code</string>
 			<key>CFBundleTypeIconFile</key>
-			<string>wide_logo</string>
+			<string>wide</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
@@ -32,7 +32,7 @@
 			<key>CFBundleTypeName</key>
 			<string>Wonkey Project</string>
 			<key>CFBundleTypeIconFile</key>
-			<string>wide_logo</string>
+			<string>wxproject</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
