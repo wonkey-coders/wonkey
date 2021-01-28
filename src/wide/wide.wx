@@ -55,7 +55,7 @@ Namespace wide
 #Import "document/JsonDocument"
 #Import "document/XmlDocument"
 #Import "document/ExamplesDocument"
-'#Import "document/SceneDocument" 'need mojo3d, mojo3d-loaders, reflection modules
+#Import "document/SceneDocument"
 
 #Import "eventfilter/TextViewKeyEventFilter"
 #Import "eventfilter/WonkeyKeyEventFilter"
