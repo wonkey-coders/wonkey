@@ -89,6 +89,40 @@ Follow the next steps to build :
 3. If all went well, you should end up with a 'Wonkey (...)' app in the wonkey directory. Run this to launch the WIDE (Wonkey IDE).
 4. You should now be able to build and run wonkey apps. There are some sample apps in the 'wonkey/examples' directory.
 
+## Emscripten target
+
+See [installation instructions](https://emscripten.org/docs/getting_started/downloads.html) from Emscripten site.
+
+```bash
+# Get the emsdk repo
+git clone https://github.com/emscripten-core/emsdk.git
+
+# Enter that directory
+cd emsdk
+
+# Fetch the latest version of the emsdk (not needed the first time you clone)
+git pull
+
+# Download and install the latest SDK tools.
+./emsdk install latest
+
+# Make the "latest" SDK "active" for the current user. (writes .emscripten file)
+./emsdk activate latest
+
+# Activate PATH and other environment variables in the current terminal
+source ./emsdk_env.sh
+
+#In the description above we asked the emsdk to install and activate latest, which is the latest tagged release. That is often what you want.
+
+# You can also install a specific version by specifying it, for example,
+./emsdk install 1.38.45
+
+```
+
+*NOTE: on macOS, you can use `brew install emscripten`.*
+
+*NOTE: on Windows, run `emsdk` instead of `./emsdk`, and `emsdk_env.bat` instead of `source ./emsdk_env.sh`.*
+
 ## Introduction to Wonkey
 
 While staying true to the 'basic' style of the original blitz languages, Wonkey offers some very powerful new features including:
