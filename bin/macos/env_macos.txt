@@ -35,6 +35,10 @@ WX_AS_OPTS=
 '----- EMSCRIPTEN TARGET
 '--------------------------------------------------------------------------------------
 
+'Specify your EMSCRIPTEN version to use (one of: 1 for 1.x.x, 2 for 2.x.x)
+'
+WX_USE_EMSC_VERSION=2
+
 'Change this to the location of your emsdk:
 '
 EMSDK=${HOME}/emsdk

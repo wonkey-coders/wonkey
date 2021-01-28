@@ -21,6 +21,10 @@ WX_CPP_OPTS_LINUX_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 
 '***** EMSCRIPTEN *****
 
+'Specify your EMSCRIPTEN version to use (one of: 1 for 1.x.x, 2 for 2.x.x)
+'
+WX_USE_EMSC_VERSION=2
+
 'Path to you emsdk installation.
 '
 EMSDK=${HOME}/dev/emsdk

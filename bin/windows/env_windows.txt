@@ -115,6 +115,10 @@ WX_AS_OPTS_MSVC=-DBOOST_CONTEXT_EXPORT=
 
 '***** EMSCRIPTEN TARGET *****
 
+'Specify your EMSCRIPTEN version to use (one of: 1 for 1.x.x, 2 for 2.x.x)
+'
+WX_USE_EMSC_VERSION=2
+
 'This is for the emsdk download available at http://monkeycoder.co.nz/monkey2-files/
 '
 'If you have a different emscripten installation installed that you want to use, comment this lot out.
