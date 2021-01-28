@@ -1,7 +1,10 @@
 
 WX_THREADS=1
 
-'***** LINUX DESKTOP TARGET *****
+
+'--------------------------------------------------------------------------------------
+'----- LINUX DESKTOP TARGET
+'--------------------------------------------------------------------------------------
 
 'LD options
 WX_LD_OPTS_LINUX=-lpthread -no-pie
@@ -19,7 +22,9 @@ WX_CPP_OPTS_LINUX_DEBUG=
 WX_CPP_OPTS_LINUX_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 
 
-'***** EMSCRIPTEN *****
+'--------------------------------------------------------------------------------------
+'----- EMSCRIPTEN
+'--------------------------------------------------------------------------------------
 
 'Specify your EMSCRIPTEN version to use (one of: 1 for 1.x.x, 2 for 2.x.x)
 '

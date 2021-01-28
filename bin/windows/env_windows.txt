@@ -1,4 +1,6 @@
 
+
+
 'Hyper experimental thread builds!
 '
 WX_THREADS=1
@@ -25,7 +27,10 @@ WX_ARCH_WINDOWS=x64
 
 'If you change anything below, you should rebuild all!
 
-'***** WINDOWS DESKTOP TARGET - MINGW *****
+
+'--------------------------------------------------------------------------------------
+'----- WINDOWS DESKTOP TARGET - MINGW
+'--------------------------------------------------------------------------------------
 
 'Note: Requires MinGW compilers+build tools, see: http://github.com/wonkey-coders/wonkey
 '
@@ -54,7 +59,9 @@ WX_CPP_OPTS_WINDOWS_DEBUG=-O2
 WX_CPP_OPTS_WINDOWS_RELEASE=-O3 -DNDEBUG
 
 
-'***** WINDOWS DESKTOP TARGET - MSVC *****
+'--------------------------------------------------------------------------------------
+'----- WINDOWS DESKTOP TARGET - MSVC
+'--------------------------------------------------------------------------------------
 
 'Note: these paths are only used if legacy WX_USE_MSVC=1
 '
@@ -92,7 +99,10 @@ WX_MSVC_LIB_X64=${WX_MSVC_TOOLS_DIR}\lib\x64;
 WX_MSVC_LIB_X64=${WX_MSVC_LIB_X64}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\ucrt\x64;
 WX_MSVC_LIB_X64=${WX_MSVC_LIB_X64}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\um\x64;
 
-'***** MSVC COMMAND LINE OPTIONS *****
+
+'--------------------------------------------------------------------------------------
+'----- MSVC COMMAND LINE OPTIONS
+'--------------------------------------------------------------------------------------
 
 'Linker options
 WX_LD_OPTS_MSVC=user32.lib
@@ -113,7 +123,9 @@ WX_CPP_OPTS_MSVC_RELEASE=-O2 -DNDEBUG
 WX_AS_OPTS_MSVC=-DBOOST_CONTEXT_EXPORT=
 
 
-'***** EMSCRIPTEN TARGET *****
+'--------------------------------------------------------------------------------------
+'----- EMSCRIPTEN TARGET
+'--------------------------------------------------------------------------------------
 
 'Specify your EMSCRIPTEN version to use (one of: 1 for 1.x.x, 2 for 2.x.x)
 '
@@ -123,18 +135,20 @@ WX_USE_EMSC_VERSION=2
 '
 'If you have a different emscripten installation installed that you want to use, comment this lot out.
 '
-EMSDK=${WX_HOME}\devtools\emsdk-1.37.35_64bit
+EMSDK=${WX_HOME}\devtools\emsdk
 EM_CONFIG=${EMSDK}\.emscripten
-BINARYEN_ROOT = ${EMSDK}\clang\e1.37.35_64bit\binaryen
+BINARYEN_ROOT = ${EMSDK}\upstream\bin
 JAVA_HOME = ${EMSDK}\java\8.152_64bit
-EMSCRIPTEN = ${EMSDK}\emscripten\1.37.35
+EMSCRIPTEN = ${EMSDK}\upstream\emscripten
 
+' See values in .emscripten configuration file
+'
 PATH=${EMSDK};${PATH}
 PATH=${EMSDK}\clang\e1.37.35_64bit;${PATH}
-PATH=${EMSDK}\node\8.9.1_64bit\bin;${PATH}
-PATH=${EMSDK}\python\2.7.5.3_64bit;${PATH}
+PATH=${EMSDK}\node\12.18.1_64bit\bin;${PATH}
+PATH=${EMSDK}\python\3.7.4-pywin32_64bit;${PATH}
 PATH=${EMSDK}\java\8.152_64bit\bin;${PATH}
-PATH=${EMSDK}\emscripten\1.37.35;${PATH}
+PATH=${EMSDK}\upstream\emscripten;${PATH}
 
 'Add mserver_winnt emscripten mini-server/launcher.
 '
@@ -160,7 +174,10 @@ WX_CPP_OPTS_EMSCRIPTEN=-std=c++11 -Wno-all -s USE_SDL=2 -s TOTAL_MEMORY=53687091
 WX_CPP_OPTS_EMSCRIPTEN_DEBUG=-O2
 WX_CPP_OPTS_EMSCRIPTEN_RELEASE=-O3 -DNDEBUG
 
-'***** ANDROID TARGET *****
+
+'--------------------------------------------------------------------------------------
+'----- ANDROID TARGET
+'--------------------------------------------------------------------------------------
 
 'Note: Requires Android Studio + Android NDK, see: https://developer.android.com/studio/index.html
 
@@ -178,7 +195,10 @@ WX_ANDROID_APP_PLATFORM=android-16
 WX_ANDROID_APP_ABI=armeabi-v7a x86
 WX_ANDROID_APP_STL=c++_static
 
-'***** RASPBIAN *****
+
+'--------------------------------------------------------------------------------------
+'----- RASPBIAN
+'--------------------------------------------------------------------------------------
 
 WX_RASPBIAN_TOOLS=${WX_HOME}\devtools\SysGCC\Raspberry\bin
 
