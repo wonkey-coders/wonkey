@@ -1,0 +1,9 @@
+{
+	"module":"glad",
+	"about":"Multi-Language Vulkan/GL/GLES/EGL/GLX/WGL Loader-Generator based on the official specs.",
+	"author":"David Herberth, Wonkey Coders",
+	"version":"1.0.0",
+	"targets":["desktop"],
+	"support": "https://github.com/Dav1dde/glad, https://github.com/wonkey-coders",
+	"depends":["libc"]
+}

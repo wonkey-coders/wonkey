@@ -1,0 +1,95 @@
+namespace glad
+
+#import "<libc>"
+#import "<glfw>"
+
+using libc..
+using glfw..
+
+#import "native/include/*.h"
+
+#import "<glad/glad.h>"
+
+#import "native/src/glad.c"
+
+#import "native/glad_glue.h"
+#import "native/glad_glue.cpp"
+
+#if __TARGET__="windows"
+    '// TODO
+#else if __TARGET__="linux"
+    '// TODO
+#else if __TARGET__="macos"
+    #import "<OpenGL.framework>"
+#end
+
+extern
+
+'glad_glue
+function gladLoadGLLoaderGLFW:int()
+
+alias GLvoid:void
+alias GLenum:uint
+alias GLboolean:bool
+alias GLbitfield:uint
+alias GLbyte:byte
+alias GLshort:short
+alias GLint:int
+alias GLsizei:int
+alias GLubyte:ubyte
+alias GLushort:ushort
+alias GLuint:uint
+alias GLfloat:float
+alias GLclampf:float
+alias GLdouble:double
+alias GLclampd:double
+alias GLfixed:int
+alias GLclampx:int
+alias GLintptr:long
+alias GLsizeiptr:long
+alias GLint64:long
+alias GLuint64:ulong
+
+#if __TARGET__="macos"
+    alias GLhandleARB:void ptr
+#else
+    alias GLhandleARB:uint
+#end
+
+alias khronos_int8_t:GLbyte
+alias khronos_uint8_t:GLubyte
+alias khronos_int16_t:GLshort
+alias khronos_uint16_t:GLushort
+alias khronos_int32_t:GLclampx
+alias khronos_float_t:GLfloat
+alias khronos_intptr_t:GLintptr
+alias khronos_ssize_t:GLsizeiptr
+alias khronos_int64_t:GLint64
+alias khronos_uint64_t:GLuint64
+
+struct GLchar="GLchar"
+end
+
+struct GLcchar="const GLchar"
+end
+
+struct GLsync
+end
+
+struct gladGLversionStruct
+    field major:int
+    field minor:int
+end
+
+alias GLADloadproc:void ptr(name:const_char_t ptr)
+'// Defs
+
+${DEFS}
+
+'// Decls
+
+function GLVersion:gladGLversionStruct()
+function gladLoadGL:int()
+function gladLoadGLLoader:int(GLADloadproc)
+
+${DECLS}
