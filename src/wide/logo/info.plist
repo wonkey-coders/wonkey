@@ -2,27 +2,65 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en-US</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
 	<key>CFBundleExecutable</key>
 	<string>wide</string>
 	<key>CFBundleIconFile</key>
-	<string>wide</string>
+	<string>wide.icns</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>NSHighResolutionCapable</key> <true/>
+	<key>CFBundleIdentifier</key>
+	<string>io.github.wonkey-coders.wide</string>
+	<key>CFBundleSignature</key>
+	<string>PURE</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.0</string>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.developer-tools</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>wx</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Wonkey Source</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>wide.icns</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>io.github.wonkey-coders.wide.wx</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>monkey2</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Wonkey Source Code</string>
+			<string>Wonkey Source</string>
 			<key>CFBundleTypeIconFile</key>
-			<string>wide</string>
+			<string>wide.icns</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>io.github.wonkey-coders.wide.monkey2</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -32,9 +70,75 @@
 			<key>CFBundleTypeName</key>
 			<string>Wonkey Project</string>
 			<key>CFBundleTypeIconFile</key>
-			<string>wxproject</string>
+			<string>wxproject.icns</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>io.github.wonkey-coders.wide.wxproject</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+		</dict>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.source-code</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Wonkey Source</string>
+			<key>UTTypeIconFile</key>
+			<string>wide.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>io.github.wonkey-coders.wide.wx</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>wx</string>
+				<key>public.mime-type</key>
+				<string>public.source-code</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.source-code</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Wonkey Source</string>
+			<key>UTTypeIconFile</key>
+			<string>wide.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>io.github.wonkey-coders.wide.monkey2</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>monkey2</string>
+				<key>public.mime-type</key>
+				<string>public.source-code</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Wonkey Project</string>
+			<key>UTTypeIconFile</key>
+			<string>wxproject.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>io.github.wonkey-coders.wide.wxproject</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>wxproject</string>
+				<key>public.mime-type</key>
+				<string>public.plain-text</string>
+			</dict>
 		</dict>
 	</array>
 </dict>
