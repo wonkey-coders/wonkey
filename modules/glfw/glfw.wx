@@ -20,9 +20,9 @@ using libc..
 #import "glfw/src/window.c"
 
 #if __TARGET__="windows"
-    #import "WX_CC_OPTS_MACOS=-D_GLFW_WIN32"
-    #import "WX_CPP_OPTS_MACOS=-D_GLFW_WIN32"
-    #import "WX_LD_OPTS_MACOS=-D_GLFW_WIN32"
+    #import "WX_CC_OPTS_WINDOWS=-D_GLFW_WIN32"
+    #import "WX_CPP_OPTS_WINDOWS=-D_GLFW_WIN32"
+    #import "WX_LD_OPTS_WINDOWS=-D_GLFW_WIN32"
 
     #import "<libgdi32.a>"
 
@@ -37,9 +37,9 @@ using libc..
     #import "glfw/src/osmesa_context.c"
 
 #elseif __TARGET__="linux"
-    #import "WX_CC_OPTS_MACOS=-D_GLFW_X11"
-    #import "WX_CPP_OPTS_MACOS=-D_GLFW_X11"
-    #import "WX_LD_OPTS_MACOS=-D_GLFW_X11"
+    #import "WX_CC_OPTS_LINUX=-D_GLFW_X11"
+    #import "WX_CPP_OPTS_LINUX=-D_GLFW_X11"
+    #import "WX_LD_OPTS_LINUX=-D_GLFW_X11"
 
     #import "glfw/src/x11_init.c"
     #import "glfw/src/x11_monitor.c"
