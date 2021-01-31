@@ -5,7 +5,7 @@ echo ""
 echo "***** Rebuilding wide *****"
 echo ""
 
-$wake app -clean -apptype=gui -build -config=release -product=scripts/wide.products/$host/wide ../src/wide/wide.wx
+$wake app -clean -time -apptype=gui -build -config=release -product=scripts/wide.products/$host/wide ../src/wide/wide.wx
 
 if [ "$OSTYPE" = "linux-gnu" ]
 then

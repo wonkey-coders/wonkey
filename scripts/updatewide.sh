@@ -5,7 +5,7 @@ echo ""
 echo "***** Updating wide *****"
 echo ""
 
-$wake app -apptype=gui -build -config=release -product=scripts/wide.products/$host/wide ../src/wide/wide.wx
+$wake app -apptype=gui -time -build -config=release -product=scripts/wide.products/$host/wide ../src/wide/wide.wx
 
 $wake app -apptype=gui -build -config=release -product=scripts/launcher.products/$host/launcher ../src/launcher/launcher.wx
 
