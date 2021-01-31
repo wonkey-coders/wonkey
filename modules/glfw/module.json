@@ -1,0 +1,10 @@
+{
+	"module":"glfw",
+	"about":"GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan application development",
+	"author":"GLFW, Wonkey Coders",
+	"version":"1.0.0",
+	"targets":["desktop"],
+	"support": "https://github.com/glfw/glfw, https://github.com/wonkey-coders",
+	"depends":["libc"]
+}
+
