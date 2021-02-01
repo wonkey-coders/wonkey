@@ -214,6 +214,7 @@ Class ProjectView Extends DockingView
 		Else
 			_projects+=proj
 			_projBrowser.AddProject( proj )
+			_projBrowser.RefreshProject( proj )
 		Endif
 		
 		ProjectOpened( proj.Path )
@@ -864,7 +865,13 @@ Class WonkeyProject
 		
 		Local jobj:=New JsonObject
 		jobj[KEY_MAIN_FILE]=New JsonString
-		jobj[KEY_HIDDEN]=New JsonArray( New JsonValue[]( New JsonString( ".wx" ) ) )
+		jobj[KEY_HIDDEN]=New JsonArray( New JsonValue[]( New JsonString( ".wx" ),
+														 New JsonString( ".git" ),
+														 New JsonString( ".github" ),
+														 New JsonString( ".gitignore" ),
+														 New JsonString( ".gitattributes" ),
+														 New JsonString( ".travis.yml" ),
+														 New JsonString( ".DS_Store" ) ) )
 		
 		SaveString( jobj.ToJson(),path )
 	End
