@@ -8,138 +8,549 @@ Namespace tinyxml2
 
 Extern
 
+#rem wonkeydoc Error codes
+
+| Error code | |
+|:---|:---
+| XML\_SUCCESS = 0 | Success = no error
+| XML\_NO\_ATTRIBUTE |
+| XML\_WRONG\_ATTRIBUTE_TYPE |
+| XML\_ERROR\_FILE\_NOT\_FOUND |
+| XML\_ERROR\_FILE\_COULD\_NOT\_BE\_OPENED |
+| XML\_ERROR\_FILE\_READ\_ERROR |
+| XML\_ERROR\_ELEMENT\_MISMATCH |
+| XML\_ERROR\_PARSING\_ELEMENT |
+| XML\_ERROR\_PARSING\_ATTRIBUTE |
+| XML\_ERROR\_IDENTIFYING\_TAG |
+| XML\_ERROR\_PARSING\_TEXT |
+| XML\_ERROR\_PARSING\_CDATA |
+| XML\_ERROR\_PARSING\_COMMENT |
+| XML\_ERROR\_PARSING\_DECLARATION |
+| XML\_ERROR\_PARSING\_UNKNOWN |
+| XML\_ERROR\_EMPTY\_DOCUMENT |
+| XML\_ERROR\_MISMATCHED\_ELEMENT |
+| XML\_ERROR\_PARSING |
+| XML\_CAN\_NOT\_CONVERT\_TEXT |
+| XML\_NO\_TEXT\_NODE |
+
+#end
 enum XMLError="tinyxml2::"
 
-    XML_SUCCESS
-    XML_NO_ATTRIBUTE
-    XML_WRONG_ATTRIBUTE_TYPE
-    XML_ERROR_FILE_NOT_FOUND
-    XML_ERROR_FILE_COULD_NOT_BE_OPENED
-    XML_ERROR_FILE_READ_ERROR
-    XML_ERROR_ELEMENT_MISMATCH
-    XML_ERROR_PARSING_ELEMENT
-    XML_ERROR_PARSING_ATTRIBUTE
-    XML_ERROR_IDENTIFYING_TAG
-    XML_ERROR_PARSING_TEXT
-    XML_ERROR_PARSING_CDATA
-    XML_ERROR_PARSING_COMMENT
-    XML_ERROR_PARSING_DECLARATION
-    XML_ERROR_PARSING_UNKNOWN
-    XML_ERROR_EMPTY_DOCUMENT
-    XML_ERROR_MISMATCHED_ELEMENT
-    XML_ERROR_PARSING
-    XML_CAN_NOT_CONVERT_TEXT
-    XML_NO_TEXT_NODE
+	XML_SUCCESS
+	XML_NO_ATTRIBUTE
+	XML_WRONG_ATTRIBUTE_TYPE
+	XML_ERROR_FILE_NOT_FOUND
+	XML_ERROR_FILE_COULD_NOT_BE_OPENED
+	XML_ERROR_FILE_READ_ERROR
+	XML_ERROR_ELEMENT_MISMATCH
+	XML_ERROR_PARSING_ELEMENT
+	XML_ERROR_PARSING_ATTRIBUTE
+	XML_ERROR_IDENTIFYING_TAG
+	XML_ERROR_PARSING_TEXT
+	XML_ERROR_PARSING_CDATA
+	XML_ERROR_PARSING_COMMENT
+	XML_ERROR_PARSING_DECLARATION
+	XML_ERROR_PARSING_UNKNOWN
+	XML_ERROR_EMPTY_DOCUMENT
+	XML_ERROR_MISMATCHED_ELEMENT
+	XML_ERROR_PARSING
+	XML_CAN_NOT_CONVERT_TEXT
+	XML_NO_TEXT_NODE
 
 End
 
+#rem wonkeydoc XML attribute
+
+An attribute is a name-value pair. Elements have an arbitrary
+number of attributes, each with a unique name.
+
+Note: The attributes are not XMLNodes. You may only query the
+[[NextAttribute]]() attribute in a list.
+
+#end
 Class XMLAttribute Extends Void="tinyxml2::XMLAttribute"
 
+	#rem wonkeydoc The name of the attribute.
+	#end
 	Method Name:String() Extension="tinyxml2::wxAttributeName"
 
+	#rem wonkeydoc The value of the attribute.
+	#end
 	Method Value:String() Extension="tinyxml2::wxAttributeValue"
 	
+	#rem wonkeydoc The next attribute in the list.
+	#end
 	Method NextAttribute:XMLAttribute() Extension="tinyxml2::wxAttributeNext"
 
 End
 
+#rem wonkeydoc TinyXML-2 base class
+
+XMLNode is a base class for every object that is in the
+XML Document Object Model (DOM), except XMLAttributes.
+
+Nodes have siblings, a parent, and children which can
+be navigated. A node is always in a XMLDocument.
+
+The type of a XMLNode can be queried, and it can
+be cast to its more defined type.
+
+A XMLDocument allocates memory for all its Nodes.
+
+When the XMLDocument gets deleted, all its Nodes
+will also be deleted.
+
+| A Document can contain:
+|:---
+|	- Element (container or leaf)
+|	- Comment (leaf)
+|	- Unknown (leaf)
+|	- Declaration (leaf)
+
+| An Element can contain:
+|:---
+|	- Element (container or leaf)
+|	- Text (leaf)
+|	- Attributes (not on tree)
+|	- Comment (leaf)
+|	- Unknown (leaf)
+
+#end
 Class XMLNode Extends Void Abstract="tinyxml2::XMLNode"
 
+	#rem wonkeydoc Get the XMLDocument that owns this XMLNode.
+	#end
 	Method GetDocument:XMLDocument()
 	
+	#rem wonkeydoc Safely cast to an Element, or Null.
+	#end
 	Method ToElement:XMLElement()
 	
+	#rem wonkeydoc Safely cast to Text, or Null.
+	#end
 	Method ToText:XMLText()
 	
+	#rem wonkeydoc Safely cast to a Comment, or Null.
+	#end
 	Method ToComment:XMLComment()
 	
+	#rem wonkeydoc Safely cast to a Document, or Null.
+	#end
 	Method ToDocument:XMLDocument()
 	
+	#rem wonkeydoc Safely cast to a Declaration, or Null.
+	#end
 	Method ToDeclaration:XMLDeclaration()
 	
+	#rem wonkeydoc Safely cast to an Unknown, or Null.
+	#end
 	Method ToUnknown:XMLUnknown()
 	
+	#rem wonkeydoc Returns True if this node has no children.
+	#end
 	Method NoChildren:Bool()
 
+	#rem wonkeydoc Get the parent of this node on the DOM.
+	#end
 	Method Parent:XMLNode()
 	
+	#rem wonkeydoc Get the first child node, or Null if none exists.
+	#end
 	Method FirstChild:XMLNode()
 	
+	#rem wonkeydoc Get the first child element, or Null.
+	#end
 	Method FirstChildElement:XMLElement()
 	
+	#rem wonkeydoc Get the last child node, or Null if none exists.
+	#end
 	Method LastChild:XMLNode()
 	
+	#rem wonkeydoc Get the last child element, or Null.
+	#end
 	Method LastChildElement:XMLElement()
 	
+	#rem wonkeydoc Get the previous (left) sibling node of this node.
+	#end
 	Method PreviousSibling:XMLNode()
 	
+	#rem wonkeydoc Get the previous (left) sibling element of this node.
+	#end
 	Method PreviousSiblingElement:XMLElement()
 	
+	#rem wonkeydoc Get the next (right) sibling node of this node.
+	#end
 	Method NextSibling:XMLNode()
 	
+	#rem wonkeydoc Get the next (right) sibling element of this node.
+	#end
 	Method NextSiblingElement:XMLElement()
 	
+	#rem wonkeydoc Get the value
+
+	@return The value
+
+	The meaning of `value` changes for the specific type.
+
+   	- Document:	empty
+   	- Element:	name of the element
+   	- Comment:	the comment text
+   	- Unknown:	the tag contents
+   	- Text:		the text string
+
+	#end
 	Method Value:String() Extension="tinyxml2::wxNodeValue"
 End
 
+#rem wonkeydoc XML document
+
+A Document binds together all the functionality.
+
+It can be saved, loaded, and printed to the screen.
+
+All Nodes are connected and allocated to a Document.
+
+If the Document is deleted, all its Nodes are also deleted.
+
+#end
 Class XMLDocument Extends XMLNode="tinyxml2::XMLDocument"
 
+	#rem wonkeydoc Parse XML from a character String.
+
+	Returns `XML_NO_ERROR` (0) on success, or an errorID.
+
+	#end
 	Method Parse:XMLError( xml:CString )
 	
+	#rem wonkeydoc Print the Document to stdout.
+	#end
 	Method PrintDocument()="Print"
 	
+	#rem wonkeydoc Return True if there was an error parsing the document.
+	#end
 	Method Error:Bool()
 	
+	#rem wonkeydoc Return the errorID.
+	#end
 	Method ErrorID:XMLError()
 	
+	#rem wonkeydoc Deconstructor, deletes the Object from memory
+	#end
 	Method Destroy() Extension="tinyxml2::wxDocumentDestroy"
 End
 
+#rem wonkeydoc XML element
+
+The element is a container class.
+
+It has a value, the element name, and can contain other elements, text, comments, and unknowns.
+
+Elements also contain an arbitrary number of attributes.
+
+#end
 Class XMLElement Extends XMLNode="tinyxml2::XMLElement"
 
+	#rem wonkeydoc Get the name of an element. (Value() of the node.)
+	#end
 	Method Name:String() Extension="tinyxml2::wxElementName"
 	
+	#rem wonkeydoc Get the attribute of an element.
+
+	Given an attribute name, Attribute() returns the value
+	for the attribute of that name, or Null if none
+	exists.
+	
+	For example:
+
+	```
+	Local value := elem.Attribute( "foo" )
+	```
+
+	The `value` parameter is normally empty. However, if specified,
+
+	the attribute will only be returned if the `name` and `value`
+
+	match. This allow you to write code:
+
+	```
+   	If elem.Attribute( "foo", "bar" ) Then callFooIsBar()
+   	```
+
+	rather than:
+
+	```
+	If elem.Attribute( "foo" )
+		If elem.Attribute( "foo" ) = "bar" then callFooIsBar()
+	EndIf
+    ```
+	#end
 	Method Attribute:String( name:String,value:String="" ) Extension="tinyxml2::wxElementAttribute"
 	
+	#rem wonkeydoc Get Attribute of an element as Int
+
+	Given an attribute name, IntAttribute() returns the value
+   	of the attribute interpreted as an integer.
+
+   	0 will be returned if there is an error.
+   	
+   	For a method with error	checking, see [[QueryIntAttribute]]()
+
+	#end
 	Method IntAttribute:Int( name:CString )
 	
+	#rem wonkeydoc Get Attribute of an element as UInt
+
+	Given an attribute name, UnsignedAttribute() returns the value
+   	of the attribute interpreted as an unsigned integer.
+
+   	0 will be returned if there is an error.
+   	
+   	For a method with error	checking, see [[QueryUnsignedAttribute]]()
+
+	#end
 	Method UnsignedAttribute:UInt( name:CString )
 	
+	#rem wonkeydoc Get Attribute of an element as Bool
+
+	Given an attribute name, BoolAttribute() returns the value
+   	of the attribute interpreted as a boolean value.
+
+   	False will be returned if there is an error.
+   	
+   	For a method with error	checking, see [[QueryBoolAttribute]]()
+
+	#end
 	Method BoolAttribute:Bool( name:CString )
 	
+	#rem wonkeydoc Get Attribute of an element as Double
+
+	Given an attribute name, DoubleAttribute() returns the value
+   	of the attribute interpreted as a Double value.
+
+   	0 will be returned if there is an error.
+   	
+   	For a method with error	checking, see [[QueryDoubleAttribute]]()
+
+	#end
 	Method DoubleAttribute:Double( name:CString )
 	
+	#rem wonkeydoc Get Attribute of an element as Float
+
+	Given an attribute name, FloatAttribute() returns the value
+   	of the attribute interpreted as a Float value.
+
+   	0 will be returned if there is an error.
+   	
+   	For a method with error	checking, see [[QueryFloatAttribute]]()
+
+	#end
 	Method FloatAttribute:Float( name:CString )
 	
+	#rem wonkeydoc Get Attribute of an element as Int, with error checking
+
+	Given an attribute name, QueryIntAttribute() returns `XML_NO_ERROR` on success,
+   	
+   	`XML_WRONG_ATTRIBUTE_TYPE` if the conversion can't be performed, or
+   	
+   	`XML_NO_ATTRIBUTE` if the attribute doesn't exist.
+   	
+   	If successful, the result of the conversion
+    will be written to `value`.
+    
+    If not successful, nothing will	be written to `value`.
+	This allows you to provide default value:
+
+	```
+	Local value:Int = 10
+	elem.QueryIntAttribute( "foo", VarPtr value ) ' if "foo" isn't found, value will still be 10
+   	```
+	#end
 	Method QueryIntAttribute:XMLError( name:CString,value:Int Ptr )
 	
+	#rem wonkeydoc Get Attribute of an element as UInt, with error checking
+
+	Given an attribute name, QueryUnsignedAttribute() returns `XML_NO_ERROR` on success,
+   	
+   	`XML_WRONG_ATTRIBUTE_TYPE` if the conversion can't be performed, or
+   	
+   	`XML_NO_ATTRIBUTE` if the attribute doesn't exist.
+   	
+   	If successful, the result of the conversion
+    will be written to `value`.
+    
+    If not successful, nothing will	be written to `value`.
+	This allows you to provide default value:
+
+	```
+	Local value:UInt = 10
+	elem.QueryUnsignedAttribute( "foo", VarPtr value ) ' if "foo" isn't found, value will still be 10
+   	```
+	#end
 	Method QueryUnsignedAttribute:XMLError( name:CString,value:UInt Ptr )
 	
+	#rem wonkeydoc Get Attribute of an element as Bool, with error checking
+
+	Given an attribute name, QueryBoolAttribute() returns `XML_NO_ERROR` on success,
+   	
+   	`XML_WRONG_ATTRIBUTE_TYPE` if the conversion can't be performed, or
+   	
+   	`XML_NO_ATTRIBUTE` if the attribute doesn't exist.
+   	
+   	If successful, the result of the conversion
+    will be written to `value`.
+    
+    If not successful, nothing will	be written to `value`.
+	This allows you to provide default value:
+
+	```
+	Local value:Bool = True
+	elem.QueryBoolAttribute( "foo", VarPtr value ) ' if "foo" isn't found, value will still be True
+   	```
+	#end
 	Method QueryBoolAttribute:XMLError( name:CString,value:Bool Ptr )
 	
+	#rem wonkeydoc Get Attribute of an element as Double, with error checking
+
+	Given an attribute name, QueryDoubleAttribute() returns `XML_NO_ERROR` on success,
+   	
+   	`XML_WRONG_ATTRIBUTE_TYPE` if the conversion can't be performed, or
+   	
+   	`XML_NO_ATTRIBUTE` if the attribute doesn't exist.
+   	
+   	If successful, the result of the conversion
+    will be written to `value`.
+    
+    If not successful, nothing will	be written to `value`.
+	This allows you to provide default value:
+
+	```
+	Local value:Double = 44.2
+	elem.QueryDoubleAttribute( "foo", VarPtr value ) ' if "foo" isn't found, value will still be 44.2
+   	```
+	#end
 	Method QueryDoubleAttribute:XMLError( name:CString,value:Double Ptr )
 	
+	#rem wonkeydoc Get Attribute of an element as Float, with error checking
+
+	Given an attribute name, QueryFloatAttribute() returns `XML_NO_ERROR` on success,
+   	
+   	`XML_WRONG_ATTRIBUTE_TYPE` if the conversion can't be performed, or
+   	
+   	`XML_NO_ATTRIBUTE` if the attribute doesn't exist.
+   	
+   	If successful, the result of the conversion
+    will be written to `value`.
+    
+    If not successful, nothing will	be written to `value`.
+	This allows you to provide default value:
+
+	```
+	Local value:Float = 123.456
+	elem.QueryFloatAttribute( "foo", VarPtr value ) ' if "foo" isn't found, value will still be 123.456
+   	```
+	#end
 	Method QueryFloatAttribute:XMLError( name:CString,value:Float Ptr )
 	
+	#rem wonkeydoc Get Attribute of an element as Int, with error checking
+	
+	See [[QueryIntAttribute]]
+
+	#end
 	Method QueryAttribute:Int( name:CString,value:Int Ptr )
 	
+	#rem wonkeydoc Return the first attribute in the list.
+	#end
 	Method FirstAttribute:XMLAttribute() Extension="tinyxml2::wxElementFirstAttribute"
 
+	#rem wonkeydoc Get attribute text
+
+	Convenience function for easy access to the text inside an element. Although easy
+	and concise, GetText() is limited compared to getting the XMLText child
+	and accessing it directly.
+
+	If the first child of `Self` is a XMLText, the GetText()
+	returns the character string of the Text node, else an empty String is returned.
+
+	This is a convenient method for getting the text of simple contained text:
+	
+	`<foo>This is text</foo>`
+
+	```
+	Local str := fooElement.GetText()
+	```
+
+   	`str` will be "This is text".
+
+	Note that this function can be misleading. If the element foo was created from
+	this XML:
+
+	`<foo><b>This is text</b></foo>`
+
+	then the value of str would be empty. The first child node isn't a text node, it is
+	another element.
+
+	From this XML:
+
+	`<foo>This is <b>text</b></foo>`
+
+	GetText() will return "This is ".
+
+	#end
 	Method GetText:String() Extension="tinyxml2::wxElementGetText"
 	
 End
 
+#rem wonkeydoc XML comment
+#end
 Class XMLComment Extends XMLNode="tinyxml2::XMLComment"
 End
 
+#rem wonkeydoc XML declaration
+
+In correct XML the declaration is the first entry in the file.
+
+	* `<?xml version="1.0" standalone="yes"?>`
+
+TinyXML-2 will happily read or write files without a declaration,
+however.
+
+The text of the declaration isn't interpreted. It is parsed
+and written as a string.
+
+#end
 Class XMLDeclaration Extends XMLNode="tinyxml2::XMLDeclaration"
 End
 
+#rem wonkeydoc XML text
+
+Note that a text node can have child element nodes, for example:
+
+* `<root>This is <b>bold</b></root>`
+
+A text node can have 2 ways to output the next.
+
+"normal" output and CDATA.
+
+It will default to the mode it was parsed from the XML file.
+
+#end
 Class XMLText Extends XMLNode="tinyxml2::XMLText"
 
+	#rem wonkeydoc Returns true if this is a CDATA text element.
+	#end
 	Method CData:Bool()
 	
 End
 
+#rem wonkeydoc Unknown XML tag
+
+Any tag that TinyXML-2 doesn't recognize is saved as an
+unknown. It is a tag of text, but should not be modified.
+It will be written back to the XML, unchanged, when the file
+is saved.
+
+DTD tags get thrown into XMLUnknowns.
+
+#end
 Class XMLUnknown Extends XMLNode="tinyxml2::XMLUnknown"
 End
