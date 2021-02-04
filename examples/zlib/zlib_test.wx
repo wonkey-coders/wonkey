@@ -1,0 +1,82 @@
+#Import "<std>"
+#Import "<zlib>"
+
+Using std.memory
+Using zlib
+
+Function Main()
+	Local bytes := New DataBuffer(30000)
+	bytes.PokeString(0,"Hello zlib - Let's compress something!")
+	
+	Local requiredLength := compressBound( bytes.Length )
+	
+	Local destBuffer := New DataBuffer(requiredLength)
+
+	Local destBufferLength:z_uLong = destBuffer.Length
+	
+	Print "Source buffer length:      "+bytes.Length+" bytes"
+	Print "Destination buffer length: "+destBuffer.Length+" bytes"
+	Print "requiredLength:            "+requiredLength+" bytes"
+	Print ""
+		
+	Local result := compress2(  Cast<UByte Ptr>(destBuffer.Data),
+                            	Varptr destBufferLength,
+	                            Cast<UByte Ptr>(bytes.Data),
+	                            bytes.Length,
+	                            Z_BEST_COMPRESSION )
+
+	If result <> Z_OK
+		Local msg := ""
+		Select result
+			Case Z_MEM_ERROR
+				msg = "Z_MEM_ERROR (not enough memory)"
+			Case Z_BUF_ERROR
+				msg = "Z_BUF_ERROR (not enough room in the output buffer)"
+			Case Z_STREAM_ERROR
+				msg = "Z_STREAM_ERROR (level parameter is invalid)"
+			Default
+				msg = "Unknown error"
+		End Select
+		Print "Compression failed: "+msg
+		Return
+	Endif
+
+	Print "Success! Compressed buffer size: "+destBufferLength+" bytes"
+
+	Local outString := ""
+	For Local i := 1 To destBufferLength
+		outString += Hex(destBuffer.PeekUByte(i-1)).PadRight(2,"0") + " "
+		If Not (i Mod 15) Then outString += "~n"
+	Next
+
+	Print "Buffer:~n" + outString.Trim()
+	Print ""
+	
+	Local decompressBuffer := New DataBuffer(40000)
+	
+	Local decompressBufferLength:z_uLong = decompressBuffer.Length
+	
+	result = uncompress( Cast<UByte Ptr>(decompressBuffer.Data),
+						 Varptr decompressBufferLength,
+						 Cast<UByte Ptr>(destBuffer.Data),
+						 destBufferLength )
+
+	If result = Z_OK
+		Print "Successfully uncompressed the buffer!"
+		Print "Data: " + decompressBuffer.PeekString(0)
+	Else
+		Local msg := ""
+		Select result
+			Case Z_MEM_ERROR
+				msg = "Z_MEM_ERROR (not enough memory)"
+			Case Z_BUF_ERROR
+				msg = "Z_BUF_ERROR (not enough room in the output buffer)"
+			Case Z_DATA_ERROR
+				msg = "Z_DATA_ERROR (input data was corrupted or incomplete)"
+			Default
+				msg = "Unknown error"
+		End Select
+		Print "uncompress() error: "+msg
+	Endif
+
+End

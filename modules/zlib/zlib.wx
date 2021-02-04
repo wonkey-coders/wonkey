@@ -23,8 +23,9 @@ Namespace zlib
 Extern
 
 'PITA zlib ulong define
-Struct z_uLong="uLong"
-End
+'Struct z_uLong="uLong"
+'End
+Alias z_uLong:ULong = "uLong"
 
 Const Z_OK:Int
 Const Z_STREAM_END:Int
@@ -36,9 +37,138 @@ Const Z_MEM_ERROR:Int
 Const Z_BUF_ERROR:Int
 Const Z_VERSION_ERROR:Int
 
+'
+' compression levels
+'
+Const Z_NO_COMPRESSION:Int
+Const Z_BEST_SPEED:Int
+Const Z_BEST_COMPRESSION:Int
+Const Z_DEFAULT_COMPRESSION:Int
+
+'
+' zlib version
+'
+Const ZLIB_VER_MAJOR:Int
+Const ZLIB_VER_MINOR:Int
+Const ZLIB_VER_REVISION:Int
+Const ZLIB_VER_SUBREVISION:Int
+
+
+#rem wonkeydoc Compress a buffer
+
+Compresses the source buffer into the destination buffer.
+
+`sourceLen` is the byte length of the source buffer.
+
+Upon entry, `destLen` is the total size of the destination buffer,
+which must be at least the value returned by [[compressBound]](sourceLen).
+
+Upon exit, `destLen` is the actual size of the compressed data.
+
+compress() is equivalent to [[compress2]]() with a level parameter of `Z_DEFAULT_COMPRESSION`.
+
+compress() returns `Z_OK` if success, `Z_MEM_ERROR` if there was not
+enough memory, `Z_BUF_ERROR` if there was not enough room in the output
+buffer.
+
+@param dest Pointer to the destination buffer
+
+@param destLen Pointer to an z_uLong value that must contain the destination buffer length and retrieves the size of the compressed buffer.
+
+@param source Pointer to the source buffer
+
+@param sourceLen The source buffer length
+
+@return `Z_OK` on success, or error code
+
+#end
 Function compress:Int( dest:UByte Ptr,destLen:z_uLong Ptr,source:UByte Ptr,sourceLen:UInt )
+
+#rem wonkeydoc Compress a buffer using a compression level
+
+Compresses the source buffer into the destination buffer.
+
+The `level` parameter must be `Z_DEFAULT_COMPRESSION`, or between 0 and 9:
+
+| Level | Const Name |Description
+|:---|:---|:---
+| 0  | `Z_NO_COMPRESSION`      | 0 gives no compression at all (the input data is simply copied a block at a time).
+| 1  | `Z_BEST_SPEED`          | 1 gives best speed and less compression
+| :  |                         |
+| 6  | `Z_DEFAULT_COMPRESSION` | `Z_DEFAULT_COMPRESSION` requests a default compromise between speed and compression (currently equivalent to level 6).
+| :  |                         |
+| 9  | `Z_BEST_COMPRESSION`    | 9 gives best compression and less speed
+
+`sourceLen` is the byte length of the source buffer.
+
+Upon entry, `destLen` is the total size of the destination buffer,
+which must be at least the value returned by [[compressBound]](sourceLen).
+
+Upon exit, `destLen` is the actual size of the compressed data.
+
+compress2() returns `Z_OK` if success, `Z_MEM_ERROR` if there was not enough
+memory, `Z_BUF_ERROR` if there was not enough room in the output buffer,
+`Z_STREAM_ERROR` if the level parameter is invalid.
+
+@param dest Pointer to the destination buffer
+
+@param destLen Pointer to an z_uLong value that must contain the destination buffer length and retrieves the size of the compressed buffer.
+
+@param source Pointer to the source buffer
+
+@param sourceLen The source buffer length
+
+@param level The compression level (0-9)
+
+@return `Z_OK` on success, or error code
+
+#end
 Function compress2:Int( dest:UByte Ptr,destLen:z_uLong Ptr,source:UByte Ptr,sourceLen:UInt,level:Int )
+
+#rem wonkeydoc Uncompress a compressed buffer
+
+Decompresses the source buffer into the destination buffer.
+
+`sourceLen` is the byte length of the source buffer.
+
+Upon entry, `destLen` is the total size of the destination buffer,
+which must be large enough to hold the entire uncompressed data.
+(The size of the uncompressed data must have been saved previously
+by the compressor and transmitted to the decompressor by some
+mechanism outside the scope of this compression library.)
+
+Upon exit, `destLen` is the actual size of the uncompressed data.
+
+uncompress() returns `Z_OK` if success, `Z_MEM_ERROR` if there was not
+enough memory, `Z_BUF_ERROR` if there was not enough room in the output
+buffer, or `Z_DATA_ERROR` if the input data was corrupted or incomplete.
+In the case where there is not enough room, uncompress() will fill the output
+buffer with the uncompressed data up to that point.
+
+@param dest Pointer to the destination buffer
+
+@param destLen Pointer to an z_uLong value that must contain the destination buffer length and retrieves the size of the uncompressed data.
+
+@param source Pointer to the (compressed) source buffer
+
+@param sourceLen The source buffer length
+
+@return `Z_OK` on success, or error code
+
+#end
 Function uncompress:Int( dest:UByte Ptr,destLen:z_uLong Ptr,source:UByte Ptr,sourceLen:UInt )
+
+#rem wonkeydoc Get the required destination buffer size
+
+compressBound() returns an upper bound on the compressed size after
+
+compress() or compress2() on sourceLen bytes.  It would be used before a
+
+compress() or compress2() call to allocate the destination buffer.
+
+@param sourceLen The size of the source buffer in bytes.
+
+@return the required destination buffer size.
+
+#end
 Function compressBound:UInt( sourceLen:UInt )
-
-
