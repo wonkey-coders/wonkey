@@ -65,7 +65,7 @@ An attribute is a name-value pair. Elements have an arbitrary
 number of attributes, each with a unique name.
 
 Note: The attributes are not XMLNodes. You may only query the
-[[NextAttribute]]() attribute in a list.
+[[tinyxml2:XMLAttribute.NextAttribute]]() attribute in a list.
 
 #end
 Class XMLAttribute Extends Void="tinyxml2::XMLAttribute"
