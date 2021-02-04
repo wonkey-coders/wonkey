@@ -45,7 +45,7 @@ Function Main()
 
 	Local outString := ""
 	For Local i := 1 To destBufferLength
-		outString += Hex(destBuffer.PeekUByte(i-1)).PadRight(2,"0") + " "
+		outString += Hex(destBuffer.PeekUByte(i-1)).PadLeft(2,"0") + " "
 		If Not (i Mod 15) Then outString += "~n"
 	Next
 
