@@ -6,7 +6,7 @@ Namespace std.digest
 Private
 
 Function Hex:String(val:UInt)
-	Local hex:=("00000000"+stringio.ULongToString(val,16)).Right(8)
+	Local hex:=("00000000"+strings.ULongToString(val,16)).Right(8)
 	Return hex
 End Function
  

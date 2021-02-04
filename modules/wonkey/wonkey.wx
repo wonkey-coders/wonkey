@@ -33,6 +33,9 @@ Namespace wonkey
 #endif
 
 #Import "types"
+#Import "strings_converter"
+#Import "strings_chartype"
+#Import "strings_functions"
 #Import "math"
 #Import "debug"
 #Import "gc"

@@ -1,5 +1,5 @@
 
-Namespace std.stringio
+Namespace wonkey.strings
 
 #rem wonkeydoc Checks if a character is whitespace.
 

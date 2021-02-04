@@ -1,7 +1,7 @@
 
 Namespace std.time
 
-Using std.stringio
+Using wonkey.strings
 
 #rem wonkeydoc The TimeParser class.
 

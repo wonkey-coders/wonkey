@@ -1,0 +1,198 @@
+Namespace wonkey.strings
+
+'jl added
+'------------------------------------------------------------
+#rem wonkeydoc Return a character from a string
+
+Asc() is the same as the String index operator `[]`
+
+@param input The input String
+
+@param index The character index, defaults to 0 (first character)
+
+@example
+Print Asc("Hello")   ' output:  72 (Character 'H')
+Print Asc("World",2) ' output: 114 (Character 'r')
+
+Print "Hello"[0]     ' output:  72 (Character 'H')
+Print "World"[2]     ' output: 114 (Character 'r')
+@end
+
+#end
+Function Asc:Int( input:String, index:UInt = 0 )
+	Return input[index]
+End
+
+#rem wonkeydoc Create a String from a single character
+
+Chr() is the same as the function `String.FromChar(character)`
+
+@param character The character
+
+@example
+Print Chr(49)              ' outputs String "1"
+Print Chr(65)              ' outputs String "A"
+Print Chr(169)             ' outputs String "©"
+Print Chr(198)             ' outputs String "Æ"
+Print Asc(Chr($05D0))      ' output: 1488 
+Print Hex(Asc(Chr($05D0))) ' output: 5D0
+@end
+
+#end
+Function Chr:String( character:Int )
+    Return String.FromChar(character)
+End
+'------------------------------------------------------------
+
+#rem wonkeydoc Returns a String containing 'count' space characters (Ascii char 32)
+
+Space() is the same as `" ".Dup(count)`
+
+@param count Space character count
+
+@example
+Print "A" + Space(5) + "Z" ' output: "A     Z"
+@end
+
+#end
+Function Space:String(count:Int)
+    Return " ".Dup(count)
+End
+
+#rem wonkeydoc Left Trim: Returns a String with any leading whitespace removed.
+
+LTrim() is the same as `theString.TrimStart()`
+
+@param input the input string
+
+@example
+Print LTrim("  abc") ' output: "abc"
+@end
+
+#end
+Function LTrim:String(input:String)
+    Return input.TrimStart()
+End
+
+#rem wonkeydoc Right Trim: Returns a String with any trailing whitespace removed.
+
+RTrim() is the same as `theString.TrimEnd()`
+
+@param input the input string
+
+@example
+Print RTrim("abc  ") ' output: "abc"
+@end
+
+#end
+Function RTrim:String(input:String)
+    Return input.TrimEnd()
+End
+
+#rem wonkeydoc Returns a String with leading and trailing whitespace removed.
+
+Trim() is the same as `theString.Trim()`
+
+@param input the input string
+
+@example
+Print Trim("  abc  ") ' output: "abc"
+@end
+
+#end
+Function Trim:String(input:String)
+    Return input.Trim()
+End
+
+#rem wonkeydoc Returns the string converted to lowercase
+
+LCase() is the same as `theString.ToLower()`
+
+@param input the input string
+
+@example
+Print LCase("HeLLo WoRlD") ' output: "hello world"
+@end
+
+#end
+Function LCase:String(input:String)
+    Return input.ToLower()
+End
+
+#rem wonkeydoc Returns the string converted to uppercase
+
+UCase() is the same as `theString.ToUpper()`
+
+@param input the input string
+
+@example
+Print UCase("HeLLo WoRlD") ' output: "HELLO WORLD"
+@end
+
+#end
+Function UCase:String(input:String)
+    Return input.ToUpper()
+End
+
+#rem wonkeydoc Get the first 'count' characters from a string.
+
+Left() is the same as `theString.Left(count)`
+
+@param input The input string
+
+@param count The number of characters to return, defaults to 1
+
+@example
+Print Left("Hello")    ' output: H
+Print Left("Hello",3)  ' output: Hel
+@end
+
+#end
+Function Left:String(input:String, count:Int = 1)
+    Return input.Left(count)
+End
+
+#rem wonkeydoc Get the last 'count' characters from a string.
+
+Right() is the same as `theString.Right(count)`
+
+@param input The input string
+
+@param count The number of characters to return, defaults to 1
+
+@example
+Print Right("Hello")    ' output: o
+Print Right("Hello",3)  ' output: llo
+@end
+
+#end
+Function Right:String(input:String, count:Int = 1)
+    Return input.Right(count)
+End
+
+#rem wonkeydoc Get a substring from the middle of a string
+
+Returns a string consisting of `count` characters starting from index `from`.
+
+If `count` is less than or equal to 0, an empty string is returned.
+
+If `from`+`count` is greater than the length of the string, the returned string is truncated.
+
+Mid() is the same as `theString.Mid(from, count)`
+
+@param fromChar The index of the first character to return.
+
+@param count The number of characters to return.
+
+@return A string consisting of `count` characters starting from index `from`.
+
+@example
+Print Mid("Hello",0,2)   ' output: He
+Print Mid("Hello",1,3)   ' output: ell
+Print Mid("Hello",3,100) ' output: lo
+@end
+
+#end
+Function Mid:String(input:String, from:Int, count:Int)
+    Return input.Mid(from, count)
+End

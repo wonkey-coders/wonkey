@@ -1,0 +1,60 @@
+
+Namespace std.stringio
+
+Using libc
+
+#rem wonkeydoc Loads a string from a file.
+
+An empty string will be returned if the file could not be opened.
+
+@param path The path of the file.
+
+@param fixeols If true, converts eols to UNIX "~n" eols after loading.
+
+@return A String containing the contents of the file. 
+
+#end
+Function LoadString:String( path:String,fixeols:Bool=False )
+
+	Local data:=DataBuffer.Load( path )
+	If Not data Return ""
+	
+	Local str:=String.FromCString( data.Data,data.Length )
+	
+	data.Discard()
+	
+	If fixeols
+		str=str.Replace( "~r~n","~n" )
+		str=str.Replace( "~r","~n" )
+	Endif
+	
+	Return str
+End
+
+#rem wonkeydoc Saves a string to a file.
+
+@param str The string to save.
+
+@param path The path of the file.
+
+@param fixeols If true, converts eols to UNIX "~n" eols before saving.
+
+@return False if the file could not be opened.
+
+#end
+Function SaveString:Bool( str:String,path:String,fixeols:Bool=False )
+
+	If fixeols
+		str=str.Replace( "~r~n","~n" )
+		str=str.Replace( "~r","~n" )
+	Endif
+	
+	Local data:=New DataBuffer( str.CStringLength )
+	str.ToCString( data.Data,data.Length )
+	
+	Local ok:=data.Save( path )
+	
+	data.Discard()
+	
+	Return ok
+End

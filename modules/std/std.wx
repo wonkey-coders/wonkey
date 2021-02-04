@@ -75,8 +75,7 @@ Namespace std
 #Import "filesystem/filesystem"
 
 #Import "misc/random"
-#Import "misc/chartype"
-#Import "misc/stringio"
+#Import "stringio/stringio"
 #Import "misc/json"
 #Import "misc/jsonify"
 #Import "misc/zipfile"
