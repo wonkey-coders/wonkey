@@ -640,7 +640,7 @@ wxString wxString::padLeft( int w, const wxString ch )const {
 
 wxString wxString::padRight( int w )const {
 	if(length()>w) w=length();
-	int pad=w-length();
+	int pad=length();
 	Rep *rep=Rep::alloc(w);
 	wxChar *p=rep->data;
 	for( int i=0;i<w;++i ){
@@ -655,7 +655,7 @@ wxString wxString::padRight( int w )const {
 
 wxString wxString::padRight( int w, const wxString ch )const {
 	if(length()>w) w=length();
-	int pad=w-length();
+	int pad=length();
 	wxChar c= !ch.length()?' ':ch.data()[0];
 	Rep *rep=Rep::alloc(w);
 	wxChar *p=rep->data;
