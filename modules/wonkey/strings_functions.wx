@@ -196,3 +196,40 @@ Print Mid("Hello",3,100) ' output: lo
 Function Mid:String(input:String, from:Int, count:Int)
     Return input.Mid(from, count)
 End
+
+#rem wonkeydoc Right-align the string and fill the left side with a character
+
+If the length of `input` is greater than `width`, only the leftmost `width` characters are returned.
+
+If the length of `input` is less than `width`, `ch` characters are added to the left of the returned string so that its length becomes `width`.
+
+@param input The string to be right-aligned
+
+@param width The length of the returned string
+
+@param ch The fill-character
+
+#end
+Function RSet:String(input:String, width:Int, ch:String = " ")
+	If input.Length >= width Then Return input.Left(width)
+	Return input.PadLeft(width, ch)
+End
+
+#rem wonkeydoc Left-align the string and fill the right side with a character
+
+If the length of `input` is greater than `width`, only the leftmost `width` characters are returned.
+
+If the length of `input` is less than `width`, `ch` characters are added to the right of the returned string so that its length becomes `width`.
+
+@param input The string to be left-aligned
+
+@param width The length of the returned string
+
+@param ch The fill-character
+
+#end
+Function LSet:String(input:String, width:Int, ch:String = " ")
+	If input.Length >= width Then Return input.Left(width)
+	Return input.PadRight(width, ch)
+End
+
