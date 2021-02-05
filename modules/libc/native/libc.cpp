@@ -78,8 +78,18 @@ int fputs_utf8( const char *str,FILE *stream ){
 }
 
 char *fgets_utf8( const char *str,int size, FILE *stream ){
+
+	static char *p;
+
+	const WCHAR *wstr=widen( str );
 	
-	return fgetws( widen( str ), size,stream );
+	WCHAR *w=fgetws( wstr, size, stream );
+	if( !w ) return 0;
+	
+	free( p );
+	p=strdup( narrow( w ) );
+	
+	return p;
 }
 
 int remove_utf8( const char *path ){

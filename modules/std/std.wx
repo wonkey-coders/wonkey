@@ -26,6 +26,7 @@ Namespace std
 
 #Import "stream/stream"
 #Import "stream/filestream"
+#Import "stream/processstream"
 
 '#If __MOBILE_TARGET__
 '#Import "stream/sdl_rwstream"
