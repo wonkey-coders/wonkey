@@ -1,0 +1,151 @@
+Namespace std.stream
+
+Using libc
+
+#rem wonkeydoc ProcessStream class.
+#end
+Class ProcessStream Extends Stream
+	
+	#rem wonkeydoc True if no more data can be read from the stream.
+	
+	You can still write to a processstream even if `Eof` is true - memory space permitting!
+	
+	#end
+	Property Eof:Bool() Override
+		Return _pos>=_end
+	End
+
+	#rem wonkeydoc Current processstream position.
+	
+	The current process read/write position.
+	
+	#end
+	Property Position:Int() Override
+		Return _pos
+	End
+
+	#rem wonkeydoc Current processstream length.
+	
+	The length of the processstream. This is the same as the length of the process.
+	
+	The process length can increase if you write past the end of the process.
+	
+	#end	
+	Property Length:Int() Override
+		Return _end
+	End
+
+
+	#rem wonkeydoc Seeks to a position in the processstream.
+	
+	@param offset The position to seek to.
+	
+	#end
+	Method Seek( position:Int ) Override
+		DebugAssert( position>=0 And position<=_end )
+	
+		fseek( _proc,position,SEEK_SET )
+		_pos=position
+		DebugAssert( ftell( _proc )=_pos )	'Sanity check...
+	End
+	
+	#rem wonkeydoc Reads data from the processstream.
+	
+	@param buf A pointer to the memory to read the data into.
+	
+	@param count The number of bytes to read.
+	
+	@return The number of bytes actually read.
+	
+	#end
+	Method Read:Int( buf:Void Ptr,count:Int ) Override
+		count=Clamp( count,0,_end-_pos )
+		count=fread( buf,1,count,_proc )
+		_pos+=count
+		DebugAssert( ftell( _proc )=_pos )	'Sanity check...
+		Return count
+	End
+	
+	#rem wonkeydoc Writes data to the processstream.
+	
+	Writing past the end of the process will increase the length of a processstream.
+	
+	@param buf A pointer to the memory to write the data from.
+	
+	@param count The number of bytes to write.
+	
+	@return The number of bytes actually written.
+	
+	#end
+	Method Write:Int( buf:Void Ptr,count:Int ) Override
+		If count<=0 Return 0
+		count=fwrite( buf,1,count,_proc )
+		_pos+=count
+		_end=Max( _pos,_end )
+		DebugAssert( ftell( _proc )=_pos )	'Sanity check...
+		Return count
+	End
+	
+	#rem wonkeydoc Opens a process and returns a new process stream.
+	
+	The Open function is closely related to the [[libc.system]] function. 
+	
+	It executes the shell command command as a subprocess. However, instead of waiting for the command to complete, it creates a pipe to the subprocess and returns a stream that corresponds to that pipe.
+	
+	If you specify a mode argument of "r", you can read from the stream to retrieve data from the standard output channel of the subprocess. The subprocess inherits its standard input channel from the parent process.
+	
+	Similarly, if you specify a mode argument of "w", you can write to the stream to send data to the standard input channel of the subprocess. The subprocess inherits its standard output channel from the parent process.
+
+	@param path The path of the file to open.
+	
+	@param mode The mode to open the file in: "r", "w" or "rw".
+	
+	@return A new processstream, or null if the process could not be opened.
+	
+	#end
+	Function Open:ProcessStream( command:String, mode:String )
+	
+		Select mode
+		Case "r" mode="r"
+		Case "w" mode="w"
+		Case "rw" mode="r+"
+		Default
+			Return Null
+		End
+		
+		Local proc:=popen( command,mode )
+		If Not proc Return Null
+		
+		Return New ProcessStream( proc )
+	End
+	
+Protected
+	
+	Method OnDiscard() Override
+		
+		pclose( _proc )
+		_proc=Null
+		_pos=0
+		_end=0
+	end
+	
+	Method OnFinalize() Override
+		
+		pclose( _proc )
+	End
+	
+Private
+
+	Field _proc:FILE Ptr
+	Field _pos:Int
+	Field _end:Int
+	
+	Method New( cproc:FILE Ptr )
+		_proc=cproc
+		_pos=ftell( _proc )
+		fseek( _proc,0,SEEK_END )
+		_end=ftell( _proc )
+		fseek( _proc,_pos,SEEK_SET )
+		DebugAssert( ftell( _proc )=_pos )	'Sanity check...
+	End
+End

@@ -37,7 +37,9 @@ const wchar_t *widen_utf8( const char *p );
 const char *narrow_utf8( const wchar_t *w );
 
 FILE *fopen_utf8( const char *path,char const *mode );
+FILE *popen_utf8( const char *path,char const *mode );
 int fputs_utf8( const char *str,FILE *stream );
+char *fgets_utf8( const char *str,int size,FILE *stream );
 int remove_utf8( const char *path );
 int rename_utf8( const char *oldpath,const char *newpath );
 int puts_utf8( const char *str );
@@ -66,7 +68,9 @@ typedef struct tm tm_t;
 typedef struct stat stat_t;
 
 #define fopen_utf8 fopen
+#define popen_utf8 popen
 #define fputs_utf8 fputs
+#define fgets_utf8 fgets
 #define remove_utf8 remove
 #define rename_utf8 rename
 #define puts_utf8 puts

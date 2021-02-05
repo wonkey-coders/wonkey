@@ -67,9 +67,19 @@ FILE *fopen_utf8( const char *filename,const char *mode ){
 	return _wfopen( widen( filename ),widen( mode ) );
 }
 
+FILE *fopen_utf8( const char *command,const char *mode ){
+
+	return _wpopen( widen( command ),widen( mode ) );
+}
+
 int fputs_utf8( const char *str,FILE *stream ){
 	
 	return fputws( widen( str ),stream );
+}
+
+char *fgets_utf8( const char *str,int size, FILE *stream ){
+	
+	return fgetws( widen( str ), size,stream );
 }
 
 int remove_utf8( const char *path ){
