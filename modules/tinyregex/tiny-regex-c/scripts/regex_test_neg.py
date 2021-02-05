@@ -13,11 +13,12 @@
 
 import re
 import sys
-import exrex
+import string
+import random
 from subprocess import call
 
 
-prog = "./tests/test_rand"
+prog = "./tests/test_rand_neg"
 
 if len(sys.argv) < 2:
   print("")
@@ -41,27 +42,32 @@ try:
 except:
   pass
 
-r = 50
-while r < 0:
-  try:
-    g = exrex.generate(pattern)
-    break
-  except:
-    pass
-
-
 sys.stdout.write("%-35s" % ("  pattern '%s': " % pattern))
+
+
+
+
+def gen_no_match(pattern, minlen=1, maxlen=50, maxattempts=500):
+  nattempts = 0
+  while True:
+    nattempts += 1
+    ret = "".join([random.choice(string.printable) for i in range(random.Random().randint(minlen, maxlen))])
+    if re.findall(pattern, ret) == []:
+      return ret
+    if nattempts >= maxattempts:
+      raise Exception("Could not generate string that did not match the regex pattern '%s' after %d attempts" % (pattern, nattempts))
+
 
 
 while repeats >= 0:
   try:
     repeats -= 1
-    example = exrex.getone(pattern)
+    example = gen_no_match(pattern)
     #print("%s %s %s" % (prog, pattern, example))
     ret = call([prog, "\"%s\"" % pattern, "\"%s\"" % example])
     if ret != 0:
       escaped = repr(example) # escapes special chars for better printing
-      print("    FAIL : doesn't match %s as expected [%s]." % (escaped, ", ".join([("0x%02x" % ord(e)) for e in example]) ))
+      print("    FAIL : matches %s unexpectedly [%s]." % (escaped, ", ".join([("0x%02x" % ord(e)) for e in example]) ))
       nfails += 1
 
   except:
@@ -74,4 +80,3 @@ while repeats >= 0:
 
 sys.stdout.write("%4d/%d tests succeeded \n" % (ntests - nfails, ntests))
 #print("")
-
