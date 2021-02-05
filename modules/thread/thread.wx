@@ -39,8 +39,17 @@ End
 
 Public
 
+#rem wonkeydoc Thread - asynchronously running threads
+#end
 Class Thread
 	
+	#rem wonkeydoc Create a new thread
+	
+	Creates a new thread and start the asynchronously execution of the provided entry() function
+	
+	@param entry The thread function/lambda
+	
+	#end
 	Method New( entry:Void() )
 		FlushZombies()
 		_entry=entry
@@ -52,14 +61,31 @@ Class Thread
 		End )
 	End
 	
+	#rem wonkeydoc Get the thread id
+	#end
 	Property Id:Int()
 		Return _id
 	End
 	
+	#rem wonkeydoc Thread running state
+	
+	Returns `True` if the thread is still running, and `False` when
+	the thread execution has finished.
+	
+	#end
 	Property Running:Bool()
 		Return _thread.running
 	End
 	
+	#rem wonkeydoc Detach the thread
+	
+	Detach the thread from the thread object (Self) and
+	let it continue to run independly.
+	
+	After detaching the thread, it runs independly and
+	can not be controlled anymore.
+	
+	#end
 	Method Detach()
 		If Not _id Return
 		_mutex.lock()
@@ -70,6 +96,8 @@ Class Thread
 		_id=0
 	End
 	
+	#rem wonkeydoc Wait for the thread to finish its execution
+	#end
 	Method Join()
 		If Not _id Return
 		_thread.join()
@@ -79,6 +107,12 @@ Class Thread
 		_id=0
 	End
 	
+	#rem wonkeydoc Get the currently running thread
+
+	Running code calls Thread.Current() to get the thread
+	where the code is running in.
+
+	#end
 	Function Current:Thread()
 		_mutex.lock()
 		Local thread:=_threads[wxThread.current_id]
@@ -86,10 +120,14 @@ Class Thread
 		Return thread
 	End
 
+	#rem wonkeydoc Get the currently running thread id
+	#end
 	Function CurrentId:Int()
 		Return wxThread.current_id
 	End
 	
+	#rem wonkeydoc Get the programs Main thread
+	#end
 	Function Main:Thread()
 		_mutex.lock()
 		If Not _threads.Contains( 1 ) _threads[1]=New Thread( 1 )
@@ -127,16 +165,51 @@ Class Thread
 	
 End
 
+#rem wonkeydoc Mutex - single access to a resource
+
+A Mutex is a lockable type to protect access to a critical secion of code.
+
+A Mutex can only be locked one time, preventing other threads to access
+the same object at the same time.
+
+If a thread calls Lock() on an already locked Mutex, thread execution is
+paused until the Mutex is unlocked.
+
+See also: [[https://en.wikipedia.org/wiki/Mutual_exclusion|Wikipedia: Mutual exclusion]]
+
+#end
 Class Mutex
+
+	#rem wonkeydoc Try to lock the Mutex
 	
+	Returns `True` if the Mutex was successfully locked, `False` otherwise.
+	
+	#end
 	Method TryLock:Bool()
 		Return _mutex.try_lock()
 	End
 	
+	#rem wonkeydoc Lock the Mutex
+
+	Locks the Mutex and gets exclusive access to it.
+	
+	If the Mutex is already locked, thread execution is paused
+	until exclusive access to the Mutex is given.
+
+	#end
 	Method Lock()
 		_mutex.lock()
 	End
 	
+	#rem wonkeydoc Unlock the Mutex
+
+	Release exclusive access to the Mutex, allowing other
+	threads to access it.
+	
+	Attention: Forgetting to unlock the Mutex will prevent any
+	further access to the Mutex!
+
+	#end
 	Method Unlock()
 		_mutex.unlock()
 	End
@@ -146,16 +219,45 @@ Class Mutex
 	Field _mutex:wxMutex
 End
 
+#rem wonkeydoc Condition variable, wait until notified
+
+A condition variable is used to block the execution of the current thread
+until notified to resume.
+
+#end
 Class Condvar
 	
+	#rem wonkeydoc Wait until getting notified
+	
+	Wait() is blocking the current thread execution until notified.
+	
+	You need to provide a Mutex for this wait method.
+	
+	@params mutex The Mutex object
+
+	#end
 	Method Wait( mutex:Mutex )
 		_condvar.wait( mutex._mutex )
 	End
 	
+	#rem wonkeydoc Notify one waiting thread
+	
+	Notify one of the threads currently waiting for this condition.
+	
+	The notified thread continues execution, other waiting threads will continue waiting.
+	
+	#end
 	Method Notify()
 		_condvar.notify_one()
 	End
 	
+	#rem wonkeydoc Notify all waiting threads
+	
+	Notify all of the threads currently waiting for this condition.
+	
+	All waiting threads continue execution.
+	
+	#end
 	Method NotifyAll()
 		_condvar.notify_all()
 	End
@@ -165,12 +267,45 @@ Class Condvar
 	Field _condvar:wxCondvar
 End
 
+#rem wonkeydoc Counting semaphore, multiple access to a resource
+
+A counting semaphore allows to give access to a resource multiple times,
+by specifying a resource counter.
+
+A Mutex allows One, and only One, access at the same time.
+If you want to allow access to a resource multiple times, you use a semaphore and specify
+an access count.
+
+Access to a resource is requested by calling semaphore.Wait() and
+after the work is done, semaphore.Signal() releases access to the resource
+and makes it available for further access.
+
+See also: [[https://en.wikipedia.org/wiki/Semaphore_(programming)|Wikipedia: Semaphore (programming)]]
+
+#end
 Class Semaphore
 	
+	#rem wonkeydoc Create a new semaphore and specify the resources counter
+	
+	`count` is the number of resources available at the same time.
+	
+	If you specify a `count` of 3, it means the semaphore will allow
+	access 3 times simultaneously. Any further access is blocked until a resource
+	becomes available again.
+	
+	#end
 	Method New( count:Int=0 )
 		_count=count
 	End
 	
+	#rem wonkeydoc Request access to a resource
+	
+	Wait() decreases the internal semaphore count by One.
+	
+	If the semaphore counter is less than 1, execution is
+	paused until a resource is available.
+	
+	#end
 	Method Wait()
 		_mutex.lock()
 		While( _count<=0 )
@@ -180,6 +315,11 @@ Class Semaphore
 		_mutex.unlock()
 	End
 	
+	#rem wonkeydoc Release access to a resource.
+	
+	Release access to a resource, incrementing the internal semaphore counter of available resources.
+	
+	#end
 	Method Signal()
 		_mutex.lock()
 		_count+=1
