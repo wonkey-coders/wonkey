@@ -1,0 +1,19 @@
+#Import "<tinyregex>"
+
+Using tinyregex
+
+Function Main()
+	Local string_to_search := "ahem.. 'hello world !' .."
+
+	Local pattern := re_compile("[Hh]ello [Ww]orld\s*[!]?")
+
+	Local match_length:Int
+	Local match_idx := re_matchp(pattern, string_to_search, Varptr match_length)
+
+	If match_idx <> -1
+  		Print "match at idx "+match_idx+", "+match_length+" chars long."
+  	Else
+	  	Print "Nothing found."
+	Endif
+
+End
