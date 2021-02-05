@@ -96,9 +96,9 @@ Class ProcessStream Extends Stream
 	
 	Similarly, if you specify a mode argument of "w", you can write to the stream to send data to the standard input channel of the subprocess. The subprocess inherits its standard output channel from the parent process.
 
-	@param path The path of the file to open.
+	@param command The command to execute into subprocess.
 	
-	@param mode The mode to open the file in: "r", "w" or "rw".
+	@param mode The mode to open the process stream in: "r", "w" or "rw".
 	
 	@return A new processstream, or null if the process could not be opened.
 	
