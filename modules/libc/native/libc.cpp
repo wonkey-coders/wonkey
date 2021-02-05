@@ -67,7 +67,7 @@ FILE *fopen_utf8( const char *filename,const char *mode ){
 	return _wfopen( widen( filename ),widen( mode ) );
 }
 
-FILE *fopen_utf8( const char *command,const char *mode ){
+FILE *popen_utf8( const char *command,const char *mode ){
 
 	return _wpopen( widen( command ),widen( mode ) );
 }
@@ -81,13 +81,13 @@ char *fgets_utf8( const char *str,int size, FILE *stream ){
 
 	static char *p;
 
-	const WCHAR *wstr=widen( str );
+	const wchar_t *wstr=widen_utf8( str );
 	
-	WCHAR *w=fgetws( wstr, size, stream );
+	wchar_t *w=fgetws( (wchar_t*)wstr, size, stream );
 	if( !w ) return 0;
 	
 	free( p );
-	p=strdup( narrow( w ) );
+	p=strdup( narrow_utf8( w ) );
 	
 	return p;
 }

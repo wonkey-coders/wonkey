@@ -118,7 +118,11 @@ Function fgets:char_t ptr(str:CString, size:int, stream:FILE ptr)="fgets_utf8"
 Function fgetc:int(FILE ptr)
 
 Function popen:FILE Ptr( command:CString, mode:CString)="popen_utf8"
+#If __COMPILER__="msvc"
+Function pclose:Int(FILE Ptr)="_pclose"
+#Else
 Function pclose:Int(FILE Ptr)
+#End
 
 Function remove:Int( path:CString )="remove_utf8"
 Function rename:Int( oldPath:CString,newPath:CString )="rename_utf8"
