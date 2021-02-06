@@ -42,7 +42,7 @@ Namespace sdl2
 #Import "SDL/src/core/linux/SDL_evdev.c"
 #Import "SDL/src/core/linux/SDL_evdev_capabilities.c" 'v2.0.14
 #Import "SDL/src/core/linux/SDL_evdev_kbd.c" 'v2.0.9
-#Import "SDL/src/core/linux/SDL_fcitx.c" 'v2.0.9
+'#Import "SDL/src/core/linux/SDL_fcitx.c" 'v2.0.14 -- need libdbus
 #Import "SDL/src/core/linux/SDL_ibus.c"
 #Import "SDL/src/core/linux/SDL_ime.c" 'v2.0.9
 #Import "SDL/src/core/linux/SDL_threadprio.c" 'v2.0.14

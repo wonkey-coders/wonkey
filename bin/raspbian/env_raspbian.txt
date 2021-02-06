@@ -1,17 +1,31 @@
+'--------------------------------------------------------------------------------------
+'----- RASPBIAN DESKTOP TARGET
+'--------------------------------------------------------------------------------------
 
-'***** RASPBIAN TARGET *****
+WX_THREADS=1
 
-'LD options
-WX_LD_OPTS_RASPBIAN=-s -L/opt/vc/lib -lbcm_host -lvcos -lvchiq_arm
+'
+' LD linker options
+'
+WX_LD_OPTS_RASPBIAN=-s -L/opt/vc/lib -lbcm_host -lvcos -lvchiq_arm -lpthread
 WX_LD_OPTS_RASPBIAN_DEBUG=
-WX_LD_OPTS_RASPBIAN_RELEASE=
+WX_LD_OPTS_RASPBIAN_RELEASE=-s -O3 -Wl,-s -Wl,-S -Wl,-x -Wl,--gc-sections
 
-'C compiler options
+'
+' AS assembler options
+'
+WX_AS_OPTS_RASPBIAN=-mcpu=cortex-a72 -mfloat-abi=softfp -mfpu=neon
+
+'
+' C compiler options
+'
 WX_CC_OPTS_RASPBIAN=-std=gnu99 -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads
 WX_CC_OPTS_RASPBIAN_DEBUG=-Os
-WX_CC_OPTS_RASPBIAN_RELEASE=-O3 -DNDEBUG
+WX_CC_OPTS_RASPBIAN_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 
-'C++ compiler options
+'
+' C++ compiler options
+'
 WX_CPP_OPTS_RASPBIAN=-std=c++11 -I/opt/vc/include  -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads
 WX_CPP_OPTS_RASPBIAN_DEBUG=-Os
-WX_CPP_OPTS_RASPBIAN_RELEASE=-O3 -DNDEBUG
+WX_CPP_OPTS_RASPBIAN_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
