@@ -18,7 +18,7 @@ Namespace std.requesters
 	#Import "native/requesters_macos.mm"
 	#Import "native/requesters.h"
 
-#Elseif __TARGET__="linux"
+#Elseif __TARGET__="linux" or __TARGET__="raspbian"
 
 	'Nice, but no yesnocancel!
 	'
