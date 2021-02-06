@@ -233,7 +233,7 @@ Class Condvar
 	
 	You need to provide a Mutex for this wait method.
 	
-	@params mutex The Mutex object
+	@param mutex The Mutex object
 
 	#end
 	Method Wait( mutex:Mutex )

@@ -88,7 +88,7 @@ Class ProcessStream Extends Stream
 	
 	#rem wonkeydoc Opens a process and returns a new process stream.
 	
-	The Open function is closely related to the [[libc.system]] function. 
+	The Open function is closely related to the [[libc:libc.system]] function. 
 	
 	It executes the shell command command as a subprocess. However, instead of waiting for the command to complete, it creates a pipe to the subprocess and returns a stream that corresponds to that pipe.
 	
