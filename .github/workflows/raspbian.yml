@@ -18,7 +18,7 @@ jobs:
   # This workflow contains a single job called "build"
   build-raspbian-arm64:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: 
       image: navikey/raspbian-buster:latest
       env:
@@ -27,10 +27,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: Get gcc version
+      - name: Print gcc version
         run: gcc --version
 
       # Runs a set of commands using the runners shell
