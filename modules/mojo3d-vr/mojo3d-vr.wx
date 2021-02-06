@@ -1,9 +1,9 @@
 
 namespace mojo3d
 
-'FIXME: Problems with openvr.h on linux...
+'FIXME: Problems with openvr.h on linux... and raspbian
 '
-#If __DESKTOP_TARGET__ And __TARGET__<>"linux"
+#If __DESKTOP_TARGET__ And __TARGET__<>"linux" And __TARGET__<>"raspbian"
 
 #Import "<std>"
 #Import "<mojo>"
