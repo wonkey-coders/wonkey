@@ -1,0 +1,40 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Raspbian
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the develop branch
+  #push:
+  #  branches: [ develop ]
+  #pull_request:
+  #  branches: [ develop ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build-raspbian-arm64:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    container: 
+      image: navikey/raspbian-buster:latest
+      env:
+        TARGETPLATFORM: linux/arm64 
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Get gcc version
+        run: gcc --version
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
