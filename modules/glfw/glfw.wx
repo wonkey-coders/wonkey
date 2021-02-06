@@ -1,5 +1,7 @@
 namespace glfw
 
+#if __TARGET__<> "raspbian"
+
 #import "<libc>"
 
 using libc..
@@ -4439,3 +4441,4 @@ function glfwVulkanSupported:int()
 #end
 function glfwGetRequiredInstanceExtensions:const_char_t ptr ptr(count:uint ptr)
 
+#end
