@@ -328,11 +328,12 @@ Class GccBuildProduct Extends BuildProduct
 				End
 				
 			Case "raspbian"
-				CC_CMD= "arm-linux-gnueabihf-gcc -c"
-				CXX_CMD="arm-linux-gnueabihf-g++ -c"
-				LD_CMD= "arm-linux-gnueabihf-g++"
-				AR_CMD= "arm-linux-gnueabihf-ar q"
-				AS_CMD= "arm-linux-gnueabihf-as"
+				local prefix:=GetEnv("WX_GCC_EXEC_PREFIX")
+				CC_CMD= prefix+"gcc -c"
+				CXX_CMD=prefix+"g++ -c"
+				LD_CMD= prefix+"g++"
+				AR_CMD= prefix+"ar q"
+				AS_CMD= prefix+"as"
 			Case "ios"
 				CC_CMD= "gcc -c"
 				CXX_CMD="g++ -c"

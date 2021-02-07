@@ -2,6 +2,11 @@
 '----- RASPBIAN DESKTOP TARGET
 '--------------------------------------------------------------------------------------
 
+' It specifies a prefix to use in the names of the subprograms executed by the compiler
+'
+'WX_GCC_EXEC_PREFIX=${GCC_EXEC_PREFIX}
+WX_GCC_EXEC_PREFIX=arm-linux-gnueabihf-
+
 WX_THREADS=1
 
 '
