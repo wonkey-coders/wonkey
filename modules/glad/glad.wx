@@ -1,5 +1,7 @@
 namespace glad
 
+#If __TARGET__<>"raspbian"
+
 #import "<libc>"
 #import "<glfw>"
 
@@ -1296,3 +1298,5 @@ function glColorP4ui:void(type:GLenum,color:GLuint)
 function glColorP4uiv:void(type:GLenum,color:GLuint ptr)
 function glSecondaryColorP3ui:void(type:GLenum,color:GLuint)
 function glSecondaryColorP3uiv:void(type:GLenum,color:GLuint ptr)
+
+#end // __TARGET__<>"raspbian"
