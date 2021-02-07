@@ -32,34 +32,40 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: print host infos
-        run: |
-          echo %CD%
+        shell: cmd
+        run: echo %CD%
 
       - name: print wake help
+        shell: cmd
         run: |
           %CD%\bin\windows\wake
 
       - name: rebuild modules
+        shell: cmd
         run: |
           cd %CD%\scripts
           rebuildmods.bat
 
       - name: rebuild wake
+        shell: cmd
         run: |
           cd %CD%\scripts
           rebuildwake.bat
 
       - name: rebuild wide
+        shell: cmd
         run: |
           cd %CD%\scripts
           rebuildwide.bat
 
       - name: rebuild launcher
+        shell: cmd
         run: |
           cd %CD%\scripts
           rebuildlauncher.bat
 
       - name: make docs
+        shell: cmd
         run: |
           cd %CD%\scripts
           makedocs.bat
