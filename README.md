@@ -1,6 +1,10 @@
 ![Views](https://views.whatilearened.today/views/github/wonkey-coders/wonkey.svg)
 [![Travis CI](https://travis-ci.org/wonkey-coders/wonkey.svg?branch=develop)](https://travis-ci.org/wonkey-coders/wonkey)
-![Github CI](https://github.com/wonkey-coders/wonkey/workflows/Github%20CI/badge.svg?branch=develop)
+![windows](https://github.com/wonkey-coders/wonkey/workflows/windows/badge.svg?branch=develop)
+![linux](https://github.com/wonkey-coders/wonkey/workflows/linux/badge.svg?branch=develop)
+![macos](https://github.com/wonkey-coders/wonkey/workflows/macos/badge.svg?branch=develop)
+![raspbian](https://github.com/wonkey-coders/wonkey/workflows/raspbian/badge.svg?branch=develop)
+
 # Wonkey Programming Language
 
 <div align="center">
