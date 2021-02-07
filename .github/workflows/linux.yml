@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: raspbian
+name: linux
 
 # Controls when the action will run. 
 on:
@@ -19,37 +19,35 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build-raspbian:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
-    container: 
-      image: navikey/raspbian-buster:latest
+  # This workflow contains a single job called "build-linux"
+  build-linux:
+    # The type of runner that the job will run on (ubuntu-latest or ubuntu-18.04)
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
+    steps:     
       # Runs a single command using the runners shell
       - name: update packages
-        run: sudo apt-get update
+        run: sudo apt-get update -y
 
       - name: install packages
-        run: sudo apt-get install -y libraspberrypi0 libraspberrypi-dev libraspberrypi-doc libraspberrypi-bin git build-essential libopenal-dev libpulse-dev libsdl2-dev
-
+        run: sudo apt-get install -y g++-multilib libopenal-dev libpulse-dev libsdl2-dev
+      
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: checkout repository
         uses: actions/checkout@v2
 
+      # Runs a set of commands using the runners shell
       - name: print host infos
         run: |
           pwd
           arch
-          ls -la /opt/vc/lib
       
       - name: print g++ version
-        run: arm-linux-gnueabihf-g++ --version
-          
+        run: g++ --version
+
       - name: print wake help
-        run: ./bin/raspbian/wake
+        run: ./bin/linux/wake
 
       - name: rebuild modules
         run: |
@@ -75,4 +73,4 @@ jobs:
         run: |
           cd scripts
           ./makedocs.sh
-
+  
