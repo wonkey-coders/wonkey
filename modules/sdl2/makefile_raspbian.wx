@@ -3,13 +3,12 @@ Namespace sdl2
 
 #Import "<libpthread.a>"
 #Import "<libdl.a>"
-#Import "<libpulse.a>"
-
 #rem
 #Import "<libX11.a>"
 #Import "<libXext.a>"
 #Import "<libXi.a>"
 #end
+#Import "<libpulse.a>"
 
 'src
 #Import "SDL/src/SDL.c"
@@ -20,8 +19,8 @@ Namespace sdl2
 #Import "SDL/src/SDL_log.c"
 
 'atomic
-#Import "SDL/src/atomic/SDL_spinlock.c"
 #Import "SDL/src/atomic/SDL_atomic.c"
+#Import "SDL/src/atomic/SDL_spinlock.c"
 
 'audio
 #Import "SDL/src/audio/SDL_audio.c"
@@ -35,18 +34,20 @@ Namespace sdl2
 #Import "SDL/src/audio/disk/SDL_diskaudio.c"
 #Import "SDL/src/audio/dsp/SDL_dspaudio.c"
 #Import "SDL/src/audio/alsa/SDL_alsa_audio.c"
+
 #Import "SDL/src/audio/pulseaudio/SDL_pulseaudio.c"
 
 'core
-#Import "SDL/src/core/linux/SDL_dbus.c"
-#Import "SDL/src/core/linux/SDL_evdev.c"
-#Import "SDL/src/core/linux/SDL_evdev_capabilities.c" 'v2.0.14
-#Import "SDL/src/core/linux/SDL_evdev_kbd.c" 'v2.0.9
-'#Import "SDL/src/core/linux/SDL_fcitx.c" 'v2.0.14 -- need libdbus
-#Import "SDL/src/core/linux/SDL_ibus.c"
-#Import "SDL/src/core/linux/SDL_ime.c" 'v2.0.9
-#Import "SDL/src/core/linux/SDL_threadprio.c" 'v2.0.14
-#Import "SDL/src/core/linux/SDL_udev.c"
+#import "SDL/src/core/unix/SDL_poll.c" 'v2.0.9
+#import "SDL/src/core/linux/SDL_dbus.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_evdev_capabilities.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_evdev_kbd.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_evdev.c" 'v2.0.14
+'#import "SDL/src/core/linux/SDL_fcitx.c" 'v2.0.14 -- need libdbus
+#import "SDL/src/core/linux/SDL_ibus.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_ime.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_threadprio.c" 'v2.0.14
+#import "SDL/src/core/linux/SDL_udev.c" 'v2.0.14
 
 'cupinfo
 #Import "SDL/src/cpuinfo/SDL_cpuinfo.c"
@@ -96,27 +97,27 @@ Namespace sdl2
 #import "SDL/src/joystick/hidapi/SDL_hidapi_xboxone.c" 'v2.0.9'
 #import "SDL/src/joystick/hidapi/SDL_hidapijoystick.c" 'v2.0.9'
 
-'libm - really?!?...
-'#Import "SDL/src/libm/e_atan2.c"
-'#Import "SDL/src/libm/e_exp.c" 'v2.0.9
-'#Import "SDL/src/libm/e_fmod.c" '2.0.9
-'#Import "SDL/src/libm/e_log.c"
-'#Import "SDL/src/libm/e_log10.c" 'v2.0.9
-'#Import "SDL/src/libm/e_pow.c"
-'#Import "SDL/src/libm/e_rem_pio2.c"
-'#Import "SDL/src/libm/e_sqrt.c"
-'#Import "SDL/src/libm/k_cos.c"
-'#Import "SDL/src/libm/k_rem_pio2.c"
-'#Import "SDL/src/libm/k_sin.c"
-'#Import "SDL/src/libm/k_tan.c"
-'#Import "SDL/src/libm/s_atan.c"
-'#Import "SDL/src/libm/s_copysign.c"
-'#Import "SDL/src/libm/s_cos.c"
-'#Import "SDL/src/libm/s_fabs.c"
-'#Import "SDL/src/libm/s_floor.c"
-'#Import "SDL/src/libm/s_scalbn.c"
-'#Import "SDL/src/libm/s_sin.c"
-'#Import "SDL/src/libm/s_tan.c"
+'libm
+#Import "SDL/src/libm/e_atan2.c"
+#Import "SDL/src/libm/e_exp.c" 'v2.0.9
+#Import "SDL/src/libm/e_fmod.c" '2.0.9
+#Import "SDL/src/libm/e_log.c"
+#Import "SDL/src/libm/e_log10.c" 'v2.0.9
+#Import "SDL/src/libm/e_pow.c"
+#Import "SDL/src/libm/e_rem_pio2.c"
+#Import "SDL/src/libm/e_sqrt.c"
+#Import "SDL/src/libm/k_cos.c"
+#Import "SDL/src/libm/k_rem_pio2.c"
+#Import "SDL/src/libm/k_sin.c"
+#Import "SDL/src/libm/k_tan.c"
+#Import "SDL/src/libm/s_atan.c"
+#Import "SDL/src/libm/s_copysign.c"
+#Import "SDL/src/libm/s_cos.c"
+#Import "SDL/src/libm/s_fabs.c"
+#Import "SDL/src/libm/s_floor.c"
+#Import "SDL/src/libm/s_scalbn.c"
+#Import "SDL/src/libm/s_sin.c"
+#Import "SDL/src/libm/s_tan.c"
 
 'loadso
 #Import "SDL/src/loadso/dlopen/SDL_sysloadso.c"
@@ -201,6 +202,7 @@ Namespace sdl2
 #import "SDL/src/video/SDL_vulkan_utils.c" 'v2.0.9
 #import "SDL/src/video/SDL_yuv.c" 'v2.0.9
 #import "SDL/src/video/yuv2rgb/yuv_rgb.c" 'v2.0.9
+
 #Import "SDL/src/video/dummy/SDL_nullevents.c"
 #Import "SDL/src/video/dummy/SDL_nullframebuffer.c"
 #Import "SDL/src/video/dummy/SDL_nullvideo.c"
