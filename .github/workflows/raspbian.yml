@@ -25,6 +25,7 @@ jobs:
     runs-on: ubuntu-20.04
     container: 
       image: navikey/raspbian-buster:latest
+      options: "--entrypoint /usr/bin/tail -f /dev/null"
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -51,28 +52,28 @@ jobs:
       - name: print wake help
         run: ./bin/raspbian/wake
 
-      - name: rebuild modules
-        run: |
-          cd scripts
-          ./rebuildmods.sh
-
-      - name: rebuild wake
-        run: |
-          cd scripts
-          ./rebuildwake.sh
-
-      - name: rebuild wide
-        run: |
-          cd scripts
-          ./rebuildwide.sh
-
-      - name: rebuild launcher
-        run: |
-          cd scripts
-          ./rebuildlauncher.sh
-
-      - name: make docs
-        run: |
-          cd scripts
-          ./makedocs.sh
+      #- name: rebuild modules
+      #  run: |
+      #    cd scripts
+      #    ./rebuildmods.sh
+      #
+      #- name: rebuild wake
+      #  run: |
+      #    cd scripts
+      #    ./rebuildwake.sh
+      #
+      #- name: rebuild wide
+      #  run: |
+      #    cd scripts
+      #    ./rebuildwide.sh
+      #
+      #- name: rebuild launcher
+      #  run: |
+      #    cd scripts
+      #    ./rebuildlauncher.sh
+      #
+      #- name: make docs
+      #  run: |
+      #    cd scripts
+      #    ./makedocs.sh
 
