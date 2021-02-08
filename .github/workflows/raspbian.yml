@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-20.04
     container: 
       image: navikey/raspbian-buster:latest
-      options: "--entrypoint /usr/bin/tail -f /dev/null"
+      options: "--entrypoint \"/usr/bin/tail\" \"-f\" \"/dev/null\""
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
