@@ -13,6 +13,11 @@
 
 Wonkey is a fork of Monkey2 programming language designed by Mark Sibly, creator of the 'Blitz' range of languages.
 
+### Showcase
+
+**Wonkey on Raspbian (Raspberry PI 4)**
+![](./docs/img/wonkey_raspbian.png)
+
 ### Multi-target products
 
 Wonkey works on a wide range of targets: Windows, Macos, Linux, Emscripten, Android and iOS.
