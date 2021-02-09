@@ -21,13 +21,6 @@ Namespace raspberry.pigpio
 Extern
 
 '
-' Functions:
-'
-Function gpioInitialise:Int()
-Function gpioTerminate()
-
-
-'
 ' Macro Functions:
 '
 Function PI_NTFY_FLAGS_BIT:Int(x:Int)
@@ -40,6 +33,293 @@ Function PI_SPI_FLAGS_AUX_SPI:Int(x:Int)
 Function PI_SPI_FLAGS_RESVD:Int(x:Int)
 Function PI_SPI_FLAGS_CSPOLS:Int(x:Int)
 Function PI_SPI_FLAGS_MODE:Int(x:Int)
+
+
+'
+' Aliases:
+'
+Alias gpioAlertFunc_t:Void(gpio:Int, level:Int, tick:Int)
+Alias gpioAlertFuncEx_t:Void(gpio:Int, level:Int, tick:Int, userdata:Void Ptr)
+Alias eventFunc_t:Void(event:Int, tick:Int)
+Alias eventFuncEx_t:Void(event:Int, tick:Int, userdata:Void Ptr)
+Alias gpioISRFunc_t:Void(gpio:Int, level:Int, tick:Int)
+Alias gpioISRFuncEx_t:Void(gpio:Int, level:Int, tick:Int, userdata:Void Ptr)
+Alias gpioTimerFunc_t:Void()
+Alias gpioTimerFuncEx_t:Void(userdata:Void Ptr)
+Alias gpioSignalFunc_t:Void(signum:Int)
+Alias gpioSignalFuncEx_t:Void(signum:Int, userdata:Void Ptr)
+Alias gpioGetSamplesFunc_t:Void(samples:gpioSample_t Ptr, numSamples:Int)
+Alias gpioGetSamplesFuncEx_t:Void(samples:gpioSample_t Ptr, numSamples:Int, userdata:Void Ptr)
+Alias gpioThreadFunc_t:Void Ptr(Void Ptr)
+
+
+'
+' Functions:
+'
+Function gpioInitialise:Int()
+Function gpioTerminate:Void()
+Function gpioSetMode:Int(gpio:Int, mode:Int)
+Function gpioGetMode:Int(gpio:Int)
+Function gpioSetPullUpDown:Int(gpio:Int, pud:Int)
+Function gpioRead:Int(gpio:Int)
+Function gpioWrite:Int(gpio:Int, level:Int)
+Function gpioPWM:Int(user_gpio:Int, dutycycle:Int)
+Function gpioGetPWMdutycycle:Int(user_gpio:Int)
+Function gpioSetPWMrange:Int(user_gpio:Int, range:Int)
+Function gpioGetPWMrange:Int(user_gpio:Int)
+Function gpioGetPWMrealRange:Int(user_gpio:Int)
+Function gpioSetPWMfrequency:Int(user_gpio:Int, frequency:Int)
+Function gpioGetPWMfrequency:Int(user_gpio:Int)
+Function gpioServo:Int(user_gpio:Int, pulsewidth:Int)
+Function gpioGetServoPulsewidth:Int(user_gpio:Int)
+Function gpioSetAlertFunc:Int(user_gpio:Int, f:gpioAlertFunc_t)
+Function gpioSetAlertFuncEx:Int(user_gpio:Int, f:gpioAlertFuncEx_t, userdata:Void Ptr)
+Function gpioSetISRFunc:Int(gpio:Int, edge:Int, timeout:Int, f:gpioISRFunc_t)
+Function gpioSetISRFuncEx:Int(gpio:Int, edge:Int, timeout:Int, f:gpioISRFuncEx_t, userdata:Void Ptr)
+Function gpioNotifyOpen:Int()
+Function gpioNotifyOpenWithSize:Int(bufSize:Int)
+Function gpioNotifyBegin:Int(handle:Int, bits:Int)
+Function gpioNotifyPause:Int(handle:Int)
+Function gpioNotifyClose:Int(handle:Int)
+Function gpioWaveClear:Int()
+Function gpioWaveAddNew:Int()
+Function gpioWaveAddGeneric:Int(numPulses:Int, pulses:gpioPulse_t Ptr)
+Function gpioWaveAddSerial:Int(user_gpio:Int, baud:Int, data_bits:Int, stop_bits:Int, offset:Int, numBytes:Int, str:CString)
+Function gpioWaveCreate:Int()
+Function gpioWaveCreatePad:Int(pctCB:Int, pctBOOL:Int, pctTOOL:Int)
+Function gpioWaveDelete:Int(wave_id:Int)
+Function gpioWaveTxSend:Int(wave_id:Int, wave_mode:Int)
+Function gpioWaveChain:Int(buf:CString, bufSize:Int)
+Function gpioWaveTxAt:Int()
+Function gpioWaveTxBusy:Int()
+Function gpioWaveTxStop:Int()
+Function gpioWaveGetMicros:Int()
+Function gpioWaveGetHighMicros:Int()
+Function gpioWaveGetMaxMicros:Int()
+Function gpioWaveGetPulses:Int()
+Function gpioWaveGetHighPulses:Int()
+Function gpioWaveGetMaxPulses:Int()
+Function gpioWaveGetCbs:Int()
+Function gpioWaveGetHighCbs:Int()
+Function gpioWaveGetMaxCbs:Int()
+Function gpioSerialReadOpen:Int(user_gpio:Int, baud:Int, data_bits:Int)
+Function gpioSerialReadInvert:Int(user_gpio:Int, invert:Int)
+Function gpioSerialRead:Int(user_gpio:Int, buf:Void Ptr, bufSize:ULong)
+Function gpioSerialReadClose:Int(user_gpio:Int)
+Function i2cOpen:Int(i2cBus:Int, i2cAddr:Int, i2cFlags:Int)
+Function i2cClose:Int(handle:Int)
+Function i2cWriteQuick:Int(handle:Int, bit:Int)
+Function i2cWriteByte:Int(handle:Int, bVal:Int)
+Function i2cReadByte:Int(handle:Int)
+Function i2cWriteByteData:Int(handle:Int, i2cReg:Int, bVal:Int)
+Function i2cWriteWordData:Int(handle:Int, i2cReg:Int, wVal:Int)
+Function i2cReadByteData:Int(handle:Int, i2cReg:Int)
+Function i2cReadWordData:Int(handle:Int, i2cReg:Int)
+Function i2cProcessCall:Int(handle:Int, i2cReg:Int, wVal:Int)
+Function i2cWriteBlockData:Int(handle:Int, i2cReg:Int, buf:CString, count:Int)
+Function i2cReadBlockData:Int(handle:Int, i2cReg:Int, buf:CString)
+Function i2cBlockProcessCall:Int(handle:Int, i2cReg:Int, buf:CString, count:Int)
+Function i2cReadI2CBlockData:Int(handle:Int, i2cReg:Int, buf:CString, count:Int)
+Function i2cWriteI2CBlockData:Int(handle:Int, i2cReg:Int, buf:CString, count:Int)
+Function i2cReadDevice:Int(handle:Int, buf:CString, count:Int)
+Function i2cWriteDevice:Int(handle:Int, buf:CString, count:Int)
+Function i2cSwitchCombined:Void(setting:Int)
+Function i2cSegments:Int(handle:Int, segs:pi_i2c_msg_t Ptr, numSegs:Int)
+Function i2cZip:Int(handle:Int, inBuf:CString, inLen:Int, outBuf:CString, outLen:Int)
+Function bbI2COpen:Int(SDA:Int, SCL:Int, baud:Int)
+Function bbI2CClose:Int(SDA:Int)
+Function bbI2CZip:Int(SDA:Int, inBuf:CString, inLen:Int, outBuf:CString, outLen:Int)
+Function bscXfer:Int(bsc_xfer:bsc_xfer_t Ptr)
+Function bbSPIOpen:Int(CS:Int, MISO:Int, MOSI:Int, SCLK:Int, baud:Int, spiFlags:Int)
+Function bbSPIClose:Int(CS:Int)
+Function bbSPIXfer:Int(CS:Int, inBuf:CString, outBuf:CString, count:Int)
+Function spiOpen:Int(spiChan:Int, baud:Int, spiFlags:Int)
+Function spiClose:Int(handle:Int)
+Function spiRead:Int(handle:Int, buf:CString, count:Int)
+Function spiWrite:Int(handle:Int, buf:CString, count:Int)
+Function spiXfer:Int(handle:Int, txBuf:CString, rxBuf:CString, count:Int)
+Function serOpen:Int(sertty:CString, baud:Int, serFlags:Int)
+Function serClose:Int(handle:Int)
+Function serWriteByte:Int(handle:Int, bVal:Int)
+Function serReadByte:Int(handle:Int)
+Function serWrite:Int(handle:Int, buf:CString, count:Int)
+Function serRead:Int(handle:Int, buf:CString, count:Int)
+Function serDataAvailable:Int(handle:Int)
+Function gpioTrigger:Int(user_gpio:Int, pulseLen:Int, level:Int)
+Function gpioSetWatchdog:Int(user_gpio:Int, timeout:Int)
+Function gpioNoiseFilter:Int(user_gpio:Int, steady:Int, active:Int)
+Function gpioGlitchFilter:Int(user_gpio:Int, steady:Int)
+Function gpioSetGetSamplesFunc:Int(f:gpioGetSamplesFunc_t, bits:Int)
+Function gpioSetGetSamplesFuncEx:Int(f:gpioGetSamplesFuncEx_t, bits:Int, userdata:Void Ptr)
+Function gpioSetTimerFunc:Int(timer:Int, millis:Int, f:gpioTimerFunc_t)
+Function gpioSetTimerFuncEx:Int(timer:Int, millis:Int, f:gpioTimerFuncEx_t, userdata:Void Ptr)
+Function gpioStartThread:Void Ptr(f:gpioThreadFunc_t, userdata:Void Ptr)
+Function gpioStopThread:Void(pth:Void Ptr)
+Function gpioStoreScript:Int(script:CString)
+Function gpioRunScript:Int(script_id:Int, numPar:Int, param:Int Ptr)
+Function gpioRunScript:Int(script_id:Int, numPar:Int, param:Int Ptr)
+Function gpioUpdateScript:Int(script_id:Int, numPar:Int, param:Int Ptr)
+Function gpioScriptStatus:Int(script_id:Int, param:Int Ptr)
+Function gpioStopScript:Int(script_id:Int)
+Function gpioDeleteScript:Int(script_id:Int)
+Function gpioSetSignalFunc:Int(signum:Int, f:gpioSignalFunc_t)
+Function gpioSetSignalFuncEx:Int(signum:Int, f:gpioSignalFuncEx_t, userdata:Void Ptr)
+Function gpioRead_Bits_0_31:Int()
+Function gpioRead_Bits_32_53:Int()
+Function gpioWrite_Bits_0_31_Clear:Int(bits:Int)
+Function gpioWrite_Bits_32_53_Clear:Int(bits:Int)
+Function gpioWrite_Bits_0_31_Set:Int(bits:Int)
+Function gpioWrite_Bits_32_53_Set:Int(bits:Int)
+Function gpioHardwareClock:Int(gpio:Int, clkfreq:Int)
+Function gpioHardwarePWM:Int(gpio:Int, PWMfreq:Int, PWMduty:Int)
+Function gpioTime:Int(timetype:Int, seconds:Int Ptr, micros:Int Ptr)
+Function gpioSleep:Int(timetype:Int, seconds:Int, micros:Int)
+Function gpioDelay:Int(micros:Int)
+Function gpioTick:Int()
+Function gpioHardwareRevision:Int()
+Function gpioVersion:Int()
+Function gpioGetPad:Int(pad:Int)
+Function gpioSetPad:Int(pad:Int, padStrength:Int)
+Function eventMonitor:Int(handle:Int, bits:Int)
+Function eventSetFunc:Int(event:Int, f:eventFunc_t)
+Function eventSetFuncEx:Int(event:Int, f:eventFuncEx_t, userdata:Void Ptr)
+Function eventTrigger:Int(event:Int)
+Function shell:Int(scriptName:CString, scriptString:CString)
+Function fileOpen:Int(file:CString, mode:Int)
+Function fileClose:Int(handle:Int)
+Function fileWrite:Int(handle:Int, buf:CString, count:Int)
+Function fileRead:Int(handle:Int, buf:CString, count:Int)
+Function fileSeek:Int(handle:Int, seekOffset:Int, seekFrom:Int)
+Function fileList:Int(fpat:CString, buf:CString, count:Int)
+Function gpioCfgBufferSize:Int(cfgMillis:Int)
+Function gpioCfgClock:Int(cfgMicros:Int, cfgPeripheral:Int, cfgSource:Int)
+Function gpioCfgDMAchannel:Int(DMAchannel:Int)
+Function gpioCfgDMAchannels:Int(primaryChannel:Int, secondaryChannel:Int)
+Function gpioCfgPermissions:Int(updateMask:ULong)
+Function gpioCfgSocketPort:Int(port:Int)
+Function gpioCfgInterfaces:Int(ifFlags:Int)
+Function gpioCfgMemAlloc:Int(memAllocMode:Int)
+Function gpioCfgNetAddr:Int(numSockAddr:Int, sockAddr:Int Ptr)
+Function gpioCfgGetInternals:Int()
+Function gpioCfgSetInternals:Int(cfgVal:Int)
+Function gpioCustom1:Int(arg1:Int, arg2:Int, argx:CString, argc:Int)
+Function gpioCustom2:Int(arg1:Int, argx:CString, argc:Int, retBuf:CString, retMax:Int)
+Function rawWaveAddSPI:Int(spi:rawSPI_t Ptr, offset:Int, spiSS:Int, buf:CString, spiTxBits:Int, spiBitFirst:Int, spiBitLast:Int, spiBits:Int)
+Function rawWaveAddGeneric:Int(numPulses:Int, pulses:rawWave_t Ptr)
+Function rawWaveCB:Int()
+Function rawWaveCBAdr:rawCbs_t Ptr(cbNum:Int)
+Function rawWaveGetOOL:Int(pos:Int)
+Function rawWaveSetOOL:Void(pos:Int, lVal:Int)
+Function rawWaveGetOut:Int(pos:Int)
+Function rawWaveSetOut:Void(pos:Int, lVal:Int)
+Function rawWaveGetIn:Int(pos:Int)
+Function rawWaveSetIn:Void(pos:Int, lVal:Int)
+Function rawWaveInfo:rawWaveInfo_t(wave_id:Int)
+Function getBitInBytes:Int(bitPos:Int, buf:CString, numBits:Int)
+Function putBitInBytes:Void(bitPos:Int, buf:CString, bit:Int)
+Function time_time:Double()
+Function time_sleep:Void(seconds:Double)
+Function rawDumpWave:Void()
+Function rawDumpScript:Void(script_id:Int)
+
+
+'
+' Structures:
+'
+Struct gpioHeader_t
+	Field func:UShort
+	Field size:UShort
+End
+
+
+Struct gpioExtent_t
+	Field size:ULong
+	Field ptr_:Void Ptr = "ptr"
+	Field data:Int
+End
+
+
+Struct gpioSample_t
+	Field tick:Int
+	Field level:Int
+End
+
+
+Struct gpioReport_t
+	Field seqno:UShort
+	Field flags:UShort
+	Field tick:Int
+	Field level:Int
+End
+
+
+Struct gpioPulse_t
+	Field gpioOn:Int
+	Field gpioOff:Int
+	Field usDelay:Int
+End
+
+
+Struct rawWave_t
+	Field gpioOn:Int
+	Field gpioOff:Int
+	Field usDelay:Int
+	Field flags:Int
+End
+
+
+Struct rawWaveInfo_t
+	Field botCB:UShort
+	Field topCB:UShort
+	Field botOOL:UShort
+	Field topOOL:UShort
+	Field deleted:UShort
+	Field numCB:UShort
+	Field numBOOL:UShort
+	Field numTOOL:UShort
+End
+
+
+Struct rawSPI_t
+	Field clk:Int
+	Field mosi:Int
+	Field miso:Int
+	Field ss_pol:Int
+	Field ss_us:Int
+	Field clk_pol:Int
+	Field clk_pha:Int
+	Field clk_us:Int
+End
+
+
+Struct rawCbs_t
+	Field info:Int
+	Field src:Int
+	Field dst:Int
+	Field length:Int
+	Field stride:Int
+	Field next_:Int = "next"
+	Field pad:Int[]
+End
+
+
+Struct pi_i2c_msg_t
+	Field addr:UShort
+	Field flags:UShort
+	Field len:UShort
+	Field buf:UByte Ptr
+End
+
+
+Struct bsc_xfer_t
+	Field control:Int
+	Field rxCnt:Int
+	Field rxBuf:Byte[]
+	Field txCnt:Int
+	Field txBuf:Byte[]
+End
+
+
 
 
 '
@@ -258,14 +538,6 @@ Const PI_FROM_END:Int
 Const MAX_CONNECT_ADDRESSES:Int
 Const PI_MAX_EVENT:Int
 Const PI_EVENT_BSC:Int
-Const MSG_LEN:Int
-Const WAVES:Int
-Const GPIO:Int
-Const CE0:Int
-Const CE1:Int
-Const MISO:Int
-Const MOSI:Int
-Const SCLK:Int
 Const PI_CMD_MODES:Int
 Const PI_CMD_MODEG:Int
 Const PI_CMD_PUD:Int
