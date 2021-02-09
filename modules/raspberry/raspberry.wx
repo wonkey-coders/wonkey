@@ -1,4 +1,8 @@
 
 Namespace raspberry
 
-#Import "pigpio/pigpio"
+#If __TARGET__="raspbian"
+
+	#Import "pigpio/pigpio"
+
+#Endif
