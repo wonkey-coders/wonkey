@@ -30,16 +30,16 @@ Function gpioTerminate()
 '
 ' Macro Functions:
 '
-Function PI_NTFY_FLAGS_BIT(x:Int)
-Function PI_SPI_FLAGS_BITLEN(x:Int)
-Function PI_SPI_FLAGS_RX_LSB(x:Int)
-Function PI_SPI_FLAGS_TX_LSB(x:Int)
-Function PI_SPI_FLAGS_3WREN(x:Int)
-Function PI_SPI_FLAGS_3WIRE(x:Int)
-Function PI_SPI_FLAGS_AUX_SPI(x:Int)
-Function PI_SPI_FLAGS_RESVD(x:Int)
-Function PI_SPI_FLAGS_CSPOLS(x:Int)
-Function PI_SPI_FLAGS_MODE(x:Int)
+Function PI_NTFY_FLAGS_BIT:Int(x:Int)
+Function PI_SPI_FLAGS_BITLEN:Int(x:Int)
+Function PI_SPI_FLAGS_RX_LSB:Int(x:Int)
+Function PI_SPI_FLAGS_TX_LSB:Int(x:Int)
+Function PI_SPI_FLAGS_3WREN:Int(x:Int)
+Function PI_SPI_FLAGS_3WIRE:Int(x:Int)
+Function PI_SPI_FLAGS_AUX_SPI:Int(x:Int)
+Function PI_SPI_FLAGS_RESVD:Int(x:Int)
+Function PI_SPI_FLAGS_CSPOLS:Int(x:Int)
+Function PI_SPI_FLAGS_MODE:Int(x:Int)
 
 
 '
