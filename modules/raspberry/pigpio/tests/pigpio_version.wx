@@ -1,0 +1,5 @@
+#Import "<raspberry>"
+
+Function Main()
+	Print "pigpio version: " + raspberry.pigpio.PIGPIO_VERSION
+End

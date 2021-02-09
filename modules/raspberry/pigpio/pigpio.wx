@@ -1,0 +1,26 @@
+
+#rem wonkeydoc Raspberry Pi GPIO lib pigpio
+#end
+Namespace raspberry.pigpio
+
+'
+' Import from Raspberry OS system (old version)
+'
+'#Import "<pigpio.h>"
+'#Import "<libpigpio.a>"
+
+'
+' Importing from sources
+'
+#Import "pigpio/pigpio.h"
+#Import "pigpio/pigpio.c"
+
+#Import "pigpio/command.h"
+#Import "pigpio/command.c"
+
+Extern
+
+Const PIGPIO_VERSION:Int
+
+Function gpioInitialise:Int()
+Function gpioTerminate()
