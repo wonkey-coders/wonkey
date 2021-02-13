@@ -1,0 +1,6 @@
+{
+	"module"  : "simplevideo",
+	"version" : "1.0.0",
+	"depends" : ["std","mojo","theoraplayer"],
+	"author"  : "Thomas Schröder"
+}
