@@ -1,17 +1,17 @@
 
 Namespace mojo.app
 
-#If __TARGET__="macos"
-#Import "native/displaylink.mm"
-#Import "native/displaylink.h"
-#Endif
-
-Extern Private
-
-#If __TARGET__="macos"
-Function initDisplayLink()="wxDisplayLink::init"
-Function enableDisplayLink(enable:Bool)="wxDisplayLink::enable"
-#Endif
+'#If __TARGET__="macos"
+'#Import "native/displaylink.mm"
+'#Import "native/displaylink.h"
+'#Endif
+'
+'Extern Private
+'
+'#If __TARGET__="macos"
+'Function initDisplayLink()="wxDisplayLink::init"
+'Function enableDisplayLink(enable:Bool)="wxDisplayLink::enable"
+'#Endif
 	
 Public
 
@@ -102,9 +102,9 @@ Class Window Extends View
 		If swapInterval=_swapInterval Return
 		
 		_swapInterval=swapInterval
-#If __TARGET__="macos"		
-		_canRender=True
-#Endif
+'#If __TARGET__="macos"		
+'		_canRender=True
+'#Endif
 	End
 
 	'Deprecated! Too hard on macos...	
@@ -435,9 +435,9 @@ Class Window Extends View
 		Case EventType.WindowRestored
 		Case EventType.WindowSwapped
 		Case EventType.WindowVSync
-#If __TARGET__="macos"
-			_canRender=True
-#endif				
+'#If __TARGET__="macos"
+'			_canRender=True
+'#endif				
 		Case EventType.WindowMoved,EventType.WindowResized
 			Frame=GetFrame()
 			_frame=Frame
@@ -686,9 +686,9 @@ Class Window Extends View
 		
 		Assert( _canRender )
 		
-#If __TARGET__="macos"
-		_canRender=(_swapInterval=0)
-#endif
+'#If __TARGET__="macos"
+'		_canRender=(_swapInterval=0)
+'#endif
 		If _maxfudge
 			_maxfudge-=1
 			RequestRender()
@@ -698,11 +698,11 @@ Class Window Extends View
 		
 		If _swapInterval<>_rswapInterval
 			_rswapInterval=_swapInterval
-#If __TARGET__="macos"
-			enableDisplayLink(_swapInterval<>0)
-#Else			
+'#If __TARGET__="macos"
+'			enableDisplayLink(_swapInterval<>0)
+'#Else			
 			SDL_GL_SetSwapInterval( _swapInterval )
-#endif		
+'#endif		
 		Endif
 		
 #If __TARGET__="windows"
@@ -784,13 +784,13 @@ Class Window Extends View
 		Endif
 		SDL_GL_MakeCurrent( _sdlWindow,_sdlGLContext )
 
-#If __TARGET__="macos"		
-		initDisplayLink()
-		enableDisplayLink( _rswapInterval<>0 )
-		SDL_GL_SetSwapInterval( 0 )
-#Else
+'#If __TARGET__="macos"		
+'		initDisplayLink()
+'		enableDisplayLink( _rswapInterval<>0 )
+'		SDL_GL_SetSwapInterval( 0 )
+'#Else
 		SDL_GL_SetSwapInterval( _rswapInterval )
-#endif
+'#endif
 		
 		wxglInit()
 		
