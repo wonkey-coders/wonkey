@@ -8,7 +8,12 @@ Class UndockWindow Extends Window
 	Field _storeTabbutton:TabButtonExt
 	Field _storeIndex:Int
 	Field _visible:Int
-	
+
+'---[ by DrCox85 ]----------------------------------------------
+	Field _storeDocument:CodeDocument
+	Field _type:String
+'---------------------------------------------------------------
+
 	Global _undockWindows:=New Stack<UndockWindow>
 	
 	Method New()
@@ -17,7 +22,28 @@ Class UndockWindow Extends Window
 		Self.UpdateWindow( True )
 		_undockWindows.Push( Self )
 	End
+
+'---[ by DrCox85 ]----------------------------------------------
+	Function NewUndockDocument:UndockWindow(_doc:CodeDocument)
+		
+		Local _window:UndockWindow
 	
+		For Local dw:=Eachin _undockWindows
+			If dw.Title=_doc.Path Then _window=dw ; Exit
+		Next
+		
+		If Not _window Then _window=New UndockWindow
+		
+		_window._storeDocument=_doc
+		_doc.Close()
+		_window.ContentView=_window._storeDocument.View
+		_window._visible=True
+		_window.Activated()
+		_window._type="document"
+		Return _window
+	End
+'---------------------------------------------------------------
+
 	Function NewUndock:UndockWindow( _tabbutton:TabButtonExt )
 		
 		Local _window:UndockWindow
@@ -46,6 +72,9 @@ Class UndockWindow Extends Window
 		_window.ContentView=_window._storeView
 		_window._visible=True
 		_window.Activated()
+'---[ by DrCox85 ]----------------------------------------------
+		_window._type="dock"
+'---------------------------------------------------------------
 		
 		Return _window
 	End
@@ -70,23 +99,42 @@ Class UndockWindow Extends Window
 	End
 	
 	Method CloseWindow()
-		
-		Local view:=ContentView
-		ContentView=Null
-		_storeTabbutton.CurrentHolder.SetTabView( _storeIndex, view )
-		_storeTabbutton.Visible=True
-		If Not _storeTabbutton.CurrentHolder.Visible Then _storeTabbutton.CurrentHolder.Visible=True
-		SDL_HideWindow( Self.Window.SDLWindow )
-		Self._visible=False
+'---[ by DrCox85 ]----------------------------------------------
+		Select _type
+			Case "dock"
+'---------------------------------------------------------------
+				Local view:=ContentView
+				ContentView=Null
+				_storeTabbutton.CurrentHolder.SetTabView( _storeIndex, view )
+				_storeTabbutton.Visible=True
+				If Not _storeTabbutton.CurrentHolder.Visible Then _storeTabbutton.CurrentHolder.Visible=True
+				SDL_HideWindow( Self.Window.SDLWindow )
+				Self._visible=False
+'---[ by DrCox85 ]----------------------------------------------
+			Case "document"
+				Local _undockFile:=FileStream.Open(_storeDocument.Path,"w")
+				_undockFile.WriteString(_storeDocument.TextView.Text)
+				_undockFile.Close()
+				ContentView=Null
+				MainWindow.OpenDocument(_storeDocument.Path)
+				SDL_HideWindow( Self.Window.SDLWindow )
+				Self._visible=False
+		End
+'---------------------------------------------------------------
 	End
 	
 	Function RestoreUndock()
 		
+'		For Local i:=Eachin _undockWindows
+'			i.CloseWindow()
+'			_undockWindows.RemoveEach( i )
+'		Next
+'		If _undockWindows.Length Then RestoreUndock()
+'---[ by DrCox85 ]----------------------------------------------
 		For Local i:=Eachin _undockWindows
 			i.CloseWindow()
-			_undockWindows.RemoveEach( i )
 		Next
-		If _undockWindows.Length Then RestoreUndock()
+'---------------------------------------------------------------
 	End
 	
 End
