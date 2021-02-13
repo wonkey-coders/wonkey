@@ -323,7 +323,16 @@ Class Time
 		Local ticks:=to_ticks( libc.time( Null ) )
 		Return New Time( ticks )
 	End
-	
+
+'---[ by DrCox85 ]----------------------------------------------
+	#rem wonkeydoc Gets Unix TimeStamp.
+	#end
+	Function Unix:Long()
+		Local ticks:=to_ticks( libc.time( Null ) )
+		Return ticks/TimeSpan.TicksPerSecond
+	End
+'---------------------------------------------------------------
+
 	#rem wonkeydoc Parses a time from a string.
 	
 	The string format is: 'WeekDay' Day 'Month' Year Hours:Minutes:Seconds.

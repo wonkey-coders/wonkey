@@ -138,6 +138,12 @@ Class DataStream Extends std.stream.Stream
 		Return New DataStream( data )
 	End
 
+'---[ by DrCox85 ]----------------------------------------------
+	Function Open:DataStream( data:DataBuffer )
+		Return New DataStream( data )
+	End
+'---------------------------------------------------------------
+
 	Private
 	
 	Field _buf:DataBuffer

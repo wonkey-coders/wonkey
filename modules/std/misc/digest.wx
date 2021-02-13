@@ -242,4 +242,29 @@ Function SHA256:String( in:String )
 	Return (Hex(h0) + Hex(h1) + Hex(h2) + Hex(h3) + Hex(h4) + Hex(h5) + Hex(h6) + Hex(h7)).ToLower()
 	
 End
- 
+
+
+'---[ by DrCox85 ]----------------------------------------------
+Function MD5File:String(path:String,blocksize:int=1024)
+	
+	Local _file:=FileStream.Open(path,"r")
+	If (_file)
+		If _file.Length<blocksize blocksize=_file.Length
+		Local _md5String:String
+		Local _count:=_file.Length/blocksize
+		Local _rest:=_file.Length Mod blocksize
+		Local _buf:=_file.ReadAll()
+		
+		For Local a:=0 To _count-1
+			_md5String+=_buf.PeekString(a*blocksize,blocksize)
+		Next
+		_md5String+=_buf.PeekString(_count*blocksize,_rest)
+
+		_file.Close()
+		Return MD5(_md5String)
+	Else	
+		'Return "File:"+path+" not found!"
+		Return ""
+	End
+End
+'---------------------------------------------------------------
