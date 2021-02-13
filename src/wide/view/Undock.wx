@@ -46,6 +46,8 @@ Class UndockWindow Extends Window
 
 	Function NewUndock:UndockWindow( _tabbutton:TabButtonExt )
 		
+		If Not _tabbutton Then Return Null
+		
 		Local _window:UndockWindow
 	
 		For Local dw:=Eachin _undockWindows
@@ -54,22 +56,24 @@ Class UndockWindow Extends Window
 		
 		If Not _window Then _window=New UndockWindow
 		
-		_tabbutton.CurrentHolder.MakeCurrent( _tabbutton.Text )
+		_tabbutton.CurrentHolder?.MakeCurrent( _tabbutton.Text )
 		_window.Title=_tabbutton.Text
 		_tabbutton.Visible=False
 	
 		_window._storeTabbutton=_tabbutton
-		_window._storeView=_tabbutton.CurrentHolder.CurrentView
-		_window._storeIndex=_tabbutton.CurrentHolder.CurrentIndex
-	
-		_tabbutton.CurrentHolder.SetTabView( _window._storeIndex, Null )
-		If Not _tabbutton.CurrentHolder.VisibleTabs Then _tabbutton.CurrentHolder.Visible=False
-	
-		For Local mk:=Eachin _tabbutton.CurrentHolder.Tabs
-			If mk.Visible Then _tabbutton.CurrentHolder.MakeCurrent( mk.Text )
-		Next
+		If _tabbutton.CurrentHolder
+			_window._storeView=_tabbutton.CurrentHolder.CurrentView
+			_window._storeIndex=_tabbutton.CurrentHolder.CurrentIndex
 		
-		_window.ContentView=_window._storeView
+			_tabbutton.CurrentHolder.SetTabView( _window._storeIndex, Null )
+			If Not _tabbutton.CurrentHolder.VisibleTabs Then _tabbutton.CurrentHolder.Visible=False
+		
+			For Local mk:=Eachin _tabbutton.CurrentHolder.Tabs
+				If mk.Visible Then _tabbutton.CurrentHolder.MakeCurrent( mk.Text )
+			Next
+			
+			_window.ContentView=_window._storeView
+		Endif
 		_window._visible=True
 		_window.Activated()
 '---[ by DrCox85 ]----------------------------------------------
@@ -110,6 +114,7 @@ Class UndockWindow Extends Window
 				If Not _storeTabbutton.CurrentHolder.Visible Then _storeTabbutton.CurrentHolder.Visible=True
 				SDL_HideWindow( Self.Window.SDLWindow )
 				Self._visible=False
+				SDL_RaiseWindow(MainWindow.Window.SDLWindow) ' activate main editor window
 '---[ by DrCox85 ]----------------------------------------------
 			Case "document"
 				Local _undockFile:=FileStream.Open(_storeDocument.Path,"w")
@@ -119,6 +124,7 @@ Class UndockWindow Extends Window
 				MainWindow.OpenDocument(_storeDocument.Path)
 				SDL_HideWindow( Self.Window.SDLWindow )
 				Self._visible=False
+				SDL_RaiseWindow(MainWindow.Window.SDLWindow) ' activate main editor window
 		End
 '---------------------------------------------------------------
 	End

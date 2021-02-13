@@ -303,8 +303,11 @@ Class TabViewExt Extends DockingView Implements IDraggableHolder
 		tab.RightClicked=Lambda()
 			
 			MakeCurrent( tab,True )
-			If tab.Undockable Then UndockWindow.NewUndock( tab )
-			RightClicked()
+			If tab.Undockable
+				UndockWindow.NewUndock( tab )
+			Else
+				RightClicked()
+			Endif
 		End
 		
 		tab.DoubleClicked=Lambda()
