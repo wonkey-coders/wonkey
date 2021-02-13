@@ -60,6 +60,8 @@ A raw key represents the physical location of a key on US keyboards. For example
 | LeftBracket
 | RightBracket
 | Backslash
+| Caret
+| Underscore
 | Semicolon
 | Apostrophe
 | Grave
@@ -145,6 +147,8 @@ Enum Key
 	Semicolon=59
 	Equals=61
 	LeftBracket=91,Backslash,RightBracket
+	Caret=94
+	Underscore=95
 	Backquote=96
 	A=97,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z
 	KeyDelete=127

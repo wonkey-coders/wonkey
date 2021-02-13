@@ -103,6 +103,32 @@ Class MouseDevice
 		Return Location.y
 	End
 
+'---[ by DrCox85 ]----------------------------------------------
+	#rem wonkeydoc X Speed of the mouse.
+	#end
+	Property XSpeed:Int()
+		Local d:=_location.x-_lastlocation.x
+		_lastlocation.x=_location.x
+		Return d
+	End
+	
+	#rem wonkeydoc Y Speed of the mouse.
+	#end
+	Property YSpeed:Int()
+		Local d:=_location.y-_lastlocation.y
+		_lastlocation.y=_location.y
+		Return d
+	End
+	#rem wonkeydoc The mouse desktop location.
+	
+	This property get the mouse desktop location.
+	
+	#end
+	Property DesktopLocation:Vec2i()
+		Return _desktoplocation
+	End
+'---------------------------------------------------------------
+
 	#rem wonkeydoc The mouse location.
 	
 	This property may be written to warp the mouse to a new location.
@@ -204,6 +230,9 @@ Class MouseDevice
 	Method Update()
 	
 		Local mask:=SDL_GetMouseState( Varptr _location.x,Varptr _location.y )
+'---[ by DrCox85 ]----------------------------------------------
+		SDL_GetGlobalMouseState(Varptr _desktoplocation.x, Varptr _desktoplocation.y)
+'---------------------------------------------------------------
 		If App.ActiveWindow	_location=App.ActiveWindow.TransformPointFromView( App.ActiveWindow.MouseScale * _location,Null )
 		
 		UpdateButton( MouseButton.Left,mask & 1 )
@@ -240,6 +269,10 @@ Class MouseDevice
 
 	Field _init:Bool	
 	Field _location:Vec2i
+'---[ by DrCox85 ]----------------------------------------------
+	Field _desktoplocation:Vec2i
+	Field _lastlocation:Vec2i
+'---------------------------------------------------------------
 	Field _wheel:Vec2i
 	Field _down:=New Bool[4]
 	Field _pressed:=New Bool[4]

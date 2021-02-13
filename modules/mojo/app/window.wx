@@ -307,7 +307,25 @@ Class Window Extends View
 		
 		ResizeWindow( New Recti( 0,0,width,height ).Centered( New Recti( 0,0,App.DesktopSize ) ) )
 	End
+
+'---[ by DrCox85 ]----------------------------------------------
+	#rem wonkeydoc Move the Window.
 	
+	Move the Window to the new position.
+	
+	@param x The new X-position
+
+	@param y The new Y-position
+	
+	#end
+	Method MoveWindow(x:Int, y:Int)
+		
+		SDL_SetWindowPosition(_sdlWindow,x,y)
+		Frame=GetFrame()
+		_frame=Frame
+	End
+'---------------------------------------------------------------
+
 	#rem wonkeydoc Switches window to fullscreen mode.
 	
 	If called with no parameters, resizes the window to cover the entire desktop without actually changing the display mode.
