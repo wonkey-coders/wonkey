@@ -43,6 +43,7 @@ Public
 		VideoInit()
 		
 		v.data = DataBuffer.Load(path)
+		If Not v.data Return Null
 		v.vidclip = vidman.createVideoClip(data.Data, data.Length)
 		If Not v.vidclip Return Null
 		If shader = Null Then

@@ -1,0 +1,42 @@
+'
+' The following example code loads and renders a video using
+' the simplevideo module by Thomas Schröder, a.k.a. PixelPaladin:
+'
+Namespace video_application
+
+#Import "<mojo>"
+#Import "<simplevideo>"
+
+#Import "../theoratest/konqi.ogv"
+
+Using mojo..
+Using simplevideo..
+
+Class AppWindow Extends Window
+	Field video:Video
+	
+	Method New(title:String, width:Int, height:Int)
+		Super.New(title, width, height)
+		
+		' load and start playing video:
+		video = Video.Load("asset::konqi.ogv")
+		If Not video Then Print "Can't load video"
+		video?.Play()
+	End
+	
+	Method OnRender( canvas:Canvas ) Override
+		App.RequestRender()
+		
+		' update and render video:
+		If video
+			video.Update()
+			canvas.DrawRect(0, 0, Width, Height, video)
+		Endif
+	End
+End
+
+Function Main()
+	New AppInstance
+	New AppWindow("simplevideo example", 320, 180)
+	App.Run()
+End
