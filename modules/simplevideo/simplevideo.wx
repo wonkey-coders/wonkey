@@ -1,7 +1,7 @@
 '
-' simplevideo module by Thomas Schröder, a.k.a. DrCox85
+' simplevideo module by Thomas Schröder, a.k.a. PixelPaladin ( https://github.com/PixelPaladin/ )
 '
-'---[ by DrCox85 ]----------------------------------------------
+'---[ by PixelPaladin ]-----------------------------------------
 Namespace simplevideo
 
 #Import "<std>"
