@@ -520,7 +520,7 @@ Class AppInstance
 	
 	#rem wonkeydoc @hidden
 	#end
-	Method UpdateWindows()
+	Method UpdateWindows(lastWindow:Window=Null)
 		
 		if Not Renderable Return
 		
@@ -528,10 +528,18 @@ Class AppInstance
 		_requestRender=False
 
 		If render UpdateFPS()
-		
-		For Local window:=Eachin Window.VisibleWindows()
-			window.UpdateWindow( render )
-		Next
+
+		If lastWindow
+			For Local window:=Eachin Window.VisibleWindows()
+				If window = lastWindow Then Continue
+				window.UpdateWindow( render )
+			Next
+			lastWindow.UpdateWindow(render)
+		Else
+			For Local window:=Eachin Window.VisibleWindows()
+				window.UpdateWindow( render )
+			Next
+		Endif
 		
 		If _mouseView And Not IsActive( _mouseView )
 			SendMouseEvent( EventType.MouseUp,_mouseView )
@@ -1220,9 +1228,16 @@ Class AppInstance
 				SdlEventFilter( event )
 	
 				SendWindowEvent( EventType.WindowResized )
-				
-				UpdateWindows()
-			
+
+				#If __TARGET__="macos"
+					' Update all windows,
+					' the currently resized window being the last one.
+					' (required for macOS to prevent red borders while resizing!)
+					UpdateWindows(_window)
+				#Else
+					UpdateWindows()
+				#Endif
+
 				Return 0
 			End
 
