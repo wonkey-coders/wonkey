@@ -4,6 +4,8 @@
 '---[ by PixelPaladin ]-----------------------------------------
 Namespace simplevideo
 
+#If __TARGET__<>"emscripten"
+
 #Import "<std>"
 #Import "<mojo>"
 #Import "<theoraplayer>"
@@ -207,4 +209,5 @@ Public
 	
 End
 
+#End
 '---------------------------------------------------------------
