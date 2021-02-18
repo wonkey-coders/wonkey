@@ -4,9 +4,9 @@ namespace sokol
 
 using libc..
 
-#if __HOSTOS__="windows"
+#if __TARGET__="windows"
     #import "<libgdi32.a>"
-#elseif __HOSTOS__="macos"
+#elseif __TARGET__="macos"
     #import "WX_CC_OPTS_MACOS=-fobjc-arc"
     #import "WX_CPP_OPTS_MACOS=-fobjc-arc"
 
@@ -39,11 +39,11 @@ using libc..
 '#import "native/util/sokol_imgui.h"
 '#import "native/util/sokol_gfx_imgui.h"
 
-#if __HOSTOS__="macos"
-    #import "native/sokol.m" 'ObjC
+#if __TARGET__="macos"
+    '#import "native/sokol.m" 'ObjC
     #import "native/sokol.mm" 'ObjC++
 #else
-    #import "native/sokol.c" 'C
+    '#import "native/sokol.c" 'C
     #import "native/sokol.cc" 'C++
 #end
 
