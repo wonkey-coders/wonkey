@@ -170,6 +170,8 @@ Class Theme
 		Return skin
 	End
 	
+	#rem wonkeydoc Loads a theme from a JSON file.
+	#end
 	Method Load:Bool( path:String,scale:Vec2f=New Vec2f( 1 ) )
 		If Not path Then Return False
 	
@@ -184,6 +186,56 @@ Class Theme
 		
 		Return True
 	End
+
+	#rem wonkeydoc Loads a theme from a JSON string.
+	
+	@example
+	App.Theme.LoadFromString("
+	{
+		'colors':{
+			'content': '#345',
+			'clear':   '#123',
+			'active':  '#789',
+			'text-default': '#ffffff'
+		},
+		'styles':{
+			'Button':{
+				'backgroundColor': '#345'
+			}
+		}
+	}")
+	@end
+	#end
+	Method LoadFromString:Bool( text:String,scale:Vec2f=New Vec2f( 1 ) )
+
+		Local jobj:=JsonObject.Parse( text )
+		If Not jobj Then Return False
+
+		If jobj.Contains( "colors" )
+			For Local it:=Eachin jobj["colors"].ToObject()
+				_jcolors[it.Key]=it.Value
+			Next
+		Endif
+		
+		If jobj.Contains( "fonts" )
+			For Local it:=Eachin jobj["fonts"].ToObject()
+				_jfonts[it.Key]=it.Value
+			Next
+		Endif
+		
+		If jobj.Contains( "styles" )
+			For Local it:=Eachin jobj["styles"].ToObject()
+				_jstyles[it.Key]=it.Value
+			Next
+		Endif
+
+		_themeScale=scale
+		
+		Reload()
+		
+		Return True
+	End
+
 
 	Private
 	
