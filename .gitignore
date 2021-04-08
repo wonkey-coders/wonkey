@@ -21,6 +21,8 @@
 
 *.products/
 
+/releases/*
+
 /docs/docs.html
 /docs/newdocs.html
 /docs/modules.html
