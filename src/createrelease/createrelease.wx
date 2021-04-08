@@ -23,10 +23,13 @@ Const RELEASE_SUFFIX:=""
 	Const TARGET:= "???"
 #endif
 
-Const OUTPUT:="wonkey_"+TARGET+"_"+WONKEY_VERSION+RELEASE_SUFFIX
+Global TARGET_SUFFIX:=""
+
+Global OUTPUT:="" '--> "wonkey_"+TARGET+TARGET_SUFFIX+"_"+WONKEY_VERSION+RELEASE_SUFFIX
 
 Const IGNORE:="
 .gitignore
+.gitattributes
 src/createrelease
 bin/windows/wide.state.json
 bin/windows/wide/wide.state.json
@@ -38,6 +41,7 @@ bin/raspbian/wide.state.json
 bin/raspbian/wide/wide.state.json
 "
 
+Global msvc:=False
 Global desktop:String
 Global output:String
 
@@ -116,7 +120,13 @@ Function CopyFiles( dir:String )
 				If file.StartsWith( "emscripten_" ) Continue
 				If file.StartsWith( "android_" ) Continue
 				If file.StartsWith( "ios_" ) Continue
-				'If file.Contains( "_msvc" )  Continue
+#if __TARGET__="windows"
+				If msvc
+					If Not file.Contains( "_msvc" ) Continue
+				Else
+					If file.Contains( "_msvc" ) Continue
+				End
+#end
 				'If file.Contains( "_x64" ) Continue
 				If file="build" Continue
 				If file="src" Continue
@@ -155,6 +165,10 @@ Function CopyFiles( dir:String )
 				If file.EndsWith("_fast.sh") Continue
 				If file.EndsWith("_fastest.sh") Continue
 				If file.EndsWith("_slow.sh") Continue
+
+#if __TARGET__<>"raspbian"
+				If file.EndsWith("_raspbian.bat") Continue
+#end
 				
 #if __TARGET__="windows"
 				If file.EndsWith(".sh") Continue
@@ -216,7 +230,7 @@ Function MakeInno()
 
 	Local iss:=New StringStack
 	iss.Push( "[Setup]" )
-	iss.Push( "OutputDir="+desktop )
+	iss.Push( "OutputDir=.") '+desktop )
 	iss.Push( "OutputBaseFilename="+OUTPUT )
 	iss.Push( "AppName="+OUTPUT )
 	iss.Push( "AppVerName="+OUTPUT )
@@ -227,7 +241,7 @@ Function MakeInno()
 	iss.Push( "Name: ~q{group}\"+OUTPUT+"~q; Filename: ~q{app}\Wonkey (windows).exe~q; WorkingDir: ~q{app}~q" )
 	iss.Push( "Name: ~q{group}\Uninstall "+OUTPUT+"~q; Filename: ~q{uninstallexe}~q" )
 	iss.Push( "[FILES]" )
-	iss.Push( "Source: ~q"+output+"\*~q; DestDir: {app}; Flags: ignoreversion recursesubdirs" )
+	iss.Push( "Source: ~q"+OUTPUT+"\*~q; DestDir: {app}; Flags: ignoreversion recursesubdirs" )
 	iss.Push( "[RUN]" )
 	iss.Push( "Filename: ~q{app}\Wonkey (windows).exe~q; Description: ~qLaunch "+OUTPUT+"~q; Flags: postinstall nowait skipifsilent" )
 			
@@ -262,6 +276,23 @@ Function Main()
 		Endif
 		ChangeDir( ExtractDir( CurrentDir() ) )
 	Wend
+	
+	'if windows msvc
+	If TARGET = "windows"		
+		Local usemsvc:= GetEnv( "WX_USE_MSVC" )
+	
+		If usemsvc=""
+			usemsvc = FindMSVC() ? "1" Else "0"
+		End
+		
+		If int(usemsvc)
+			TARGET_SUFFIX = "-msvc"
+			msvc=True
+		End
+	End
+			
+	' set output name
+	OUTPUT = "wonkey_"+TARGET+TARGET_SUFFIX+"_"+WONKEY_VERSION+RELEASE_SUFFIX
 
 '#if __TARGET__="windows"
 '	desktop=(String.FromCString( getenv( "HOMEDRIVE" ) )+String.FromCString( getenv( "HOMEPATH" ) )+"\Desktop").Replace( "\","/" )+"/"
@@ -281,12 +312,11 @@ Function Main()
 	Local outdir:= "releases/unknown/"
 #endif
 
-
-
-	DeleteDir(outdir,True )
-	CreateDir(outdir)
-	
+	desktop = outdir
 	output=outdir+OUTPUT
+
+	DeleteDir(output,True )
+	CreateDir(output)
 
 	CopyRelease()
 	
@@ -304,6 +334,78 @@ Function Main()
 
 #endif
 
-	Print "~nFinished!!!!!"
+	Print "~nFinished!"
 	
 End
+
+'--------------
+
+#If __TARGET__="windows"
+
+Function FindMSVC:bool()
+
+	Local msvcs:=""
+	Local msvcs_versions:=GetEnv("WX_MSVC_VERSIONS")
+	For Local ver:=Eachin msvcs_versions.Split(",")
+		msvcs=GetEnv( "ProgramFiles(x86)" )+"\Microsoft Visual Studio\" + ver.Trim()
+		If GetFileType( msvcs )=FileType.Directory Exit
+	Next
+	If GetFileType( msvcs )<>FileType.Directory Return False
+	
+	Local wkits:=GetEnv( "ProgramFiles(x86)" )+"\Windows Kits\10"
+	If GetFileType( wkits )<>FileType.Directory Return False
+	
+	Local toolsDir:="",maxver:=0
+	
+	For Local f:=Eachin LoadDir( msvcs )
+		
+		Local dir:=msvcs+"\"+f+"\VC\Tools\MSVC"
+		If GetFileType( dir )<>FileType.Directory Continue
+		
+		For Local f:=Eachin LoadDir( dir )
+			Local verDir:=dir+"\"+f
+			If GetFileType( verDir )<>FileType.Directory Continue
+			Local ver:=Int( f.Replace( ".","" ) )
+			If ver>maxver
+				toolsDir=verDir
+				maxver=ver
+			Endif
+		Next
+	Next
+
+	Local incsDir:=FindMaxVerDir( wkits+"\Include" )
+	If Not incsDir Return False
+
+	Local libsDir:=FindMaxVerDir( wkits+"\Lib" )
+	If Not libsDir Return False
+
+	Return True
+End
+
+Function FindMaxVerDir:String( dir:String )
+	
+	Local maxver:Long=0,maxverDir:=""
+	
+	For Local f:=Eachin LoadDir( dir )
+		
+		Local verDir:=dir+"\"+f
+		If GetFileType( verDir )<>FileType.Directory Continue
+		
+		Local ver:Long=Int( f.Replace( ".","" ) )
+		
+		If ver>maxver
+			maxver=ver
+			maxverDir=verDir
+		Endif
+	Next
+	
+	Return maxverDir
+End
+
+#Else
+	
+Function FindMSVC:Bool()
+	Return False
+End
+
+#endif
