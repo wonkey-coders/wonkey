@@ -1,0 +1,309 @@
+
+#Import "<libc>"
+#Import "<std>"
+
+Using libc..
+Using std..
+
+Const WONKEY_VERSION:="2021.04"
+
+Const WAKE_VERSION:="1.0.0"
+
+Const RELEASE_SUFFIX:=""
+
+#if __TARGET__="windows"
+	Const TARGET:= "windows"
+#elseif __TARGET__="macos"
+	Const TARGET:= "macos"
+#elseif __TARGET__="linux"
+	Const TARGET:= "linux"
+#elseif __TARGET__="raspbian"
+	Const TARGET:= "raspbian"
+#else
+	Const TARGET:= "???"
+#endif
+
+Const OUTPUT:="wonkey_"+TARGET+"_"+WONKEY_VERSION+RELEASE_SUFFIX
+
+Const IGNORE:="
+.gitignore
+src/createrelease
+bin/windows/wide.state.json
+bin/windows/wide/wide.state.json
+bin/linux/wide.state.json
+bin/linux/wide/wide.state.json
+bin/macos/wide.state.json
+bin/macos/wide.app/Contents/MacOS/state.json
+bin/raspbian/wide.state.json
+bin/raspbian/wide/wide.state.json
+"
+
+Global desktop:String
+Global output:String
+
+Function Copy( file:String )
+
+	Print "Copy file: " + file + " ==> " + output + "/" + file
+	
+	CopyFile( file,output+"/"+file )
+End
+
+Function CopyFiles( dir:String )
+
+	'Print "in directory: " + dir
+
+	'CreateDir( output+"/"+dir )
+	
+	For Local file:=Eachin LoadDir( dir )
+		
+		Local src:=dir+"/"+file
+		
+		If IGNORE.Contains( "~n"+src+"~n" ) Continue
+		
+		If dir.Contains( "bin/experimental" ) Continue
+
+#if __TARGET__="windows"
+		If dir.Contains( "bin/macos" ) Continue
+		If dir.Contains( "bin/linux" ) Continue
+		If dir.Contains( "bin/raspbian" ) Continue
+#elseif __TARGET__="macos"
+		If dir.Contains( "bin/windows" ) Continue
+		If dir.Contains( "bin/linux" ) Continue
+		If dir.Contains( "bin/raspbian" ) Continue
+#elseif __TARGET__="linux"
+		If dir.Contains( "bin/macos" ) Continue
+		If dir.Contains( "bin/windows" ) Continue
+		If dir.Contains( "bin/raspbian" ) Continue
+#elseif __TARGET__="raspbian"
+		If dir.Contains( "bin/macos" ) Continue
+		If dir.Contains( "bin/windows" ) Continue
+		If dir.Contains( "bin/linux" ) Continue
+#Endif
+		
+		Select GetFileType( src )
+		Case FileType.Directory
+			
+			If file=".wx" Or file=".DS_Store" Or file=".git" Or file="__PAGES__" Or file="__MANPAGES__"
+				
+				Continue
+				
+			Else If file.EndsWith( ".products" ) Or file.EndsWith( "-mx2" )
+				
+				Continue
+				
+			Else If dir.EndsWith( "/openvr-sdk/bin" )
+				
+#If __TARGET__="windows"
+				If Not file.EndsWith( "win32" ) And Not file.EndsWith( "win64" ) Continue
+#else
+				Continue
+#endif
+			Else If dir.EndsWith( "/openvr-sdk/lib" )
+				
+#If __TARGET__="windows"
+				If Not file.EndsWith( "win32" ) And Not file.EndsWith( "win64" ) Continue
+#else
+				Continue
+#endif
+			Else If file.Contains( ".buildv" )
+
+				If ExtractDir( dir )<>"modules/" Or Not file.EndsWith( ".buildv"+WAKE_VERSION ) Continue
+
+			Else If dir.Contains( ".buildv" )
+				
+				If Not src.Contains( "_mx" ) And Not src.EndsWith( "_mx" ) Continue
+				
+				If file.StartsWith( "emscripten_" ) Continue
+				If file.StartsWith( "android_" ) Continue
+				If file.StartsWith( "ios_" ) Continue
+				'If file.Contains( "_msvc" )  Continue
+				'If file.Contains( "_x64" ) Continue
+				If file="build" Continue
+				If file="src" Continue
+				
+#if __TARGET__="windows"
+				If file.StartsWith( "macos_" ) Continue
+				If file.StartsWith( "linux_" ) Continue
+				If file.StartsWith( "raspbian_" ) Continue
+#elseif __TARGET__="macos"
+				If file.StartsWith( "windows_" ) Continue
+				If file.StartsWith( "linux_" ) Continue
+				If file.StartsWith( "raspbian_" ) Continue
+#elseif __TARGET__="linux"
+				If file.StartsWith( "windows_" ) Continue
+				If file.StartsWith( "macos_" ) Continue
+				If file.StartsWith( "raspbian_" ) Continue
+#elseif __TARGET__="raspbian"
+				If file.StartsWith( "windows_" ) Continue
+				If file.StartsWith( "linux_" ) Continue
+				If file.StartsWith( "macos_" ) Continue
+#Endif
+
+			End
+			
+			Print "In directory: " + src
+			CreateDir( output+"/"+dir )
+			CopyFiles( src )
+		
+		Case FileType.File
+			
+			If file=".gitignore" Continue
+			
+			' ignore scripts
+			If dir = "scripts"
+				
+				If file.EndsWith("_fast.sh") Continue
+				If file.EndsWith("_fastest.sh") Continue
+				If file.EndsWith("_slow.sh") Continue
+				
+#if __TARGET__="windows"
+				If file.EndsWith(".sh") Continue
+#else
+				If file.EndsWith(".bat") Continue
+#end
+			End
+			If file.EndsWith("-mx2") Continue
+			If file.EndsWith("-bak") Or file.EndsWith("-bak.exe") Continue
+		
+			Local dst:=output+"/"+dir+"/"+file
+			
+			CreateDir( output+"/"+dir )
+			CopyFile( src,dst )
+		End
+	Next
+End
+
+Function CopyRelease()
+
+	DeleteDir( output,True )
+	CreateDir( output )
+	
+	'CreateDir( output+"/devtools" )
+	'CreateDir( output+"/tmp" )
+	
+	CopyFiles( "bin" )
+	CopyFiles( "docs" )
+	CopyFiles( "examples" )
+	CopyFiles( "modules" )
+	CopyFiles( "products" )
+	CopyFiles( "scripts" )
+	CopyFiles( "src" )
+	
+	Copy( "LICENSE.txt" )
+	Copy( "README.md" )
+	Copy( "MODULES.md" )
+	
+	'Copy( "ducks-scene.mojo3d" )
+	'Copy( "shapes-scene.mojo3d" )
+	'Copy( "sprites-scene.mojo3d" )
+	'Copy( "test-scene.mojo3d" )
+	
+	'Copy( "xmas-lights.png" )
+	
+#If __TARGET__="windows"
+	Copy( "Wonkey (windows).exe" )
+#Else if __TARGET__="macos"
+	CopyFiles("Wonkey (macos).app" )
+#Else if __TARGET__="linux"
+	Copy( "Wonkey (linux)" )
+#Else if __TARGET__="raspbian"
+	Copy( "Wonkey (raspbian)" )
+#Endif
+
+End
+
+Function MakeInno()
+
+	Local iss:=New StringStack
+	iss.Push( "[Setup]" )
+	iss.Push( "OutputDir="+desktop )
+	iss.Push( "OutputBaseFilename="+OUTPUT )
+	iss.Push( "AppName="+OUTPUT )
+	iss.Push( "AppVerName="+OUTPUT )
+	iss.Push( "DefaultGroupName="+OUTPUT )
+	iss.Push( "DefaultDirName={sd}\"+OUTPUT )
+	iss.Push( "UninstallFilesDir={app}\bin\windows" )
+	iss.Push( "[Icons]" )
+	iss.Push( "Name: ~q{group}\"+OUTPUT+"~q; Filename: ~q{app}\Wonkey (windows).exe~q; WorkingDir: ~q{app}~q" )
+	iss.Push( "Name: ~q{group}\Uninstall "+OUTPUT+"~q; Filename: ~q{uninstallexe}~q" )
+	iss.Push( "[FILES]" )
+	iss.Push( "Source: ~q"+output+"\*~q; DestDir: {app}; Flags: ignoreversion recursesubdirs" )
+	iss.Push( "[RUN]" )
+	iss.Push( "Filename: ~q{app}\Wonkey (windows).exe~q; Description: ~qLaunch "+OUTPUT+"~q; Flags: postinstall nowait skipifsilent" )
+			
+	Local isspath:=output+".iss"
+	
+	SaveString( iss.Join("~n"),isspath )
+End
+
+Function MakeMacosPkg()
+
+	libc.system( "chmod -R 777 "+output )
+	
+	libc.system( "pkgbuild --install-location /Applications/"+OUTPUT+" --identifier "+OUTPUT+" --ownership preserve --root "+output+" "+output+".pkg" )
+End
+
+Function MakeLinuxTargz()
+
+	libc.system( "chmod -R 777 "+output )
+	
+	libc.system( "tar czf "+output+".tgz -C "+desktop+" "+OUTPUT )
+End
+
+Function Main()
+
+	Print "Creating release..."
+
+	ChangeDir( AppDir() )
+	
+	While GetFileType( "bin" )<>FileType.Directory
+		If IsRootDir( CurrentDir() )
+			libc.exit_( -1 )
+		Endif
+		ChangeDir( ExtractDir( CurrentDir() ) )
+	Wend
+
+'#if __TARGET__="windows"
+'	desktop=(String.FromCString( getenv( "HOMEDRIVE" ) )+String.FromCString( getenv( "HOMEPATH" ) )+"\Desktop").Replace( "\","/" )+"/"
+'#else
+'	desktop=String.FromCString( getenv( "HOME" ) )+"/Desktop/"
+'#endif
+
+#if __TARGET__="windows"
+	Local outdir:= "releases/windows/"
+#elseif __TARGET__="macos"
+	Local outdir:= "releases/macos/"
+#elseif __TARGET__="linux"
+	Local outdir:= "releases/linux/"
+#elseif __TARGET__="raspbian"
+	Local outdir:= "releases/raspbian/"
+#else
+	Local outdir:= "releases/unknown/"
+#endif
+
+
+
+	DeleteDir(outdir,True )
+	CreateDir(outdir)
+	
+	output=outdir+OUTPUT
+
+	CopyRelease()
+	
+#if __TARGET__="windows"
+
+	MakeInno()
+	
+#else if __TARGET__="macos"
+
+	MakeMacosPkg()
+	
+#else if __TARGET__="linux" or __TARGET__="raspbian"
+
+	MakeLinuxTargz()
+
+#endif
+
+	Print "~nFinished!!!!!"
+	
+End
