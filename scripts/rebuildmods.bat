@@ -7,8 +7,8 @@ echo.
 echo ***** Rebuilding modules *****
 echo.
 
-%wake% mods -clean -config=release -target=desktop
+%wake% mods -clean -time -config=release -target=desktop
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-%wake% mods -clean -config=debug -target=desktop
+%wake% mods -clean -time -config=debug -target=desktop
 if %errorlevel% neq 0 exit /b %errorlevel%
