@@ -13,11 +13,6 @@
 	<img src="./docs/img/logo-wonkey-anim.svg"/>
 </div>
 
-## Showcase
-
-**Wonkey on Raspbian (Raspberry PI 4)**
-![](./docs/img/wonkey_raspbian.png)
-
 ## Desktop targets
 
 | Windows                                | MacOS                                | Linux                                | Raspbian                                 |
@@ -38,7 +33,7 @@
 
 ## More information
 
-Website: https://wonkey-coders.github.io/
+![](./docs/img/icons/logo-wordpress.svg) Website: https://wonkey-coders.github.io/
 
 ![](./docs/img/icons/logo-github.svg) Github page: https://github.com/wonkey-coders
 
@@ -47,6 +42,19 @@ Website: https://wonkey-coders.github.io/
 **Join the community and improve this programming language.**
 
 Enjoy!
+
+## Showcase
+
+**Wonkey on Raspbian (Raspberry PI 4)**
+![](./docs/img/wonkey_raspbian.png)
+
+**Click screenshots to run the examples in browser:**
+
+[![Pool](https://wonkey-coders.github.io/examples/pool.png)](https://wonkey-coders.github.io/examples/pool/)
+
+[![Toy plane](https://wonkey-coders.github.io/examples/toy_plane.png)](https://wonkey-coders.github.io/examples/toy_plane/)
+
+[![Commanche](https://wonkey-coders.github.io/examples/commanche.png)](https://wonkey-coders.github.io/examples/commanche/)
 
 ----
 ## How to build from source
