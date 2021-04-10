@@ -7,40 +7,36 @@
 
 # Wonkey Programming Language
 
+**Wonkey** is an open source programming language for the creation of cross-platform video games, highly inspired by the “Blitz” range of languages.
+
 <div align="center">
 	<img src="./docs/img/logo-wonkey-anim.svg"/>
 </div>
 
-Wonkey is a fork of Monkey2 programming language designed by Mark Sibly, creator of the 'Blitz' range of languages.
-
-### Showcase
+## Showcase
 
 **Wonkey on Raspbian (Raspberry PI 4)**
 ![](./docs/img/wonkey_raspbian.png)
 
-### Multi-target products
-
-Wonkey works on a wide range of targets: Windows, Macos, Linux, Emscripten, Android and iOS.
-
-#### Desktop targets
+## Desktop targets
 
 | Windows                                | MacOS                                | Linux                                | Raspbian                                 |
 | -------------------------------------- | ------------------------------------ | ------------------------------------ | ---------------------------------------- |
 | ![](./docs/img/icons/logo-windows.svg) | ![](./docs/img/icons/logo-apple.svg) | ![](./docs/img/icons/logo-linux.svg) | ![](./docs/img/icons/logo-raspberry.png) |
 
-#### Mobile targets
+## Mobile targets
 
 | Android                                | iOS                                  |
 | -------------------------------------- | ------------------------------------ |
 | ![](./docs/img/icons/logo-android.svg) | ![](./docs/img/icons/logo-apple.svg) |
 
-#### Web targets
+## Web targets
 
 | Emscripten                                                   |
 | ------------------------------------------------------------ |
 | ![](./docs/img/icons/logo-html5.svg)![](./docs/img/icons/logo-javascript.svg) |
 
-### More information
+## More information
 
 Website: https://wonkey-coders.github.io/
 
@@ -48,9 +44,19 @@ Website: https://wonkey-coders.github.io/
 
 ![](./docs/img/icons/logo-discord.svg) Discord channel : https://discord.gg/awfuRtZay7
 
+**Join the community and improve this programming language.**
 
+Enjoy!
 
+----
 ## How to build from source
+
+**Table of contents**
+
+- [Building on Windows](#building-on-windows)
+	- [Using GCC](#using-gcc)
+	- [Using MSVC](#using-msvc)
+- [Building on MacOS/Linux](#building-on-macoslinux)
 
 If you are reading this on Github, please note there are prebuilt versions of wonkey (with complete source code) available from https://github.com/wonkey-coders/wonkey/releases.
 
@@ -98,7 +104,9 @@ Follow the next steps to build :
 3. If all went well, you should end up with a 'Wonkey (...)' app in the wonkey directory. Run this to launch the WIDE (Wonkey IDE).
 4. You should now be able to build and run wonkey apps. There are some sample apps in the 'wonkey/examples' directory.
 
-## Emscripten target
+----
+
+## Setup Emscripten target
 
 See [installation instructions](https://emscripten.org/docs/getting_started/downloads.html) from Emscripten site.
 
@@ -132,9 +140,21 @@ source ./emsdk_env.sh
 
 *NOTE: on Windows, run `emsdk` instead of `./emsdk`, and `emsdk_env.bat` instead of `source ./emsdk_env.sh`.*
 
+----
+
 ## Introduction to Wonkey
 
-While staying true to the 'basic' style of the original blitz languages, Wonkey offers some very powerful new features including:
+ℹ️ More complete help and samples are available online at https://wonkey-coders.github.io/.
+
+### "Hello, Wonkey!'
+
+```monkey
+Function Main()
+	Print "Hello, Wonkey!"
+End
+```
+
+While staying true to the 'basic' style of the original Blitz languages, Wonkey offers some very powerful new features including:
 
 ### Generic classes and methods 
 
@@ -152,7 +172,7 @@ Function Main()
 End
 ```
 
-### 'First class' functions :
+### 'First class' functions
 
 Functions (and methods) can be stored in variables and passed to/from other functions.
 
@@ -314,3 +334,7 @@ Function Main()
 End
 
 ```
+
+### Credits
+
+Wonkey is an community project and an fork of Monkey2 programming language designed by Mark Sibly, creator of the 'Blitz' range of languages.
