@@ -1,0 +1,28 @@
+{
+	"endpos":"97:0",
+	"flags":0,
+	"ident":"wake_findmsvc",
+	"kind":"file",
+	"members":[{
+		"endpos":"97:0",
+		"flags":1,
+		"ident":"FindMSVC",
+		"kind":"function",
+		"srcpos":"94:0",
+		"stmts":[],
+		"type":{
+			"endpos":"94:24",
+			"kind":"functype",
+			"params":[],
+			"retType":{
+				"endpos":"94:22",
+				"ident":"bool",
+				"kind":"ident",
+				"srcpos":"94:18"
+			},
+			"srcpos":"94:18"
+		}
+	}],
+	"namespace":"wake",
+	"srcpos":"1:0"
+}

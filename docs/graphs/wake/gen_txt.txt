@@ -1,0 +1,1770 @@
+class Scope
++global semanting: Stack<Scope>
++field inner: Stack<Scope>
++field nodes: Map<String, SNode>
++field outer: Scope
++field transMembers: Stack<SNode>
+--
++function Semanting: Scope()
++method FindClass: ClassType()
++method FindFile: FileScope()
++method FindNode: SNode(ident: String)
++method FindType: Type(ident: String)
++method FindValue: Value(ident: String)
++method GetNode: SNode(ident: String)
++method GetType: Type(ident: String)
++method Insert: bool(ident: String, node: SNode)
++method ToString: string()
++method new: void(outer: Scope)
+
+class Value --> SNode
++field flags: Int
++field type: Type
+--
++function CheckAccess: void(decl: Decl, scope: Scope, tscope: Scope)
++method Assign: Stmt(pnode: PNode, op: String, value: Value, block: Block)
++method CheckAccess: void(tscope: Scope)
++method Compare: Value(op: String, rhs: Value)
++method FindValue: Value(ident: String)
++method GenInstance: Value(types: Type[])
++method Index: Value(args: Value[])
++method Invoke: Value(args: Value[])
++method RemoveSideEffects: Value(block: Block)
++method ToRValue: Value()
++method ToString: string()
++method ToValue: Value(instance: Value)
++method UpCast: Value(type: Type)
+
+class TypeValue --> Value
++field ttype: Type
+--
++method FindValue: Value(ident: String)
++method ToRValue: Value()
++method ToString: string()
++method new: void(ttype: Type)
+
+class UpCastValue --> Value
++field value: Value
+--
++method CheckAccess: void(tscope: Scope)
++method RemoveSideEffects: Value(block: Block)
++method ToString: string()
++method new: void(type: Type, value: Value)
+
+class ExplicitCastValue --> Value
++field value: Value
+--
++method RemoveSideEffects: Value(block: Block)
++method ToString: string()
++method new: void(type: Type, value: Value)
+
+class SelfValue --> Value
++field ctype: ClassType
++field func: FuncValue
+--
++method ToString: string()
++method new: void(ctype: ClassType, func: FuncValue)
+
+class SuperValue --> Value
++field ctype: ClassType
++field func: FuncValue
+--
++method ToString: string()
++method new: void(ctype: ClassType, func: FuncValue)
+
+class LiteralValue --> Value
++field value: String
+--
++function BoolValue: LiteralValue(value: Bool)
++function IntValue: LiteralValue(value: Int)
++function NullValue: LiteralValue(type: Type)
++method RemoveSideEffects: Value(block: Block)
++method ToString: string()
++method UpCast: Value(type: Type)
++method new: void(type: Type, value: String)
+
+class NullValue --> Value
+--
++method ToRValue: Value()
++method ToString: string()
++method UpCast: Value(type: Type)
++method new: void()
+
+class InvokeValue --> Value
++field args: Value[]
++field ftype: FuncType
++field value: Value
+--
++method CheckAccess: void(scope: Scope)
++method RemoveSideEffects: Value(block: Block)
++method ToString: string()
++method new: void(value: Value, args: Value[])
+
+class InvokeNewValue --> Value
++field args: Value[]
++field ctype: ClassType
+--
++method ToString: string()
++method new: void(ctype: ClassType, args: Value[])
+
+class NewObjectValue --> Value
++field args: Value[]
++field ctor: FuncValue
++field ctype: ClassType
+--
++method RemoveSideEffects: Value(block: Block)
++method ToString: string()
++method new: void(ctype: ClassType, ctor: FuncValue, args: Value[])
+
+class NewArrayValue --> Value
++field atype: ArrayType
++field inits: Value[]
++field sizes: Value[]
+--
++method RemoveSideEffects: Value(block: Block)
++method ToString: string()
++method new: void(atype: ArrayType, sizes: Value[], inits: Value[])
+
+class ArrayIndexValue --> Value
++field args: Value[]
++field atype: ArrayType
++field value: Value
+--
++method RemoveSideEffects: Value(block: Block)
++method ToString: string()
++method new: void(atype: ArrayType, value: Value, args: Value[])
+
+class StringIndexValue --> Value
++field index: Value
++field value: Value
+--
++method RemoveSideEffects: Value(block: Block)
++method ToString: string()
++method new: void(value: Value, index: Value)
+
+class PointerIndexValue --> Value
++field index: Value
++field value: Value
+--
++method RemoveSideEffects: Value(block: Block)
++method ToString: string()
++method new: void(elemType: Type, value: Value, index: Value)
+
+class UnaryopValue --> Value
++field op: String
++field value: Value
+--
++method ToString: string()
++method new: void(type: Type, op: String, value: Value)
+
+class BinaryopValue --> Value
++field lhs: Value
++field op: String
++field rhs: Value
+--
++method ToString: string()
++method new: void(type: Type, op: String, lhs: Value, rhs: Value)
+
+class IfThenElseValue --> Value
++field elseValue: Value
++field thenValue: Value
++field value: Value
+--
++method new: void(type: Type, value: Value, thenValue: Value, elseValue: Value)
+
+class PointerValue --> Value
++field value: Value
+--
++method ToString: string()
++method new: void(value: Value)
+
+class TypeofValue --> Value
++field value: Value
+--
++method ToString: string()
++method new: void(value: Value)
+
+class TypeofTypeValue --> Value
++field ttype: Type
+--
++method ToString: string()
++method new: void(ttype: Type)
+
+class Type --> SNode
++const MAX_DISTANCE: Int
++const TYPE_GENERIC: Int
++global ArrayClass: ClassType
++global BadType: BadType
++global BoolType: PrimType
++global ByteType: PrimType
++global CStringClass: ClassType
++global DoubleType: PrimType
++global FloatType: PrimType
++global IntType: PrimType
++global LongType: PrimType
++global NullType: NullType
++global ObjectClass: ClassType
++global ShortType: PrimType
++global StringType: PrimType
++global ThrowableClass: ClassType
++global TypeInfoClass: ClassType
++global UByteType: PrimType
++global UIntType: PrimType
++global ULongType: PrimType
++global UShortType: PrimType
++global VariantType: PrimType
++global VoidType: VoidType
++global WStringClass: ClassType
++field flags: Int
+--
++operator <=>: int(type: Type)
++operator <>: bool(type: Type)
++operator =: bool(type: Type)
++method CanCastToType: bool(type: Type)
++method DistanceToType: int(type: Type)
++method Equals: bool(type: Type)
++method ExtendsType: bool(type: Type)
++method FindNode: SNode(ident: String)
++method FindType: Type(ident: String)
++method GenInstance: Type(types: Type[])
++method Index: Value(args: Value[], value: Value)
++method InferType: Type(type: Type, infered: Type[])
++method Invoke: Value(args: Value[], value: Value)
++method ToType: Type()
++method ToValue: Value(instance: Value)
++method UpCast: Value(rvalue: Value, type: Type)
+
+class ProxyType --> Type
++field _alias: Type
+--
++method CanCastToType: bool(type: Type)
++method DistanceToType: int(type: Type)
++method Equals: bool(type: Type)
++method ExtendsType: bool(type: Type)
++method FindNode: SNode(ident: String)
++method FindType: Type(ident: String)
++method GenInstance: Type(types: Type[])
++method Index: Value(args: Value[], value: Value)
++method InferType: Type(type: Type, args: Type[])
++method Invoke: Value(args: Value[], value: Value)
++method ToString: string()
++method ToValue: Value(instance: Value)
++method UpCast: Value(rvalue: Value, type: Type)
++method new: void()
+
+class PrimType --> Type
++field ctype: ClassType
+--
++method CanCastToType: bool(type: Type)
++method DistanceToType: int(type: Type)
++method Equals: bool(type: Type)
++method ExtendsType: bool(type: Type)
++method FindNode: SNode(ident: String)
++method FindType: Type(ident: String)
++method Index: Value(args: Value[], value: Value)
++method ToString: string()
++method new: void(ctype: ClassType)
+
+class ArrayType --> Type
++field ctype: ClassType
++field elemType: Type
++field rank: Int
+--
++method DistanceToType: int(type: Type)
++method Equals: bool(type: Type)
++method FindNode: SNode(ident: String)
++method FindType: Type(ident: String)
++method Index: Value(args: Value[], value: Value)
++method InferType: Type(type: Type, infered: Type[])
++method ToString: string()
++method new: void(elemType: Type, rank: Int)
+
+class PointerType --> Type
++field elemType: Type
+--
++method CanCastToType: bool(type: Type)
++method DistanceToType: int(type: Type)
++method Equals: bool(type: Type)
++method Index: Value(args: Value[], value: Value)
++method InferType: Type(type: Type, infered: Type[])
++method ToString: string()
++method new: void(elemType: Type)
+
+class FuncType --> Type
++field argTypes: Type[]
++field retType: Type
+--
++method DistanceToType: int(type: Type)
++method Equals: bool(type: Type)
++method InferType: Type(type: Type, infered: Type[])
++method Invoke: Value(args: Value[], value: Value)
++method ToString: string()
++method new: void(retType: Type, argTypes: Type[])
+
+class GenArgType --> Type
++field ident: String
++field index: Int
+--
++method Equals: bool(type: Type)
++method InferType: Type(type: Type, infered: Type[])
++method ToString: string()
++method new: void(index: Int, ident: String)
+
+class VoidType --> Type
+--
++method ToString: string()
+
+class BadType --> Type
+--
++method Equals: bool(type: Type)
++method ToString: string()
+
+class NullType --> Type
+--
++method DistanceToType: int(type: Type)
++method Equals: bool(type: Type)
++method ToString: string()
+
+class UNode
+--
++function Join<T>: string(args: arraytype)
++method ToString: string()
+
+class PNode --> UNode
++global parsing: FileDecl
++global semanting: Stack<PNode>
++field endpos: Int
++field srcfile: FileDecl
++field srcpos: Int
+--
++method ToDebugString: string()
++method new: void()
++method new: void(srcpos: Int, endpos: Int)
+
+class SNode --> UNode
++global semtab: String
++field pnode: PNode
++field semanted: SNode
++field state: Int
+--
++method OnSemant: SNode()
++method Semant: SNode()
++method ToString: string()
++method ToType: Type()
++method ToValue: Value(instance: Value)
+
+class Stmt
++field pnode: PNode
+--
++method new: void()
++method new: void(pnode: PNode)
+
+class PrintStmt --> Stmt
++field value: Value
+--
++method new: void(pnode: PNode, value: Value)
+
+class ReturnStmt --> Stmt
++field value: Value
+--
++method new: void(pnode: PNode, value: Value)
+
+class VarDeclStmt --> Stmt
++field varValue: VarValue
+--
++method new: void(pnode: PNode, varValue: VarValue)
+
+class AssignStmt --> Stmt
++field lhs: Value
++field op: String
++field rhs: Value
+--
++method new: void(pnode: PNode, op: String, lhs: Value, rhs: Value)
+
+class EvalStmt --> Stmt
++field value: Value
+--
++method new: void(pnode: PNode, value: Value)
+
+class IfStmt --> Stmt
++field block: Block
++field cond: Value
++field succ: IfStmt
+--
++method new: void(pnode: PNode, cond: Value, block: Block)
+
+class WhileStmt --> Stmt
++field block: Block
++field cond: Value
+--
++method new: void(pnode: PNode, cond: Value, block: Block)
+
+class RepeatStmt --> Stmt
++field block: Block
++field cond: Value
+--
++method new: void(pnode: PNode, cond: Value, block: Block)
+
+class CaseStmt --> Stmt
++field block: Block
++field values: Value[]
+--
++method new: void(values: Value[], block: Block)
+
+class SelectStmt --> Stmt
++field cases: CaseStmt[]
++field value: Value
+--
++method new: void(pnode: PNode, value: Value, cases: CaseStmt[])
+
+class ForStmt --> Stmt
++field block: Block
++field cond: Value
++field iblock: Block
++field incr: Stmt
+--
++method new: void(pnode: PNode, iblock: Block, cond: Value, incr: Stmt, block: Block)
+
+class CatchStmt
++field block: Block
++field vvar: VarValue
+--
++method new: void(vvar: VarValue, block: Block)
+
+class TryStmt --> Stmt
++field block: Block
++field catches: CatchStmt[]
+--
++method new: void(pnode: PNode, block: Block, catches: CatchStmt[])
+
+class ThrowStmt --> Stmt
++field value: Value
+--
++method new: void(pnode: PNode, value: Value)
+
+class ContinueStmt --> Stmt
+--
++method new: void(pnode: PNode)
+
+class ExitStmt --> Stmt
+--
++method new: void(pnode: PNode)
+
+class StmtVisitor
+--
++method Visit: void(block: Block)
++method Visit: void(stmt: Stmt)
++method Visit: void(stmt: PrintStmt)
++method Visit: void(stmt: ReturnStmt)
++method Visit: void(stmt: VarDeclStmt)
++method Visit: void(stmt: AssignStmt)
++method Visit: void(stmt: EvalStmt)
++method Visit: void(stmt: ThrowStmt)
++method Visit: void(stmt: ExitStmt)
++method Visit: void(stmt: ContinueStmt)
++method Visit: void(stmt: IfStmt)
++method Visit: void(stmt: WhileStmt)
++method Visit: void(stmt: RepeatStmt)
++method Visit: void(stmt: SelectStmt)
++method Visit: void(stmt: ForStmt)
++method Visit: void(stmt: TryStmt)
+
+class FileScope --> Scope
++field fdecl: FileDecl
++field nmspace: NamespaceScope
++field toSemant: Stack<SNode>
++field usings: Stack<NamespaceScope>
+--
++function FindExtensions: SNode(ident: String, ctype: ClassType, found: SNode)
++method FindExtensions: SNode(finder: NodeFinder, ctype: ClassType)
++method FindFile: FileScope()
++method FindNode: SNode(ident: String)
++method FindType: Type(ident: String)
++method Semant: void()
++method SemantUsings: void()
++method UsingAll: void(nmspace: NamespaceScope)
++method UsingInner: void(nmspace: NamespaceScope)
++method UsingNamespace: bool(nmspace: NamespaceScope)
++method new: void(fdecl: FileDecl)
+
+class Block --> Scope
++field func: FuncValue
++field inex: Bool
++field loop: Bool
++field reachable: Bool
++field stmts: Stack<Stmt>
+--
++method AllocLocal: VarValue(init: Value, srcpos: Int, endpos: Int)
++method AllocLocal: VarValue(ident: String, init: Value, srcpos: Int, endpos: Int)
++method Emit: void(stmt: Stmt)
++method FindValue: Value(ident: String)
++method Semant: void(stmts: StmtExpr[])
++method new: void(func: FuncValue)
++method new: void(outer: Block)
+
+class FuncBlock --> Block
+--
++method FindType: Type(ident: String)
++method new: void(func: FuncValue)
+
+class ErrorEx --> throwable
++field msg: String
+--
++method ToString: string()
++method new: void(msg: String)
+
+class ParseEx --> ErrorEx
++field srcfile: String
++field srcpos: Int
+--
++method ToString: string()
++method new: void(msg: String, srcfile: String, srcpos: Int)
+
+class SemantEx --> ErrorEx
++field pnode: PNode
+--
++method ToString: string()
++method new: void(msg: String)
++method new: void(msg: String, pnode: PNode)
+
+class BuildEx --> ErrorEx
++global srcpath: String
++global srcpos: Int
+--
++method ToString: string()
++method new: void(msg: String)
+
+class TransEx --> BuildEx
+--
++method ToString: string()
++method new: void(msg: String)
+
+class IdentEx --> SemantEx
+--
++method new: void(ident: String)
+
+class TypeIdentEx --> SemantEx
+--
++method new: void(ident: String)
+
+class UpCastEx --> SemantEx
+--
++method new: void(value: Value, type: Type)
+
+class OverloadEx --> SemantEx
+--
++method new: void(value: Value, args: Value[])
++method new: void(value: Value, args: Type[])
+
+class Toker
+-field _endPos: Int
+-field _flags: Int
+-field _len: Int
+-field _line: Int
+-field _linePos: Int
+-field _pos: Int
+-field _srcPos: Int
+-field _text: String
+-field _toke: String
+-field _tokePos: Int
+-field _tokeType: Int
+--
++method Bump: string()
++method new: void()
++method new: void(text: String)
++method new: void(toker: Toker)
+
+class TryParseEx --> throwable
+--
+
+class Parser
++field _cc: 
++field _doccing: Bool
++field _docs: 
++field _errors: 
++field _fdecl: FileDecl
++field _imports: 
++field _meta: String
++field _ppsyms: StringMap<string>
++field _reflects: 
++field _stateStack: 
++field _toker: Toker
++field _usings: 
+--
++method AtEos: bool()
++method BeginTryParse: void()
++method Bump: string()
++method CParse: bool(toke: String)
++method CParseEol: bool()
++method CParseIdent: string()
++method Docs: string()
++method EatEols: void()
++method EndTryParse: void()
++method Error: void(msg: String)
++method ErrorNx: void(msg: String)
++method Eval: string()
++method EvalAnd: string()
++method EvalBool: bool()
++method EvalEquals: string()
++method EvalOr: string()
++method EvalPrimary: string()
++method EvalUnary: string()
++method IsBool: bool(v: String)
++method IsTypeIdent: bool(ident: String)
++method Meta: string()
++method Parse: void(toke: String)
++method Parse: string()
++method ParseAccessFlags: int(flags: Int, fileScope: Bool)
++method ParseAddsubExpr: Expr()
++method ParseAliases: void(decls: generic, flags: ident)
++method ParseAndExpr: Expr()
++method ParseBaseType: Expr(identType: ident)
++method ParseBitandExpr: Expr()
++method ParseBitorExpr: Expr()
++method ParseBlockStmts: StmtExpr[]()
++method ParseClass: ClassDecl(flags: ident)
++method ParseCompareExpr: Expr()
++method ParseDecls: Decl[](flags: ident, fileScope: ident)
++method ParseEnum: EnumDecl(flags: ident)
++method ParseEol: void()
++method ParseEqualsExpr: Expr()
++method ParseExpr: Expr()
++method ParseExprStmt: StmtExpr()
++method ParseExprs: Expr[]()
++method ParseExtendsExpr: Expr()
++method ParseFile: FileDecl(ident: ident, srcPath: ident, ppsyms: generic)
++method ParseFor: ForStmtExpr()
++method ParseFunc: FuncDecl(flags: ident)
++method ParseFuncType: FuncTypeExpr(retType: ident)
++method ParseGenArgs: string[]()
++method ParseIdent: string()
++method ParseIdentType: IdentExpr()
++method ParseIf: IfStmtExpr()
++method ParseIfThenElseExpr: Expr()
++method ParseInvokeArgs: Expr[]()
++method ParseMeta: string()
++method ParseMuldivExpr: Expr()
++method ParseNamespaceIdent: string()
++method ParseNewType: Expr()
++method ParseOrExpr: Expr()
++method ParseOrderExpr: Expr()
++method ParsePostfixExpr: Expr()
++method ParsePrefixExpr: Expr()
++method ParsePrimaryExpr: Expr()
++method ParseProperty: PropertyDecl(flags: ident)
++method ParseRepeat: RepeatStmtExpr()
++method ParseSelect: SelectStmtExpr()
++method ParseShiftExpr: Expr()
++method ParseSimpleStmt: StmtExpr()
++method ParseSimpleStmts: StmtExpr[]()
++method ParseStmts: StmtExpr[](block: ident)
++method ParseString: string()
++method ParseTry: TryStmtExpr()
++method ParseType: Expr(identType: ident)
++method ParseTypes: Expr[]()
++method ParseUsingIdent: string()
++method ParseVars: void(decls: generic, flags: ident)
++method ParseWhile: WhileStmtExpr()
++method PreProcess: void(text: String)
++method SkipToEol: void()
++method SkipToNextLine: void()
++method ToBool: string(v: String)
++method TryParseFailed: void()
++method new: void()
++method new: void(source: ident, ppsyms: generic)
+
+class Decl --> PNode
++field docs: String
++field flags: Int
++field ident: String
++field kind: String
++field members: Decl[]
++field meta: String
++field symbol: String
+--
++method ToNode: SNode(scope: Scope)
++method ToString: string()
+
+class FileDecl --> Decl
++field cfile: String
++field classes: Stack<ClassType>
++field enums: Stack<EnumType>
++field errors: ParseEx[]
++field exhfile: String
++field extclasses: Stack<ClassType>
++field functions: Stack<FuncValue>
++field globals: Stack<VarValue>
++field gpath: String
++field hfile: String
++field imports: String[]
++field module: Module
++field nmspace: String
++field path: String
++field reflects: String[]
++field usings: String[]
+--
++method ToString: string()
++method new: void()
+
+class Expr --> PNode
+--
++method OnSemant: Value(scope: Scope)
++method OnSemantType: Type(scope: Scope)
++method OnSemantWhere: bool(scope: Scope)
++method Semant: Value(scope: Scope)
++method SemantRValue: Value(scope: Scope, type: Type)
++method SemantType: Type(scope: Scope, canBeGeneric: Bool)
++method SemantWhere: bool(scope: Scope)
++method TrySemantRValue: Value(scope: Scope, type: Type)
++method new: void(srcpos: Int, endpos: Int)
+
+class ValueExpr --> Expr
++field value: Value
+--
++method OnSemant: Value(scope: Scope)
++method new: void(value: Value, srcpos: Int, endpos: Int)
+
+class IdentExpr --> Expr
++field ident: String
+--
++method OnSemant: Value(scope: Scope)
++method OnSemantType: Type(scope: Scope)
++method ToString: string()
++method new: void(ident: String, srcpos: Int, endpos: Int)
+
+class MemberExpr --> Expr
++field expr: Expr
++field ident: String
+--
++method OnSemant: Value(scope: Scope)
++method OnSemantType: Type(scope: Scope)
++method ToString: string()
++method new: void(expr: Expr, ident: String, srcpos: Int, endpos: Int)
+
+class SafeMemberExpr --> Expr
++field expr: Expr
++field ident: String
+--
++method OnSemant: Value(scope: Scope)
++method new: void(expr: Expr, ident: String, srcpos: Int, endpos: Int)
+
+class InvokeExpr --> Expr
++field args: Expr[]
++field expr: Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(expr: Expr, args: Expr[], srcpos: Int, endpos: Int)
+
+class SafeInvokeExpr --> Expr
++field args: Expr[]
++field expr: Expr
++field ident: String
+--
++method OnSemant: Value(scope: Scope)
++method new: void(expr: Expr, ident: String, args: Expr[], srcpos: Int, endpos: Int)
+
+class GenericExpr --> Expr
++field args: Expr[]
++field expr: Expr
+--
++method OnSemant: Value(scope: Scope)
++method OnSemantType: Type(scope: Scope)
++method ToString: string()
++method new: void(expr: Expr, args: Expr[], srcpos: Int, endpos: Int)
+
+class NewObjectExpr --> Expr
++field args: Expr[]
++field type: Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(type: Expr, args: Expr[], srcpos: Int, endpos: Int)
+
+class NewArrayExpr --> Expr
++field inits: Expr[]
++field sizes: Expr[]
++field type: ArrayTypeExpr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(type: ArrayTypeExpr, sizes: Expr[], inits: Expr[], srcpos: Int, endpos: Int)
+
+class IndexExpr --> Expr
++field args: Expr[]
++field expr: Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(expr: Expr, args: Expr[], srcpos: Int, endpos: Int)
+
+class ExtendsExpr --> Expr
++field expr: Expr
++field op: String
++field type: Expr
+--
++method OnSemant: Value(scope: Scope)
++method OnSemantWhere: bool(scope: Scope)
++method ToString: string()
++method new: void(op: String, expr: Expr, type: Expr, srcpos: Int, endpos: Int)
+
+class CastExpr --> Expr
++field expr: Expr
++field type: Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(type: Expr, expr: Expr, srcpos: Int, endpos: Int)
+
+class SelfExpr --> Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(srcpos: Int, endpos: Int)
+
+class SuperExpr --> Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(srcpos: Int, endpos: Int)
+
+class NullExpr --> Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(srcpos: Int, endpos: Int)
+
+class UnaryopExpr --> Expr
++field expr: Expr
++field op: String
+--
++method OnSemant: Value(scope: Scope)
++method OnSemantWhere: bool(scope: Scope)
++method ToString: string()
++method new: void(op: String, expr: Expr, srcpos: Int, endpos: Int)
+
+class BinaryopExpr --> Expr
++field lhs: Expr
++field op: String
++field rhs: Expr
+--
++method OnSemant: Value(scope: Scope)
++method OnSemantWhere: bool(scope: Scope)
++method ToString: string()
++method new: void(op: String, lhs: Expr, rhs: Expr, srcpos: Int, endpos: Int)
+
+class ElvisExpr --> Expr
++field elseExpr: Expr
++field expr: Expr
+--
++method OnSemant: Value(scope: Scope)
++method new: void(expr: Expr, elseExpr: Expr, srcpos: Int, endpos: Int)
+
+class IfThenElseExpr --> Expr
++field elseExpr: Expr
++field expr: Expr
++field thenExpr: Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(expr: Expr, thenExpr: Expr, elseExpr: Expr, srcpos: Int, endpos: Int)
+
+class VarptrExpr --> Expr
++field expr: Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(expr: Expr, srcpos: Int, endpos: Int)
+
+class LiteralExpr --> Expr
++field toke: String
++field tokeType: Int
++field typeExpr: Expr
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(toke: String, tokeType: Int, typeExpr: Expr, srcpos: Int, endpos: Int)
+
+class LambdaExpr --> Expr
++field decl: FuncDecl
+--
++method OnSemant: Value(scope: Scope)
++method ToString: string()
++method new: void(decl: FuncDecl, srcpos: Int, endpos: Int)
+
+class ArrayTypeExpr --> Expr
++field rank: Int
++field type: Expr
+--
++method OnSemantType: Type(scope: Scope)
++method ToString: string()
++method new: void(type: Expr, rank: Int, srcpos: Int, endpos: Int)
+
+class FuncTypeExpr --> Expr
++field params: VarDecl[]
++field retType: Expr
+--
++method OnSemantType: Type(scope: Scope)
++method ToString: string()
++method new: void(retType: Expr, params: VarDecl[], srcpos: Int, endpos: Int)
+
+class PointerTypeExpr --> Expr
++field type: Expr
+--
++method OnSemantType: Type(scope: Scope)
++method ToString: string()
++method new: void(type: Expr, srcpos: Int, endpos: Int)
+
+class TypeofExpr --> Expr
++field expr: Expr
++field istype: Bool
+--
++method OnSemant: Value(scope: Scope)
++method new: void(expr: Expr, istype: Bool, srcpos: Int, endpos: Int)
+
+class StmtExpr --> PNode
+--
++method Emit: void(buf: StringStack, spc: String)
++method OnSemant: Stmt(block: Block)
++method Semant: Stmt(block: Block)
++method new: void(srcpos: Int, endpos: Int)
+
+class AssignStmtExpr --> StmtExpr
++field lhs: Expr
++field op: String
++field rhs: Expr
+--
++method OnSemant: Stmt(smexpr: SafeMemberExpr, block: Block)
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(op: String, lhs: Expr, rhs: Expr, srcpos: Int, endpos: Int)
+
+class VarDeclStmtExpr --> StmtExpr
++field decl: VarDecl
+--
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(decl: VarDecl, srcpos: Int, endpos: Int)
+
+class EvalStmtExpr --> StmtExpr
++field expr: Expr
+--
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(expr: Expr, srcpos: Int, endpos: Int)
+
+class InvokeNewStmtExpr --> StmtExpr
++field args: Expr[]
++field expr: Expr
+--
++method OnSemant: Stmt(block: Block)
++method new: void(expr: Expr, args: Expr[], srcpos: Int, endpos: Int)
+
+class PrintStmtExpr --> StmtExpr
++field expr: Expr
+--
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(expr: Expr, srcpos: Int, endpos: Int)
+
+class ReturnStmtExpr --> StmtExpr
++field expr: Expr
+--
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(expr: Expr, srcpos: Int, endpos: Int)
+
+class ContinueStmtExpr --> StmtExpr
+--
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(srcpos: Int, endpos: Int)
+
+class ExitStmtExpr --> StmtExpr
+--
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(srcpos: Int, endpos: Int)
+
+class IfStmtExpr --> StmtExpr
++field cond: Expr
++field stmts: StmtExpr[]
++field succ: IfStmtExpr
+--
++method Emit: void(buf: StringStack, spc: String)
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(cond: Expr, stmts: StmtExpr[], succ: IfStmtExpr, srcpos: Int, endpos: Int)
+
+class WhileStmtExpr --> StmtExpr
++field expr: Expr
++field stmts: StmtExpr[]
+--
++method Emit: void(buf: StringStack, spc: String)
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(expr: Expr, stmts: StmtExpr[], srcpos: Int, endpos: Int)
+
+class RepeatStmtExpr --> StmtExpr
++field expr: Expr
++field stmts: StmtExpr[]
+--
++method Emit: void(buf: StringStack, spc: String)
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(stmts: StmtExpr[], expr: Expr, srcpos: Int, endpos: Int)
+
+class CaseStmtExpr --> StmtExpr
++field exprs: Expr[]
++field stmts: StmtExpr[]
+--
++method new: void(exprs: Expr[], stmts: StmtExpr[], srcpos: Int, endpos: Int)
+
+class SelectStmtExpr --> StmtExpr
++field cases: CaseStmtExpr[]
++field expr: Expr
+--
++method Emit: void(buf: StringStack, spc: String)
++method OnSemant: Stmt(block: Block)
++method ToString: string()
++method new: void(expr: Expr, cases: CaseStmtExpr[], srcpos: Int, endpos: Int)
+
+class ForStmtExpr --> StmtExpr
++field cond: Expr
++field incr: Expr
++field init: Expr
++field kind: String
++field semVar: VarValue
++field stmts: StmtExpr[]
++field varExpr: Expr
++field varIdent: String
++field varType: Expr
++field vendpos: Int
++field vsrcpos: Int
+--
++method Emit: void(buf: StringStack, spc: String)
++method OnSemant: Stmt(block: Block)
++method SemantEachin: Stmt(block: Block)
++method ToString: string()
++method new: void(varIdent: String, varType: Expr, varExpr: Expr, kind: String, init: Expr, cond: Expr, incr: Expr, stmts: StmtExpr[], srcpos: Int, endpos: Int, vsrcpos: Int, vendpos: Int)
+
+class CatchStmtExpr --> StmtExpr
++field stmts: StmtExpr[]
++field varIdent: String
++field varType: Expr
+--
++method new: void(varIdent: String, varType: Expr, stmts: StmtExpr[], srcpos: Int, endpos: Int)
+
+class TryStmtExpr --> StmtExpr
++field catches: CatchStmtExpr[]
++field stmts: StmtExpr[]
+--
++method OnSemant: Stmt(block: Block)
++method new: void(stmts: StmtExpr[], catches: CatchStmtExpr[], srcpos: Int, endpos: Int)
+
+class ThrowStmtExpr --> StmtExpr
++field expr: Expr
+--
++method OnSemant: Stmt(block: Block)
++method new: void(expr: Expr, srcpos: Int, endpos: Int)
+
+class ClassDecl --> Decl
++field genArgs: String[]
++field hasCtor: Bool
++field hasDefaultCtor: Bool
++field ifaceTypes: Expr[]
++field superType: Expr
++field whereExpr: Expr
+--
++method ToNode: SNode(scope: Scope)
++method ToString: string()
+
+class ClassType --> Type
++field abstractMethods: FuncValue[]
++field allIfaces: ClassType[]
++field cdecl: ClassDecl
++field ctors: Stack<FuncValue>
++field defaultCtor: FuncValue
++field extendsVoid: Bool
++field fields: Stack<VarValue>
++field ifaceTypes: ClassType[]
++field instanceOf: ClassType
++field instances: Stack<ClassType>
++field membersSemanted: Bool
++field membersSemanting: Bool
++field methods: Stack<FuncValue>
++field scope: ClassScope
++field superType: ClassType
++field transFile: FileDecl
++field types: Type[]
+--
++method CanCastToType: bool(type: Type)
++method DistanceToBase: int(type: Type)
++method DistanceToType: int(type: Type)
++method ExtendsType: bool(type: Type)
++method FindNode: SNode(ident: String)
++method FindNode2: SNode(ident: String)
++method FindSuperFunc: FuncValue(ident: String, ftype: FuncType)
++method FindSuperNode: SNode(ident: String)
++method FindToFunc: FuncValue(type: Type)
++method FindType: Type(ident: String)
++method FindType2: Type(ident: String)
++method GenInstance: Type(types: Type[])
++method Index: Value(args: Value[], value: Value)
++method InferType: Type(type: Type, infered: Type[])
++method OnSemant: SNode()
++method SemantMembers: void()
++method ToString: string()
++method UpCast: Value(rvalue: Value, type: Type)
++method new: void(cdecl: ClassDecl, outer: Scope, types: Type[], instanceOf: ClassType)
+
+class OpIndexValue --> Value
++field args: Value[]
++field ctype: ClassType
++field getters: FuncList
++field instance: Value
++field invokeGet: Value
++field setters: FuncList
+--
++method Assign: Stmt(pnode: PNode, op: String, rvalue: Value, block: Block)
++method ToRValue: Value()
++method ToString: string()
++method new: void(ctype: ClassType, args: Value[], instance: Value)
+
+class ClassScope --> Scope
++field ctype: ClassType
++field itype: Type
+--
++method FindClass: ClassType()
++method FindNode: SNode(ident: String)
++method FindType: Type(ident: String)
++method new: void(ctype: ClassType, outer: Scope)
+
+class FuncDecl --> Decl
++field genArgs: String[]
++field stmts: StmtExpr[]
++field type: FuncTypeExpr
++field whereExpr: Expr
+--
++method ToNode: SNode(scope: Scope)
++method ToString: string()
+
+class FuncValue --> Value
++field block: Block
++field captures: Stack<VarValue>
++field cscope: ClassScope
++field fdecl: FuncDecl
++field ftype: FuncType
++field instanceOf: FuncValue
++field instances: Stack<FuncValue>
++field invokeNew: InvokeNewValue
++field nextLocalId: Int
++field overrides: FuncValue
++field params: VarValue[]
++field pdecls: VarDecl[]
++field scope: Scope
++field selfType: ClassType
++field selfValue: Value
++field simpleGetter: Bool
++field superType: ClassType
++field superValue: Value
++field transFile: FileDecl
++field types: Type[]
++field used: Bool
+--
++method CheckAccess: void(tscope: Scope)
++method FixArgs: Value[](args: Value[])
++method GenInstance: Value(types: Type[])
++method Invoke: Value(args: Value[])
++method IsSimpleType: bool(type: Type)
++method OnSemant: SNode()
++method SemantParams: void()
++method SemantStmts: void()
++method ToString: string()
++method ToValue: Value(instance: Value)
++method TryGenInstance: FuncValue(types: Type[])
++method Used: void()
++method new: void(fdecl: FuncDecl, scope: Scope, types: Type[], instanceOf: FuncValue)
+
+class MemberFuncValue --> Value
++field instance: Value
++field member: FuncValue
+--
++method CheckAccess: void(tscope: Scope)
++method ToString: string()
++method new: void(instance: Value, member: FuncValue)
+
+class FuncListValue --> Value
++field flistType: FuncListType
++field instance: Value
+--
++method GenInstance: Value(types: Type[])
++method Invoke: Value(args: Value[])
++method ToRValue: Value()
++method ToString: string()
++method UpCast: Value(type: Type)
++method new: void(flistType: FuncListType, instance: Value)
+
+class FuncListType --> Type
++field flist: FuncList
++field funcs: Stack<FuncValue>
++field types: Type[]
+--
++method DistanceToType: int(type: Type)
++method FindFunc: FuncValue(ftype: FuncType)
++method FindOverload: FuncValue(ret: Type, args: Type[])
++method ToString: string()
++method ToValue: Value(instance: Value)
++method new: void(flist: FuncList)
++method new: void(flist: FuncList, types: Type[])
+
+class FuncList --> SNode
++field funcs: Stack<FuncValue>
++field ident: String
++field instance0: FuncListType
++field instances: Stack<FuncListType>
++field scope: Scope
+--
++method FindFunc: FuncValue(ftype: FuncType)
++method GenFuncListType: FuncListType(types: Type[])
++method OnSemant: SNode()
++method PushFunc: void(func: FuncValue)
++method ToString: string()
++method ToValue: Value(instance: Value)
++method new: void(ident: String, scope: Scope)
+
+class VarDecl --> Decl
++field init: Expr
++field semtype: Type
++field type: Expr
+--
++method ToNode: SNode(scope: Scope)
++method ToString: string()
+
+class VarValue --> Value
++field cscope: ClassScope
++field init: Value
++field scope: Scope
++field transFile: FileDecl
++field vdecl: VarDecl
+--
++method CheckAccess: void(tscope: Scope)
++method OnSemant: SNode()
++method ToString: string()
++method ToValue: Value(instance: Value)
++method new: void(vdecl: VarDecl, scope: Scope)
++method new: void(kind: String, ident: String, init: Value, scope: Scope, srcpos: Int, endpos: Int, declflags: Int)
+
+class MemberVarValue --> Value
++field instance: Value
++field member: VarValue
+--
++method CheckAccess: void(tscope: Scope)
++method ToString: string()
++method new: void(instance: Value, member: VarValue)
+
+class EnumDecl --> Decl
+--
++method ToNode: SNode(scope: Scope)
+
+class EnumType --> Type
++field edecl: EnumDecl
++field nextInit: Int
++field scope: EnumScope
++field transFile: FileDecl
+--
++method DistanceToType: int(type: Type)
++method FindNode: SNode(ident: String)
++method OnSemant: SNode()
++method ToString: string()
++method new: void(edecl: EnumDecl, outer: Scope)
+
+class EnumScope --> Scope
++field etype: EnumType
+--
++method new: void(etype: EnumType, outer: Scope)
+
+class PropertyDecl --> Decl
++field genArgs: String[]
++field getFunc: FuncDecl
++field setFunc: FuncDecl
+--
++method ToNode: SNode(scope: Scope)
+
+class PropertyList --> FuncList
++field cscope: ClassScope
++field getFunc: FuncValue
++field instanceof: PropertyList
++field instances: Stack<PropertyList>
++field pdecl: PropertyDecl
++field scope: Scope
++field setFunc: FuncValue
++field type: Type
++field types: Type[]
+--
++method GenInstance: PropertyList(types: Type[])
++method OnSemant: SNode()
++method ToString: string()
++method ToValue: Value(instance: Value)
++method new: void(pdecl: PropertyDecl, scope: Scope, types: Type[], instanceof: PropertyList)
+
+class PropertyValue --> Value
++field instance: Value
++field plist: PropertyList
+--
++method Assign: Stmt(pnode: PNode, op: String, rvalue: Value, block: Block)
++method RemoveSideEffects: Value(block: Block)
++method ToRValue: Value()
++method ToString: string()
++method new: void(plist: PropertyList, instance: Value)
+
+class AliasDecl --> Decl
++field genArgs: String[]
++field type: Expr
+--
++method ToNode: SNode(scope: Scope)
+
+class AliasType --> ProxyType
++field adecl: AliasDecl
++field instanceOf: AliasType
++field instances: Stack<AliasType>
++field scope: Scope
++field transFile: FileDecl
++field types: Type[]
+--
++method GenInstance: Type(types: Type[])
++method OnSemant: SNode()
++method new: void(adecl: AliasDecl, scope: Scope, types: Type[], instanceOf: AliasType)
+
+class NamespaceType --> Type
++field ident: String
++field scope: NamespaceScope
+--
++method FindNode: SNode(ident: String)
++method FindType: Type(ident: String)
++method ToString: string()
++method new: void(ident: String, outer: NamespaceScope)
+
+class NamespaceScope --> Scope
++field classexts: Stack<ClassType>
++field ntype: NamespaceType
+--
++method FindExtensions: void(finder: NodeFinder, ctype: ClassType)
++method FindRoot: NamespaceScope()
++method GetClassExtensions: Stack<ClassType>(ctype: ClassType)
++method GetExtensions: void(finder: NodeFinder, ctype: ClassType)
++method ToString: string()
++method new: void(ntype: NamespaceType, outer: NamespaceScope)
+
+class Module
++global Dirs: String[]
++field afile: String
++field baseDir: String
++field buildDir: String
++field cacheDir: String
++field cfileDir: String
++field fileDecls: Stack<FileDecl>
++field fileScopes: Stack<FileScope>
++field genInstances: Stack<SNode>
++field hfileDir: String
++field ident: String
++field main: FuncValue
++field moduleDeps: Map<String, Bool>
++field name: String
++field outputDir: String
++field rfile: String
++field srcPath: String
++field usings: Stack<NamespaceScope>
+--
++method new: void(name: String, srcPath: String, version: String, profile: String)
+
+class NodeFinder
++field flist: FuncList
++field ident: String
++field node: SNode
+--
++method Add: void(node: SNode)
++method AddFuncs: void(src: FuncList, dst: FuncList)
++method new: void(ident: String)
+
+class AssignedGCParamsVisitor --> StmtVisitor
++field gcparams: Map<String, VarValue>
+--
++method Visit: void(stmt: AssignStmt)
+
+class Translator
++field _buf: Stack<String>
++field _debug: Bool
++field _deps: Deps
++field _gcframe: GCFrame
++field _indent: String
++field _insertStack: Stack<StringStack>
+--
++method AddRef: bool(node: SNode)
++method AllocGCTmp: string(type: Type)
++method BeginDeps: void()
++method BeginGCFrame: void()
++method BeginGCFrame: void(func: FuncValue)
++method BeginInsert: void(pos: Int)
++method DeclsFunc: void(type: FuncType)
++method DeclsVar: void(type: Type)
++method Emit: void(str: String)
++method EmitBr: void()
++method EmitInclude: void(fdecl: FileDecl, baseDir: String)
++method EndDeps: void(baseDir: String)
++method EndGCFrame: void()
++method EndInsert: void()
++method FindGCTmp: string(vvar: VarValue)
++method FreeGCTmps: void()
++method FuncProto: string(func: FuncValue)
++method Included: bool(fdecl: FileDecl)
++method InsertGCTmp: string(vvar: VarValue)
++method MarksType: void(type: Type)
++method RefsFunc: void(func: FuncValue)
++method RefsType: void(type: Type)
++method RefsVar: void(vvar: VarValue)
++method Reset: void()
++method ResetGC: void()
++method Trans: string(value: Value)
++method TransType: string(type: Type)
++method UsesFile: void(fdecl: FileDecl)
++method UsesFunc: void(type: FuncType)
++method UsesType: void(type: Type)
++method VarProto: string(vvar: VarValue)
++method new: void()
+
+class Translator_CPP --> Translator
++field _dbline: Int
++field _gctmps: Int
++field _lambdaId: Int
++field _module: Module
+--
++method ArrayName: string(type: ArrayType)
++method AssignsTo: void(type: Type)
++method BeginBlock: void()
++method CFuncType: string(type: FuncType)
++method DebugInfo: string(stmt: Stmt)
++method DiscardGCFields: void(ctype: ClassType, prefix: String)
++method EmitBlock: void(block: Block)
++method EmitBlock: void(func: FuncValue)
++method EmitClassMembers: void(ctype: ClassType)
++method EmitClassProto: void(ctype: ClassType)
++method EmitDebugInfo: void(stmt: Stmt)
++method EmitExternIncludes: void(fdecl: FileDecl)
++method EmitFunc: void(func: FuncValue, init: Bool, header: Bool)
++method EmitGlobalInits: void(fdecl: FileDecl)
++method EmitLambda: string(func: FuncValue)
++method EmitMain: void()
++method EmitNullTypeInfo: void(fdecl: FileDecl)
++method EmitNullTypeInfo: void(etype: EnumType)
++method EmitNullTypeInfo: void(ctype: ClassType)
++method EmitStmt: void(stmt: Stmt)
++method EmitStmt: void(stmt: PrintStmt)
++method EmitStmt: void(stmt: ExitStmt)
++method EmitStmt: void(stmt: ContinueStmt)
++method EmitStmt: void(stmt: ReturnStmt)
++method EmitStmt: void(stmt: VarDeclStmt)
++method EmitStmt: void(stmt: AssignStmt)
++method EmitStmt: void(stmt: EvalStmt)
++method EmitStmt: void(stmt: IfStmt)
++method EmitStmt: void(stmt: SelectStmt)
++method EmitStmt: void(stmt: WhileStmt)
++method EmitStmt: void(stmt: RepeatStmt)
++method EmitStmt: void(stmt: ForStmt)
++method EmitStmt: void(stmt: TryStmt)
++method EmitStmt: void(stmt: ThrowStmt)
++method EmitStmts: void(block: Block)
++method EmitTypeInfo: void(fdecl: FileDecl)
++method EmitTypeInfo: void(etype: EnumType)
++method EmitTypeInfo: void(ctype: ClassType)
++method EndBlock: void()
++method FuncProto: string(func: FuncValue)
++method FuncProto: string(func: FuncValue, header: Bool)
++method HeapVarType: string(type: Type)
++method IsCValueType: bool(type: Type)
++method IsVolatile: bool(arg: Value)
++method IsVolatileGCType: bool(arg: Value)
++method Reset: void()
++method SortClassTypes: void(ctype: ClassType, done: Map<SNode, Bool>, order: Stack<ClassType>, fdecl: FileDecl)
++method Trans: string(value: Value)
++method Trans: string(value: UpCastValue)
++method Trans: string(value: ExplicitCastValue)
++method Trans: string(value: LiteralValue)
++method Trans: string(value: SelfValue)
++method Trans: string(value: SuperValue)
++method Trans: string(value: InvokeValue)
++method Trans: string(value: MemberVarValue)
++method Trans: string(value: MemberFuncValue)
++method Trans: string(value: FuncValue)
++method Trans: string(value: NewObjectValue)
++method Trans: string(value: NewArrayValue)
++method Trans: string(value: ArrayIndexValue)
++method Trans: string(value: PointerIndexValue)
++method Trans: string(value: StringIndexValue)
++method Trans: string(value: UnaryopValue)
++method Trans: string(value: BinaryopValue)
++method Trans: string(value: IfThenElseValue)
++method Trans: string(value: PointerValue)
++method Trans: string(value: VarValue)
++method Trans: string(value: TypeofValue)
++method Trans: string(value: TypeofTypeValue)
++method TransArgs: string(args: Value[])
++method TransInvokeMember: string(instance: Value, member: FuncValue, args: Value[])
++method TransMember: string(instance: Value, member: Value, invoking: Bool)
++method TransNull: string(type: Type)
++method TransRef: string(value: Value)
++method TransRef: string(value: ArrayIndexValue)
++method TransRef: string(value: PointerIndexValue)
++method TransRef: string(value: VarValue)
++method TransRef: string(value: MemberVarValue)
++method TransType: string(type: Type)
++method TransType: string(type: ClassType)
++method TransType: string(type: EnumType)
++method TransType: string(type: PrimType)
++method TransType: string(type: FuncType)
++method TransType: string(type: ArrayType)
++method TransType: string(type: PointerType)
++method TransType: string(type: GenArgType)
++method TranslateFile: void(fdecl: FileDecl)
++method TranslateModule: bool(module: Module)
++method TranslateTypeInfo: void(module: Module)
++method VarProto: string(vvar: VarValue)
++method VarType: string(vvar: VarValue)
+
+class BuildOpts
++field appType: String
++field arch: String
++field clean: Bool
++field config: String
++field fast: Bool
++field geninfo: Bool
++field mainSource: String
++field makedocs: Bool
++field passes: Int
++field product: String
++field productType: String
++field target: String
++field threads: Bool
++field toolchain: String
++field verbose: Int
++field wholeArchive: Bool
+--
+
+class BuilderInstance
++field WX_LIBS: 
++field WX_SRCS: 
++field currentDir: String
++field errors: 
++field imported: 
++field mainModule: Module
++field modules: 
++field modulesMap: 
++field opts: BuildOpts
++field parsingModule: Module
++field ppsyms: 
++field product: BuildProduct
++field profileName: String
++field rootNamespace: NamespaceScope
++field semantMembers: 
++field semantStmts: 
++field semantingModule: Module
++field wonkeyNamespace: NamespaceScope
+--
++method AllocTmpFile: string(kind: String)
++method ClearPrimTypes: void()
++method CreatePrimTypes: void()
++method Exec: bool(cmd: String)
++method GetNamespace: NamespaceScope(path: ident, mustExist: ident)
++method ImportFile: void(path: String)
++method ImportLocalFile: void(path: String)
++method ImportSystemFile: void(path: String)
++method Parse: void()
++method Semant: void()
++method SortModules: void(module: ident, done: generic, deps: generic)
++method SortModules: void()
++method Translate: void()
++method new: void(opts: BuildOpts)
+
+class BuildProduct
++field ASSET_FILES: 
++field AS_OPTS: String
++field CC_OPTS: String
++field CPP_OPTS: String
++field DLL_FILES: 
++field JAVA_FILES: 
++field LD_OPTS: String
++field LIB_FILES: 
++field OBJ_FILES: 
++field SRC_FILES: 
++field imports: 
++field module: Module
++field opts: BuildOpts
++field outputFile: String
++field reflects: 
+--
+#method AllocTmpFile: string(kind: String)
++method Build: void()
++method Build: void(srcs: ident)
+-method CopyAll: bool(src: String, dst: String)
+-method CopyAssetFiles: void(files: generic)
+#method CopyAssets: void(assetsDir: String)
+#method CopyDlls: void(dllsDir: String)
+-method EnumAssetFiles: void(src: ident, dst: ident, files: generic)
+#method Exec: bool(cmd: String, eatstdout: Bool)
++method Run: void()
++method new: void(module: ident, opts: ident)
+
+class GccBuildProduct --> BuildProduct
++field AR_CMD: String
++field AS_CMD: String
++field CC_CMD: String
++field CXX_CMD: String
++field LD_CMD: String
+--
++method Build: void(srcs: ident)
++method BuildApp: void(objs: ident)
++method BuildModule: void(objs: ident)
++method CompileSource: string(src: String)
++method Run: void()
++method new: void(module: ident, opts: ident)
+
+class IosBuildProduct --> GccBuildProduct
+--
++method BuildApp: void(objs: ident)
++method Run: void()
++method new: void(module: ident, opts: ident)
+
+class AndroidBuildProduct --> BuildProduct
+--
++method Build: void(srcs: ident)
++method new: void(module: ident, opts: ident)
+
+class DocsNode
+-field _children: Stack<DocsNode>
+-field _clean: Bool
+-field _ident: String
+-field _label: String
+-field _markdown: String
+-field _parent: DocsNode
+-field _type: DocsType
+--
++method Clean: void()
++method Debug: void()
++method Find: DocsNode(path: String)
++method Find: DocsNode(path: String, done: Map<DocsNode, Bool>)
++method Remove: void()
++method new: void(ident: String, label: String, parent: DocsNode, type: DocsType, clean: Bool)
+
+class DocsBuffer
+-field _baseDir: String
+-field _docs: DocsNode
+-field _label: String
+-field _lines: Stack<String>
+-field _params: Stack<String>
+-field _pre: Int
+-field _return: String
+--
++method Emit: void(docs: String)
++method EmitBr: void()
++method EmitLine: void(line: String)
++method EmitLines: void(lines: String[])
+-method FixIndent: void(i0: Int, i1: Int)
++method Flush: string()
++method new: void()
++method new: void(docs: DocsNode, baseDir: String)
+
+class DocsMaker
+-field _converting: DocsNode
+-field _convertor: MarkdownConvertor
+-field _docsDir: String
+-field _module: Module
+-field _pageTemplate: String
+--
+-method CreateHtmlPages: void(docs: DocsNode, dir: String)
+-method CreateJSNavTree: void(docs: DocsNode, dir: String)
+-method CreateJSNavTree: void(docs: DocsNode, buf: StringStack, indent: String, dir: String)
++method CreateModuleDocs: void(module: Module)
+-method DeclDesc: string(decl: Decl)
+-method DeclDocsIdent: string(decl: Decl)
+-method DeclIdent: string(decl: Decl)
+-method DeclLabel: string(decl: Decl)
+-method DeclLink: string(decl: Decl)
+-method DocsVisible: bool(decl: Decl, access: Int)
+-method EmitHeader: void(buf: DocsBuffer, decl: Decl, parent: DocsNode)
+-method MakeAliasDocs: DocsNode(xtype: AliasType, parent: DocsNode)
+-method MakeClassDocs: DocsNode(ctype: ClassType, parent: DocsNode)
+-method MakeEnumDocs: DocsNode(etype: EnumType, parent: DocsNode)
+-method MakeFuncDocs: DocsNode(flist: FuncList, parent: DocsNode)
+-method MakeMemberDocs: DocsNode(scope: Scope, kind: String, access: Int, parent: DocsNode, buf: DocsBuffer)
+-method MakeModuleDocs: DocsNode(parent: DocsNode)
+-method MakeNamespaceDocs: DocsNode(scope: NamespaceScope, parent: DocsNode)
+-method MakePropertyDocs: DocsNode(plist: PropertyList, parent: DocsNode)
+-method MakeVarDocs: DocsNode(vvar: VarValue, parent: DocsNode)
+-method ResolveHtmlLink: string(link: String, name: String)
+-method TypeName: string(type: Type, name: String)
++method new: void(docsDir: String, pageTemplate: String)
+
+class MarkdownConvertor
+-const CHAR_ESCAPE: Int
+-const CHAR_HASH: Int
+-field _buf: Stack<String>
+-field _cls: String
+-field _lineNum: Int
+-field _lines: String[]
+-field _linkResolver: LinkResolver
+-field _para: Bool
+-field _source: String
+--
+-method BeginPara: void()
+-method ConvertEscapeChars: string(str: String)
+-method ConvertSpanLinks: string(str: String)
+-method ConvertSpanTags: string(str: String, tag: String, ent: String)
++method ConvertToHtml: string(source: String)
+-method Emit: void(str: String)
+-method EmitCode: void(line: String)
+-method EmitHeader: void(line: String)
+-method EmitList: void(line: String)
+-method EmitTable: void(line: String)
+-method EndPara: void()
+-method Escape: string(str: String)
+-method EscapeHtml: string(str: String)
+-method Find: int(str: String, chr: String, index: Int)
+-method NextLine: string()
+-method PrevLine: string()
+-method ReplaceAll: string(str: String, find: String, rep: String, index: Int)
++method new: void(linkResolver: LinkResolver)
+
+class GeninfoGenerator
+--
+-method GenNode<T>: JsonArray(args: arraytype)
+-method GenNode: JsonArray(args: String[])
+-method GenNode: JsonValue(decl: Decl)
+-method GenNode: JsonValue(decl: FileDecl)
+-method GenNode: JsonValue(decl: ClassDecl)
+-method GenNode: JsonValue(decl: FuncDecl)
+-method GenNode: JsonValue(decl: AliasDecl)
+-method GenNode: JsonValue(decl: VarDecl)
+-method GenNode: JsonValue(decl: PropertyDecl)
+-method GenNode: JsonValue(stmt: StmtExpr)
+-method GenNode: JsonValue(ifStmt: IfStmtExpr)
+-method GenNode: JsonValue(whileStmt: WhileStmtExpr)
+-method GenNode: JsonValue(repeatStmt: RepeatStmtExpr)
+-method GenNode: JsonValue(selectStmt: SelectStmtExpr)
+-method GenNode: JsonValue(forStmt: ForStmtExpr)
+-method GenNode: JsonValue(tryStmt: TryStmtExpr)
+-method GenNode: JsonValue(expr: Expr)
+-method GenNode: JsonValue(expr: IdentExpr)
+-method GenNode: JsonValue(expr: MemberExpr)
+-method GenNode: JsonValue(expr: GenericExpr)
+-method GenNode: JsonValue(expr: LiteralExpr)
+-method GenNode: JsonValue(expr: NewObjectExpr)
+-method GenNode: JsonValue(expr: NewArrayExpr)
+-method GenNode: JsonValue(expr: FuncTypeExpr)
+-method GenNode: JsonValue(expr: ArrayTypeExpr)
+-method GenNode: JsonValue(expr: PointerTypeExpr)
++method GenParseInfo: void()
++method GenSemantInfo: void()
+-method MakeNode: JsonObject(decl: Decl)
+-method MakeNode: JsonObject(stmt: StmtExpr, kind: String)
+-method MakeNode: JsonObject(expr: Expr, kind: String)
+

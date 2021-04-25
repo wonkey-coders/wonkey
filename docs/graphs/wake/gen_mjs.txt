@@ -1,0 +1,1907 @@
+classDiagram
+  class Scope {
+    +semanting$: Stack<Scope>
+    +inner: Stack<Scope>
+    +nodes: Map<String, SNode>
+    +outer: Scope
+    +transMembers: Stack<SNode>
+    +Semanting()$ Scope
+    +FindClass()* ClassType
+    +FindFile()* FileScope
+    +FindNode(String)* SNode
+    +FindType(String)* Type
+    +FindValue(String)* Value
+    +GetNode(String) SNode
+    +GetType(String) Type
+    +Insert(String, SNode) bool
+    +ToString()* string
+    +new(Scope) void
+  }
+
+  class Value {
+    +flags: Int
+    +type: Type
+    +CheckAccess(Decl, Scope, Scope)$ void
+    +Assign(PNode, String, Value, Block)* Stmt
+    +CheckAccess(Scope)* void
+    +Compare(String, Value) Value
+    +FindValue(String)* Value
+    +GenInstance(Type[])* Value
+    +Index(Value[])* Value
+    +Invoke(Value[])* Value
+    +RemoveSideEffects(Block)* Value
+    +ToRValue()* Value
+    +ToString() string
+    +ToValue(Value) Value
+    +UpCast(Type)* Value
+  }
+  SNode <|-- Value
+
+  class TypeValue {
+    +ttype: Type
+    +FindValue(String) Value
+    +ToRValue() Value
+    +ToString() string
+    +new(Type) void
+  }
+  Value <|-- TypeValue
+
+  class UpCastValue {
+    +value: Value
+    +CheckAccess(Scope) void
+    +RemoveSideEffects(Block) Value
+    +ToString() string
+    +new(Type, Value) void
+  }
+  Value <|-- UpCastValue
+
+  class ExplicitCastValue {
+    +value: Value
+    +RemoveSideEffects(Block) Value
+    +ToString() string
+    +new(Type, Value) void
+  }
+  Value <|-- ExplicitCastValue
+
+  class SelfValue {
+    +ctype: ClassType
+    +func: FuncValue
+    +ToString() string
+    +new(ClassType, FuncValue) void
+  }
+  Value <|-- SelfValue
+
+  class SuperValue {
+    +ctype: ClassType
+    +func: FuncValue
+    +ToString() string
+    +new(ClassType, FuncValue) void
+  }
+  Value <|-- SuperValue
+
+  class LiteralValue {
+    +value: String
+    +BoolValue(Bool)$ LiteralValue
+    +IntValue(Int)$ LiteralValue
+    +NullValue(Type)$ LiteralValue
+    +RemoveSideEffects(Block) Value
+    +ToString() string
+    +UpCast(Type) Value
+    +new(Type, String) void
+  }
+  Value <|-- LiteralValue
+
+  class NullValue {
+    +ToRValue() Value
+    +ToString() string
+    +UpCast(Type) Value
+    +new() void
+  }
+  Value <|-- NullValue
+
+  class InvokeValue {
+    +args: Value[]
+    +ftype: FuncType
+    +value: Value
+    +CheckAccess(Scope) void
+    +RemoveSideEffects(Block) Value
+    +ToString() string
+    +new(Value, Value[]) void
+  }
+  Value <|-- InvokeValue
+
+  class InvokeNewValue {
+    +args: Value[]
+    +ctype: ClassType
+    +ToString() string
+    +new(ClassType, Value[]) void
+  }
+  Value <|-- InvokeNewValue
+
+  class NewObjectValue {
+    +args: Value[]
+    +ctor: FuncValue
+    +ctype: ClassType
+    +RemoveSideEffects(Block) Value
+    +ToString() string
+    +new(ClassType, FuncValue, Value[]) void
+  }
+  Value <|-- NewObjectValue
+
+  class NewArrayValue {
+    +atype: ArrayType
+    +inits: Value[]
+    +sizes: Value[]
+    +RemoveSideEffects(Block) Value
+    +ToString() string
+    +new(ArrayType, Value[], Value[]) void
+  }
+  Value <|-- NewArrayValue
+
+  class ArrayIndexValue {
+    +args: Value[]
+    +atype: ArrayType
+    +value: Value
+    +RemoveSideEffects(Block) Value
+    +ToString() string
+    +new(ArrayType, Value, Value[]) void
+  }
+  Value <|-- ArrayIndexValue
+
+  class StringIndexValue {
+    +index: Value
+    +value: Value
+    +RemoveSideEffects(Block) Value
+    +ToString() string
+    +new(Value, Value) void
+  }
+  Value <|-- StringIndexValue
+
+  class PointerIndexValue {
+    +index: Value
+    +value: Value
+    +RemoveSideEffects(Block) Value
+    +ToString() string
+    +new(Type, Value, Value) void
+  }
+  Value <|-- PointerIndexValue
+
+  class UnaryopValue {
+    +op: String
+    +value: Value
+    +ToString() string
+    +new(Type, String, Value) void
+  }
+  Value <|-- UnaryopValue
+
+  class BinaryopValue {
+    +lhs: Value
+    +op: String
+    +rhs: Value
+    +ToString() string
+    +new(Type, String, Value, Value) void
+  }
+  Value <|-- BinaryopValue
+
+  class IfThenElseValue {
+    +elseValue: Value
+    +thenValue: Value
+    +value: Value
+    +new(Type, Value, Value, Value) void
+  }
+  Value <|-- IfThenElseValue
+
+  class PointerValue {
+    +value: Value
+    +ToString() string
+    +new(Value) void
+  }
+  Value <|-- PointerValue
+
+  class TypeofValue {
+    +value: Value
+    +ToString() string
+    +new(Value) void
+  }
+  Value <|-- TypeofValue
+
+  class TypeofTypeValue {
+    +ttype: Type
+    +ToString() string
+    +new(Type) void
+  }
+  Value <|-- TypeofTypeValue
+
+  class Type {
+    +MAX_DISTANCE$: Int
+    +TYPE_GENERIC$: Int
+    +ArrayClass$: ClassType
+    +BadType$: BadType
+    +BoolType$: PrimType
+    +ByteType$: PrimType
+    +CStringClass$: ClassType
+    +DoubleType$: PrimType
+    +FloatType$: PrimType
+    +IntType$: PrimType
+    +LongType$: PrimType
+    +NullType$: NullType
+    +ObjectClass$: ClassType
+    +ShortType$: PrimType
+    +StringType$: PrimType
+    +ThrowableClass$: ClassType
+    +TypeInfoClass$: ClassType
+    +UByteType$: PrimType
+    +UIntType$: PrimType
+    +ULongType$: PrimType
+    +UShortType$: PrimType
+    +VariantType$: PrimType
+    +VoidType$: VoidType
+    +WStringClass$: ClassType
+    +flags: Int
+    +<=>(Type) int
+    +<>(Type) bool
+    +=(Type) bool
+    +CanCastToType(Type)* bool
+    +DistanceToType(Type)* int
+    +Equals(Type)* bool
+    +ExtendsType(Type)* bool
+    +FindNode(String)* SNode
+    +FindType(String)* Type
+    +GenInstance(Type[])* Type
+    +Index(Value[], Value)* Value
+    +InferType(Type, Type[])* Type
+    +Invoke(Value[], Value)* Value
+    +ToType() Type
+    +ToValue(Value) Value
+    +UpCast(Value, Type)* Value
+  }
+  SNode <|-- Type
+
+  class ProxyType {
+    +_alias: Type
+    +CanCastToType(Type) bool
+    +DistanceToType(Type) int
+    +Equals(Type) bool
+    +ExtendsType(Type) bool
+    +FindNode(String) SNode
+    +FindType(String) Type
+    +GenInstance(Type[]) Type
+    +Index(Value[], Value) Value
+    +InferType(Type, Type[]) Type
+    +Invoke(Value[], Value) Value
+    +ToString() string
+    +ToValue(Value) Value
+    +UpCast(Value, Type) Value
+    +new() void
+  }
+  Type <|-- ProxyType
+
+  class PrimType {
+    +ctype: ClassType
+    +CanCastToType(Type) bool
+    +DistanceToType(Type) int
+    +Equals(Type) bool
+    +ExtendsType(Type) bool
+    +FindNode(String) SNode
+    +FindType(String) Type
+    +Index(Value[], Value) Value
+    +ToString() string
+    +new(ClassType) void
+  }
+  Type <|-- PrimType
+
+  class ArrayType {
+    +ctype: ClassType
+    +elemType: Type
+    +rank: Int
+    +DistanceToType(Type) int
+    +Equals(Type) bool
+    +FindNode(String) SNode
+    +FindType(String) Type
+    +Index(Value[], Value) Value
+    +InferType(Type, Type[]) Type
+    +ToString() string
+    +new(Type, Int) void
+  }
+  Type <|-- ArrayType
+
+  class PointerType {
+    +elemType: Type
+    +CanCastToType(Type) bool
+    +DistanceToType(Type) int
+    +Equals(Type) bool
+    +Index(Value[], Value) Value
+    +InferType(Type, Type[]) Type
+    +ToString() string
+    +new(Type) void
+  }
+  Type <|-- PointerType
+
+  class FuncType {
+    +argTypes: Type[]
+    +retType: Type
+    +DistanceToType(Type) int
+    +Equals(Type) bool
+    +InferType(Type, Type[]) Type
+    +Invoke(Value[], Value) Value
+    +ToString() string
+    +new(Type, Type[]) void
+  }
+  Type <|-- FuncType
+
+  class GenArgType {
+    +ident: String
+    +index: Int
+    +Equals(Type) bool
+    +InferType(Type, Type[]) Type
+    +ToString() string
+    +new(Int, String) void
+  }
+  Type <|-- GenArgType
+
+  class VoidType {
+    +ToString() string
+  }
+  Type <|-- VoidType
+
+  class BadType {
+    +Equals(Type) bool
+    +ToString() string
+  }
+  Type <|-- BadType
+
+  class NullType {
+    +DistanceToType(Type) int
+    +Equals(Type) bool
+    +ToString() string
+  }
+  Type <|-- NullType
+
+  class UNode {
+    +Join<T>(arraytype)$ string
+    +ToString()* string
+  }
+
+  class PNode {
+    +parsing$: FileDecl
+    +semanting$: Stack<PNode>
+    +endpos: Int
+    +srcfile: FileDecl
+    +srcpos: Int
+    +ToDebugString()* string
+    +new() void
+    +new(Int, Int) void
+  }
+  UNode <|-- PNode
+
+  class SNode {
+    +semtab$: String
+    +pnode: PNode
+    +semanted: SNode
+    +state: Int
+    +OnSemant()* SNode
+    +Semant() SNode
+    +ToString() string
+    +ToType()* Type
+    +ToValue(Value)* Value
+  }
+  UNode <|-- SNode
+
+  class Stmt {
+    +pnode: PNode
+    +new() void
+    +new(PNode) void
+  }
+
+  class PrintStmt {
+    +value: Value
+    +new(PNode, Value) void
+  }
+  Stmt <|-- PrintStmt
+
+  class ReturnStmt {
+    +value: Value
+    +new(PNode, Value) void
+  }
+  Stmt <|-- ReturnStmt
+
+  class VarDeclStmt {
+    +varValue: VarValue
+    +new(PNode, VarValue) void
+  }
+  Stmt <|-- VarDeclStmt
+
+  class AssignStmt {
+    +lhs: Value
+    +op: String
+    +rhs: Value
+    +new(PNode, String, Value, Value) void
+  }
+  Stmt <|-- AssignStmt
+
+  class EvalStmt {
+    +value: Value
+    +new(PNode, Value) void
+  }
+  Stmt <|-- EvalStmt
+
+  class IfStmt {
+    +block: Block
+    +cond: Value
+    +succ: IfStmt
+    +new(PNode, Value, Block) void
+  }
+  Stmt <|-- IfStmt
+
+  class WhileStmt {
+    +block: Block
+    +cond: Value
+    +new(PNode, Value, Block) void
+  }
+  Stmt <|-- WhileStmt
+
+  class RepeatStmt {
+    +block: Block
+    +cond: Value
+    +new(PNode, Value, Block) void
+  }
+  Stmt <|-- RepeatStmt
+
+  class CaseStmt {
+    +block: Block
+    +values: Value[]
+    +new(Value[], Block) void
+  }
+  Stmt <|-- CaseStmt
+
+  class SelectStmt {
+    +cases: CaseStmt[]
+    +value: Value
+    +new(PNode, Value, CaseStmt[]) void
+  }
+  Stmt <|-- SelectStmt
+
+  class ForStmt {
+    +block: Block
+    +cond: Value
+    +iblock: Block
+    +incr: Stmt
+    +new(PNode, Block, Value, Stmt, Block) void
+  }
+  Stmt <|-- ForStmt
+
+  class CatchStmt {
+    +block: Block
+    +vvar: VarValue
+    +new(VarValue, Block) void
+  }
+
+  class TryStmt {
+    +block: Block
+    +catches: CatchStmt[]
+    +new(PNode, Block, CatchStmt[]) void
+  }
+  Stmt <|-- TryStmt
+
+  class ThrowStmt {
+    +value: Value
+    +new(PNode, Value) void
+  }
+  Stmt <|-- ThrowStmt
+
+  class ContinueStmt {
+    +new(PNode) void
+  }
+  Stmt <|-- ContinueStmt
+
+  class ExitStmt {
+    +new(PNode) void
+  }
+  Stmt <|-- ExitStmt
+
+  class StmtVisitor {
+    +Visit(Block) void
+    +Visit(Stmt)* void
+    +Visit(PrintStmt)* void
+    +Visit(ReturnStmt)* void
+    +Visit(VarDeclStmt)* void
+    +Visit(AssignStmt)* void
+    +Visit(EvalStmt)* void
+    +Visit(ThrowStmt)* void
+    +Visit(ExitStmt)* void
+    +Visit(ContinueStmt)* void
+    +Visit(IfStmt)* void
+    +Visit(WhileStmt)* void
+    +Visit(RepeatStmt)* void
+    +Visit(SelectStmt)* void
+    +Visit(ForStmt)* void
+    +Visit(TryStmt)* void
+  }
+
+  class FileScope {
+    +fdecl: FileDecl
+    +nmspace: NamespaceScope
+    +toSemant: Stack<SNode>
+    +usings: Stack<NamespaceScope>
+    +FindExtensions(String, ClassType, SNode)$ SNode
+    +FindExtensions(NodeFinder, ClassType) SNode
+    +FindFile() FileScope
+    +FindNode(String) SNode
+    +FindType(String) Type
+    +Semant() void
+    +SemantUsings() void
+    +UsingAll(NamespaceScope) void
+    +UsingInner(NamespaceScope) void
+    +UsingNamespace(NamespaceScope) bool
+    +new(FileDecl) void
+  }
+  Scope <|-- FileScope
+
+  class Block {
+    +func: FuncValue
+    +inex: Bool
+    +loop: Bool
+    +reachable: Bool
+    +stmts: Stack<Stmt>
+    +AllocLocal(Value, Int, Int) VarValue
+    +AllocLocal(String, Value, Int, Int) VarValue
+    +Emit(Stmt) void
+    +FindValue(String) Value
+    +Semant(StmtExpr[]) void
+    +new(FuncValue) void
+    +new(Block) void
+  }
+  Scope <|-- Block
+
+  class FuncBlock {
+    +FindType(String) Type
+    +new(FuncValue) void
+  }
+  Block <|-- FuncBlock
+
+  class ErrorEx {
+    +msg: String
+    +ToString()* string
+    +new(String) void
+  }
+  throwable <|-- ErrorEx
+
+  class ParseEx {
+    +srcfile: String
+    +srcpos: Int
+    +ToString() string
+    +new(String, String, Int) void
+  }
+  ErrorEx <|-- ParseEx
+
+  class SemantEx {
+    +pnode: PNode
+    +ToString() string
+    +new(String) void
+    +new(String, PNode) void
+  }
+  ErrorEx <|-- SemantEx
+
+  class BuildEx {
+    +srcpath$: String
+    +srcpos$: Int
+    +ToString() string
+    +new(String) void
+  }
+  ErrorEx <|-- BuildEx
+
+  class TransEx {
+    +ToString() string
+    +new(String) void
+  }
+  BuildEx <|-- TransEx
+
+  class IdentEx {
+    +new(String) void
+  }
+  SemantEx <|-- IdentEx
+
+  class TypeIdentEx {
+    +new(String) void
+  }
+  SemantEx <|-- TypeIdentEx
+
+  class UpCastEx {
+    +new(Value, Type) void
+  }
+  SemantEx <|-- UpCastEx
+
+  class OverloadEx {
+    +new(Value, Value[]) void
+    +new(Value, Type[]) void
+  }
+  SemantEx <|-- OverloadEx
+
+  class Toker {
+    -_endPos: Int
+    -_flags: Int
+    -_len: Int
+    -_line: Int
+    -_linePos: Int
+    -_pos: Int
+    -_srcPos: Int
+    -_text: String
+    -_toke: String
+    -_tokePos: Int
+    -_tokeType: Int
+    +Bump() string
+    +new() void
+    +new(String) void
+    +new(Toker) void
+  }
+
+  class TryParseEx {
+  }
+  throwable <|-- TryParseEx
+
+  class Parser {
+    +_cc: 
+    +_doccing: Bool
+    +_docs: 
+    +_errors: 
+    +_fdecl: FileDecl
+    +_imports: 
+    +_meta: String
+    +_ppsyms: StringMap<string>
+    +_reflects: 
+    +_stateStack: 
+    +_toker: Toker
+    +_usings: 
+    +AtEos() bool
+    +BeginTryParse() void
+    +Bump() string
+    +CParse(String) bool
+    +CParseEol() bool
+    +CParseIdent() string
+    +Docs() string
+    +EatEols() void
+    +EndTryParse() void
+    +Error(String) void
+    +ErrorNx(String) void
+    +Eval() string
+    +EvalAnd() string
+    +EvalBool() bool
+    +EvalEquals() string
+    +EvalOr() string
+    +EvalPrimary() string
+    +EvalUnary() string
+    +IsBool(String) bool
+    +IsTypeIdent(String) bool
+    +Meta() string
+    +Parse(String) void
+    +Parse() string
+    +ParseAccessFlags(Int, Bool) int
+    +ParseAddsubExpr() Expr
+    +ParseAliases(generic, ident) void
+    +ParseAndExpr() Expr
+    +ParseBaseType(ident) Expr
+    +ParseBitandExpr() Expr
+    +ParseBitorExpr() Expr
+    +ParseBlockStmts() StmtExpr[]
+    +ParseClass(ident) ClassDecl
+    +ParseCompareExpr() Expr
+    +ParseDecls(ident, ident) Decl[]
+    +ParseEnum(ident) EnumDecl
+    +ParseEol() void
+    +ParseEqualsExpr() Expr
+    +ParseExpr() Expr
+    +ParseExprStmt() StmtExpr
+    +ParseExprs() Expr[]
+    +ParseExtendsExpr() Expr
+    +ParseFile(ident, ident, generic) FileDecl
+    +ParseFor() ForStmtExpr
+    +ParseFunc(ident) FuncDecl
+    +ParseFuncType(ident) FuncTypeExpr
+    +ParseGenArgs() string[]
+    +ParseIdent() string
+    +ParseIdentType() IdentExpr
+    +ParseIf() IfStmtExpr
+    +ParseIfThenElseExpr() Expr
+    +ParseInvokeArgs() Expr[]
+    +ParseMeta() string
+    +ParseMuldivExpr() Expr
+    +ParseNamespaceIdent() string
+    +ParseNewType() Expr
+    +ParseOrExpr() Expr
+    +ParseOrderExpr() Expr
+    +ParsePostfixExpr() Expr
+    +ParsePrefixExpr() Expr
+    +ParsePrimaryExpr() Expr
+    +ParseProperty(ident) PropertyDecl
+    +ParseRepeat() RepeatStmtExpr
+    +ParseSelect() SelectStmtExpr
+    +ParseShiftExpr() Expr
+    +ParseSimpleStmt() StmtExpr
+    +ParseSimpleStmts() StmtExpr[]
+    +ParseStmts(ident) StmtExpr[]
+    +ParseString() string
+    +ParseTry() TryStmtExpr
+    +ParseType(ident) Expr
+    +ParseTypes() Expr[]
+    +ParseUsingIdent() string
+    +ParseVars(generic, ident) void
+    +ParseWhile() WhileStmtExpr
+    +PreProcess(String) void
+    +SkipToEol() void
+    +SkipToNextLine() void
+    +ToBool(String) string
+    +TryParseFailed() void
+    +new() void
+    +new(ident, generic) void
+  }
+
+  class Decl {
+    +docs: String
+    +flags: Int
+    +ident: String
+    +kind: String
+    +members: Decl[]
+    +meta: String
+    +symbol: String
+    +ToNode(Scope)* SNode
+    +ToString() string
+  }
+  PNode <|-- Decl
+
+  class FileDecl {
+    +cfile: String
+    +classes: Stack<ClassType>
+    +enums: Stack<EnumType>
+    +errors: ParseEx[]
+    +exhfile: String
+    +extclasses: Stack<ClassType>
+    +functions: Stack<FuncValue>
+    +globals: Stack<VarValue>
+    +gpath: String
+    +hfile: String
+    +imports: String[]
+    +module: Module
+    +nmspace: String
+    +path: String
+    +reflects: String[]
+    +usings: String[]
+    +ToString() string
+    +new() void
+  }
+  Decl <|-- FileDecl
+
+  class Expr {
+    +OnSemant(Scope)* Value
+    +OnSemantType(Scope)* Type
+    +OnSemantWhere(Scope)* bool
+    +Semant(Scope) Value
+    +SemantRValue(Scope, Type) Value
+    +SemantType(Scope, Bool) Type
+    +SemantWhere(Scope) bool
+    +TrySemantRValue(Scope, Type) Value
+    +new(Int, Int) void
+  }
+  PNode <|-- Expr
+
+  class ValueExpr {
+    +value: Value
+    +OnSemant(Scope) Value
+    +new(Value, Int, Int) void
+  }
+  Expr <|-- ValueExpr
+
+  class IdentExpr {
+    +ident: String
+    +OnSemant(Scope) Value
+    +OnSemantType(Scope) Type
+    +ToString() string
+    +new(String, Int, Int) void
+  }
+  Expr <|-- IdentExpr
+
+  class MemberExpr {
+    +expr: Expr
+    +ident: String
+    +OnSemant(Scope) Value
+    +OnSemantType(Scope) Type
+    +ToString() string
+    +new(Expr, String, Int, Int) void
+  }
+  Expr <|-- MemberExpr
+
+  class SafeMemberExpr {
+    +expr: Expr
+    +ident: String
+    +OnSemant(Scope) Value
+    +new(Expr, String, Int, Int) void
+  }
+  Expr <|-- SafeMemberExpr
+
+  class InvokeExpr {
+    +args: Expr[]
+    +expr: Expr
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(Expr, Expr[], Int, Int) void
+  }
+  Expr <|-- InvokeExpr
+
+  class SafeInvokeExpr {
+    +args: Expr[]
+    +expr: Expr
+    +ident: String
+    +OnSemant(Scope) Value
+    +new(Expr, String, Expr[], Int, Int) void
+  }
+  Expr <|-- SafeInvokeExpr
+
+  class GenericExpr {
+    +args: Expr[]
+    +expr: Expr
+    +OnSemant(Scope) Value
+    +OnSemantType(Scope) Type
+    +ToString() string
+    +new(Expr, Expr[], Int, Int) void
+  }
+  Expr <|-- GenericExpr
+
+  class NewObjectExpr {
+    +args: Expr[]
+    +type: Expr
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(Expr, Expr[], Int, Int) void
+  }
+  Expr <|-- NewObjectExpr
+
+  class NewArrayExpr {
+    +inits: Expr[]
+    +sizes: Expr[]
+    +type: ArrayTypeExpr
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(ArrayTypeExpr, Expr[], Expr[], Int, Int) void
+  }
+  Expr <|-- NewArrayExpr
+
+  class IndexExpr {
+    +args: Expr[]
+    +expr: Expr
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(Expr, Expr[], Int, Int) void
+  }
+  Expr <|-- IndexExpr
+
+  class ExtendsExpr {
+    +expr: Expr
+    +op: String
+    +type: Expr
+    +OnSemant(Scope) Value
+    +OnSemantWhere(Scope) bool
+    +ToString() string
+    +new(String, Expr, Expr, Int, Int) void
+  }
+  Expr <|-- ExtendsExpr
+
+  class CastExpr {
+    +expr: Expr
+    +type: Expr
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(Expr, Expr, Int, Int) void
+  }
+  Expr <|-- CastExpr
+
+  class SelfExpr {
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(Int, Int) void
+  }
+  Expr <|-- SelfExpr
+
+  class SuperExpr {
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(Int, Int) void
+  }
+  Expr <|-- SuperExpr
+
+  class NullExpr {
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(Int, Int) void
+  }
+  Expr <|-- NullExpr
+
+  class UnaryopExpr {
+    +expr: Expr
+    +op: String
+    +OnSemant(Scope) Value
+    +OnSemantWhere(Scope) bool
+    +ToString() string
+    +new(String, Expr, Int, Int) void
+  }
+  Expr <|-- UnaryopExpr
+
+  class BinaryopExpr {
+    +lhs: Expr
+    +op: String
+    +rhs: Expr
+    +OnSemant(Scope) Value
+    +OnSemantWhere(Scope) bool
+    +ToString() string
+    +new(String, Expr, Expr, Int, Int) void
+  }
+  Expr <|-- BinaryopExpr
+
+  class ElvisExpr {
+    +elseExpr: Expr
+    +expr: Expr
+    +OnSemant(Scope) Value
+    +new(Expr, Expr, Int, Int) void
+  }
+  Expr <|-- ElvisExpr
+
+  class IfThenElseExpr {
+    +elseExpr: Expr
+    +expr: Expr
+    +thenExpr: Expr
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(Expr, Expr, Expr, Int, Int) void
+  }
+  Expr <|-- IfThenElseExpr
+
+  class VarptrExpr {
+    +expr: Expr
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(Expr, Int, Int) void
+  }
+  Expr <|-- VarptrExpr
+
+  class LiteralExpr {
+    +toke: String
+    +tokeType: Int
+    +typeExpr: Expr
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(String, Int, Expr, Int, Int) void
+  }
+  Expr <|-- LiteralExpr
+
+  class LambdaExpr {
+    +decl: FuncDecl
+    +OnSemant(Scope) Value
+    +ToString() string
+    +new(FuncDecl, Int, Int) void
+  }
+  Expr <|-- LambdaExpr
+
+  class ArrayTypeExpr {
+    +rank: Int
+    +type: Expr
+    +OnSemantType(Scope) Type
+    +ToString() string
+    +new(Expr, Int, Int, Int) void
+  }
+  Expr <|-- ArrayTypeExpr
+
+  class FuncTypeExpr {
+    +params: VarDecl[]
+    +retType: Expr
+    +OnSemantType(Scope) Type
+    +ToString() string
+    +new(Expr, VarDecl[], Int, Int) void
+  }
+  Expr <|-- FuncTypeExpr
+
+  class PointerTypeExpr {
+    +type: Expr
+    +OnSemantType(Scope) Type
+    +ToString() string
+    +new(Expr, Int, Int) void
+  }
+  Expr <|-- PointerTypeExpr
+
+  class TypeofExpr {
+    +expr: Expr
+    +istype: Bool
+    +OnSemant(Scope) Value
+    +new(Expr, Bool, Int, Int) void
+  }
+  Expr <|-- TypeofExpr
+
+  class StmtExpr {
+    +Emit(StringStack, String)* void
+    +OnSemant(Block)* Stmt
+    +Semant(Block) Stmt
+    +new(Int, Int) void
+  }
+  PNode <|-- StmtExpr
+
+  class AssignStmtExpr {
+    +lhs: Expr
+    +op: String
+    +rhs: Expr
+    +OnSemant(SafeMemberExpr, Block) Stmt
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(String, Expr, Expr, Int, Int) void
+  }
+  StmtExpr <|-- AssignStmtExpr
+
+  class VarDeclStmtExpr {
+    +decl: VarDecl
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(VarDecl, Int, Int) void
+  }
+  StmtExpr <|-- VarDeclStmtExpr
+
+  class EvalStmtExpr {
+    +expr: Expr
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(Expr, Int, Int) void
+  }
+  StmtExpr <|-- EvalStmtExpr
+
+  class InvokeNewStmtExpr {
+    +args: Expr[]
+    +expr: Expr
+    +OnSemant(Block) Stmt
+    +new(Expr, Expr[], Int, Int) void
+  }
+  StmtExpr <|-- InvokeNewStmtExpr
+
+  class PrintStmtExpr {
+    +expr: Expr
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(Expr, Int, Int) void
+  }
+  StmtExpr <|-- PrintStmtExpr
+
+  class ReturnStmtExpr {
+    +expr: Expr
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(Expr, Int, Int) void
+  }
+  StmtExpr <|-- ReturnStmtExpr
+
+  class ContinueStmtExpr {
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(Int, Int) void
+  }
+  StmtExpr <|-- ContinueStmtExpr
+
+  class ExitStmtExpr {
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(Int, Int) void
+  }
+  StmtExpr <|-- ExitStmtExpr
+
+  class IfStmtExpr {
+    +cond: Expr
+    +stmts: StmtExpr[]
+    +succ: IfStmtExpr
+    +Emit(StringStack, String) void
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(Expr, StmtExpr[], IfStmtExpr, Int, Int) void
+  }
+  StmtExpr <|-- IfStmtExpr
+
+  class WhileStmtExpr {
+    +expr: Expr
+    +stmts: StmtExpr[]
+    +Emit(StringStack, String) void
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(Expr, StmtExpr[], Int, Int) void
+  }
+  StmtExpr <|-- WhileStmtExpr
+
+  class RepeatStmtExpr {
+    +expr: Expr
+    +stmts: StmtExpr[]
+    +Emit(StringStack, String) void
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(StmtExpr[], Expr, Int, Int) void
+  }
+  StmtExpr <|-- RepeatStmtExpr
+
+  class CaseStmtExpr {
+    +exprs: Expr[]
+    +stmts: StmtExpr[]
+    +new(Expr[], StmtExpr[], Int, Int) void
+  }
+  StmtExpr <|-- CaseStmtExpr
+
+  class SelectStmtExpr {
+    +cases: CaseStmtExpr[]
+    +expr: Expr
+    +Emit(StringStack, String) void
+    +OnSemant(Block) Stmt
+    +ToString() string
+    +new(Expr, CaseStmtExpr[], Int, Int) void
+  }
+  StmtExpr <|-- SelectStmtExpr
+
+  class ForStmtExpr {
+    +cond: Expr
+    +incr: Expr
+    +init: Expr
+    +kind: String
+    +semVar: VarValue
+    +stmts: StmtExpr[]
+    +varExpr: Expr
+    +varIdent: String
+    +varType: Expr
+    +vendpos: Int
+    +vsrcpos: Int
+    +Emit(StringStack, String) void
+    +OnSemant(Block) Stmt
+    +SemantEachin(Block) Stmt
+    +ToString() string
+    +new(String, Expr, Expr, String, Expr, Expr, Expr, StmtExpr[], Int, Int, Int, Int) void
+  }
+  StmtExpr <|-- ForStmtExpr
+
+  class CatchStmtExpr {
+    +stmts: StmtExpr[]
+    +varIdent: String
+    +varType: Expr
+    +new(String, Expr, StmtExpr[], Int, Int) void
+  }
+  StmtExpr <|-- CatchStmtExpr
+
+  class TryStmtExpr {
+    +catches: CatchStmtExpr[]
+    +stmts: StmtExpr[]
+    +OnSemant(Block) Stmt
+    +new(StmtExpr[], CatchStmtExpr[], Int, Int) void
+  }
+  StmtExpr <|-- TryStmtExpr
+
+  class ThrowStmtExpr {
+    +expr: Expr
+    +OnSemant(Block) Stmt
+    +new(Expr, Int, Int) void
+  }
+  StmtExpr <|-- ThrowStmtExpr
+
+  class ClassDecl {
+    +genArgs: String[]
+    +hasCtor: Bool
+    +hasDefaultCtor: Bool
+    +ifaceTypes: Expr[]
+    +superType: Expr
+    +whereExpr: Expr
+    +ToNode(Scope) SNode
+    +ToString() string
+  }
+  Decl <|-- ClassDecl
+
+  class ClassType {
+    +abstractMethods: FuncValue[]
+    +allIfaces: ClassType[]
+    +cdecl: ClassDecl
+    +ctors: Stack<FuncValue>
+    +defaultCtor: FuncValue
+    +extendsVoid: Bool
+    +fields: Stack<VarValue>
+    +ifaceTypes: ClassType[]
+    +instanceOf: ClassType
+    +instances: Stack<ClassType>
+    +membersSemanted: Bool
+    +membersSemanting: Bool
+    +methods: Stack<FuncValue>
+    +scope: ClassScope
+    +superType: ClassType
+    +transFile: FileDecl
+    +types: Type[]
+    +CanCastToType(Type) bool
+    +DistanceToBase(Type) int
+    +DistanceToType(Type) int
+    +ExtendsType(Type) bool
+    +FindNode(String) SNode
+    +FindNode2(String) SNode
+    +FindSuperFunc(String, FuncType) FuncValue
+    +FindSuperNode(String) SNode
+    +FindToFunc(Type) FuncValue
+    +FindType(String) Type
+    +FindType2(String) Type
+    +GenInstance(Type[]) Type
+    +Index(Value[], Value) Value
+    +InferType(Type, Type[]) Type
+    +OnSemant() SNode
+    +SemantMembers() void
+    +ToString() string
+    +UpCast(Value, Type) Value
+    +new(ClassDecl, Scope, Type[], ClassType) void
+  }
+  Type <|-- ClassType
+
+  class OpIndexValue {
+    +args: Value[]
+    +ctype: ClassType
+    +getters: FuncList
+    +instance: Value
+    +invokeGet: Value
+    +setters: FuncList
+    +Assign(PNode, String, Value, Block) Stmt
+    +ToRValue() Value
+    +ToString() string
+    +new(ClassType, Value[], Value) void
+  }
+  Value <|-- OpIndexValue
+
+  class ClassScope {
+    +ctype: ClassType
+    +itype: Type
+    +FindClass() ClassType
+    +FindNode(String) SNode
+    +FindType(String) Type
+    +new(ClassType, Scope) void
+  }
+  Scope <|-- ClassScope
+
+  class FuncDecl {
+    +genArgs: String[]
+    +stmts: StmtExpr[]
+    +type: FuncTypeExpr
+    +whereExpr: Expr
+    +ToNode(Scope) SNode
+    +ToString() string
+  }
+  Decl <|-- FuncDecl
+
+  class FuncValue {
+    +block: Block
+    +captures: Stack<VarValue>
+    +cscope: ClassScope
+    +fdecl: FuncDecl
+    +ftype: FuncType
+    +instanceOf: FuncValue
+    +instances: Stack<FuncValue>
+    +invokeNew: InvokeNewValue
+    +nextLocalId: Int
+    +overrides: FuncValue
+    +params: VarValue[]
+    +pdecls: VarDecl[]
+    +scope: Scope
+    +selfType: ClassType
+    +selfValue: Value
+    +simpleGetter: Bool
+    +superType: ClassType
+    +superValue: Value
+    +transFile: FileDecl
+    +types: Type[]
+    +used: Bool
+    +CheckAccess(Scope) void
+    +FixArgs(Value[]) Value[]
+    +GenInstance(Type[]) Value
+    +Invoke(Value[]) Value
+    +IsSimpleType(Type) bool
+    +OnSemant() SNode
+    +SemantParams() void
+    +SemantStmts() void
+    +ToString() string
+    +ToValue(Value) Value
+    +TryGenInstance(Type[]) FuncValue
+    +Used() void
+    +new(FuncDecl, Scope, Type[], FuncValue) void
+  }
+  Value <|-- FuncValue
+
+  class MemberFuncValue {
+    +instance: Value
+    +member: FuncValue
+    +CheckAccess(Scope) void
+    +ToString() string
+    +new(Value, FuncValue) void
+  }
+  Value <|-- MemberFuncValue
+
+  class FuncListValue {
+    +flistType: FuncListType
+    +instance: Value
+    +GenInstance(Type[]) Value
+    +Invoke(Value[]) Value
+    +ToRValue() Value
+    +ToString() string
+    +UpCast(Type) Value
+    +new(FuncListType, Value) void
+  }
+  Value <|-- FuncListValue
+
+  class FuncListType {
+    +flist: FuncList
+    +funcs: Stack<FuncValue>
+    +types: Type[]
+    +DistanceToType(Type) int
+    +FindFunc(FuncType) FuncValue
+    +FindOverload(Type, Type[]) FuncValue
+    +ToString() string
+    +ToValue(Value) Value
+    +new(FuncList) void
+    +new(FuncList, Type[]) void
+  }
+  Type <|-- FuncListType
+
+  class FuncList {
+    +funcs: Stack<FuncValue>
+    +ident: String
+    +instance0: FuncListType
+    +instances: Stack<FuncListType>
+    +scope: Scope
+    +FindFunc(FuncType) FuncValue
+    +GenFuncListType(Type[]) FuncListType
+    +OnSemant() SNode
+    +PushFunc(FuncValue) void
+    +ToString() string
+    +ToValue(Value) Value
+    +new(String, Scope) void
+  }
+  SNode <|-- FuncList
+
+  class VarDecl {
+    +init: Expr
+    +semtype: Type
+    +type: Expr
+    +ToNode(Scope) SNode
+    +ToString() string
+  }
+  Decl <|-- VarDecl
+
+  class VarValue {
+    +cscope: ClassScope
+    +init: Value
+    +scope: Scope
+    +transFile: FileDecl
+    +vdecl: VarDecl
+    +CheckAccess(Scope) void
+    +OnSemant() SNode
+    +ToString() string
+    +ToValue(Value) Value
+    +new(VarDecl, Scope) void
+    +new(String, String, Value, Scope, Int, Int, Int) void
+  }
+  Value <|-- VarValue
+
+  class MemberVarValue {
+    +instance: Value
+    +member: VarValue
+    +CheckAccess(Scope) void
+    +ToString() string
+    +new(Value, VarValue) void
+  }
+  Value <|-- MemberVarValue
+
+  class EnumDecl {
+    +ToNode(Scope) SNode
+  }
+  Decl <|-- EnumDecl
+
+  class EnumType {
+    +edecl: EnumDecl
+    +nextInit: Int
+    +scope: EnumScope
+    +transFile: FileDecl
+    +DistanceToType(Type) int
+    +FindNode(String) SNode
+    +OnSemant() SNode
+    +ToString() string
+    +new(EnumDecl, Scope) void
+  }
+  Type <|-- EnumType
+
+  class EnumScope {
+    +etype: EnumType
+    +new(EnumType, Scope) void
+  }
+  Scope <|-- EnumScope
+
+  class PropertyDecl {
+    +genArgs: String[]
+    +getFunc: FuncDecl
+    +setFunc: FuncDecl
+    +ToNode(Scope) SNode
+  }
+  Decl <|-- PropertyDecl
+
+  class PropertyList {
+    +cscope: ClassScope
+    +getFunc: FuncValue
+    +instanceof: PropertyList
+    +instances: Stack<PropertyList>
+    +pdecl: PropertyDecl
+    +scope: Scope
+    +setFunc: FuncValue
+    +type: Type
+    +types: Type[]
+    +GenInstance(Type[]) PropertyList
+    +OnSemant() SNode
+    +ToString() string
+    +ToValue(Value) Value
+    +new(PropertyDecl, Scope, Type[], PropertyList) void
+  }
+  FuncList <|-- PropertyList
+
+  class PropertyValue {
+    +instance: Value
+    +plist: PropertyList
+    +Assign(PNode, String, Value, Block) Stmt
+    +RemoveSideEffects(Block) Value
+    +ToRValue() Value
+    +ToString() string
+    +new(PropertyList, Value) void
+  }
+  Value <|-- PropertyValue
+
+  class AliasDecl {
+    +genArgs: String[]
+    +type: Expr
+    +ToNode(Scope) SNode
+  }
+  Decl <|-- AliasDecl
+
+  class AliasType {
+    +adecl: AliasDecl
+    +instanceOf: AliasType
+    +instances: Stack<AliasType>
+    +scope: Scope
+    +transFile: FileDecl
+    +types: Type[]
+    +GenInstance(Type[]) Type
+    +OnSemant() SNode
+    +new(AliasDecl, Scope, Type[], AliasType) void
+  }
+  ProxyType <|-- AliasType
+
+  class NamespaceType {
+    +ident: String
+    +scope: NamespaceScope
+    +FindNode(String) SNode
+    +FindType(String) Type
+    +ToString() string
+    +new(String, NamespaceScope) void
+  }
+  Type <|-- NamespaceType
+
+  class NamespaceScope {
+    +classexts: Stack<ClassType>
+    +ntype: NamespaceType
+    +FindExtensions(NodeFinder, ClassType) void
+    +FindRoot() NamespaceScope
+    +GetClassExtensions(ClassType) Stack<ClassType>
+    +GetExtensions(NodeFinder, ClassType) void
+    +ToString() string
+    +new(NamespaceType, NamespaceScope) void
+  }
+  Scope <|-- NamespaceScope
+
+  class Module {
+    +Dirs$: String[]
+    +afile: String
+    +baseDir: String
+    +buildDir: String
+    +cacheDir: String
+    +cfileDir: String
+    +fileDecls: Stack<FileDecl>
+    +fileScopes: Stack<FileScope>
+    +genInstances: Stack<SNode>
+    +hfileDir: String
+    +ident: String
+    +main: FuncValue
+    +moduleDeps: Map<String, Bool>
+    +name: String
+    +outputDir: String
+    +rfile: String
+    +srcPath: String
+    +usings: Stack<NamespaceScope>
+    +new(String, String, String, String) void
+  }
+
+  class NodeFinder {
+    +flist: FuncList
+    +ident: String
+    +node: SNode
+    +Add(SNode) void
+    +AddFuncs(FuncList, FuncList) void
+    +new(String) void
+  }
+
+  class AssignedGCParamsVisitor {
+    +gcparams: Map<String, VarValue>
+    +Visit(AssignStmt) void
+  }
+  StmtVisitor <|-- AssignedGCParamsVisitor
+
+  class Translator {
+    +_buf: Stack<String>
+    +_debug: Bool
+    +_deps: Deps
+    +_gcframe: GCFrame
+    +_indent: String
+    +_insertStack: Stack<StringStack>
+    +AddRef(SNode) bool
+    +AllocGCTmp(Type) string
+    +BeginDeps() void
+    +BeginGCFrame() void
+    +BeginGCFrame(FuncValue) void
+    +BeginInsert(Int) void
+    +DeclsFunc(FuncType) void
+    +DeclsVar(Type) void
+    +Emit(String) void
+    +EmitBr() void
+    +EmitInclude(FileDecl, String) void
+    +EndDeps(String) void
+    +EndGCFrame() void
+    +EndInsert() void
+    +FindGCTmp(VarValue) string
+    +FreeGCTmps() void
+    +FuncProto(FuncValue)* string
+    +Included(FileDecl) bool
+    +InsertGCTmp(VarValue) string
+    +MarksType(Type) void
+    +RefsFunc(FuncValue) void
+    +RefsType(Type) void
+    +RefsVar(VarValue) void
+    +Reset()* void
+    +ResetGC() void
+    +Trans(Value)* string
+    +TransType(Type)* string
+    +UsesFile(FileDecl) void
+    +UsesFunc(FuncType) void
+    +UsesType(Type) void
+    +VarProto(VarValue)* string
+    +new() void
+  }
+
+  class Translator_CPP {
+    +_dbline: Int
+    +_gctmps: Int
+    +_lambdaId: Int
+    +_module: Module
+    +ArrayName(ArrayType) string
+    +AssignsTo(Type) void
+    +BeginBlock() void
+    +CFuncType(FuncType) string
+    +DebugInfo(Stmt) string
+    +DiscardGCFields(ClassType, String) void
+    +EmitBlock(Block) void
+    +EmitBlock(FuncValue) void
+    +EmitClassMembers(ClassType) void
+    +EmitClassProto(ClassType) void
+    +EmitDebugInfo(Stmt) void
+    +EmitExternIncludes(FileDecl) void
+    +EmitFunc(FuncValue, Bool, Bool) void
+    +EmitGlobalInits(FileDecl) void
+    +EmitLambda(FuncValue) string
+    +EmitMain() void
+    +EmitNullTypeInfo(FileDecl) void
+    +EmitNullTypeInfo(EnumType) void
+    +EmitNullTypeInfo(ClassType) void
+    +EmitStmt(Stmt) void
+    +EmitStmt(PrintStmt) void
+    +EmitStmt(ExitStmt) void
+    +EmitStmt(ContinueStmt) void
+    +EmitStmt(ReturnStmt) void
+    +EmitStmt(VarDeclStmt) void
+    +EmitStmt(AssignStmt) void
+    +EmitStmt(EvalStmt) void
+    +EmitStmt(IfStmt) void
+    +EmitStmt(SelectStmt) void
+    +EmitStmt(WhileStmt) void
+    +EmitStmt(RepeatStmt) void
+    +EmitStmt(ForStmt) void
+    +EmitStmt(TryStmt) void
+    +EmitStmt(ThrowStmt) void
+    +EmitStmts(Block) void
+    +EmitTypeInfo(FileDecl) void
+    +EmitTypeInfo(EnumType) void
+    +EmitTypeInfo(ClassType) void
+    +EndBlock() void
+    +FuncProto(FuncValue) string
+    +FuncProto(FuncValue, Bool) string
+    +HeapVarType(Type) string
+    +IsCValueType(Type) bool
+    +IsVolatile(Value) bool
+    +IsVolatileGCType(Value) bool
+    +Reset() void
+    +SortClassTypes(ClassType, Map<SNode, Bool>, Stack<ClassType>, FileDecl) void
+    +Trans(Value) string
+    +Trans(UpCastValue) string
+    +Trans(ExplicitCastValue) string
+    +Trans(LiteralValue) string
+    +Trans(SelfValue) string
+    +Trans(SuperValue) string
+    +Trans(InvokeValue) string
+    +Trans(MemberVarValue) string
+    +Trans(MemberFuncValue) string
+    +Trans(FuncValue) string
+    +Trans(NewObjectValue) string
+    +Trans(NewArrayValue) string
+    +Trans(ArrayIndexValue) string
+    +Trans(PointerIndexValue) string
+    +Trans(StringIndexValue) string
+    +Trans(UnaryopValue) string
+    +Trans(BinaryopValue) string
+    +Trans(IfThenElseValue) string
+    +Trans(PointerValue) string
+    +Trans(VarValue) string
+    +Trans(TypeofValue) string
+    +Trans(TypeofTypeValue) string
+    +TransArgs(Value[]) string
+    +TransInvokeMember(Value, FuncValue, Value[]) string
+    +TransMember(Value, Value, Bool) string
+    +TransNull(Type) string
+    +TransRef(Value) string
+    +TransRef(ArrayIndexValue) string
+    +TransRef(PointerIndexValue) string
+    +TransRef(VarValue) string
+    +TransRef(MemberVarValue) string
+    +TransType(Type) string
+    +TransType(ClassType) string
+    +TransType(EnumType) string
+    +TransType(PrimType) string
+    +TransType(FuncType) string
+    +TransType(ArrayType) string
+    +TransType(PointerType) string
+    +TransType(GenArgType) string
+    +TranslateFile(FileDecl) void
+    +TranslateModule(Module) bool
+    +TranslateTypeInfo(Module) void
+    +VarProto(VarValue) string
+    +VarType(VarValue) string
+  }
+  Translator <|-- Translator_CPP
+
+  class BuildOpts {
+    +appType: String
+    +arch: String
+    +clean: Bool
+    +config: String
+    +fast: Bool
+    +geninfo: Bool
+    +mainSource: String
+    +makedocs: Bool
+    +passes: Int
+    +product: String
+    +productType: String
+    +target: String
+    +threads: Bool
+    +toolchain: String
+    +verbose: Int
+    +wholeArchive: Bool
+  }
+
+  class BuilderInstance {
+    +WX_LIBS: 
+    +WX_SRCS: 
+    +currentDir: String
+    +errors: 
+    +imported: 
+    +mainModule: Module
+    +modules: 
+    +modulesMap: 
+    +opts: BuildOpts
+    +parsingModule: Module
+    +ppsyms: 
+    +product: BuildProduct
+    +profileName: String
+    +rootNamespace: NamespaceScope
+    +semantMembers: 
+    +semantStmts: 
+    +semantingModule: Module
+    +wonkeyNamespace: NamespaceScope
+    +AllocTmpFile(String) string
+    +ClearPrimTypes() void
+    +CreatePrimTypes() void
+    +Exec(String) bool
+    +GetNamespace(ident, ident) NamespaceScope
+    +ImportFile(String) void
+    +ImportLocalFile(String) void
+    +ImportSystemFile(String) void
+    +Parse() void
+    +Semant() void
+    +SortModules(ident, generic, generic) void
+    +SortModules() void
+    +Translate() void
+    +new(BuildOpts) void
+  }
+
+  class BuildProduct {
+    +ASSET_FILES: 
+    +AS_OPTS: String
+    +CC_OPTS: String
+    +CPP_OPTS: String
+    +DLL_FILES: 
+    +JAVA_FILES: 
+    +LD_OPTS: String
+    +LIB_FILES: 
+    +OBJ_FILES: 
+    +SRC_FILES: 
+    +imports: 
+    +module: Module
+    +opts: BuildOpts
+    +outputFile: String
+    +reflects: 
+    #AllocTmpFile(String) string
+    +Build() void
+    +Build(ident)* void
+    -CopyAll(String, String) bool
+    -CopyAssetFiles(generic) void
+    #CopyAssets(String) void
+    #CopyDlls(String) void
+    -EnumAssetFiles(ident, ident, generic) void
+    #Exec(String, Bool) bool
+    +Run()* void
+    +new(ident, ident) void
+  }
+
+  class GccBuildProduct {
+    +AR_CMD: String
+    +AS_CMD: String
+    +CC_CMD: String
+    +CXX_CMD: String
+    +LD_CMD: String
+    +Build(ident) void
+    +BuildApp(ident)* void
+    +BuildModule(ident) void
+    +CompileSource(String) string
+    +Run() void
+    +new(ident, ident) void
+  }
+  BuildProduct <|-- GccBuildProduct
+
+  class IosBuildProduct {
+    +BuildApp(ident) void
+    +Run() void
+    +new(ident, ident) void
+  }
+  GccBuildProduct <|-- IosBuildProduct
+
+  class AndroidBuildProduct {
+    +Build(ident) void
+    +new(ident, ident) void
+  }
+  BuildProduct <|-- AndroidBuildProduct
+
+  class DocsNode {
+    -_children: Stack<DocsNode>
+    -_clean: Bool
+    -_ident: String
+    -_label: String
+    -_markdown: String
+    -_parent: DocsNode
+    -_type: DocsType
+    +Clean() void
+    +Debug() void
+    +Find(String) DocsNode
+    +Find(String, Map<DocsNode, Bool>) DocsNode
+    +Remove() void
+    +new(String, String, DocsNode, DocsType, Bool) void
+  }
+
+  class DocsBuffer {
+    -_baseDir: String
+    -_docs: DocsNode
+    -_label: String
+    -_lines: Stack<String>
+    -_params: Stack<String>
+    -_pre: Int
+    -_return: String
+    +Emit(String) void
+    +EmitBr() void
+    +EmitLine(String) void
+    +EmitLines(String[]) void
+    -FixIndent(Int, Int) void
+    +Flush() string
+    +new() void
+    +new(DocsNode, String) void
+  }
+
+  class DocsMaker {
+    -_converting: DocsNode
+    -_convertor: MarkdownConvertor
+    -_docsDir: String
+    -_module: Module
+    -_pageTemplate: String
+    -CreateHtmlPages(DocsNode, String) void
+    -CreateJSNavTree(DocsNode, String) void
+    -CreateJSNavTree(DocsNode, StringStack, String, String) void
+    +CreateModuleDocs(Module) void
+    -DeclDesc(Decl) string
+    -DeclDocsIdent(Decl) string
+    -DeclIdent(Decl) string
+    -DeclLabel(Decl) string
+    -DeclLink(Decl) string
+    -DocsVisible(Decl, Int) bool
+    -EmitHeader(DocsBuffer, Decl, DocsNode) void
+    -MakeAliasDocs(AliasType, DocsNode) DocsNode
+    -MakeClassDocs(ClassType, DocsNode) DocsNode
+    -MakeEnumDocs(EnumType, DocsNode) DocsNode
+    -MakeFuncDocs(FuncList, DocsNode) DocsNode
+    -MakeMemberDocs(Scope, String, Int, DocsNode, DocsBuffer) DocsNode
+    -MakeModuleDocs(DocsNode) DocsNode
+    -MakeNamespaceDocs(NamespaceScope, DocsNode) DocsNode
+    -MakePropertyDocs(PropertyList, DocsNode) DocsNode
+    -MakeVarDocs(VarValue, DocsNode) DocsNode
+    -ResolveHtmlLink(String, String) string
+    -TypeName(Type, String) string
+    +new(String, String) void
+  }
+
+  class MarkdownConvertor {
+    -CHAR_ESCAPE$: Int
+    -CHAR_HASH$: Int
+    -_buf: Stack<String>
+    -_cls: String
+    -_lineNum: Int
+    -_lines: String[]
+    -_linkResolver: LinkResolver
+    -_para: Bool
+    -_source: String
+    -BeginPara() void
+    -ConvertEscapeChars(String) string
+    -ConvertSpanLinks(String) string
+    -ConvertSpanTags(String, String, String) string
+    +ConvertToHtml(String) string
+    -Emit(String) void
+    -EmitCode(String) void
+    -EmitHeader(String) void
+    -EmitList(String) void
+    -EmitTable(String) void
+    -EndPara() void
+    -Escape(String) string
+    -EscapeHtml(String) string
+    -Find(String, String, Int) int
+    -NextLine() string
+    -PrevLine() string
+    -ReplaceAll(String, String, String, Int) string
+    +new(LinkResolver) void
+  }
+
+  class GeninfoGenerator {
+    -GenNode<T>(arraytype) JsonArray
+    -GenNode(String[]) JsonArray
+    -GenNode(Decl) JsonValue
+    -GenNode(FileDecl) JsonValue
+    -GenNode(ClassDecl) JsonValue
+    -GenNode(FuncDecl) JsonValue
+    -GenNode(AliasDecl) JsonValue
+    -GenNode(VarDecl) JsonValue
+    -GenNode(PropertyDecl) JsonValue
+    -GenNode(StmtExpr) JsonValue
+    -GenNode(IfStmtExpr) JsonValue
+    -GenNode(WhileStmtExpr) JsonValue
+    -GenNode(RepeatStmtExpr) JsonValue
+    -GenNode(SelectStmtExpr) JsonValue
+    -GenNode(ForStmtExpr) JsonValue
+    -GenNode(TryStmtExpr) JsonValue
+    -GenNode(Expr) JsonValue
+    -GenNode(IdentExpr) JsonValue
+    -GenNode(MemberExpr) JsonValue
+    -GenNode(GenericExpr) JsonValue
+    -GenNode(LiteralExpr) JsonValue
+    -GenNode(NewObjectExpr) JsonValue
+    -GenNode(NewArrayExpr) JsonValue
+    -GenNode(FuncTypeExpr) JsonValue
+    -GenNode(ArrayTypeExpr) JsonValue
+    -GenNode(PointerTypeExpr) JsonValue
+    +GenParseInfo() void
+    +GenSemantInfo() void
+    -MakeNode(Decl) JsonObject
+    -MakeNode(StmtExpr, String) JsonObject
+    -MakeNode(Expr, String) JsonObject
+  }
+
