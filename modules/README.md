@@ -42,3 +42,4 @@
 | win32           | Windows Win32 support                             | libc                                                         | system   | Done       |
 | zlib            | Zlib library                                      | libc                                                         | system   | Done       |
 
+Others _community_ modules are identified and available in **Wonkey-Coders** repositories : https://github.com/wonkey-coders
