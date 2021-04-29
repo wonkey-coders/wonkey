@@ -26,10 +26,13 @@ Const RELEASE_SUFFIX:=""
 Global TARGET_SUFFIX:=""
 
 Global OUTPUT:="" '--> "wonkey_"+TARGET+TARGET_SUFFIX+"_"+WONKEY_VERSION+RELEASE_SUFFIX
+Global OUTPUT_DIR:=""
+Global OUTPUT_NAME:=""
 
 Const IGNORE:="
 .gitignore
 .gitattributes
+.DS_Store
 src/createrelease
 bin/windows/wide.state.json
 bin/windows/wide/wide.state.json
@@ -95,6 +98,10 @@ Function CopyFiles( dir:String )
 				
 				Continue
 				
+			Else If dir.StartsWith("docs/graphs") 
+				
+				Continue
+				
 			Else If dir.EndsWith( "/openvr-sdk/bin" )
 				
 #If __TARGET__="windows"
@@ -122,9 +129,9 @@ Function CopyFiles( dir:String )
 				If file.StartsWith( "ios_" ) Continue
 #if __TARGET__="windows"
 				If msvc
-					If Not file.Contains( "_msvc" ) Continue
+					If file.StartsWith( "windows_" ) And Not file.Contains( "_msvc" ) Continue
 				Else
-					If file.Contains( "_msvc" ) Continue
+					If file.StartsWith( "windows_" ) And file.Contains( "_msvc" ) Continue
 				End
 #end
 				'If file.Contains( "_x64" ) Continue
@@ -157,7 +164,7 @@ Function CopyFiles( dir:String )
 		
 		Case FileType.File
 			
-			If file=".gitignore" Continue
+			If file=".gitignore" Or file=".gitattributes" Or file=".DS_Store" Or file=".travis.yml" Continue
 			
 			' ignore scripts
 			If dir = "scripts"
@@ -182,6 +189,7 @@ Function CopyFiles( dir:String )
 			Local dst:=output+"/"+dir+"/"+file
 			
 			CreateDir( output+"/"+dir )
+			If Not src.StartsWith("docs/modules/") Print "Copy file: " + src 'most verbose, use only into output log (" > out.txt")
 			CopyFile( src,dst )
 		End
 	Next
@@ -232,18 +240,18 @@ Function MakeInno()
 	iss.Push( "[Setup]" )
 	iss.Push( "OutputDir=.") '+desktop )
 	iss.Push( "OutputBaseFilename="+OUTPUT )
-	iss.Push( "AppName="+OUTPUT )
-	iss.Push( "AppVerName="+OUTPUT )
-	iss.Push( "DefaultGroupName="+OUTPUT )
-	iss.Push( "DefaultDirName={sd}\"+OUTPUT )
+	iss.Push( "AppName="+OUTPUT_NAME )
+	iss.Push( "AppVerName="+OUTPUT_NAME )
+	iss.Push( "DefaultGroupName="+OUTPUT_NAME )
+	iss.Push( "DefaultDirName={sd}\"+OUTPUT_DIR )
 	iss.Push( "UninstallFilesDir={app}\bin\windows" )
 	iss.Push( "[Icons]" )
-	iss.Push( "Name: ~q{group}\"+OUTPUT+"~q; Filename: ~q{app}\Wonkey (windows).exe~q; WorkingDir: ~q{app}~q" )
-	iss.Push( "Name: ~q{group}\Uninstall "+OUTPUT+"~q; Filename: ~q{uninstallexe}~q" )
+	iss.Push( "Name: ~q{group}\Wonkey~q; Filename: ~q{app}\Wonkey (windows).exe~q; WorkingDir: ~q{app}~q" )
+	iss.Push( "Name: ~q{group}\Uninstall Wonkey~q; Filename: ~q{uninstallexe}~q" )
 	iss.Push( "[FILES]" )
 	iss.Push( "Source: ~q"+OUTPUT+"\*~q; DestDir: {app}; Flags: ignoreversion recursesubdirs" )
 	iss.Push( "[RUN]" )
-	iss.Push( "Filename: ~q{app}\Wonkey (windows).exe~q; Description: ~qLaunch "+OUTPUT+"~q; Flags: postinstall nowait skipifsilent" )
+	iss.Push( "Filename: ~q{app}\Wonkey (windows).exe~q; Description: ~qLaunch Wonkey~q; Flags: postinstall nowait skipifsilent" )
 			
 	Local isspath:=output+".iss"
 	
@@ -293,6 +301,8 @@ Function Main()
 			
 	' set output name
 	OUTPUT = "wonkey_"+TARGET+TARGET_SUFFIX+"_"+WONKEY_VERSION+RELEASE_SUFFIX
+	OUTPUT_DIR = "wonkey_"+WONKEY_VERSION+RELEASE_SUFFIX
+	OUTPUT_NAME = "Wonkey "+WONKEY_VERSION+RELEASE_SUFFIX
 
 '#if __TARGET__="windows"
 '	desktop=(String.FromCString( getenv( "HOMEDRIVE" ) )+String.FromCString( getenv( "HOMEPATH" ) )+"\Desktop").Replace( "\","/" )+"/"
