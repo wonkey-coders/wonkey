@@ -46,6 +46,7 @@ end
 function init:void()
 	local desc:sg_desc
 	desc.context = sapp_sgcontext()
+	desc.context.sample_count = MSAA_SAMPLES
 	sg_setup(varptr desc)
 	
 	'/* a default pass action to framebuffer to gray */
