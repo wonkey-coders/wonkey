@@ -1,0 +1,12 @@
+{
+	"clangArgs":[
+		"-Xclang",
+		"-std=c++11",
+		"-I."
+	],
+	
+	"inputFile":"test.h",
+	
+	"outputFile":"test_extern"
+
+}
