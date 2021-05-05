@@ -10,7 +10,6 @@
 
 /desktop.ini
 
-/bin/*/*.dll
 /bin/assets
 /bin/*/assets
 /bin/*/wide.state.json
