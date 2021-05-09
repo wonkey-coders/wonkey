@@ -39,7 +39,7 @@ Namespace raylib
 	#Import "<OpenGL.framework>"
 	#Import "<GLKit.framework>"
 #ElseIf __TARGET__="windows"
-	#If __TOOLCHAIN__="gcc"
+	#If __COMPILER__="gcc"
 		#Import "<libmingw32.a>"
 	#End
 	#Import "<libuser.a>"
