@@ -105,7 +105,7 @@ WX_MSVC_LIB_X64=${WX_MSVC_LIB_X64}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\u
 '--------------------------------------------------------------------------------------
 
 'Linker options
-WX_LD_OPTS_MSVC=user32.lib
+WX_LD_OPTS_MSVC=
 WX_LD_OPTS_MSVC_DEBUG=
 WX_LD_OPTS_MSVC_RELEASE=
 
