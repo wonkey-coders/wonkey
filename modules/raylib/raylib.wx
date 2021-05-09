@@ -1,0 +1,1141 @@
+Namespace raylib
+
+#Import "<libc>"
+
+#import "WX_CC_OPTS_MACOS= -DPLATFORM_DESKTOP -DUSE_AUDIO -ObjC"
+#import "WX_CC_OPTS_LINUX= -DPLATFORM_DESKTOP -DUSE_AUDIO"
+#import "WX_CC_OPTS_WINDOWS= -DPLATFORM_DESKTOP -DUSE_AUDIO -D_CRT_SECURE_NO_WARNINGS"
+
+#import "WX_LD_OPTS_MACOS= -DPLATFORM_DESKTOP -DUSE_AUDIO -ObjC"
+#import "WX_LD_OPTS_LINUX= -DPLATFORM_DESKTOP -DUSE_AUDIO"
+#import "WX_LD_OPTS_WINDOWS= -DPLATFORM_DESKTOP -DUSE_AUDIO -D_CRT_SECURE_NO_WARNINGS"
+
+#Import "native/src/*.h"
+
+#If __DESKTOP_TARGET__
+	#Import "native/src/external/glfw/include/*.h"
+	#Import "native/src/external/glfw/src/*.h"
+#End
+
+#Import "<raylib.h>"
+
+#Import "native/src/core.c"
+#Import "native/src/models.c"
+#Import "native/src/shapes.c"
+#Import "native/src/text.c"
+#Import "native/src/textures.c"
+#Import "native/src/utils.c"
+#Import "native/src/raudio.c"
+
+#If __DESKTOP_TARGET__
+	#Import "native/src/rglfw.c"
+#End
+
+#If __TARGET__="macos"
+	#Import "<CoreFoundation.framework>"
+	#Import "<CoreVideo.framework>"
+	#Import "<IOKit.framework>"
+	#Import "<Cocoa.framework>"
+	#Import "<OpenGL.framework>"
+	#Import "<GLKit.framework>"
+#ElseIf __TARGET__="windows"
+	#If __TOOLCHAIN__="gcc"
+		#Import "<libmingw32.a>"
+	#End
+	#Import "<libuser.a>"
+	#Import "<libshell32.a>"
+	#Import "<libopengl32.a>"
+	#Import "<libgdi32.a>"
+	#Import "<libwinmm.a>"
+#ElseIf __TARGET__="linux"
+	Print "TODO: raylib linux target"
+#Else
+	Print "TODO: raylib other targets"
+#End
+
+Extern
+
+'***** File: native/src/raylib.h *****
+
+Const PI:Float
+Const DEG2RAD:float
+Const RAD2DEG:Float
+
+Enum bool_
+End
+Const false_:bool_
+Const true_:bool_
+
+const LIGHTGRAY  :Color 'CLITERAL(Color){ 200, 200, 200, 255 }   // Light Gray
+const GRAY       :Color 'CLITERAL(Color){ 130, 130, 130, 255 }   // Gray
+const DARKGRAY   :Color 'CLITERAL(Color){ 80, 80, 80, 255 }      // Dark Gray
+const YELLOW     :Color 'CLITERAL(Color){ 253, 249, 0, 255 }     // Yellow
+const GOLD       :Color 'CLITERAL(Color){ 255, 203, 0, 255 }     // Gold
+const ORANGE     :Color 'CLITERAL(Color){ 255, 161, 0, 255 }     // Orange
+const PINK       :Color 'CLITERAL(Color){ 255, 109, 194, 255 }   // Pink
+const RED        :Color 'CLITERAL(Color){ 230, 41, 55, 255 }     // Red
+const MAROON     :Color 'CLITERAL(Color){ 190, 33, 55, 255 }     // Maroon
+const GREEN      :Color 'CLITERAL(Color){ 0, 228, 48, 255 }      // Green
+const LIME       :Color 'CLITERAL(Color){ 0, 158, 47, 255 }      // Lime
+const DARKGREEN  :Color 'CLITERAL(Color){ 0, 117, 44, 255 }      // Dark Green
+const SKYBLUE    :Color 'CLITERAL(Color){ 102, 191, 255, 255 }   // Sky Blue
+const BLUE       :Color 'CLITERAL(Color){ 0, 121, 241, 255 }     // Blue
+const DARKBLUE   :Color 'CLITERAL(Color){ 0, 82, 172, 255 }      // Dark Blue
+const PURPLE     :Color 'CLITERAL(Color){ 200, 122, 255, 255 }   // Purple
+const VIOLET     :Color 'CLITERAL(Color){ 135, 60, 190, 255 }    // Violet
+const DARKPURPLE :Color 'CLITERAL(Color){ 112, 31, 126, 255 }    // Dark Purple
+const BEIGE      :Color 'CLITERAL(Color){ 211, 176, 131, 255 }   // Beige
+const BROWN      :Color 'CLITERAL(Color){ 127, 106, 79, 255 }    // Brown
+const DARKBROWN  :Color 'CLITERAL(Color){ 76, 63, 47, 255 }      // Dark Brown
+
+const WHITE      :Color 'CLITERAL(Color){ 255, 255, 255, 255 }   // White
+const BLACK      :Color 'CLITERAL(Color){ 0, 0, 0, 255 }         // Black
+const BLANK      :Color 'CLITERAL(Color){ 0, 0, 0, 0 }           // Blank (Transparent)
+const MAGENTA    :Color 'CLITERAL(Color){ 255, 0, 255, 255 }     // Magenta
+const RAYWHITE   :Color 'CLITERAL(Color){ 245, 245, 245, 255 }   // My own White (raylib logo)
+
+Struct Vector2
+	Field x:Float
+	Field y:Float
+End
+Struct Vector3
+	Field x:Float
+	Field y:Float
+	Field z:Float
+End
+Struct Vector4
+	Field x:Float
+	Field y:Float
+	Field z:Float
+	Field w:Float
+End
+Alias Quaternion:Vector4
+Struct Matrix
+	Field m0:Float
+	Field m4:Float
+	Field m8:Float
+	Field m12:Float
+	Field m1:Float
+	Field m5:Float
+	Field m9:Float
+	Field m13:Float
+	Field m2:Float
+	Field m6:Float
+	Field m10:Float
+	Field m14:Float
+	Field m3:Float
+	Field m7:Float
+	Field m11:Float
+	Field m15:Float
+End
+Struct Color
+	Field r:UByte
+	Field g:UByte
+	Field b:UByte
+	Field a:UByte
+End
+Struct Rectangle
+	Field x:Float
+	Field y:Float
+	Field width:Float
+	Field height:Float
+End
+Struct Image
+	Field data:Void Ptr
+	Field width:Int
+	Field height:Int
+	Field mipmaps:Int
+	Field format:Int
+End
+Struct Texture
+	Field id:UInt
+	Field width:Int
+	Field height:Int
+	Field mipmaps:Int
+	Field format:Int
+End
+Alias Texture2D:Texture
+Alias TextureCubemap:Texture
+Struct RenderTexture
+	Field id:UInt
+	Field texture:Texture
+	Field depth:Texture
+End
+Alias RenderTexture2D:RenderTexture
+Struct NPatchInfo
+	Field source:Rectangle
+	Field left:Int
+	Field top:Int
+	Field right:Int
+	Field bottom:Int
+	Field layout:Int
+End
+Struct CharInfo
+	Field value:Int
+	Field offsetX:Int
+	Field offsetY:Int
+	Field advanceX:Int
+	Field image:Image
+End
+Struct Font
+	Field baseSize:Int
+	Field charsCount:Int
+	Field charsPadding:Int
+	Field texture:Texture2D
+	Field recs:Rectangle Ptr
+	Field chars:CharInfo Ptr
+End
+Struct Camera3D
+	Field position:Vector3
+	Field target:Vector3
+	Field up:Vector3
+	Field fovy:Float
+	Field projection:Int
+End
+Alias Camera:Camera3D
+Struct Camera2D
+	Field offset:Vector2
+	Field target:Vector2
+	Field rotation:Float
+	Field zoom:Float
+End
+Struct Mesh
+	Field vertexCount:Int
+	Field triangleCount:Int
+	Field vertices:Float Ptr
+	Field texcoords:Float Ptr
+	Field texcoords2:Float Ptr
+	Field normals:Float Ptr
+	Field tangents:Float Ptr
+	Field colors:UByte Ptr
+	Field indices:UShort Ptr
+	Field animVertices:Float Ptr
+	Field animNormals:Float Ptr
+	Field boneIds:Int Ptr
+	Field boneWeights:Float Ptr
+	Field vaoId:UInt
+	Field vboId:UInt Ptr
+End
+Struct Shader
+	Field id:UInt
+	Field locs:Int Ptr
+End
+Struct MaterialMap
+	Field texture:Texture2D
+	Field color:Color
+	Field value:Float
+End
+Struct Material
+	Field shader:Shader
+	Field maps:MaterialMap Ptr
+	Field params:Float Ptr
+End
+Struct Transform
+	Field translation:Vector3
+	Field rotation:Quaternion
+	Field scale:Vector3
+End
+Struct BoneInfo
+	Field name:libc.char_t Ptr
+	Field parent:Int
+End
+Struct Model
+	Field transform:Matrix
+	Field meshCount:Int
+	Field materialCount:Int
+	Field meshes:Mesh Ptr
+	Field materials:Material Ptr
+	Field meshMaterial:Int Ptr
+	Field boneCount:Int
+	Field bones:BoneInfo Ptr
+	Field bindPose:Transform Ptr
+End
+Struct ModelAnimation
+	Field boneCount:Int
+	Field frameCount:Int
+	Field bones:BoneInfo Ptr
+	Field framePoses:Transform Ptr Ptr
+End
+Struct Ray
+	Field position:Vector3
+	Field direction:Vector3
+End
+Struct RayHitInfo
+	Field hit:bool_
+	Field distance:Float
+	Field position:Vector3
+	Field normal:Vector3
+End
+Struct BoundingBox
+	Field min:Vector3
+	Field max:Vector3
+End
+Struct Wave
+	Field sampleCount:UInt
+	Field sampleRate:UInt
+	Field sampleSize:UInt
+	Field channels:UInt
+	Field data:Void Ptr
+End
+Struct AudioStream
+	Field buffer:rAudioBuffer Ptr
+	Field sampleRate:UInt
+	Field sampleSize:UInt
+	Field channels:UInt
+End
+Struct Sound
+	Field stream:AudioStream
+	Field sampleCount:UInt
+End
+Struct Music
+	Field stream:AudioStream
+	Field sampleCount:UInt
+	Field looping:bool_
+	Field ctxType:Int
+	Field ctxData:Void Ptr
+End
+Struct VrDeviceInfo
+	Field hResolution:Int
+	Field vResolution:Int
+	Field hScreenSize:Float
+	Field vScreenSize:Float
+	Field vScreenCenter:Float
+	Field eyeToScreenDistance:Float
+	Field lensSeparationDistance:Float
+	Field interpupillaryDistance:Float
+	Field lensDistortionValues:Float Ptr
+	Field chromaAbCorrection:Float Ptr
+End
+Struct VrStereoConfig
+	Field projection:Matrix Ptr
+	Field viewOffset:Matrix Ptr
+	Field leftLensCenter:Float Ptr
+	Field rightLensCenter:Float Ptr
+	Field leftScreenCenter:Float Ptr
+	Field rightScreenCenter:Float Ptr
+	Field scale:Float Ptr
+	Field scaleIn:Float Ptr
+End
+Enum ConfigFlags
+End
+Const FLAG_VSYNC_HINT:ConfigFlags
+Const FLAG_FULLSCREEN_MODE:ConfigFlags
+Const FLAG_WINDOW_RESIZABLE:ConfigFlags
+Const FLAG_WINDOW_UNDECORATED:ConfigFlags
+Const FLAG_WINDOW_HIDDEN:ConfigFlags
+Const FLAG_WINDOW_MINIMIZED:ConfigFlags
+Const FLAG_WINDOW_MAXIMIZED:ConfigFlags
+Const FLAG_WINDOW_UNFOCUSED:ConfigFlags
+Const FLAG_WINDOW_TOPMOST:ConfigFlags
+Const FLAG_WINDOW_ALWAYS_RUN:ConfigFlags
+Const FLAG_WINDOW_TRANSPARENT:ConfigFlags
+Const FLAG_WINDOW_HIGHDPI:ConfigFlags
+Const FLAG_MSAA_4X_HINT:ConfigFlags
+Const FLAG_INTERLACED_HINT:ConfigFlags
+Enum TraceLogLevel
+End
+Const LOG_ALL:TraceLogLevel
+Const LOG_TRACE:TraceLogLevel
+Const LOG_DEBUG:TraceLogLevel
+Const LOG_INFO:TraceLogLevel
+Const LOG_WARNING:TraceLogLevel
+Const LOG_ERROR:TraceLogLevel
+Const LOG_FATAL:TraceLogLevel
+Const LOG_NONE:TraceLogLevel
+Enum KeyboardKey
+End
+Const KEY_NULL:KeyboardKey
+Const KEY_APOSTROPHE:KeyboardKey
+Const KEY_COMMA:KeyboardKey
+Const KEY_MINUS:KeyboardKey
+Const KEY_PERIOD:KeyboardKey
+Const KEY_SLASH:KeyboardKey
+Const KEY_ZERO:KeyboardKey
+Const KEY_ONE:KeyboardKey
+Const KEY_TWO:KeyboardKey
+Const KEY_THREE:KeyboardKey
+Const KEY_FOUR:KeyboardKey
+Const KEY_FIVE:KeyboardKey
+Const KEY_SIX:KeyboardKey
+Const KEY_SEVEN:KeyboardKey
+Const KEY_EIGHT:KeyboardKey
+Const KEY_NINE:KeyboardKey
+Const KEY_SEMICOLON:KeyboardKey
+Const KEY_EQUAL:KeyboardKey
+Const KEY_A:KeyboardKey
+Const KEY_B:KeyboardKey
+Const KEY_C:KeyboardKey
+Const KEY_D:KeyboardKey
+Const KEY_E:KeyboardKey
+Const KEY_F:KeyboardKey
+Const KEY_G:KeyboardKey
+Const KEY_H:KeyboardKey
+Const KEY_I:KeyboardKey
+Const KEY_J:KeyboardKey
+Const KEY_K:KeyboardKey
+Const KEY_L:KeyboardKey
+Const KEY_M:KeyboardKey
+Const KEY_N:KeyboardKey
+Const KEY_O:KeyboardKey
+Const KEY_P:KeyboardKey
+Const KEY_Q:KeyboardKey
+Const KEY_R:KeyboardKey
+Const KEY_S:KeyboardKey
+Const KEY_T:KeyboardKey
+Const KEY_U:KeyboardKey
+Const KEY_V:KeyboardKey
+Const KEY_W:KeyboardKey
+Const KEY_X:KeyboardKey
+Const KEY_Y:KeyboardKey
+Const KEY_Z:KeyboardKey
+Const KEY_SPACE:KeyboardKey
+Const KEY_ESCAPE:KeyboardKey
+Const KEY_ENTER:KeyboardKey
+Const KEY_TAB:KeyboardKey
+Const KEY_BACKSPACE:KeyboardKey
+Const KEY_INSERT:KeyboardKey
+Const KEY_DELETE:KeyboardKey
+Const KEY_RIGHT:KeyboardKey
+Const KEY_LEFT:KeyboardKey
+Const KEY_DOWN:KeyboardKey
+Const KEY_UP:KeyboardKey
+Const KEY_PAGE_UP:KeyboardKey
+Const KEY_PAGE_DOWN:KeyboardKey
+Const KEY_HOME:KeyboardKey
+Const KEY_END:KeyboardKey
+Const KEY_CAPS_LOCK:KeyboardKey
+Const KEY_SCROLL_LOCK:KeyboardKey
+Const KEY_NUM_LOCK:KeyboardKey
+Const KEY_PRINT_SCREEN:KeyboardKey
+Const KEY_PAUSE:KeyboardKey
+Const KEY_F1:KeyboardKey
+Const KEY_F2:KeyboardKey
+Const KEY_F3:KeyboardKey
+Const KEY_F4:KeyboardKey
+Const KEY_F5:KeyboardKey
+Const KEY_F6:KeyboardKey
+Const KEY_F7:KeyboardKey
+Const KEY_F8:KeyboardKey
+Const KEY_F9:KeyboardKey
+Const KEY_F10:KeyboardKey
+Const KEY_F11:KeyboardKey
+Const KEY_F12:KeyboardKey
+Const KEY_LEFT_SHIFT:KeyboardKey
+Const KEY_LEFT_CONTROL:KeyboardKey
+Const KEY_LEFT_ALT:KeyboardKey
+Const KEY_LEFT_SUPER:KeyboardKey
+Const KEY_RIGHT_SHIFT:KeyboardKey
+Const KEY_RIGHT_CONTROL:KeyboardKey
+Const KEY_RIGHT_ALT:KeyboardKey
+Const KEY_RIGHT_SUPER:KeyboardKey
+Const KEY_KB_MENU:KeyboardKey
+Const KEY_LEFT_BRACKET:KeyboardKey
+Const KEY_BACKSLASH:KeyboardKey
+Const KEY_RIGHT_BRACKET:KeyboardKey
+Const KEY_GRAVE:KeyboardKey
+Const KEY_KP_0:KeyboardKey
+Const KEY_KP_1:KeyboardKey
+Const KEY_KP_2:KeyboardKey
+Const KEY_KP_3:KeyboardKey
+Const KEY_KP_4:KeyboardKey
+Const KEY_KP_5:KeyboardKey
+Const KEY_KP_6:KeyboardKey
+Const KEY_KP_7:KeyboardKey
+Const KEY_KP_8:KeyboardKey
+Const KEY_KP_9:KeyboardKey
+Const KEY_KP_DECIMAL:KeyboardKey
+Const KEY_KP_DIVIDE:KeyboardKey
+Const KEY_KP_MULTIPLY:KeyboardKey
+Const KEY_KP_SUBTRACT:KeyboardKey
+Const KEY_KP_ADD:KeyboardKey
+Const KEY_KP_ENTER:KeyboardKey
+Const KEY_KP_EQUAL:KeyboardKey
+Const KEY_BACK:KeyboardKey
+Const KEY_MENU:KeyboardKey
+Const KEY_VOLUME_UP:KeyboardKey
+Const KEY_VOLUME_DOWN:KeyboardKey
+Enum MouseButton
+End
+Const MOUSE_LEFT_BUTTON:MouseButton
+Const MOUSE_RIGHT_BUTTON:MouseButton
+Const MOUSE_MIDDLE_BUTTON:MouseButton
+Enum MouseCursor
+End
+Const MOUSE_CURSOR_DEFAULT:MouseCursor
+Const MOUSE_CURSOR_ARROW:MouseCursor
+Const MOUSE_CURSOR_IBEAM:MouseCursor
+Const MOUSE_CURSOR_CROSSHAIR:MouseCursor
+Const MOUSE_CURSOR_POINTING_HAND:MouseCursor
+Const MOUSE_CURSOR_RESIZE_EW:MouseCursor
+Const MOUSE_CURSOR_RESIZE_NS:MouseCursor
+Const MOUSE_CURSOR_RESIZE_NWSE:MouseCursor
+Const MOUSE_CURSOR_RESIZE_NESW:MouseCursor
+Const MOUSE_CURSOR_RESIZE_ALL:MouseCursor
+Const MOUSE_CURSOR_NOT_ALLOWED:MouseCursor
+Enum GamepadButton
+End
+Const GAMEPAD_BUTTON_UNKNOWN:GamepadButton
+Const GAMEPAD_BUTTON_LEFT_FACE_UP:GamepadButton
+Const GAMEPAD_BUTTON_LEFT_FACE_RIGHT:GamepadButton
+Const GAMEPAD_BUTTON_LEFT_FACE_DOWN:GamepadButton
+Const GAMEPAD_BUTTON_LEFT_FACE_LEFT:GamepadButton
+Const GAMEPAD_BUTTON_RIGHT_FACE_UP:GamepadButton
+Const GAMEPAD_BUTTON_RIGHT_FACE_RIGHT:GamepadButton
+Const GAMEPAD_BUTTON_RIGHT_FACE_DOWN:GamepadButton
+Const GAMEPAD_BUTTON_RIGHT_FACE_LEFT:GamepadButton
+Const GAMEPAD_BUTTON_LEFT_TRIGGER_1:GamepadButton
+Const GAMEPAD_BUTTON_LEFT_TRIGGER_2:GamepadButton
+Const GAMEPAD_BUTTON_RIGHT_TRIGGER_1:GamepadButton
+Const GAMEPAD_BUTTON_RIGHT_TRIGGER_2:GamepadButton
+Const GAMEPAD_BUTTON_MIDDLE_LEFT:GamepadButton
+Const GAMEPAD_BUTTON_MIDDLE:GamepadButton
+Const GAMEPAD_BUTTON_MIDDLE_RIGHT:GamepadButton
+Const GAMEPAD_BUTTON_LEFT_THUMB:GamepadButton
+Const GAMEPAD_BUTTON_RIGHT_THUMB:GamepadButton
+Enum GamepadAxis
+End
+Const GAMEPAD_AXIS_LEFT_X:GamepadAxis
+Const GAMEPAD_AXIS_LEFT_Y:GamepadAxis
+Const GAMEPAD_AXIS_RIGHT_X:GamepadAxis
+Const GAMEPAD_AXIS_RIGHT_Y:GamepadAxis
+Const GAMEPAD_AXIS_LEFT_TRIGGER:GamepadAxis
+Const GAMEPAD_AXIS_RIGHT_TRIGGER:GamepadAxis
+Enum MaterialMapIndex
+End
+Const MATERIAL_MAP_ALBEDO:MaterialMapIndex
+Const MATERIAL_MAP_METALNESS:MaterialMapIndex
+Const MATERIAL_MAP_NORMAL:MaterialMapIndex
+Const MATERIAL_MAP_ROUGHNESS:MaterialMapIndex
+Const MATERIAL_MAP_OCCLUSION:MaterialMapIndex
+Const MATERIAL_MAP_EMISSION:MaterialMapIndex
+Const MATERIAL_MAP_HEIGHT:MaterialMapIndex
+Const MATERIAL_MAP_BRDG:MaterialMapIndex
+Const MATERIAL_MAP_CUBEMAP:MaterialMapIndex
+Const MATERIAL_MAP_IRRADIANCE:MaterialMapIndex
+Const MATERIAL_MAP_PREFILTER:MaterialMapIndex
+Enum ShaderLocationIndex
+End
+Const SHADER_LOC_VERTEX_POSITION:ShaderLocationIndex
+Const SHADER_LOC_VERTEX_TEXCOORD01:ShaderLocationIndex
+Const SHADER_LOC_VERTEX_TEXCOORD02:ShaderLocationIndex
+Const SHADER_LOC_VERTEX_NORMAL:ShaderLocationIndex
+Const SHADER_LOC_VERTEX_TANGENT:ShaderLocationIndex
+Const SHADER_LOC_VERTEX_COLOR:ShaderLocationIndex
+Const SHADER_LOC_MATRIX_MVP:ShaderLocationIndex
+Const SHADER_LOC_MATRIX_VIEW:ShaderLocationIndex
+Const SHADER_LOC_MATRIX_PROJECTION:ShaderLocationIndex
+Const SHADER_LOC_MATRIX_MODEL:ShaderLocationIndex
+Const SHADER_LOC_MATRIX_NORMAL:ShaderLocationIndex
+Const SHADER_LOC_VECTOR_VIEW:ShaderLocationIndex
+Const SHADER_LOC_COLOR_DIFFUSE:ShaderLocationIndex
+Const SHADER_LOC_COLOR_SPECULAR:ShaderLocationIndex
+Const SHADER_LOC_COLOR_AMBIENT:ShaderLocationIndex
+Const SHADER_LOC_MAP_ALBEDO:ShaderLocationIndex
+Const SHADER_LOC_MAP_METALNESS:ShaderLocationIndex
+Const SHADER_LOC_MAP_NORMAL:ShaderLocationIndex
+Const SHADER_LOC_MAP_ROUGHNESS:ShaderLocationIndex
+Const SHADER_LOC_MAP_OCCLUSION:ShaderLocationIndex
+Const SHADER_LOC_MAP_EMISSION:ShaderLocationIndex
+Const SHADER_LOC_MAP_HEIGHT:ShaderLocationIndex
+Const SHADER_LOC_MAP_CUBEMAP:ShaderLocationIndex
+Const SHADER_LOC_MAP_IRRADIANCE:ShaderLocationIndex
+Const SHADER_LOC_MAP_PREFILTER:ShaderLocationIndex
+Const SHADER_LOC_MAP_BRDF:ShaderLocationIndex
+Enum ShaderUniformDataType
+End
+Const SHADER_UNIFORM_FLOAT:ShaderUniformDataType
+Const SHADER_UNIFORM_VEC2:ShaderUniformDataType
+Const SHADER_UNIFORM_VEC3:ShaderUniformDataType
+Const SHADER_UNIFORM_VEC4:ShaderUniformDataType
+Const SHADER_UNIFORM_INT:ShaderUniformDataType
+Const SHADER_UNIFORM_IVEC2:ShaderUniformDataType
+Const SHADER_UNIFORM_IVEC3:ShaderUniformDataType
+Const SHADER_UNIFORM_IVEC4:ShaderUniformDataType
+Const SHADER_UNIFORM_SAMPLER2D:ShaderUniformDataType
+Enum PixelFormat
+End
+Const PIXELFORMAT_UNCOMPRESSED_GRAYSCALE:PixelFormat
+Const PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA:PixelFormat
+Const PIXELFORMAT_UNCOMPRESSED_R5G6B5:PixelFormat
+Const PIXELFORMAT_UNCOMPRESSED_R8G8B8:PixelFormat
+Const PIXELFORMAT_UNCOMPRESSED_R5G5B5A1:PixelFormat
+Const PIXELFORMAT_UNCOMPRESSED_R4G4B4A4:PixelFormat
+Const PIXELFORMAT_UNCOMPRESSED_R8G8B8A8:PixelFormat
+Const PIXELFORMAT_UNCOMPRESSED_R32:PixelFormat
+Const PIXELFORMAT_UNCOMPRESSED_R32G32B32:PixelFormat
+Const PIXELFORMAT_UNCOMPRESSED_R32G32B32A32:PixelFormat
+Const PIXELFORMAT_COMPRESSED_DXT1_RGB:PixelFormat
+Const PIXELFORMAT_COMPRESSED_DXT1_RGBA:PixelFormat
+Const PIXELFORMAT_COMPRESSED_DXT3_RGBA:PixelFormat
+Const PIXELFORMAT_COMPRESSED_DXT5_RGBA:PixelFormat
+Const PIXELFORMAT_COMPRESSED_ETC1_RGB:PixelFormat
+Const PIXELFORMAT_COMPRESSED_ETC2_RGB:PixelFormat
+Const PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA:PixelFormat
+Const PIXELFORMAT_COMPRESSED_PVRT_RGB:PixelFormat
+Const PIXELFORMAT_COMPRESSED_PVRT_RGBA:PixelFormat
+Const PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA:PixelFormat
+Const PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA:PixelFormat
+Enum TextureFilter
+End
+Const TEXTURE_FILTER_POINT:TextureFilter
+Const TEXTURE_FILTER_BILINEAR:TextureFilter
+Const TEXTURE_FILTER_TRILINEAR:TextureFilter
+Const TEXTURE_FILTER_ANISOTROPIC_4X:TextureFilter
+Const TEXTURE_FILTER_ANISOTROPIC_8X:TextureFilter
+Const TEXTURE_FILTER_ANISOTROPIC_16X:TextureFilter
+Enum TextureWrap
+End
+Const TEXTURE_WRAP_REPEAT:TextureWrap
+Const TEXTURE_WRAP_CLAMP:TextureWrap
+Const TEXTURE_WRAP_MIRROR_REPEAT:TextureWrap
+Const TEXTURE_WRAP_MIRROR_CLAMP:TextureWrap
+Enum CubemapLayout
+End
+Const CUBEMAP_LAYOUT_AUTO_DETECT:CubemapLayout
+Const CUBEMAP_LAYOUT_LINE_VERTICAL:CubemapLayout
+Const CUBEMAP_LAYOUT_LINE_HORIZONTAL:CubemapLayout
+Const CUBEMAP_LAYOUT_CROSS_THREE_BY_FOUR:CubemapLayout
+Const CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE:CubemapLayout
+Const CUBEMAP_LAYOUT_PANORAMA:CubemapLayout
+Enum FontType
+End
+Const FONT_DEFAULT:FontType
+Const FONT_BITMAP:FontType
+Const FONT_SDF:FontType
+Enum BlendMode
+End
+Const BLEND_ALPHA:BlendMode
+Const BLEND_ADDITIVE:BlendMode
+Const BLEND_MULTIPLIED:BlendMode
+Const BLEND_ADD_COLORS:BlendMode
+Const BLEND_SUBTRACT_COLORS:BlendMode
+Const BLEND_CUSTOM:BlendMode
+Enum Gestures
+End
+Const GESTURE_NONE:Gestures
+Const GESTURE_TAP:Gestures
+Const GESTURE_DOUBLETAP:Gestures
+Const GESTURE_HOLD:Gestures
+Const GESTURE_DRAG:Gestures
+Const GESTURE_SWIPE_RIGHT:Gestures
+Const GESTURE_SWIPE_LEFT:Gestures
+Const GESTURE_SWIPE_UP:Gestures
+Const GESTURE_SWIPE_DOWN:Gestures
+Const GESTURE_PINCH_IN:Gestures
+Const GESTURE_PINCH_OUT:Gestures
+Enum CameraMode
+End
+Const CAMERA_CUSTOM:CameraMode
+Const CAMERA_FREE:CameraMode
+Const CAMERA_ORBITAL:CameraMode
+Const CAMERA_FIRST_PERSON:CameraMode
+Const CAMERA_THIRD_PERSON:CameraMode
+Enum CameraProjection
+End
+Const CAMERA_PERSPECTIVE:CameraProjection
+Const CAMERA_ORTHOGRAPHIC:CameraProjection
+Enum NPatchLayout
+End
+Const NPATCH_NINE_PATCH:NPatchLayout
+Const NPATCH_THREE_PATCH_VERTICAL:NPatchLayout
+Const NPATCH_THREE_PATCH_HORIZONTAL:NPatchLayout
+Alias TraceLogCallback:Void( Int, CString, Int )
+Alias LoadFileDataCallback:UByte Ptr( CString, UInt Ptr )
+Alias SaveFileDataCallback:bool_( CString, Void Ptr, UInt )
+Alias LoadFileTextCallback:libc.char_t Ptr( CString )
+Alias SaveFileTextCallback:bool_( CString, libc.char_t Ptr )
+Function InitWindow:Void( width:Int, height:Int, title:CString )
+Function WindowShouldClose:bool_(  )
+Function CloseWindow:Void(  )
+Function IsWindowReady:bool_(  )
+Function IsWindowFullscreen:bool_(  )
+Function IsWindowHidden:bool_(  )
+Function IsWindowMinimized:bool_(  )
+Function IsWindowMaximized:bool_(  )
+Function IsWindowFocused:bool_(  )
+Function IsWindowResized:bool_(  )
+Function IsWindowState:bool_( flag:UInt )
+Function SetWindowState:Void( flags:UInt )
+Function ClearWindowState:Void( flags:UInt )
+Function ToggleFullscreen:Void(  )
+Function MaximizeWindow:Void(  )
+Function MinimizeWindow:Void(  )
+Function RestoreWindow:Void(  )
+Function SetWindowIcon:Void( image:Image )
+Function SetWindowTitle:Void( title:CString )
+Function SetWindowPosition:Void( x:Int, y:Int )
+Function SetWindowMonitor:Void( monitor:Int )
+Function SetWindowMinSize:Void( width:Int, height:Int )
+Function SetWindowSize:Void( width:Int, height:Int )
+Function GetWindowHandle:Void Ptr(  )
+Function GetScreenWidth:Int(  )
+Function GetScreenHeight:Int(  )
+Function GetMonitorCount:Int(  )
+Function GetCurrentMonitor:Int(  )
+Function GetMonitorPosition:Vector2( monitor:Int )
+Function GetMonitorWidth:Int( monitor:Int )
+Function GetMonitorHeight:Int( monitor:Int )
+Function GetMonitorPhysicalWidth:Int( monitor:Int )
+Function GetMonitorPhysicalHeight:Int( monitor:Int )
+Function GetMonitorRefreshRate:Int( monitor:Int )
+Function GetWindowPosition:Vector2(  )
+Function GetWindowScaleDPI:Vector2(  )
+Function GetMonitorName:CString( monitor:Int )
+Function SetClipboardText:Void( text:CString )
+Function GetClipboardText:CString(  )
+Function ShowCursor:Void(  )
+Function HideCursor:Void(  )
+Function IsCursorHidden:bool_(  )
+Function EnableCursor:Void(  )
+Function DisableCursor:Void(  )
+Function IsCursorOnScreen:bool_(  )
+Function ClearBackground:Void( color:Color )
+Function BeginDrawing:Void(  )
+Function EndDrawing:Void(  )
+Function BeginMode2D:Void( camera:Camera2D )
+Function EndMode2D:Void(  )
+Function BeginMode3D:Void( camera:Camera3D )
+Function EndMode3D:Void(  )
+Function BeginTextureMode:Void( target:RenderTexture2D )
+Function EndTextureMode:Void(  )
+Function BeginShaderMode:Void( shader:Shader )
+Function EndShaderMode:Void(  )
+Function BeginBlendMode:Void( mode:Int )
+Function EndBlendMode:Void(  )
+Function BeginScissorMode:Void( x:Int, y:Int, width:Int, height:Int )
+Function EndScissorMode:Void(  )
+Function BeginVrStereoMode:Void( config:VrStereoConfig )
+Function EndVrStereoMode:Void(  )
+Function LoadVrStereoConfig:VrStereoConfig( device:VrDeviceInfo )
+Function UnloadVrStereoConfig:Void( config:VrStereoConfig )
+Function LoadShader:Shader( vsFileName:CString, fsFileName:CString )
+Function LoadShaderFromMemory:Shader( vsCode:CString, fsCode:CString )
+Function GetShaderLocation:Int( shader:Shader, uniformName:CString )
+Function GetShaderLocationAttrib:Int( shader:Shader, attribName:CString )
+Function SetShaderValue:Void( shader:Shader, locIndex:Int, value:Void Ptr, uniformType:Int )
+Function SetShaderValueV:Void( shader:Shader, locIndex:Int, value:Void Ptr, uniformType:Int, count:Int )
+Function SetShaderValueMatrix:Void( shader:Shader, locIndex:Int, mat:Matrix )
+Function SetShaderValueTexture:Void( shader:Shader, locIndex:Int, texture:Texture2D )
+Function UnloadShader:Void( shader:Shader )
+Function GetMouseRay:Ray( mousePosition:Vector2, camera:Camera )
+Function GetCameraMatrix:Matrix( camera:Camera )
+Function GetCameraMatrix2D:Matrix( camera:Camera2D )
+Function GetWorldToScreen:Vector2( position:Vector3, camera:Camera )
+Function GetWorldToScreenEx:Vector2( position:Vector3, camera:Camera, width:Int, height:Int )
+Function GetWorldToScreen2D:Vector2( position:Vector2, camera:Camera2D )
+Function GetScreenToWorld2D:Vector2( position:Vector2, camera:Camera2D )
+Function SetTargetFPS:Void( fps:Int )
+Function GetFPS:Int(  )
+Function GetFrameTime:Float(  )
+Function GetTime:Double(  )
+Function GetRandomValue:Int( min:Int, max:Int )
+Function TakeScreenshot:Void( fileName:CString )
+Function SetConfigFlags:Void( flags:UInt )
+Function TraceLog:Void( logLevel:Int, text:CString )
+Function SetTraceLogLevel:Void( logLevel:Int )
+Function MemAlloc:Void Ptr( size:Int )
+Function MemRealloc:Void Ptr( ptr_:Void Ptr, size:Int )
+Function MemFree:Void( ptr_:Void Ptr )
+Function SetTraceLogCallback:Void( callback:TraceLogCallback )
+Function SetLoadFileDataCallback:Void( callback:LoadFileDataCallback )
+Function SetSaveFileDataCallback:Void( callback:SaveFileDataCallback )
+Function SetLoadFileTextCallback:Void( callback:LoadFileTextCallback )
+Function SetSaveFileTextCallback:Void( callback:SaveFileTextCallback )
+Function LoadFileData:UByte Ptr( fileName:CString, bytesRead:UInt Ptr )
+Function UnloadFileData:Void( data:UByte Ptr )
+Function SaveFileData:bool_( fileName:CString, data:Void Ptr, bytesToWrite:UInt )
+Function LoadFileText:libc.char_t Ptr( fileName:CString )
+Function UnloadFileText:Void( text:UByte Ptr )
+Function SaveFileText:bool_( fileName:CString, text:libc.char_t Ptr )
+Function FileExists:bool_( fileName:CString )
+Function DirectoryExists:bool_( dirPath:CString )
+Function IsFileExtension:bool_( fileName:CString, ext:CString )
+Function GetFileExtension:CString( fileName:CString )
+Function GetFileName:CString( filePath:CString )
+Function GetFileNameWithoutExt:CString( filePath:CString )
+Function GetDirectoryPath:CString( filePath:CString )
+Function GetPrevDirectoryPath:CString( dirPath:CString )
+Function GetWorkingDirectory:CString(  )
+Function GetDirectoryFiles:libc.char_t Ptr Ptr( dirPath:CString, count:Int Ptr )
+Function ClearDirectoryFiles:Void(  )
+Function ChangeDirectory:bool_( dir:CString )
+Function IsFileDropped:bool_(  )
+Function GetDroppedFiles:libc.char_t Ptr Ptr( count:Int Ptr )
+Function ClearDroppedFiles:Void(  )
+Function GetFileModTime:Long( fileName:CString )
+Function CompressData:UByte Ptr( data:UByte Ptr, dataLength:Int, compDataLength:Int Ptr )
+Function DecompressData:UByte Ptr( compData:UByte Ptr, compDataLength:Int, dataLength:Int Ptr )
+Function SaveStorageValue:bool_( position:UInt, value:Int )
+Function LoadStorageValue:Int( position:UInt )
+Function OpenURL:Void( url:CString )
+Function IsKeyPressed:bool_( key:Int )
+Function IsKeyDown:bool_( key:Int )
+Function IsKeyReleased:bool_( key:Int )
+Function IsKeyUp:bool_( key:Int )
+Function SetExitKey:Void( key:Int )
+Function GetKeyPressed:Int(  )
+Function GetCharPressed:Int(  )
+Function IsGamepadAvailable:bool_( gamepad:Int )
+Function IsGamepadName:bool_( gamepad:Int, name:CString )
+Function GetGamepadName:CString( gamepad:Int )
+Function IsGamepadButtonPressed:bool_( gamepad:Int, button:Int )
+Function IsGamepadButtonDown:bool_( gamepad:Int, button:Int )
+Function IsGamepadButtonReleased:bool_( gamepad:Int, button:Int )
+Function IsGamepadButtonUp:bool_( gamepad:Int, button:Int )
+Function GetGamepadButtonPressed:Int(  )
+Function GetGamepadAxisCount:Int( gamepad:Int )
+Function GetGamepadAxisMovement:Float( gamepad:Int, axis:Int )
+Function SetGamepadMappings:Int( mappings:CString )
+Function IsMouseButtonPressed:bool_( button:Int )
+Function IsMouseButtonDown:bool_( button:Int )
+Function IsMouseButtonReleased:bool_( button:Int )
+Function IsMouseButtonUp:bool_( button:Int )
+Function GetMouseX:Int(  )
+Function GetMouseY:Int(  )
+Function GetMousePosition:Vector2(  )
+Function SetMousePosition:Void( x:Int, y:Int )
+Function SetMouseOffset:Void( offsetX:Int, offsetY:Int )
+Function SetMouseScale:Void( scaleX:Float, scaleY:Float )
+Function GetMouseWheelMove:Float(  )
+Function SetMouseCursor:Void( cursor:Int )
+Function GetTouchX:Int(  )
+Function GetTouchY:Int(  )
+Function GetTouchPosition:Vector2( index:Int )
+Function SetGesturesEnabled:Void( flags:UInt )
+Function IsGestureDetected:bool_( gesture:Int )
+Function GetGestureDetected:Int(  )
+Function GetTouchPointsCount:Int(  )
+Function GetGestureHoldDuration:Float(  )
+Function GetGestureDragVector:Vector2(  )
+Function GetGestureDragAngle:Float(  )
+Function GetGesturePinchVector:Vector2(  )
+Function GetGesturePinchAngle:Float(  )
+Function SetCameraMode:Void( camera:Camera, mode:Int )
+Function UpdateCamera:Void( camera:Camera Ptr )
+Function SetCameraPanControl:Void( keyPan:Int )
+Function SetCameraAltControl:Void( keyAlt:Int )
+Function SetCameraSmoothZoomControl:Void( keySmoothZoom:Int )
+Function SetCameraMoveControls:Void( keyFront:Int, keyBack:Int, keyRight:Int, keyLeft:Int, keyUp:Int, keyDown:Int )
+Function SetShapesTexture:Void( texture:Texture2D, source:Rectangle )
+Function DrawPixel:Void( posX:Int, posY:Int, color:Color )
+Function DrawPixelV:Void( position:Vector2, color:Color )
+Function DrawLine:Void( startPosX:Int, startPosY:Int, endPosX:Int, endPosY:Int, color:Color )
+Function DrawLineV:Void( startPos:Vector2, endPos:Vector2, color:Color )
+Function DrawLineEx:Void( startPos:Vector2, endPos:Vector2, thick:Float, color:Color )
+Function DrawLineBezier:Void( startPos:Vector2, endPos:Vector2, thick:Float, color:Color )
+Function DrawLineBezierQuad:Void( startPos:Vector2, endPos:Vector2, controlPos:Vector2, thick:Float, color:Color )
+Function DrawLineStrip:Void( points:Vector2 Ptr, pointsCount:Int, color:Color )
+Function DrawCircle:Void( centerX:Int, centerY:Int, radius:Float, color:Color )
+Function DrawCircleSector:Void( center:Vector2, radius:Float, startAngle:Float, endAngle:Float, segments:Int, color:Color )
+Function DrawCircleSectorLines:Void( center:Vector2, radius:Float, startAngle:Float, endAngle:Float, segments:Int, color:Color )
+Function DrawCircleGradient:Void( centerX:Int, centerY:Int, radius:Float, color1:Color, color2:Color )
+Function DrawCircleV:Void( center:Vector2, radius:Float, color:Color )
+Function DrawCircleLines:Void( centerX:Int, centerY:Int, radius:Float, color:Color )
+Function DrawEllipse:Void( centerX:Int, centerY:Int, radiusH:Float, radiusV:Float, color:Color )
+Function DrawEllipseLines:Void( centerX:Int, centerY:Int, radiusH:Float, radiusV:Float, color:Color )
+Function DrawRing:Void( center:Vector2, innerRadius:Float, outerRadius:Float, startAngle:Float, endAngle:Float, segments:Int, color:Color )
+Function DrawRingLines:Void( center:Vector2, innerRadius:Float, outerRadius:Float, startAngle:Float, endAngle:Float, segments:Int, color:Color )
+Function DrawRectangle:Void( posX:Int, posY:Int, width:Int, height:Int, color:Color )
+Function DrawRectangleV:Void( position:Vector2, size:Vector2, color:Color )
+Function DrawRectangleRec:Void( rec:Rectangle, color:Color )
+Function DrawRectanglePro:Void( rec:Rectangle, origin:Vector2, rotation:Float, color:Color )
+Function DrawRectangleGradientV:Void( posX:Int, posY:Int, width:Int, height:Int, color1:Color, color2:Color )
+Function DrawRectangleGradientH:Void( posX:Int, posY:Int, width:Int, height:Int, color1:Color, color2:Color )
+Function DrawRectangleGradientEx:Void( rec:Rectangle, col1:Color, col2:Color, col3:Color, col4:Color )
+Function DrawRectangleLines:Void( posX:Int, posY:Int, width:Int, height:Int, color:Color )
+Function DrawRectangleLinesEx:Void( rec:Rectangle, lineThick:Int, color:Color )
+Function DrawRectangleRounded:Void( rec:Rectangle, roundness:Float, segments:Int, color:Color )
+Function DrawRectangleRoundedLines:Void( rec:Rectangle, roundness:Float, segments:Int, lineThick:Int, color:Color )
+Function DrawTriangle:Void( v1:Vector2, v2:Vector2, v3:Vector2, color:Color )
+Function DrawTriangleLines:Void( v1:Vector2, v2:Vector2, v3:Vector2, color:Color )
+Function DrawTriangleFan:Void( points:Vector2 Ptr, pointsCount:Int, color:Color )
+Function DrawTriangleStrip:Void( points:Vector2 Ptr, pointsCount:Int, color:Color )
+Function DrawPoly:Void( center:Vector2, sides:Int, radius:Float, rotation:Float, color:Color )
+Function DrawPolyLines:Void( center:Vector2, sides:Int, radius:Float, rotation:Float, color:Color )
+Function CheckCollisionRecs:bool_( rec1:Rectangle, rec2:Rectangle )
+Function CheckCollisionCircles:bool_( center1:Vector2, radius1:Float, center2:Vector2, radius2:Float )
+Function CheckCollisionCircleRec:bool_( center:Vector2, radius:Float, rec:Rectangle )
+Function CheckCollisionPointRec:bool_( point:Vector2, rec:Rectangle )
+Function CheckCollisionPointCircle:bool_( point:Vector2, center:Vector2, radius:Float )
+Function CheckCollisionPointTriangle:bool_( point:Vector2, p1:Vector2, p2:Vector2, p3:Vector2 )
+Function CheckCollisionLines:bool_( startPos1:Vector2, endPos1:Vector2, startPos2:Vector2, endPos2:Vector2, collisionPoint:Vector2 Ptr )
+Function GetCollisionRec:Rectangle( rec1:Rectangle, rec2:Rectangle )
+Function LoadImage:Image( fileName:CString )
+Function LoadImageRaw:Image( fileName:CString, width:Int, height:Int, format:Int, headerSize:Int )
+Function LoadImageAnim:Image( fileName:CString, frames:Int Ptr )
+Function LoadImageFromMemory:Image( fileType:CString, fileData:UByte Ptr, dataSize:Int )
+Function UnloadImage:Void( image:Image )
+Function ExportImage:bool_( image:Image, fileName:CString )
+Function ExportImageAsCode:bool_( image:Image, fileName:CString )
+Function GenImageColor:Image( width:Int, height:Int, color:Color )
+Function GenImageGradientV:Image( width:Int, height:Int, top:Color, bottom:Color )
+Function GenImageGradientH:Image( width:Int, height:Int, left:Color, right:Color )
+Function GenImageGradientRadial:Image( width:Int, height:Int, density:Float, inner:Color, outer:Color )
+Function GenImageChecked:Image( width:Int, height:Int, checksX:Int, checksY:Int, col1:Color, col2:Color )
+Function GenImageWhiteNoise:Image( width:Int, height:Int, factor:Float )
+Function GenImagePerlinNoise:Image( width:Int, height:Int, offsetX:Int, offsetY:Int, scale:Float )
+Function GenImageCellular:Image( width:Int, height:Int, tileSize:Int )
+Function ImageCopy:Image( image:Image )
+Function ImageFromImage:Image( image:Image, rec:Rectangle )
+Function ImageText:Image( text:CString, fontSize:Int, color:Color )
+Function ImageTextEx:Image( font:Font, text:CString, fontSize:Float, spacing:Float, tint:Color )
+Function ImageFormat:Void( image:Image Ptr, newFormat:Int )
+Function ImageToPOT:Void( image:Image Ptr, fill:Color )
+Function ImageCrop:Void( image:Image Ptr, crop:Rectangle )
+Function ImageAlphaCrop:Void( image:Image Ptr, threshold:Float )
+Function ImageAlphaClear:Void( image:Image Ptr, color:Color, threshold:Float )
+Function ImageAlphaMask:Void( image:Image Ptr, alphaMask:Image )
+Function ImageAlphaPremultiply:Void( image:Image Ptr )
+Function ImageResize:Void( image:Image Ptr, newWidth:Int, newHeight:Int )
+Function ImageResizeNN:Void( image:Image Ptr, newWidth:Int, newHeight:Int )
+Function ImageResizeCanvas:Void( image:Image Ptr, newWidth:Int, newHeight:Int, offsetX:Int, offsetY:Int, fill:Color )
+Function ImageMipmaps:Void( image:Image Ptr )
+Function ImageDither:Void( image:Image Ptr, rBpp:Int, gBpp:Int, bBpp:Int, aBpp:Int )
+Function ImageFlipVertical:Void( image:Image Ptr )
+Function ImageFlipHorizontal:Void( image:Image Ptr )
+Function ImageRotateCW:Void( image:Image Ptr )
+Function ImageRotateCCW:Void( image:Image Ptr )
+Function ImageColorTint:Void( image:Image Ptr, color:Color )
+Function ImageColorInvert:Void( image:Image Ptr )
+Function ImageColorGrayscale:Void( image:Image Ptr )
+Function ImageColorContrast:Void( image:Image Ptr, contrast:Float )
+Function ImageColorBrightness:Void( image:Image Ptr, brightness:Int )
+Function ImageColorReplace:Void( image:Image Ptr, color:Color, replace:Color )
+Function LoadImageColors:Color Ptr( image:Image )
+Function LoadImagePalette:Color Ptr( image:Image, maxPaletteSize:Int, colorsCount:Int Ptr )
+Function UnloadImageColors:Void( colors:Color Ptr )
+Function UnloadImagePalette:Void( colors:Color Ptr )
+Function GetImageAlphaBorder:Rectangle( image:Image, threshold:Float )
+Function ImageClearBackground:Void( dst:Image Ptr, color:Color )
+Function ImageDrawPixel:Void( dst:Image Ptr, posX:Int, posY:Int, color:Color )
+Function ImageDrawPixelV:Void( dst:Image Ptr, position:Vector2, color:Color )
+Function ImageDrawLine:Void( dst:Image Ptr, startPosX:Int, startPosY:Int, endPosX:Int, endPosY:Int, color:Color )
+Function ImageDrawLineV:Void( dst:Image Ptr, start:Vector2, end_:Vector2, color:Color )
+Function ImageDrawCircle:Void( dst:Image Ptr, centerX:Int, centerY:Int, radius:Int, color:Color )
+Function ImageDrawCircleV:Void( dst:Image Ptr, center:Vector2, radius:Int, color:Color )
+Function ImageDrawRectangle:Void( dst:Image Ptr, posX:Int, posY:Int, width:Int, height:Int, color:Color )
+Function ImageDrawRectangleV:Void( dst:Image Ptr, position:Vector2, size:Vector2, color:Color )
+Function ImageDrawRectangleRec:Void( dst:Image Ptr, rec:Rectangle, color:Color )
+Function ImageDrawRectangleLines:Void( dst:Image Ptr, rec:Rectangle, thick:Int, color:Color )
+Function ImageDraw:Void( dst:Image Ptr, src:Image, srcRec:Rectangle, dstRec:Rectangle, tint:Color )
+Function ImageDrawText:Void( dst:Image Ptr, text:CString, posX:Int, posY:Int, fontSize:Int, color:Color )
+Function ImageDrawTextEx:Void( dst:Image Ptr, font:Font, text:CString, position:Vector2, fontSize:Float, spacing:Float, tint:Color )
+Function LoadTexture:Texture2D( fileName:CString )
+Function LoadTextureFromImage:Texture2D( image:Image )
+Function LoadTextureCubemap:TextureCubemap( image:Image, layout:Int )
+Function LoadRenderTexture:RenderTexture2D( width:Int, height:Int )
+Function UnloadTexture:Void( texture:Texture2D )
+Function UnloadRenderTexture:Void( target:RenderTexture2D )
+Function UpdateTexture:Void( texture:Texture2D, pixels:Void Ptr )
+Function UpdateTextureRec:Void( texture:Texture2D, rec:Rectangle, pixels:Void Ptr )
+Function GetTextureData:Image( texture:Texture2D )
+Function GetScreenData:Image(  )
+Function GenTextureMipmaps:Void( texture:Texture2D Ptr )
+Function SetTextureFilter:Void( texture:Texture2D, filter:Int )
+Function SetTextureWrap:Void( texture:Texture2D, wrap:Int )
+Function DrawTexture:Void( texture:Texture2D, posX:Int, posY:Int, tint:Color )
+Function DrawTextureV:Void( texture:Texture2D, position:Vector2, tint:Color )
+Function DrawTextureEx:Void( texture:Texture2D, position:Vector2, rotation:Float, scale:Float, tint:Color )
+Function DrawTextureRec:Void( texture:Texture2D, source:Rectangle, position:Vector2, tint:Color )
+Function DrawTextureQuad:Void( texture:Texture2D, tiling:Vector2, offset:Vector2, quad:Rectangle, tint:Color )
+Function DrawTextureTiled:Void( texture:Texture2D, source:Rectangle, dest:Rectangle, origin:Vector2, rotation:Float, scale:Float, tint:Color )
+Function DrawTexturePro:Void( texture:Texture2D, source:Rectangle, dest:Rectangle, origin:Vector2, rotation:Float, tint:Color )
+Function DrawTextureNPatch:Void( texture:Texture2D, nPatchInfo:NPatchInfo, dest:Rectangle, origin:Vector2, rotation:Float, tint:Color )
+Function DrawTexturePoly:Void( texture:Texture2D, center:Vector2, points:Vector2 Ptr, texcoords:Vector2 Ptr, pointsCount:Int, tint:Color )
+Function Fade:Color( color:Color, alpha:Float )
+Function ColorToInt:Int( color:Color )
+Function ColorNormalize:Vector4( color:Color )
+Function ColorFromNormalized:Color( normalized:Vector4 )
+Function ColorToHSV:Vector3( color:Color )
+Function ColorFromHSV:Color( hue:Float, saturation:Float, value:Float )
+Function ColorAlpha:Color( color:Color, alpha:Float )
+Function ColorAlphaBlend:Color( dst:Color, src:Color, tint:Color )
+Function GetColor:Color( hexValue:Int )
+Function GetPixelColor:Color( srcPtr:Void Ptr, format:Int )
+Function SetPixelColor:Void( dstPtr:Void Ptr, color:Color, format:Int )
+Function GetPixelDataSize:Int( width:Int, height:Int, format:Int )
+Function GetFontDefault:Font(  )
+Function LoadFont:Font( fileName:CString )
+Function LoadFontEx:Font( fileName:CString, fontSize:Int, fontChars:Int Ptr, charsCount:Int )
+Function LoadFontFromImage:Font( image:Image, key:Color, firstChar:Int )
+Function LoadFontFromMemory:Font( fileType:CString, fileData:UByte Ptr, dataSize:Int, fontSize:Int, fontChars:Int Ptr, charsCount:Int )
+Function LoadFontData:CharInfo Ptr( fileData:UByte Ptr, dataSize:Int, fontSize:Int, fontChars:Int Ptr, charsCount:Int, type:Int )
+Function GenImageFontAtlas:Image( chars:CharInfo Ptr, recs:Rectangle Ptr Ptr, charsCount:Int, fontSize:Int, padding:Int, packMethod:Int )
+Function UnloadFontData:Void( chars:CharInfo Ptr, charsCount:Int )
+Function UnloadFont:Void( font:Font )
+Function DrawFPS:Void( posX:Int, posY:Int )
+Function DrawText:Void( text:CString, posX:Int, posY:Int, fontSize:Int, color:Color )
+Function DrawTextEx:Void( font:Font, text:CString, position:Vector2, fontSize:Float, spacing:Float, tint:Color )
+Function DrawTextRec:Void( font:Font, text:CString, rec:Rectangle, fontSize:Float, spacing:Float, wordWrap:bool_, tint:Color )
+Function DrawTextRecEx:Void( font:Font, text:CString, rec:Rectangle, fontSize:Float, spacing:Float, wordWrap:bool_, tint:Color, selectStart:Int, selectLength:Int, selectTint:Color, selectBackTint:Color )
+Function DrawTextCodepoint:Void( font:Font, codepoint:Int, position:Vector2, fontSize:Float, tint:Color )
+Function MeasureText:Int( text:CString, fontSize:Int )
+Function MeasureTextEx:Vector2( font:Font, text:CString, fontSize:Float, spacing:Float )
+Function GetGlyphIndex:Int( font:Font, codepoint:Int )
+Function TextCopy:Int( dst:libc.char_t Ptr, src:CString )
+Function TextIsEqual:bool_( text1:CString, text2:CString )
+Function TextLength:UInt( text:CString )
+Function TextFormat:CString( text:CString )
+Function TextSubtext:CString( text:CString, position:Int, length:Int )
+Function TextReplace:libc.char_t Ptr( text:libc.char_t Ptr, replace:CString, by:CString )
+Function TextInsert:libc.char_t Ptr( text:CString, insert:CString, position:Int )
+Function TextJoin:CString( textList:libc.const_char_t Ptr Ptr, count:Int, delimiter:CString )
+Function TextSplit:libc.const_char_t Ptr Ptr( text:CString, delimiter:libc.char_t, count:Int Ptr )
+Function TextAppend:Void( text:libc.char_t Ptr, append:CString, position:Int Ptr )
+Function TextFindIndex:Int( text:CString, find:CString )
+Function TextToUpper:CString( text:CString )
+Function TextToLower:CString( text:CString )
+Function TextToPascal:CString( text:CString )
+Function TextToInteger:Int( text:CString )
+Function TextToUtf8:libc.char_t Ptr( codepoints:Int Ptr, length:Int )
+Function GetCodepoints:Int Ptr( text:CString, count:Int Ptr )
+Function GetCodepointsCount:Int( text:CString )
+Function GetNextCodepoint:Int( text:CString, bytesProcessed:Int Ptr )
+Function CodepointToUtf8:CString( codepoint:Int, byteLength:Int Ptr )
+Function DrawLine3D:Void( startPos:Vector3, endPos:Vector3, color:Color )
+Function DrawPoint3D:Void( position:Vector3, color:Color )
+Function DrawCircle3D:Void( center:Vector3, radius:Float, rotationAxis:Vector3, rotationAngle:Float, color:Color )
+Function DrawTriangle3D:Void( v1:Vector3, v2:Vector3, v3:Vector3, color:Color )
+Function DrawTriangleStrip3D:Void( points:Vector3 Ptr, pointsCount:Int, color:Color )
+Function DrawCube:Void( position:Vector3, width:Float, height:Float, length:Float, color:Color )
+Function DrawCubeV:Void( position:Vector3, size:Vector3, color:Color )
+Function DrawCubeWires:Void( position:Vector3, width:Float, height:Float, length:Float, color:Color )
+Function DrawCubeWiresV:Void( position:Vector3, size:Vector3, color:Color )
+Function DrawCubeTexture:Void( texture:Texture2D, position:Vector3, width:Float, height:Float, length:Float, color:Color )
+Function DrawSphere:Void( centerPos:Vector3, radius:Float, color:Color )
+Function DrawSphereEx:Void( centerPos:Vector3, radius:Float, rings:Int, slices:Int, color:Color )
+Function DrawSphereWires:Void( centerPos:Vector3, radius:Float, rings:Int, slices:Int, color:Color )
+Function DrawCylinder:Void( position:Vector3, radiusTop:Float, radiusBottom:Float, height:Float, slices:Int, color:Color )
+Function DrawCylinderWires:Void( position:Vector3, radiusTop:Float, radiusBottom:Float, height:Float, slices:Int, color:Color )
+Function DrawPlane:Void( centerPos:Vector3, size:Vector2, color:Color )
+Function DrawRay:Void( ray:Ray, color:Color )
+Function DrawGrid:Void( slices:Int, spacing:Float )
+Function LoadModel:Model( fileName:CString )
+Function LoadModelFromMesh:Model( mesh:Mesh )
+Function UnloadModel:Void( model:Model )
+Function UnloadModelKeepMeshes:Void( model:Model )
+Function UploadMesh:Void( mesh:Mesh Ptr, dynamic:bool_ )
+Function UpdateMeshBuffer:Void( mesh:Mesh, index:Int, data:Void Ptr, dataSize:Int, offset:Int )
+Function DrawMesh:Void( mesh:Mesh, material:Material, transform:Matrix )
+Function DrawMeshInstanced:Void( mesh:Mesh, material:Material, transforms:Matrix Ptr, instances:Int )
+Function UnloadMesh:Void( mesh:Mesh )
+Function ExportMesh:bool_( mesh:Mesh, fileName:CString )
+Function LoadMaterials:Material Ptr( fileName:CString, materialCount:Int Ptr )
+Function LoadMaterialDefault:Material(  )
+Function UnloadMaterial:Void( material:Material )
+Function SetMaterialTexture:Void( material:Material Ptr, mapType:Int, texture:Texture2D )
+Function SetModelMeshMaterial:Void( model:Model Ptr, meshId:Int, materialId:Int )
+Function LoadModelAnimations:ModelAnimation Ptr( fileName:CString, animsCount:Int Ptr )
+Function UpdateModelAnimation:Void( model:Model, anim:ModelAnimation, frame:Int )
+Function UnloadModelAnimation:Void( anim:ModelAnimation )
+Function UnloadModelAnimations:Void( animations:ModelAnimation Ptr, count:UInt )
+Function IsModelAnimationValid:bool_( model:Model, anim:ModelAnimation )
+Function GenMeshPoly:Mesh( sides:Int, radius:Float )
+Function GenMeshPlane:Mesh( width:Float, length:Float, resX:Int, resZ:Int )
+Function GenMeshCube:Mesh( width:Float, height:Float, length:Float )
+Function GenMeshSphere:Mesh( radius:Float, rings:Int, slices:Int )
+Function GenMeshHemiSphere:Mesh( radius:Float, rings:Int, slices:Int )
+Function GenMeshCylinder:Mesh( radius:Float, height:Float, slices:Int )
+Function GenMeshTorus:Mesh( radius:Float, size:Float, radSeg:Int, sides:Int )
+Function GenMeshKnot:Mesh( radius:Float, size:Float, radSeg:Int, sides:Int )
+Function GenMeshHeightmap:Mesh( heightmap:Image, size:Vector3 )
+Function GenMeshCubicmap:Mesh( cubicmap:Image, cubeSize:Vector3 )
+Function MeshBoundingBox:BoundingBox( mesh:Mesh )
+Function MeshTangents:Void( mesh:Mesh Ptr )
+Function MeshBinormals:Void( mesh:Mesh Ptr )
+Function DrawModel:Void( model:Model, position:Vector3, scale:Float, tint:Color )
+Function DrawModelEx:Void( model:Model, position:Vector3, rotationAxis:Vector3, rotationAngle:Float, scale:Vector3, tint:Color )
+Function DrawModelWires:Void( model:Model, position:Vector3, scale:Float, tint:Color )
+Function DrawModelWiresEx:Void( model:Model, position:Vector3, rotationAxis:Vector3, rotationAngle:Float, scale:Vector3, tint:Color )
+Function DrawBoundingBox:Void( box:BoundingBox, color:Color )
+Function DrawBillboard:Void( camera:Camera, texture:Texture2D, center:Vector3, size:Float, tint:Color )
+Function DrawBillboardRec:Void( camera:Camera, texture:Texture2D, source:Rectangle, center:Vector3, size:Float, tint:Color )
+Function CheckCollisionSpheres:bool_( center1:Vector3, radius1:Float, center2:Vector3, radius2:Float )
+Function CheckCollisionBoxes:bool_( box1:BoundingBox, box2:BoundingBox )
+Function CheckCollisionBoxSphere:bool_( box:BoundingBox, center:Vector3, radius:Float )
+Function CheckCollisionRaySphere:bool_( ray:Ray, center:Vector3, radius:Float )
+Function CheckCollisionRaySphereEx:bool_( ray:Ray, center:Vector3, radius:Float, collisionPoint:Vector3 Ptr )
+Function CheckCollisionRayBox:bool_( ray:Ray, box:BoundingBox )
+Function GetCollisionRayMesh:RayHitInfo( ray:Ray, mesh:Mesh, transform:Matrix )
+Function GetCollisionRayModel:RayHitInfo( ray:Ray, model:Model )
+Function GetCollisionRayTriangle:RayHitInfo( ray:Ray, p1:Vector3, p2:Vector3, p3:Vector3 )
+Function GetCollisionRayGround:RayHitInfo( ray:Ray, groundHeight:Float )
+Function InitAudioDevice:Void(  )
+Function CloseAudioDevice:Void(  )
+Function IsAudioDeviceReady:bool_(  )
+Function SetMasterVolume:Void( volume:Float )
+Function LoadWave:Wave( fileName:CString )
+Function LoadWaveFromMemory:Wave( fileType:CString, fileData:UByte Ptr, dataSize:Int )
+Function LoadSound:Sound( fileName:CString )
+Function LoadSoundFromWave:Sound( wave:Wave )
+Function UpdateSound:Void( sound:Sound, data:Void Ptr, samplesCount:Int )
+Function UnloadWave:Void( wave:Wave )
+Function UnloadSound:Void( sound:Sound )
+Function ExportWave:bool_( wave:Wave, fileName:CString )
+Function ExportWaveAsCode:bool_( wave:Wave, fileName:CString )
+Function PlaySound:Void( sound:Sound )
+Function StopSound:Void( sound:Sound )
+Function PauseSound:Void( sound:Sound )
+Function ResumeSound:Void( sound:Sound )
+Function PlaySoundMulti:Void( sound:Sound )
+Function StopSoundMulti:Void(  )
+Function GetSoundsPlaying:Int(  )
+Function IsSoundPlaying:bool_( sound:Sound )
+Function SetSoundVolume:Void( sound:Sound, volume:Float )
+Function SetSoundPitch:Void( sound:Sound, pitch:Float )
+Function WaveFormat:Void( wave:Wave Ptr, sampleRate:Int, sampleSize:Int, channels:Int )
+Function WaveCopy:Wave( wave:Wave )
+Function WaveCrop:Void( wave:Wave Ptr, initSample:Int, finalSample:Int )
+Function LoadWaveSamples:Float Ptr( wave:Wave )
+Function UnloadWaveSamples:Void( samples:Float Ptr )
+Function LoadMusicStream:Music( fileName:CString )
+Function LoadMusicStreamFromMemory:Music( fileType:CString, data:UByte Ptr, dataSize:Int )
+Function UnloadMusicStream:Void( music:Music )
+Function PlayMusicStream:Void( music:Music )
+Function IsMusicPlaying:bool_( music:Music )
+Function UpdateMusicStream:Void( music:Music )
+Function StopMusicStream:Void( music:Music )
+Function PauseMusicStream:Void( music:Music )
+Function ResumeMusicStream:Void( music:Music )
+Function SetMusicVolume:Void( music:Music, volume:Float )
+Function SetMusicPitch:Void( music:Music, pitch:Float )
+Function GetMusicTimeLength:Float( music:Music )
+Function GetMusicTimePlayed:Float( music:Music )
+Function InitAudioStream:AudioStream( sampleRate:UInt, sampleSize:UInt, channels:UInt )
+Function UpdateAudioStream:Void( stream:AudioStream, data:Void Ptr, samplesCount:Int )
+Function CloseAudioStream:Void( stream:AudioStream )
+Function IsAudioStreamProcessed:bool_( stream:AudioStream )
+Function PlayAudioStream:Void( stream:AudioStream )
+Function PauseAudioStream:Void( stream:AudioStream )
+Function ResumeAudioStream:Void( stream:AudioStream )
+Function IsAudioStreamPlaying:bool_( stream:AudioStream )
+Function StopAudioStream:Void( stream:AudioStream )
+Function SetAudioStreamVolume:Void( stream:AudioStream, volume:Float )
+Function SetAudioStreamPitch:Void( stream:AudioStream, pitch:Float )
+Function SetAudioStreamBufferSizeDefault:Void( size:Int )
+
+'***** Extern Structs *****
+
+Struct rAudioBuffer
+End
+
+#Rem
+
+################ C2WX OUTPUT LOG ################
+
+Processing:native/src/raylib.h
+***** Warning - function pointer type has const* parameters *****
+void (int, const char *, int)
+***** Warning - function pointer type has const* parameters *****
+unsigned char *(const char *, unsigned int *)
+***** Warning - function pointer type has const* parameters *****
+bool (const char *, void *, unsigned int)
+***** Warning - function pointer type has const* parameters *****
+char *(const char *)
+***** Warning - function pointer type has const* parameters *****
+bool (const char *, char *)
+
+c2mx2: **** Success ***** - output saved to raylib.wx
+
+
+#End

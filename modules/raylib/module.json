@@ -1,0 +1,8 @@
+{
+	"module":"raylib",
+	"about":"raylib is a simple and easy-to-use library to enjoy videogames programming.",
+	"author":"Ramon Santamaria (raysan5), Wonkey Coders",
+	"version":"1.0.0",
+	"support":"https://github.com/raysan5/raylib, https://github.com/wonkey-coders",
+	"depends":["libc"]
+}

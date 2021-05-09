@@ -1,0 +1,135 @@
+
+#Import "<raylib>"
+
+Using raylib
+
+Global ScreenWidth:=800
+Global ScreenHeight:=450
+
+Const MAX_SAMPLES:=512
+Const MAX_SAMPLES_PER_UPDATE:=4096
+
+Function Main()
+	InitWindow(ScreenWidth, ScreenHeight, "raylib [audio] example - raw audio streaming")
+	
+	'// Initialize audio device
+	InitAudioDevice()
+	
+	'// Init raw audio stream (sample rate: 22050, sample size: 16bit-short, channels: 1-mono)
+	Local stream:AudioStream = InitAudioStream(22050, 16, 1)
+	
+	'// Buffer for the single cycle waveform we are synthesizing
+	'Local data:=Cast<Short Ptr>(MemAlloc(sizeof<Short>() * MAX_SAMPLES))
+	Local data:=New Short[MAX_SAMPLES]
+	
+	'// Frame buffer, describing the waveform when repeated over the course of a frame
+	'Local writeBuf:= Cast<Short Ptr>(MemAlloc(sizeof<Short>() * MAX_SAMPLES_PER_UPDATE))
+	Local writeBuf:=New Short[MAX_SAMPLES_PER_UPDATE]
+	 
+	PlayAudioStream(stream)
+	 
+	'// Position read in to determine next frequency
+    Local mousePosition:Vector2
+    mousePosition.x = -100
+    mousePosition.y = -100
+
+    '// Cycles per second (hz)
+    local frequency:= 440.0
+
+    '// Previous value, used to test if sine needs to be rewritten, and to smoothly modulate frequency
+    Local oldFrequency:= 1.0
+
+    ''// Cursor to read and copy the samples of the sine wave buffer
+    Local readCursor:= 0
+
+    '// Computed size in samples of the sine wave
+    Local waveLength:= 1
+
+    Local position:Vector2
+    position.x = 0
+    position.y = 0
+
+	SetTargetFPS(30)
+	
+	While Not WindowShouldClose()
+		'// Sample mouse input.
+		mousePosition = GetMousePosition()
+		
+		If IsMouseButtonDown(MOUSE_LEFT_BUTTON)
+			
+			Local fp := mousePosition.y
+			frequency = 40.0 + fp
+		End
+		
+		'// Rewrite the sine wave.
+		'// Compute two cycles to allow the buffer padding, simplifying any modulation, resampling, etc.
+		If frequency <> oldFrequency
+			
+			'// Compute wavelength. Limit size in both directions.
+			Local oldWaveLength:= waveLength
+			waveLength = int(22050/frequency)
+			If waveLength > MAX_SAMPLES/2 waveLength = MAX_SAMPLES/2
+			If waveLength < 1 waveLength = 1
+			
+			'// Write sine wave.
+			For Local i:=0 Until waveLength*2
+				data[i] = short(Sin(2*PI*float(i)/waveLength)*3200)
+			Next
+			
+			'// Scale read cursor's position to minimize transition artifacts
+			readCursor = int(readCursor * (float(waveLength) / float(oldWaveLength)))
+			oldFrequency = frequency
+		End
+		
+		'// Refill audio stream if required
+		If IsAudioStreamProcessed(stream)
+			
+			'// Synthesize a buffer that is exactly the requested size
+			Local writeCursor:=0
+			
+			While writeCursor < MAX_SAMPLES_PER_UPDATE
+			
+				'// Start by trying to write the whole chunk at once
+				Local writeLength:= MAX_SAMPLES_PER_UPDATE - writeCursor
+				
+				'// Limit to the maximum readable size
+				Local readLength:= waveLength - readCursor
+				
+				If writeLength > readLength writeLength = readLength
+					
+				'// Write the slice
+				'writeBuf[writeCursor] = data[readCursor]
+				'method CopyTo( dstArray:T[],srcOffset:Int,dstOffset:Int,count:Int )="copyTo"
+				data.CopyTo(writeBuf, readCursor, writeCursor, writeLength)
+				
+				'// Update cursors and loop audio
+				readCursor = (readCursor + writeLength) Mod waveLength
+				writeCursor += writeLength
+			Wend
+			
+			'// Copy finished frame to audio stream
+			UpdateAudioStream(stream, writeBuf.Data, MAX_SAMPLES_PER_UPDATE)
+		End
+		
+		BeginDrawing()
+			ClearBackground(RAYWHITE)
+			DrawText("sine frequency: "+ int(frequency), GetScreenWidth() - 220, 10, 20, RED)
+			DrawText("click mouse button to change frequency", 10, 10, 20, DARKGRAY)
+			
+			'// Draw the current buffer state proportionate to the screen
+			For Local i:=0 Until ScreenWidth
+				position.x = float(i)
+				position.y = 250 + 50 * data[i*MAX_SAMPLES/ScreenWidth]/32000.0
+				
+				DrawPixelV(position, RED)
+			Next
+		EndDrawing()
+
+	Wend
+	
+	CloseAudioStream(stream)
+	CloseAudioDevice()
+	
+	CloseWindow()
+	
+End
