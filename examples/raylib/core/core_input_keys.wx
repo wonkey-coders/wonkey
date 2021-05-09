@@ -1,0 +1,64 @@
+#rem
+/*******************************************************************************************
+*
+*   raylib [core] example - Keyboard input
+*
+*   This example has been created using raylib 1.0 (www.raylib.com)
+*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*
+*   Copyright (c) 2014 Ramon Santamaria (@raysan5)
+*
+*   Translated to Wonkey by Danilo Krahn, May 2021
+*
+********************************************************************************************/
+#end
+
+#Import "<raylib>"
+
+Using raylib..
+
+Function Main()
+
+    ' Initialization
+    '--------------------------------------------------------------------------------------
+    Const screenWidth:Int  = 800
+    Const screenHeight:Int = 450
+
+    InitWindow(screenWidth, screenHeight, "raylib [core] example - keyboard input")
+
+    Local ballPosition := New Vector2( screenWidth/2, screenHeight/2 )
+
+    SetTargetFPS(60)                ' Set our game to run at 60 frames-per-second
+    '--------------------------------------------------------------------------------------
+
+    ' Main game loop
+    While Not WindowShouldClose()   ' Detect window close button or ESC key
+
+        ' Update
+        '----------------------------------------------------------------------------------
+        If IsKeyDown(KEY_RIGHT) Then ballPosition.x += 2.0
+        If IsKeyDown(KEY_LEFT)  Then ballPosition.x -= 2.0
+        If IsKeyDown(KEY_UP)    Then ballPosition.y -= 2.0
+        If IsKeyDown(KEY_DOWN)  Then ballPosition.y += 2.0
+        '----------------------------------------------------------------------------------
+
+        ' Draw
+        '----------------------------------------------------------------------------------
+        BeginDrawing()
+
+            ClearBackground(RAYWHITE)
+
+            DrawText("move the ball with arrow keys", 10, 10, 20, DARKGRAY)
+
+            DrawCircleV(ballPosition, 50, MAROON)
+
+        EndDrawing()
+        '----------------------------------------------------------------------------------
+    Wend
+
+    ' De-Initialization
+    '--------------------------------------------------------------------------------------
+    CloseWindow()                   ' Close window and OpenGL context
+    '--------------------------------------------------------------------------------------
+
+End
