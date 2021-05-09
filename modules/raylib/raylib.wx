@@ -95,6 +95,7 @@ const MAGENTA    :Color 'CLITERAL(Color){ 255, 0, 255, 255 }     // Magenta
 const RAYWHITE   :Color 'CLITERAL(Color){ 245, 245, 245, 255 }   // My own White (raylib logo)
 
 Struct Vector2
+	Method New(x:Float, y:Float)
 	Field x:Float
 	Field y:Float
 End
