@@ -42,6 +42,7 @@ Namespace raylib
 	#Import "<libopengl32.a>"
 	#Import "<libgdi32.a>"
 	#Import "<libwinmm.a>"
+	#Import "<libuser32.a>"
 #ElseIf __TARGET__="linux"
 	Print "TODO: raylib linux target"
 #Else
