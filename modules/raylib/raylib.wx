@@ -6,10 +6,6 @@ Namespace raylib
 #import "WX_CC_OPTS_LINUX= -DPLATFORM_DESKTOP -DUSE_AUDIO"
 #import "WX_CC_OPTS_WINDOWS= -DPLATFORM_DESKTOP -DUSE_AUDIO -D_CRT_SECURE_NO_WARNINGS"
 
-#import "WX_LD_OPTS_MACOS= -DPLATFORM_DESKTOP -DUSE_AUDIO -ObjC"
-#import "WX_LD_OPTS_LINUX= -DPLATFORM_DESKTOP -DUSE_AUDIO"
-#import "WX_LD_OPTS_WINDOWS= -DPLATFORM_DESKTOP -DUSE_AUDIO -D_CRT_SECURE_NO_WARNINGS"
-
 #Import "native/src/*.h"
 
 #If __DESKTOP_TARGET__
@@ -42,7 +38,6 @@ Namespace raylib
 	#If __COMPILER__="gcc"
 		#Import "<libmingw32.a>"
 	#End
-	#Import "<libuser.a>"
 	#Import "<libshell32.a>"
 	#Import "<libopengl32.a>"
 	#Import "<libgdi32.a>"
