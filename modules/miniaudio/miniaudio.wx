@@ -786,9 +786,9 @@ Function ma_get_backend_name:CString( backend:ma_backend )
 Function ma_is_backend_enabled:ma_bool32( backend:ma_backend )
 Function ma_get_enabled_backends:ma_result( pBackends:ma_backend Ptr, backendCap:libc.size_t, pBackendCount:libc.size_t Ptr )
 Function ma_is_loopback_supported:ma_bool32( backend:ma_backend )
-Function ma_spinlock_lock:ma_result( pSpinlock:volatile ma_spinlock Ptr )
-Function ma_spinlock_lock_noyield:ma_result( pSpinlock:volatile ma_spinlock Ptr )
-Function ma_spinlock_unlock:ma_result( pSpinlock:volatile ma_spinlock Ptr )
+Function ma_spinlock_lock:ma_result( pSpinlock:ma_spinlock Ptr ) 'volatile
+Function ma_spinlock_lock_noyield:ma_result( pSpinlock:ma_spinlock Ptr ) 'volatile
+Function ma_spinlock_unlock:ma_result( pSpinlock:ma_spinlock Ptr ) 'volatile
 Function ma_mutex_init:ma_result( pMutex:ma_mutex Ptr )
 Function ma_mutex_uninit:Void( pMutex:ma_mutex Ptr )
 Function ma_mutex_lock:Void( pMutex:ma_mutex Ptr )
