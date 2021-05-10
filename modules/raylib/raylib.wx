@@ -44,9 +44,17 @@ Namespace raylib
 	#Import "<libwinmm.a>"
 	#Import "<libuser32.a>"
 #ElseIf __TARGET__="linux"
-	Print "TODO: raylib linux target"
+	#Import "<libGL.a>"
+	#Import "<libc.a>"
+	#Import "<libm.a>"
+	#Import "<libpthread.a>"
+	#Import "<libdl.a>"
+	#Import "<librt.a>"
+	#Import "<libX11.a>"
 #Else
+Function Main()
 	Print "TODO: raylib other targets"
+End
 #End
 
 Extern
