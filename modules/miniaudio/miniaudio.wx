@@ -17,6 +17,18 @@ Namespace miniaudio
 
 #Import "<miniaudio.h>"
 
+#if __TARGET__="macos"
+	#Import "<CoreFoundation.framework>"
+	#Import "<CoreAudio.framework>"
+	#Import "<AudioUnit.framework>"
+	#Import "<libpthread.a>"
+	#Import "<libm.a>"
+#elseif __TARGET__="linux"
+	#Import "<libpthread.a>"
+	#Import "<libm.a>"
+	#Import "<libdl.a>"
+#endif
+
 Extern
 
 '***** File: miniaudio.h *****
@@ -24,7 +36,7 @@ Extern
 Const MA_VERSION_MAJOR:int
 Const MA_VERSION_MINOR:int
 Const MA_VERSION_REVISION:int
-Const MA_VERSION_STRING:Cstring
+Const MA_VERSION_STRING:CString
 
 Const MA_LOG_LEVEL_VERBOSE:int
 Const MA_LOG_LEVEL_INFO:int
@@ -33,6 +45,7 @@ Const MA_LOG_LEVEL_ERROR:int
 
 Const MA_LOG_LEVEL:Int
 
+Alias ma_channel:ma_uint8
 Const MA_CHANNEL_NONE:int                                
 Const MA_CHANNEL_MONO:int                                
 Const MA_CHANNEL_FRONT_LEFT:int                          
@@ -89,6 +102,7 @@ Const MA_CHANNEL_LEFT:int
 Const MA_CHANNEL_RIGHT:int                               
 Const MA_CHANNEL_POSITION_COUNT:int                      
 
+Alias ma_result:Int
 Const MA_SUCCESS:int
 Const MA_ERROR:int
 Const MA_INVALID_ARGS:int
@@ -182,12 +196,13 @@ Alias ma_uint64:ULong
 Alias ma_uintptr:ma_uint32
 Alias ma_bool8:ma_uint8
 Alias ma_bool32:ma_uint32
+Const MA_TRUE:int
+Const MA_FALSE:int
 Alias ma_handle:Void Ptr
 Alias ma_ptr:Void Ptr
 Alias ma_proc:Void(  )
 Alias wchar_t:ma_uint16
-Alias ma_channel:ma_uint8
-Alias ma_result:Int
+
 Enum ma_stream_format
 End
 Const ma_stream_format_pcm:ma_stream_format
@@ -277,6 +292,8 @@ Alias ma_semaphore:ma_handle
 Function ma_version:Void( pMajor:ma_uint32 Ptr, pMinor:ma_uint32 Ptr, pRevision:ma_uint32 Ptr )
 Function ma_version_string:CString(  )
 Struct ma_biquad_coefficient
+	field f32:float
+	field s32:ma_int32
 End
 Struct ma_biquad_config
 	Field format:ma_format
@@ -505,12 +522,18 @@ Struct ma_linear_resampler_config
 	Field lpfNyquistFactor:Double
 End
 Function ma_linear_resampler_config_init:ma_linear_resampler_config( format:ma_format, channels:ma_uint32, sampleRateIn:ma_uint32, sampleRateOut:ma_uint32 )
+Struct ma_linear_resampler__union
+	Field f32:float ptr
+	Field s16:ma_int32 ptr
+End
 Struct ma_linear_resampler
 	Field config:ma_linear_resampler_config
 	Field inAdvanceInt:ma_uint32
 	Field inAdvanceFrac:ma_uint32
 	Field inTimeInt:ma_uint32
 	Field inTimeFrac:ma_uint32
+	Field x0:ma_linear_resampler__union
+	Field x1:ma_linear_resampler__union
 	Field lpf:ma_lpf
 End
 Function ma_linear_resampler_init:ma_result( pConfig:ma_linear_resampler_config Ptr, pResampler:ma_linear_resampler Ptr )
@@ -526,14 +549,30 @@ Enum ma_resample_algorithm
 End
 Const ma_resample_algorithm_linear:ma_resample_algorithm
 Const ma_resample_algorithm_speex:ma_resample_algorithm
+Struct ma_resampler_config__linear
+	Field lpfOrder:ma_uint32
+	Field lpfNyquisFactor:Double
+End
+Struct ma_resampler_config__speex
+	Field quality:int
+End
 Struct ma_resampler_config
 	Field format:ma_format
 	Field channels:ma_uint32
 	Field sampleRateIn:ma_uint32
 	Field sampleRateOut:ma_uint32
 	Field algorithm:ma_resample_algorithm
+	Field linear:ma_resampler_config__linear
+	Field speex:ma_resampler_config__speex
 End
 Function ma_resampler_config_init:ma_resampler_config( format:ma_format, channels:ma_uint32, sampleRateIn:ma_uint32, sampleRateOut:ma_uint32, algorithm:ma_resample_algorithm )
+Struct ma_resampler_state__speex
+	field pSpeexResamplerState:Void Ptr
+End
+Struct ma_resampler_state
+	Field linear:ma_linear_resampler
+	Field speex:ma_resampler_state__speex
+End
 Struct ma_resampler
 	Field config:ma_resampler_config
 End
@@ -556,6 +595,10 @@ Struct ma_channel_converter_config
 	Field weights:Float Ptr Ptr
 End
 Function ma_channel_converter_config_init:ma_channel_converter_config( format:ma_format, channelsIn:ma_uint32, pChannelMapIn:ma_channel Ptr, channelsOut:ma_uint32, pChannelMapOut:ma_channel Ptr, mixingMode:ma_channel_mix_mode )
+Struct ma_channel_converter__weights
+	Field f32:float ptr ptr '[][]
+	Field s16:ma_int32 ptr ptr '[][]
+End
 Struct ma_channel_converter
 	Field format:ma_format
 	Field channelsIn:ma_uint32
@@ -563,6 +606,7 @@ Struct ma_channel_converter
 	Field channelMapIn:ma_channel Ptr
 	Field channelMapOut:ma_channel Ptr
 	Field mixingMode:ma_channel_mix_mode
+	Field weights:ma_channel_converter__weights
 	Field isPassthrough:ma_bool8
 	Field isSimpleShuffle:ma_bool8
 	Field isSimpleMonoExpansion:ma_bool8
@@ -572,6 +616,19 @@ End
 Function ma_channel_converter_init:ma_result( pConfig:ma_channel_converter_config Ptr, pConverter:ma_channel_converter Ptr )
 Function ma_channel_converter_uninit:Void( pConverter:ma_channel_converter Ptr )
 Function ma_channel_converter_process_pcm_frames:ma_result( pConverter:ma_channel_converter Ptr, pFramesOut:Void Ptr, pFramesIn:Void Ptr, frameCount:ma_uint64 )
+Struct ma_data_converter_config__resampling_linear
+	Field lpfOrder:ma_uint32
+	Field lpfNyquistFactor:ma_bool32
+End
+Struct ma_data_converter_config__resampling_speex
+	Field quality:Int
+End
+Struct ma_data_converter_config__resampling
+	Field algorithm:ma_resample_algorithm
+	Field allowDynamicSampleRate:ma_bool32
+	Field linear:ma_data_converter_config__resampling_linear
+	Field speex:ma_data_converter_config__resampling_speex
+End
 Struct ma_data_converter_config
 	Field formatIn:ma_format
 	Field formatOut:ma_format
@@ -584,6 +641,7 @@ Struct ma_data_converter_config
 	Field ditherMode:ma_dither_mode
 	Field channelMixMode:ma_channel_mix_mode
 	Field channelWeights:Float Ptr Ptr
+	Field resampling:ma_data_converter_config__resampling
 End
 Function ma_data_converter_config_init_default:ma_data_converter_config(  )
 Function ma_data_converter_config_init:ma_data_converter_config( formatIn:ma_format, formatOut:ma_format, channelsIn:ma_uint32, channelsOut:ma_uint32, sampleRateIn:ma_uint32, sampleRateOut:ma_uint32 )
@@ -813,8 +871,35 @@ Const ma_aaudio_input_preset_voice_recognition:ma_aaudio_input_preset
 Const ma_aaudio_input_preset_voice_communication:ma_aaudio_input_preset
 Const ma_aaudio_input_preset_voice_performance:ma_aaudio_input_preset
 Struct ma_timer
+	Field counter:ma_int64
+	Field counterID:Double
+End
+Struct ma_device_id__custom
+	Field i:int
+	Field s:byte ptr
+	Field p:Void Ptr
 End
 Struct ma_device_id
+	Field wasapi:wchar_t Ptr
+	Field dsound:ma_uint8 Ptr
+	Field winmm:ma_uint32
+	Field alsa:Byte Ptr
+	Field pulse:Byte Ptr
+	Field jack:Int
+	Field coreaudio:Byte Ptr
+	Field sndio:Byte Ptr
+	Field audio4:Byte Ptr
+	Field oss:Byte Ptr
+	Field aaudio:ma_int32
+	Field opensl:ma_uint32
+	Field webaudio:Byte Ptr
+	Field custom:ma_device_id__custom
+End
+Struct ma_device_info__nativeDataFormat
+	Field format:ma_format
+	Field channels:ma_uint32
+	Field sampleRate:ma_uint32
+	Field flags:ma_uint32
 End
 Struct ma_device_info
 	Field id:ma_device_id
@@ -827,6 +912,62 @@ Struct ma_device_info
 	Field minSampleRate:ma_uint32
 	Field maxSampleRate:ma_uint32
 	Field nativeDataFormatCount:ma_uint32
+	Field nativeDataFormat:ma_device_info__nativeDataFormat Ptr
+End
+Struct ma_device_config__aaudio
+	Field usage:ma_aaudio_usage
+	Field contentType:ma_aaudio_content_type
+	Field inputPreset:ma_aaudio_input_preset
+End
+Struct ma_device_config__opensl
+	Field streamType:ma_opensl_stream_type
+	Field recordingPreset:ma_opensl_recording_preset
+End
+Struct ma_device_config__coreaudio
+	Field allowNominalSampleRateChange:ma_bool32
+End
+Struct ma_device_config__pulse
+	Field pStreamNamePlayback:libc.const_char_t Ptr
+	Field pStreamNameCapture:libc.const_char_t Ptr
+End
+Struct ma_device_config__alsa
+	Field noMMap:ma_bool32
+	Field noAutoFormat:ma_bool32
+	Field noAutoChannels:ma_bool32
+	Field noAutoResample:ma_bool32
+End
+Struct ma_device_config__wasapi
+	Field noAutoConvertSRC:ma_bool8
+	Field noDefaultQualitySRC:ma_bool8
+	Field noAutoStreamRouting:ma_bool8
+	Field noHardwareOffloading:ma_bool8
+End
+Struct ma_device_config__capture
+	Field pDeviceID:ma_device_id Ptr
+	Field format:ma_format
+	Field channels:ma_uint32
+	Field channelMap:ma_channel Ptr
+	Field channelMixMode:ma_channel_mix_mode
+	Field shareMode:ma_share_mode
+End
+Struct ma_device_config__playback
+	Field pDeviceID:ma_device_id Ptr
+	Field format:ma_format
+	Field channels:ma_uint32
+	Field channelMap:ma_channel Ptr
+	Field channelMixMode:ma_channel_mix_mode
+	Field shareMode:ma_share_mode
+End
+Struct ma_device_config___resampling_linear
+	Field lpfOrder:ma_uint32
+End
+Struct ma_device_config___resampling_speex
+	Field quality:Int
+End
+Struct ma_device_config__resampling
+	Field algorithm:ma_resample_algorithm
+	Field linear:ma_device_config___resampling_linear
+	Field speex:ma_device_config___resampling_speex
 End
 Struct ma_device_config
 	Field deviceType:ma_device_type
@@ -840,6 +981,15 @@ Struct ma_device_config
 	Field dataCallback:ma_device_callback_proc
 	Field stopCallback:ma_stop_proc
 	Field pUserData:Void Ptr
+	Field resampling:ma_device_config__resampling
+	Field playback:ma_device_config__playback
+	Field capture:ma_device_config__capture
+	Field wasapi:ma_device_config__wasapi
+	Field alsa:ma_device_config__alsa
+	Field pulse:ma_device_config__pulse
+	Field coreaudio:ma_device_config__coreaudio
+	Field opensl:ma_device_config__opensl
+	Field aaudio:ma_device_config__aaudio
 End
 Alias ma_enum_devices_callback_proc:ma_bool32( ma_context Ptr, ma_device_type, ma_device_info Ptr, Void Ptr )
 Struct ma_device_descriptor
@@ -867,17 +1017,58 @@ Struct ma_backend_callbacks
 	Field onDeviceDataLoop:ma_result( ma_device Ptr )
 	Field onDeviceDataLoopWakeup:ma_result( ma_device Ptr )
 End
+Struct ma_context_config__alsa
+	Field useVerboseDeviceEnumeration:ma_bool32
+End
+Struct ma_context_config__pulse
+	Field pApplicationName:libc.const_char_t Ptr
+	Field pServerName:libc.const_char_t Ptr
+	Field tryAutoSpawn:ma_bool32
+End
+Struct ma_context_config__coreaudio
+	Field sessionCategory:ma_ios_session_category
+	Field sessionCategoryOptions:ma_uint32
+	Field noAudioSessionActivate:ma_bool32
+	Field noAudioSessionDeactivate:ma_bool32
+End
+Struct ma_context_config__jack
+	Field pClientName:libc.const_char_t Ptr
+	Field tryStartServer:ma_bool32
+End
 Struct ma_context_config
 	Field logCallback:ma_log_proc
 	Field threadPriority:ma_thread_priority
 	Field threadStackSize:libc.size_t
 	Field pUserData:Void Ptr
 	Field allocationCallbacks:ma_allocation_callbacks
+	Field alsa:ma_context_config__alsa
+	Field pulse:ma_context_config__pulse
+	Field coreaudio:ma_context_config__coreaudio
+	Field jack:ma_context_config__jack
 	Field custom:ma_backend_callbacks
+End
+Struct ma_context_command__wasapi__data_quit
+	Field _unused:int
+End
+Struct ma_context_command__wasapi__data_createAudioClient
+	Field deviceType:ma_device_type
+	Field pAudioClient:Void Ptr
+	Field ppAudioClientService:Void Ptr Ptr
+	Field pResult:ma_result Ptr
+End
+Struct ma_context_command__wasapi__data_releaseAudioClient
+	Field pDevice:ma_device Ptr
+	Field deviceType:ma_device_type
+End
+Struct ma_context_command__wasapi__data
+	Field quit:ma_context_command__wasapi__data_quit
+	Field createAudioClient:ma_context_command__wasapi__data_createAudioClient
+	Field releaseAudioClient:ma_context_command__wasapi__data_releaseAudioClient
 End
 Struct ma_context_command__wasapi
 	Field code:Int
 	Field pEvent:ma_event Ptr
+	Field data:ma_context_command__wasapi__data
 End
 Struct ma_context
 	Field callbacks:ma_backend_callbacks
@@ -893,6 +1084,191 @@ Struct ma_context
 	Field playbackDeviceInfoCount:ma_uint32
 	Field captureDeviceInfoCount:ma_uint32
 	Field pDeviceInfos:ma_device_info Ptr
+End
+Struct ma_device__resampling_linear
+	Field lpfOrder:ma_uint32
+End
+Struct ma_device__resampling_speex
+	Field quality:Int
+End
+Struct ma_device__resampling
+	Field algorithm:ma_resample_algorithm
+	field linear:ma_device__resampling_linear
+	Field speex:ma_device__resampling_speex
+End
+Struct ma_device__playback
+	Field id:ma_device_id
+	Field name:byte ptr
+	Field shareMode:ma_share_mode
+	Field format:ma_format
+	Field channels:ma_uint32
+	Field channelMap:ma_channel Ptr
+	Field internalFormat:ma_format
+	Field internalSampleRate:ma_uint32
+	Field internalChannelMap: ma_channel Ptr
+	Field internalPeriodSizeInFrames:ma_uint32
+	Field internalPeriods:ma_uint32
+	Field channelMixMode:ma_channel_mix_mode
+	Field converter:ma_data_converter
+End
+Struct ma_device__capture
+	Field id:ma_device_id
+	Field name:byte ptr
+	Field shareMode:ma_share_mode
+	Field format:ma_format
+	Field channels:ma_uint32
+	Field channelMap:ma_channel Ptr
+	Field internalFormat:ma_format
+	Field internalSampleRate:ma_uint32
+	Field internalChannelMap: ma_channel Ptr
+	Field internalPeriodSizeInFrames:ma_uint32
+	Field internalPeriods:ma_uint32
+	Field channelMixMode:ma_channel_mix_mode
+	Field converter:ma_data_converter
+End
+Struct ma_device__wasapi
+	Field pAudioClientPlayback:ma_ptr
+	Field pAudioClientCapture:ma_ptr
+	Field pRenderClient:ma_ptr
+	Field pCaptureClient:ma_ptr
+	Field pDeviceEnumerator:ma_ptr
+	Field notificationClient:ma_IMMNotificationClient
+	Field hEventPlayback:ma_handle
+	Field hEventCapture:ma_handle
+	Field actualPeriodSizeInFramesPlayback:ma_uint32
+	Field actualPeriodSizeInFramesCapture:ma_uint32
+	Field originalPeriodSizeInFrames:ma_uint32
+	Field originalPeriodSizeInMilliseconds:ma_uint32
+	Field originalPeriods:ma_uint32
+	Field originalPerformanceProfile:ma_performance_profile
+	Field periodSizeInFramesPlayback:ma_uint32
+	Field periodSizeInFramesCapture:ma_uint32
+	Field isStartedCapture:ma_bool32
+	Field isStartedPlayback:ma_bool32
+	Field noAutoConvertSRC:ma_bool8
+	Field noDefaultQualitySRC:ma_bool8
+	Field noHardwareOffloading:ma_bool8
+	Field allowCaptureAutoStreamRouting:ma_bool8
+	Field allowPlaybackAutoStreamRouting:ma_bool8
+	Field isDetachedPlayback:ma_bool8
+	Field isDetachedCapture:ma_bool8
+End
+Struct ma_device__dsound
+	Field pPlayback:ma_ptr
+	Field pPlaybackPrimaryBuffer:ma_ptr
+	Field pPlaybackBuffer:ma_ptr
+	Field pCapture:ma_ptr
+	Field pCaptureBuffer:ma_ptr
+End
+Struct ma_device__winmm
+	Field hDevicePlayback:ma_handle
+	Field hDeviceCapture:ma_handle
+	Field hEventPlayback:ma_handle
+	Field hEventCapture:ma_handle
+	Field fragmentSizeInFrames:ma_uint32
+	Field iNextHeaderPlayback:ma_uint32
+	Field iNextHeaderCapture:ma_uint32
+	Field headerFramesConsumedPlayback:ma_uint32
+	Field headerFramesConsumedCapture:ma_uint32
+	Field pWAVEHDRPlayback:ma_uint8 Ptr
+	Field pWAVEHDRCapture:ma_uint8 Ptr
+	Field pIntermediaryBufferPlayback:ma_uint8 Ptr
+	Field pIntermediaryBufferCapture:ma_uint8 Ptr
+	Field _pHeapData:ma_uint8 Ptr
+End
+Struct ma_device__alsa
+	Field pPCMPlayback:ma_ptr
+	Field pPCMCapture:ma_ptr
+	Field pPollDescriptorsPlayback:Void Ptr
+	Field pPollDescriptorsCapture:Void Ptr
+	Field pollDescriptorCountPlayback:Int
+	Field pollDescriptorCountCapture:Int
+	Field wakeupfdPlayback:Int
+	Field wakeupfdCapture:Int
+	Field isUsingMMapPlayback:ma_bool8
+	Field isUsingMMapCapture:ma_bool8
+End
+Struct ma_device__pulse
+	Field pStreamPlayback:ma_ptr
+	Field pStreamCapture:ma_ptr
+End
+Struct ma_device__jack
+	Field pClient:ma_ptr
+	Field pPortsPlayback:ma_ptr Ptr '[]
+	Field pPortsCapture:ma_ptr Ptr '[]
+	Field pIntermediaryBufferPlayback:Float Ptr
+	Field pIntermediaryBufferCapture:Float Ptr
+End
+Struct ma_device__coreaudio
+	Field deviceObjectIDPlayback:ma_uint32
+	Field deviceObjectIDCapture:ma_uint32
+	Field audioUnitPlayback:ma_ptr
+	Field audioUnitCapture:ma_ptr
+	Field pAudioBufferList:ma_ptr
+	Field audioBufferCapInFrames:ma_uint32
+	Field stopEvent:ma_event
+	Field originalPeriodSizeInFrames:ma_uint32
+	Field originalPeriodSizeInMilliseconds:ma_uint32
+	Field originalPeriods:ma_uint32
+	Field originalPerformanceProfile:ma_performance_profile
+	Field isDefaultPlaybackDevice:ma_bool32
+	Field isDefaultCaptureDevice:ma_bool32
+	Field isSwitchingPlaybackDevice:ma_bool32
+	Field isSwitchingCaptureDevice:ma_bool32
+	Field pRouteChangeHandler:Void Ptr
+End
+Struct ma_device__sndio
+	Field handlePlayback:ma_ptr
+	Field handleCapture:ma_ptr
+	Field isStartedPlayback:ma_bool32
+	Field isStartedCapture:ma_bool32
+End
+Struct ma_device__audio4
+	Field fdPlayback:int
+    Field fdCapture:int
+End
+Struct ma_device__oss
+	Field fdPlayback:int
+    Field fdCapture:int
+End
+Struct ma_device__aaudio
+	Field pStreamPlayback:ma_ptr
+    Field pStreamCapture:ma_ptr
+End
+Struct ma_device__opensl
+	Field pOutputMixObj:ma_ptr
+	Field pOutputMix:ma_ptr
+	Field pAudioPlayerObj:ma_ptr
+	Field pAudioPlayer:ma_ptr
+	Field pAudioRecorderObj:ma_ptr
+	Field pAudioRecorder:ma_ptr
+	Field pBufferQueuePlayback:ma_ptr
+	Field pBufferQueueCapture:ma_ptr
+	Field isDrainingCapture:ma_bool32
+	Field isDrainingPlayback:ma_bool32
+	Field currentBufferIndexPlayback:ma_uint32
+	Field currentBufferIndexCapture:ma_uint32
+	Field pBufferPlayback:ma_uint8 Ptr
+	Field pBufferCapture:ma_uint8 Ptr
+End
+Struct ma_device__webaudio
+	Field indexPlayback:int
+    Field indexCapture:int
+End
+Struct ma_device__null_device
+	Field deviceThread:ma_thread
+	Field operationEvent:ma_event
+	Field operationCompletionEvent:ma_event
+	Field operationSemaphore:ma_semaphore
+	Field operation:ma_uint32
+	Field operationResult:ma_result
+	Field timer:ma_timer
+	Field priorRunTime:double
+	Field currentPeriodFramesRemainingPlayback:ma_uint32
+	Field currentPeriodFramesRemainingCapture:ma_uint32
+	Field lastProcessedFramePlayback:ma_uint64
+	Field lastProcessedFrameCapture:ma_uint64
+	Field isStarted:ma_bool32
 End
 Struct ma_device
 	Field pContext:ma_context Ptr
@@ -913,6 +1289,23 @@ Struct ma_device
 	Field noClip:ma_bool8
 	Field masterVolumeFactor:Float
 	Field duplexRB:ma_duplex_rb
+	Field resampling:ma_device__resampling
+	Field playback:ma_device__playback
+	Field capture:ma_device__capture
+	Field wasapi:ma_device__wasapi
+	Field dsound:ma_device__dsound
+	field winmm:ma_device__winmm
+	Field alsa:ma_device__alsa
+	Field pulse:ma_device__pulse
+	Field jack:ma_device__jack
+	Field coreaudio:ma_device__coreaudio
+	Field sndio:ma_device__sndio
+	Field audio4:ma_device__audio4
+	Field oss:ma_device__oss
+	Field aaudio:ma_device__aaudio
+	Field opensl:ma_device__opensl
+	Field webaudio:ma_device__webaudio
+	field null_device:ma_device__null_device
 End
 Function ma_context_config_init:ma_context_config(  )
 Function ma_context_init:ma_result( backends:ma_backend Ptr, backendCount:ma_uint32, pConfig:ma_context_config Ptr, pContext:ma_context Ptr )
@@ -1089,6 +1482,17 @@ Alias ma_decoder_read_pcm_frames_proc:ma_uint64( ma_decoder Ptr, Void Ptr, ma_ui
 Alias ma_decoder_seek_to_pcm_frame_proc:ma_result( ma_decoder Ptr, ma_uint64 )
 Alias ma_decoder_uninit_proc:ma_result( ma_decoder Ptr )
 Alias ma_decoder_get_length_in_pcm_frames_proc:ma_uint64( ma_decoder Ptr )
+Struct ma_decoder_config__resampling_linear
+	Field lpfOrder:ma_uint32
+End
+Struct ma_decoder_config__resampling_speex
+	Field quality:Int
+End
+Struct ma_decoder_config__resampling
+	Field algorithm:ma_resample_algorithm
+	Field linear:ma_decoder_config__resampling_linear
+	Field speex:ma_decoder_config__resampling_speex
+End
 Struct ma_decoder_config
 	Field format:ma_format
 	Field channels:ma_uint32
@@ -1096,7 +1500,21 @@ Struct ma_decoder_config
 	Field channelMap:ma_channel Ptr
 	Field channelMixMode:ma_channel_mix_mode
 	Field ditherMode:ma_dither_mode
+	Field resampling:ma_decoder_config__resampling
 	Field allocationCallbacks:ma_allocation_callbacks
+End
+Struct ma_decoder__backend_vfs
+	Field pVFS:ma_vfs Ptr
+	Field file:ma_vfs_file
+End
+Struct ma_decoder__backend_memory
+	Field pData:ma_uint8 ptr
+	Field dataSize:libc.size_t
+	Field currentReadPos:libc.size_t
+End
+Struct ma_decoder__backend
+	Field vfs:ma_decoder__backend_vfs
+	Field memory:ma_decoder__backend_memory
 End
 Struct ma_decoder
 	Field ds:ma_data_source_callbacks
@@ -1120,6 +1538,7 @@ Struct ma_decoder
 	Field onUninit:ma_decoder_uninit_proc
 	Field onGetLengthInPCMFrames:ma_decoder_get_length_in_pcm_frames_proc
 	Field pInternalDecoder:Void Ptr
+	Field backend:ma_decoder__backend
 End
 Function ma_decoder_config_init:ma_decoder_config( outputFormat:ma_format, outputChannels:ma_uint32, outputSampleRate:ma_uint32 )
 Function ma_decoder_init:ma_result( onRead:ma_decoder_read_proc, onSeek:ma_decoder_seek_proc, pUserData:Void Ptr, pConfig:ma_decoder_config Ptr, pDecoder:ma_decoder Ptr )
@@ -1234,10 +1653,23 @@ Struct ma_noise_config
 	Field duplicateChannels:ma_bool32
 End
 Function ma_noise_config_init:ma_noise_config( format:ma_format, channels:ma_uint32, type:ma_noise_type, seed:ma_int32, amplitude:Double )
+Struct ma_noise__state_pink
+	Field bin:Double Ptr Ptr '[MA_MAX_CHANNELS][16]
+	Field accumulation:Double Ptr '[MA_MAX_CHANNELS]
+	Field counter:ma_uint32 Ptr '[MA_MAX_CHANNELS]
+End
+Struct ma_noise__state_brownian
+	Field accumulation:Double Ptr '[MA_MAX_CHANNELS]
+End
+Struct ma_noise__state
+	Field pink:ma_noise__state_pink
+	Field brownian:ma_noise__state_brownian
+End
 Struct ma_noise
 	Field ds:ma_data_source_callbacks
 	Field config:ma_noise_config
 	Field lcg:ma_lcg
+	field state:ma_noise__state
 End
 Function ma_noise_init:ma_result( pConfig:ma_noise_config Ptr, pNoise:ma_noise Ptr )
 Function ma_noise_read_pcm_frames:ma_uint64( pNoise:ma_noise Ptr, pFramesOut:Void Ptr, frameCount:ma_uint64 )
@@ -1248,347 +1680,4 @@ Function ma_noise_set_type:ma_result( pNoise:ma_noise Ptr, type:ma_noise_type )
 '***** Extern Structs *****
 
 
-
-'################# C2WX OUTPUT LOGS #################
-
-#rem
-
-Processing:miniaudio.h
-miniaudio.h [2048] : ***** Union ma_biquad_coefficient converted to empty struct *****
-union
-{
-    float    f32;
-    ma_int32 s32;
-}
-miniaudio.h [2428] : Failed to convert type of field: x0
-union
-    {
-        float    f32[MA_MAX_CHANNELS];
-        ma_int16 s16[MA_MAX_CHANNELS];
-    } x0
-miniaudio.h [2433] : Failed to convert type of field: x1
-union
-    {
-        float    f32[MA_MAX_CHANNELS];
-        ma_int16 s16[MA_MAX_CHANNELS];
-    } x1
-miniaudio.h [2464] : Failed to convert type of field: linear
-struct
-    {
-        ma_uint32 lpfOrder;
-        double lpfNyquistFactor;
-    } linear
-miniaudio.h [2468] : Failed to convert type of field: speex
-struct
-    {
-        int quality;    /* 0 to 10. Defaults to 3. */
-    } speex
-miniaudio.h [2483] : Failed to convert type of field: state
-union
-    {
-        ma_linear_resampler linear;
-        struct
-        {
-            void* pSpeexResamplerState;   /* SpeexResamplerState* */
-        } speex;
-    } state
-miniaudio.h [2592] : Failed to convert type of field: weights
-union
-    {
-        float    f32[MA_MAX_CHANNELS][MA_MAX_CHANNELS];
-        ma_int32 s16[MA_MAX_CHANNELS][MA_MAX_CHANNELS];
-    } weights
-miniaudio.h [2636] : Failed to convert type of field: resampling
-struct
-    {
-        ma_resample_algorithm algorithm;
-        ma_bool32 allowDynamicSampleRate;
-        struct
-        {
-            ma_uint32 lpfOrder;
-            double lpfNyquistFactor;
-        } linear;
-        struct
-        {
-            int quality;
-        } speex;
-    } resampling
-***** Warning - function pointer type has const* parameters *****
-void (ma_device *, void *, const void *, ma_uint32)
-***** Warning - function pointer type has const* parameters *****
-void (ma_context *, ma_device *, ma_uint32, const char *)
-miniaudio.h [3288] : ***** Union ma_timer converted to empty struct *****
-union
-{
-    ma_int64 counter;
-    double counterD;
-}
-miniaudio.h [3294] : ***** Union ma_device_id converted to empty struct *****
-union
-{
-    wchar_t wasapi[64];             /* WASAPI uses a wchar_t string for identification. */
-    ma_uint8 dsound[16];            /* DirectSound uses a GUID for identification. */
-    /*UINT_PTR*/ ma_uint32 winmm;   /* When creating a device, WinMM expects a Win32 UINT_PTR for device identification. In practice it's actually just a UINT. */
-    char alsa[256];                 /* ALSA uses a name string for identification. */
-    char pulse[256];                /* PulseAudio uses a name string for identification. */
-    int jack;                       /* JACK always uses default devices. */
-    char coreaudio[256];            /* Core Audio uses a string for identification. */
-    char sndio[256];                /* "snd/0", etc. */
-    char audio4[256];               /* "/dev/audio", etc. */
-    char oss[64];                   /* "dev/dsp0", etc. "dev/dsp" for the default device. */
-    ma_int32 aaudio;                /* AAudio uses a 32-bit integer for identification. */
-    ma_uint32 opensl;               /* OpenSL|ES uses a 32-bit unsigned integer for identification. */
-    char webaudio[32];              /* Web Audio always uses default devices for now, but if this changes it'll be a GUID. */
-    union
-    {
-        int i;
-        char s[256];
-        void* p;
-    } custom;                       /* The custom backend could be anything. Give them a few options. */
-    int nullbackend;                /* The null backend uses an integer for device IDs. */
-}
-miniaudio.h [3356] : Failed to convert type of field: nativeDataFormats
-struct
-    {
-        ma_format format;       /* Sample format. If set to ma_format_unknown, all sample formats are supported. */
-        ma_uint32 channels;     /* If set to 0, all channels are supported. */
-        ma_uint32 sampleRate;   /* If set to 0, all sample rates are supported. */
-        ma_uint32 flags;        /* A combination of MA_DATA_FORMAT_FLAG_* flags. */
-    } nativeDataFormats[/*ma_format_count * ma_standard_sample_rate_count * MA_MAX_CHANNELS*/ 64]
-miniaudio.h [3383] : Failed to convert type of field: resampling
-struct
-    {
-        ma_resample_algorithm algorithm;
-        struct
-        {
-            ma_uint32 lpfOrder;
-        } linear;
-        struct
-        {
-            int quality;
-        } speex;
-    } resampling
-miniaudio.h [3392] : Failed to convert type of field: playback
-struct
-    {
-        const ma_device_id* pDeviceID;
-        ma_format format;
-        ma_uint32 channels;
-        ma_channel channelMap[MA_MAX_CHANNELS];
-        ma_channel_mix_mode channelMixMode;
-        ma_share_mode shareMode;
-    } playback
-miniaudio.h [3401] : Failed to convert type of field: capture
-struct
-    {
-        const ma_device_id* pDeviceID;
-        ma_format format;
-        ma_uint32 channels;
-        ma_channel channelMap[MA_MAX_CHANNELS];
-        ma_channel_mix_mode channelMixMode;
-        ma_share_mode shareMode;
-    } capture
-miniaudio.h [3409] : Failed to convert type of field: wasapi
-struct
-    {
-        ma_bool8 noAutoConvertSRC;     /* When set to true, disables the use of AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM. */
-        ma_bool8 noDefaultQualitySRC;  /* When set to true, disables the use of AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY. */
-        ma_bool8 noAutoStreamRouting;  /* Disables automatic stream routing. */
-        ma_bool8 noHardwareOffloading; /* Disables WASAPI's hardware offloading feature. */
-    } wasapi
-miniaudio.h [3416] : Failed to convert type of field: alsa
-struct
-    {
-        ma_bool32 noMMap;           /* Disables MMap mode. */
-        ma_bool32 noAutoFormat;     /* Opens the ALSA device with SND_PCM_NO_AUTO_FORMAT. */
-        ma_bool32 noAutoChannels;   /* Opens the ALSA device with SND_PCM_NO_AUTO_CHANNELS. */
-        ma_bool32 noAutoResample;   /* Opens the ALSA device with SND_PCM_NO_AUTO_RESAMPLE. */
-    } alsa
-miniaudio.h [3421] : Failed to convert type of field: pulse
-struct
-    {
-        const char* pStreamNamePlayback;
-        const char* pStreamNameCapture;
-    } pulse
-miniaudio.h [3425] : Failed to convert type of field: coreaudio
-struct
-    {
-        ma_bool32 allowNominalSampleRateChange; /* Desktop only. When enabled, allows changing of the sample rate at the operating system level. */
-    } coreaudio
-miniaudio.h [3430] : Failed to convert type of field: opensl
-struct
-    {
-        ma_opensl_stream_type streamType;
-        ma_opensl_recording_preset recordingPreset;
-    } opensl
-miniaudio.h [3436] : Failed to convert type of field: aaudio
-struct
-    {
-        ma_aaudio_usage usage;
-        ma_aaudio_content_type contentType;
-        ma_aaudio_input_preset inputPreset;
-    } aaudio
-***** Warning - function pointer type has const* parameters *****
-ma_bool32 (ma_context *, ma_device_type, const ma_device_info *, void *)
-***** Warning - function pointer type has const* parameters *****
-ma_result (ma_context *, const ma_context_config *, ma_backend_callbacks *)
-***** Warning - function pointer type has const* parameters *****
-ma_result (ma_context *, ma_device_type, const ma_device_id *, ma_device_info *)
-***** Warning - function pointer type has const* parameters *****
-ma_result (ma_device *, const ma_device_config *, ma_device_descriptor *, ma_device_descriptor *)
-***** Warning - function pointer type has const* parameters *****
-ma_result (ma_device *, const void *, ma_uint32, ma_uint32 *)
-miniaudio.h [3570] : Failed to convert type of field: alsa
-struct
-    {
-        ma_bool32 useVerboseDeviceEnumeration;
-    } alsa
-miniaudio.h [3576] : Failed to convert type of field: pulse
-struct
-    {
-        const char* pApplicationName;
-        const char* pServerName;
-        ma_bool32 tryAutoSpawn; /* Enables autospawning of the PulseAudio daemon if necessary. */
-    } pulse
-miniaudio.h [3583] : Failed to convert type of field: coreaudio
-struct
-    {
-        ma_ios_session_category sessionCategory;
-        ma_uint32 sessionCategoryOptions;
-        ma_bool32 noAudioSessionActivate;   /* iOS only. When set to true, does not perform an explicit [[AVAudioSession sharedInstace] setActive:true] on initialization. */
-        ma_bool32 noAudioSessionDeactivate; /* iOS only. When set to true, does not perform an explicit [[AVAudioSession sharedInstace] setActive:false] on uninitialization. */
-    } coreaudio
-miniaudio.h [3588] : Failed to convert type of field: jack
-struct
-    {
-        const char* pClientName;
-        ma_bool32 tryStartServer;
-    } jack
-miniaudio.h [3615] : Failed to convert type of field: data
-union
-    {
-        struct
-        {
-            int _unused;
-        } quit;
-        struct
-        {
-            ma_device_type deviceType;
-            void* pAudioClient;
-            void** ppAudioClientService;
-            ma_result* pResult; /* The result from creating the audio client service. */
-        } createAudioClient;
-        struct
-        {
-            ma_device* pDevice;
-            ma_device_type deviceType;
-        } releaseAudioClient;
-    } data
-miniaudio.h [4055] : Failed to convert type of field: resampling
-struct
-    {
-        ma_resample_algorithm algorithm;
-        struct
-        {
-            ma_uint32 lpfOrder;
-        } linear;
-        struct
-        {
-            int quality;
-        } speex;
-    } resampling
-miniaudio.h [4072] : Failed to convert type of field: playback
-struct
-    {
-        ma_device_id id;                    /* If using an explicit device, will be set to a copy of the ID used for initialization. Otherwise cleared to 0. */
-        char name[256];                     /* Maybe temporary. Likely to be replaced with a query API. */
-        ma_share_mode shareMode;            /* Set to whatever was passed in when the device was initialized. */
-        ma_format format;
-        ma_uint32 channels;
-        ma_channel channelMap[MA_MAX_CHANNELS];
-        ma_format internalFormat;
-        ma_uint32 internalChannels;
-        ma_uint32 internalSampleRate;
-        ma_channel internalChannelMap[MA_MAX_CHANNELS];
-        ma_uint32 internalPeriodSizeInFrames;
-        ma_uint32 internalPeriods;
-        ma_channel_mix_mode channelMixMode;
-        ma_data_converter converter;
-    } playback
-miniaudio.h [4089] : Failed to convert type of field: capture
-struct
-    {
-        ma_device_id id;                    /* If using an explicit device, will be set to a copy of the ID used for initialization. Otherwise cleared to 0. */
-        char name[256];                     /* Maybe temporary. Likely to be replaced with a query API. */
-        ma_share_mode shareMode;            /* Set to whatever was passed in when the device was initialized. */
-        ma_format format;
-        ma_uint32 channels;
-        ma_channel channelMap[MA_MAX_CHANNELS];
-        ma_format internalFormat;
-        ma_uint32 internalChannels;
-        ma_uint32 internalSampleRate;
-        ma_channel internalChannelMap[MA_MAX_CHANNELS];
-        ma_uint32 internalPeriodSizeInFrames;
-        ma_uint32 internalPeriods;
-        ma_channel_mix_mode channelMixMode;
-        ma_data_converter converter;
-    } capture
-***** Warning - function pointer type has const* parameters *****
-ma_result (ma_vfs *, const char *, ma_uint32, ma_vfs_file *)
-***** Warning - function pointer type has const* parameters *****
-ma_result (ma_vfs *, const wchar_t *, ma_uint32, ma_vfs_file *)
-***** Warning - function pointer type has const* parameters *****
-ma_result (ma_vfs *, ma_vfs_file, const void *, size_t, size_t *)
-miniaudio.h [6071] : Failed to convert type of field: resampling
-struct
-    {
-        ma_resample_algorithm algorithm;
-        struct
-        {
-            ma_uint32 lpfOrder;
-        } linear;
-        struct
-        {
-            int quality;
-        } speex;
-    } resampling
-miniaudio.h [6111] : Failed to convert type of field: backend
-union
-    {
-        struct
-        {
-            ma_vfs* pVFS;
-            ma_vfs_file file;
-        } vfs;
-        struct
-        {
-            const ma_uint8* pData;
-            size_t dataSize;
-            size_t currentReadPos;
-        } memory;               /* Only used for decoders that were opened against a block of memory. */
-    } backend
-***** Warning - function pointer type has const* parameters *****
-size_t (ma_encoder *, const void *, size_t)
-***** Warning - function pointer type has const* parameters *****
-ma_uint64 (ma_encoder *, const void *, ma_uint64)
-miniaudio.h [6341] : Failed to convert type of field: state
-union
-    {
-        struct
-        {
-            double bin[MA_MAX_CHANNELS][16];
-            double accumulation[MA_MAX_CHANNELS];
-            ma_uint32 counter[MA_MAX_CHANNELS];
-        } pink;
-        struct
-        {
-            double accumulation[MA_MAX_CHANNELS];
-        } brownian;
-    } state
-
-c2mx2: **** Success ***** - output saved to miniaudio_extern.monkey2
-
-Finished debugging app.
-
-#end
 
