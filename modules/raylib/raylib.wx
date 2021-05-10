@@ -59,54 +59,61 @@ Const RAD2DEG:Float
 
 Enum bool_
 End
+
 Const false_:bool_
 Const true_:bool_
 
-const LIGHTGRAY  :Color 'CLITERAL(Color){ 200, 200, 200, 255 }   // Light Gray
-const GRAY       :Color 'CLITERAL(Color){ 130, 130, 130, 255 }   // Gray
-const DARKGRAY   :Color 'CLITERAL(Color){ 80, 80, 80, 255 }      // Dark Gray
-const YELLOW     :Color 'CLITERAL(Color){ 253, 249, 0, 255 }     // Yellow
-const GOLD       :Color 'CLITERAL(Color){ 255, 203, 0, 255 }     // Gold
-const ORANGE     :Color 'CLITERAL(Color){ 255, 161, 0, 255 }     // Orange
-const PINK       :Color 'CLITERAL(Color){ 255, 109, 194, 255 }   // Pink
-const RED        :Color 'CLITERAL(Color){ 230, 41, 55, 255 }     // Red
-const MAROON     :Color 'CLITERAL(Color){ 190, 33, 55, 255 }     // Maroon
-const GREEN      :Color 'CLITERAL(Color){ 0, 228, 48, 255 }      // Green
-const LIME       :Color 'CLITERAL(Color){ 0, 158, 47, 255 }      // Lime
-const DARKGREEN  :Color 'CLITERAL(Color){ 0, 117, 44, 255 }      // Dark Green
-const SKYBLUE    :Color 'CLITERAL(Color){ 102, 191, 255, 255 }   // Sky Blue
-const BLUE       :Color 'CLITERAL(Color){ 0, 121, 241, 255 }     // Blue
-const DARKBLUE   :Color 'CLITERAL(Color){ 0, 82, 172, 255 }      // Dark Blue
-const PURPLE     :Color 'CLITERAL(Color){ 200, 122, 255, 255 }   // Purple
-const VIOLET     :Color 'CLITERAL(Color){ 135, 60, 190, 255 }    // Violet
-const DARKPURPLE :Color 'CLITERAL(Color){ 112, 31, 126, 255 }    // Dark Purple
-const BEIGE      :Color 'CLITERAL(Color){ 211, 176, 131, 255 }   // Beige
-const BROWN      :Color 'CLITERAL(Color){ 127, 106, 79, 255 }    // Brown
-const DARKBROWN  :Color 'CLITERAL(Color){ 76, 63, 47, 255 }      // Dark Brown
+Const LIGHTGRAY  :Color 'CLITERAL(Color){ 200, 200, 200, 255 }   // Light Gray
+Const GRAY       :Color 'CLITERAL(Color){ 130, 130, 130, 255 }   // Gray
+Const DARKGRAY   :Color 'CLITERAL(Color){ 80, 80, 80, 255 }      // Dark Gray
+Const YELLOW     :Color 'CLITERAL(Color){ 253, 249, 0, 255 }     // Yellow
+Const GOLD       :Color 'CLITERAL(Color){ 255, 203, 0, 255 }     // Gold
+Const ORANGE     :Color 'CLITERAL(Color){ 255, 161, 0, 255 }     // Orange
+Const PINK       :Color 'CLITERAL(Color){ 255, 109, 194, 255 }   // Pink
+Const RED        :Color 'CLITERAL(Color){ 230, 41, 55, 255 }     // Red
+Const MAROON     :Color 'CLITERAL(Color){ 190, 33, 55, 255 }     // Maroon
+Const GREEN      :Color 'CLITERAL(Color){ 0, 228, 48, 255 }      // Green
+Const LIME       :Color 'CLITERAL(Color){ 0, 158, 47, 255 }      // Lime
+Const DARKGREEN  :Color 'CLITERAL(Color){ 0, 117, 44, 255 }      // Dark Green
+Const SKYBLUE    :Color 'CLITERAL(Color){ 102, 191, 255, 255 }   // Sky Blue
+Const BLUE       :Color 'CLITERAL(Color){ 0, 121, 241, 255 }     // Blue
+Const DARKBLUE   :Color 'CLITERAL(Color){ 0, 82, 172, 255 }      // Dark Blue
+Const PURPLE     :Color 'CLITERAL(Color){ 200, 122, 255, 255 }   // Purple
+Const VIOLET     :Color 'CLITERAL(Color){ 135, 60, 190, 255 }    // Violet
+Const DARKPURPLE :Color 'CLITERAL(Color){ 112, 31, 126, 255 }    // Dark Purple
+Const BEIGE      :Color 'CLITERAL(Color){ 211, 176, 131, 255 }   // Beige
+Const BROWN      :Color 'CLITERAL(Color){ 127, 106, 79, 255 }    // Brown
+Const DARKBROWN  :Color 'CLITERAL(Color){ 76, 63, 47, 255 }      // Dark Brown
 
-const WHITE      :Color 'CLITERAL(Color){ 255, 255, 255, 255 }   // White
-const BLACK      :Color 'CLITERAL(Color){ 0, 0, 0, 255 }         // Black
-const BLANK      :Color 'CLITERAL(Color){ 0, 0, 0, 0 }           // Blank (Transparent)
-const MAGENTA    :Color 'CLITERAL(Color){ 255, 0, 255, 255 }     // Magenta
-const RAYWHITE   :Color 'CLITERAL(Color){ 245, 245, 245, 255 }   // My own White (raylib logo)
+Const WHITE      :Color 'CLITERAL(Color){ 255, 255, 255, 255 }   // White
+Const BLACK      :Color 'CLITERAL(Color){ 0, 0, 0, 255 }         // Black
+Const BLANK      :Color 'CLITERAL(Color){ 0, 0, 0, 0 }           // Blank (Transparent)
+Const MAGENTA    :Color 'CLITERAL(Color){ 255, 0, 255, 255 }     // Magenta
+Const RAYWHITE   :Color 'CLITERAL(Color){ 245, 245, 245, 255 }   // My own White (raylib logo)
 
 Struct Vector2
 	Method New(x:Float, y:Float)
 	Field x:Float
 	Field y:Float
 End
+
 Struct Vector3
+	Method New(x:Float, y:Float, z:Float)
 	Field x:Float
 	Field y:Float
 	Field z:Float
 End
+
 Struct Vector4
+	Method New(x:Float, y:Float, z:Float, w:Float)
 	Field x:Float
 	Field y:Float
 	Field z:Float
 	Field w:Float
 End
+
 Alias Quaternion:Vector4
+
 Struct Matrix
 	Field m0:Float
 	Field m4:Float
@@ -125,18 +132,23 @@ Struct Matrix
 	Field m11:Float
 	Field m15:Float
 End
+
 Struct Color
+	Method New(r:UByte, g:UByte, b:UByte, a:UByte)
 	Field r:UByte
 	Field g:UByte
 	Field b:UByte
 	Field a:UByte
 End
+
 Struct Rectangle
+	Method New(x:Float, y:Float, width:Float, height:Float)
 	Field x:Float
 	Field y:Float
 	Field width:Float
 	Field height:Float
 End
+
 Struct Image
 	Field data:Void Ptr
 	Field width:Int
@@ -144,6 +156,7 @@ Struct Image
 	Field mipmaps:Int
 	Field format:Int
 End
+
 Struct Texture
 	Field id:UInt
 	Field width:Int
@@ -151,14 +164,18 @@ Struct Texture
 	Field mipmaps:Int
 	Field format:Int
 End
+
 Alias Texture2D:Texture
 Alias TextureCubemap:Texture
+
 Struct RenderTexture
 	Field id:UInt
 	Field texture:Texture
 	Field depth:Texture
 End
+
 Alias RenderTexture2D:RenderTexture
+
 Struct NPatchInfo
 	Field source:Rectangle
 	Field left:Int
@@ -167,6 +184,7 @@ Struct NPatchInfo
 	Field bottom:Int
 	Field layout:Int
 End
+
 Struct CharInfo
 	Field value:Int
 	Field offsetX:Int
@@ -174,6 +192,7 @@ Struct CharInfo
 	Field advanceX:Int
 	Field image:Image
 End
+
 Struct Font
 	Field baseSize:Int
 	Field charsCount:Int
@@ -182,6 +201,7 @@ Struct Font
 	Field recs:Rectangle Ptr
 	Field chars:CharInfo Ptr
 End
+
 Struct Camera3D
 	Field position:Vector3
 	Field target:Vector3
@@ -189,13 +209,16 @@ Struct Camera3D
 	Field fovy:Float
 	Field projection:Int
 End
+
 Alias Camera:Camera3D
+
 Struct Camera2D
 	Field offset:Vector2
 	Field target:Vector2
 	Field rotation:Float
 	Field zoom:Float
 End
+
 Struct Mesh
 	Field vertexCount:Int
 	Field triangleCount:Int
@@ -213,29 +236,35 @@ Struct Mesh
 	Field vaoId:UInt
 	Field vboId:UInt Ptr
 End
+
 Struct Shader
 	Field id:UInt
 	Field locs:Int Ptr
 End
+
 Struct MaterialMap
 	Field texture:Texture2D
 	Field color:Color
 	Field value:Float
 End
+
 Struct Material
 	Field shader:Shader
 	Field maps:MaterialMap Ptr
 	Field params:Float Ptr
 End
+
 Struct Transform
 	Field translation:Vector3
 	Field rotation:Quaternion
 	Field scale:Vector3
 End
+
 Struct BoneInfo
 	Field name:libc.char_t Ptr
 	Field parent:Int
 End
+
 Struct Model
 	Field transform:Matrix
 	Field meshCount:Int
@@ -247,26 +276,31 @@ Struct Model
 	Field bones:BoneInfo Ptr
 	Field bindPose:Transform Ptr
 End
+
 Struct ModelAnimation
 	Field boneCount:Int
 	Field frameCount:Int
 	Field bones:BoneInfo Ptr
 	Field framePoses:Transform Ptr Ptr
 End
+
 Struct Ray
 	Field position:Vector3
 	Field direction:Vector3
 End
+
 Struct RayHitInfo
 	Field hit:bool_
 	Field distance:Float
 	Field position:Vector3
 	Field normal:Vector3
 End
+
 Struct BoundingBox
 	Field min:Vector3
 	Field max:Vector3
 End
+
 Struct Wave
 	Field sampleCount:UInt
 	Field sampleRate:UInt
@@ -274,16 +308,19 @@ Struct Wave
 	Field channels:UInt
 	Field data:Void Ptr
 End
+
 Struct AudioStream
 	Field buffer:rAudioBuffer Ptr
 	Field sampleRate:UInt
 	Field sampleSize:UInt
 	Field channels:UInt
 End
+
 Struct Sound
 	Field stream:AudioStream
 	Field sampleCount:UInt
 End
+
 Struct Music
 	Field stream:AudioStream
 	Field sampleCount:UInt
@@ -291,6 +328,7 @@ Struct Music
 	Field ctxType:Int
 	Field ctxData:Void Ptr
 End
+
 Struct VrDeviceInfo
 	Field hResolution:Int
 	Field vResolution:Int
@@ -303,6 +341,7 @@ Struct VrDeviceInfo
 	Field lensDistortionValues:Float Ptr
 	Field chromaAbCorrection:Float Ptr
 End
+
 Struct VrStereoConfig
 	Field projection:Matrix Ptr
 	Field viewOffset:Matrix Ptr
@@ -313,8 +352,10 @@ Struct VrStereoConfig
 	Field scale:Float Ptr
 	Field scaleIn:Float Ptr
 End
+
 Enum ConfigFlags
 End
+
 Const FLAG_VSYNC_HINT:ConfigFlags
 Const FLAG_FULLSCREEN_MODE:ConfigFlags
 Const FLAG_WINDOW_RESIZABLE:ConfigFlags
@@ -329,8 +370,10 @@ Const FLAG_WINDOW_TRANSPARENT:ConfigFlags
 Const FLAG_WINDOW_HIGHDPI:ConfigFlags
 Const FLAG_MSAA_4X_HINT:ConfigFlags
 Const FLAG_INTERLACED_HINT:ConfigFlags
+
 Enum TraceLogLevel
 End
+
 Const LOG_ALL:TraceLogLevel
 Const LOG_TRACE:TraceLogLevel
 Const LOG_DEBUG:TraceLogLevel
@@ -339,8 +382,10 @@ Const LOG_WARNING:TraceLogLevel
 Const LOG_ERROR:TraceLogLevel
 Const LOG_FATAL:TraceLogLevel
 Const LOG_NONE:TraceLogLevel
+
 Enum KeyboardKey
 End
+
 Const KEY_NULL:KeyboardKey
 Const KEY_APOSTROPHE:KeyboardKey
 Const KEY_COMMA:KeyboardKey
@@ -451,13 +496,17 @@ Const KEY_BACK:KeyboardKey
 Const KEY_MENU:KeyboardKey
 Const KEY_VOLUME_UP:KeyboardKey
 Const KEY_VOLUME_DOWN:KeyboardKey
+
 Enum MouseButton
 End
+
 Const MOUSE_LEFT_BUTTON:MouseButton
 Const MOUSE_RIGHT_BUTTON:MouseButton
 Const MOUSE_MIDDLE_BUTTON:MouseButton
+
 Enum MouseCursor
 End
+
 Const MOUSE_CURSOR_DEFAULT:MouseCursor
 Const MOUSE_CURSOR_ARROW:MouseCursor
 Const MOUSE_CURSOR_IBEAM:MouseCursor
@@ -469,8 +518,10 @@ Const MOUSE_CURSOR_RESIZE_NWSE:MouseCursor
 Const MOUSE_CURSOR_RESIZE_NESW:MouseCursor
 Const MOUSE_CURSOR_RESIZE_ALL:MouseCursor
 Const MOUSE_CURSOR_NOT_ALLOWED:MouseCursor
+
 Enum GamepadButton
 End
+
 Const GAMEPAD_BUTTON_UNKNOWN:GamepadButton
 Const GAMEPAD_BUTTON_LEFT_FACE_UP:GamepadButton
 Const GAMEPAD_BUTTON_LEFT_FACE_RIGHT:GamepadButton
@@ -489,16 +540,20 @@ Const GAMEPAD_BUTTON_MIDDLE:GamepadButton
 Const GAMEPAD_BUTTON_MIDDLE_RIGHT:GamepadButton
 Const GAMEPAD_BUTTON_LEFT_THUMB:GamepadButton
 Const GAMEPAD_BUTTON_RIGHT_THUMB:GamepadButton
+
 Enum GamepadAxis
 End
+
 Const GAMEPAD_AXIS_LEFT_X:GamepadAxis
 Const GAMEPAD_AXIS_LEFT_Y:GamepadAxis
 Const GAMEPAD_AXIS_RIGHT_X:GamepadAxis
 Const GAMEPAD_AXIS_RIGHT_Y:GamepadAxis
 Const GAMEPAD_AXIS_LEFT_TRIGGER:GamepadAxis
 Const GAMEPAD_AXIS_RIGHT_TRIGGER:GamepadAxis
+
 Enum MaterialMapIndex
 End
+
 Const MATERIAL_MAP_ALBEDO:MaterialMapIndex
 Const MATERIAL_MAP_METALNESS:MaterialMapIndex
 Const MATERIAL_MAP_NORMAL:MaterialMapIndex
@@ -510,8 +565,10 @@ Const MATERIAL_MAP_BRDG:MaterialMapIndex
 Const MATERIAL_MAP_CUBEMAP:MaterialMapIndex
 Const MATERIAL_MAP_IRRADIANCE:MaterialMapIndex
 Const MATERIAL_MAP_PREFILTER:MaterialMapIndex
+
 Enum ShaderLocationIndex
 End
+
 Const SHADER_LOC_VERTEX_POSITION:ShaderLocationIndex
 Const SHADER_LOC_VERTEX_TEXCOORD01:ShaderLocationIndex
 Const SHADER_LOC_VERTEX_TEXCOORD02:ShaderLocationIndex
@@ -538,8 +595,10 @@ Const SHADER_LOC_MAP_CUBEMAP:ShaderLocationIndex
 Const SHADER_LOC_MAP_IRRADIANCE:ShaderLocationIndex
 Const SHADER_LOC_MAP_PREFILTER:ShaderLocationIndex
 Const SHADER_LOC_MAP_BRDF:ShaderLocationIndex
+
 Enum ShaderUniformDataType
 End
+
 Const SHADER_UNIFORM_FLOAT:ShaderUniformDataType
 Const SHADER_UNIFORM_VEC2:ShaderUniformDataType
 Const SHADER_UNIFORM_VEC3:ShaderUniformDataType
@@ -549,8 +608,10 @@ Const SHADER_UNIFORM_IVEC2:ShaderUniformDataType
 Const SHADER_UNIFORM_IVEC3:ShaderUniformDataType
 Const SHADER_UNIFORM_IVEC4:ShaderUniformDataType
 Const SHADER_UNIFORM_SAMPLER2D:ShaderUniformDataType
+
 Enum PixelFormat
 End
+
 Const PIXELFORMAT_UNCOMPRESSED_GRAYSCALE:PixelFormat
 Const PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA:PixelFormat
 Const PIXELFORMAT_UNCOMPRESSED_R5G6B5:PixelFormat
@@ -572,43 +633,55 @@ Const PIXELFORMAT_COMPRESSED_PVRT_RGB:PixelFormat
 Const PIXELFORMAT_COMPRESSED_PVRT_RGBA:PixelFormat
 Const PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA:PixelFormat
 Const PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA:PixelFormat
+
 Enum TextureFilter
 End
+
 Const TEXTURE_FILTER_POINT:TextureFilter
 Const TEXTURE_FILTER_BILINEAR:TextureFilter
 Const TEXTURE_FILTER_TRILINEAR:TextureFilter
 Const TEXTURE_FILTER_ANISOTROPIC_4X:TextureFilter
 Const TEXTURE_FILTER_ANISOTROPIC_8X:TextureFilter
 Const TEXTURE_FILTER_ANISOTROPIC_16X:TextureFilter
+
 Enum TextureWrap
 End
+
 Const TEXTURE_WRAP_REPEAT:TextureWrap
 Const TEXTURE_WRAP_CLAMP:TextureWrap
 Const TEXTURE_WRAP_MIRROR_REPEAT:TextureWrap
 Const TEXTURE_WRAP_MIRROR_CLAMP:TextureWrap
+
 Enum CubemapLayout
 End
+
 Const CUBEMAP_LAYOUT_AUTO_DETECT:CubemapLayout
 Const CUBEMAP_LAYOUT_LINE_VERTICAL:CubemapLayout
 Const CUBEMAP_LAYOUT_LINE_HORIZONTAL:CubemapLayout
 Const CUBEMAP_LAYOUT_CROSS_THREE_BY_FOUR:CubemapLayout
 Const CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE:CubemapLayout
 Const CUBEMAP_LAYOUT_PANORAMA:CubemapLayout
+
 Enum FontType
 End
+
 Const FONT_DEFAULT:FontType
 Const FONT_BITMAP:FontType
 Const FONT_SDF:FontType
+
 Enum BlendMode
 End
+
 Const BLEND_ALPHA:BlendMode
 Const BLEND_ADDITIVE:BlendMode
 Const BLEND_MULTIPLIED:BlendMode
 Const BLEND_ADD_COLORS:BlendMode
 Const BLEND_SUBTRACT_COLORS:BlendMode
 Const BLEND_CUSTOM:BlendMode
+
 Enum Gestures
 End
+
 Const GESTURE_NONE:Gestures
 Const GESTURE_TAP:Gestures
 Const GESTURE_DOUBLETAP:Gestures
@@ -620,27 +693,35 @@ Const GESTURE_SWIPE_UP:Gestures
 Const GESTURE_SWIPE_DOWN:Gestures
 Const GESTURE_PINCH_IN:Gestures
 Const GESTURE_PINCH_OUT:Gestures
+
 Enum CameraMode
 End
+
 Const CAMERA_CUSTOM:CameraMode
 Const CAMERA_FREE:CameraMode
 Const CAMERA_ORBITAL:CameraMode
 Const CAMERA_FIRST_PERSON:CameraMode
 Const CAMERA_THIRD_PERSON:CameraMode
+
 Enum CameraProjection
 End
+
 Const CAMERA_PERSPECTIVE:CameraProjection
 Const CAMERA_ORTHOGRAPHIC:CameraProjection
+
 Enum NPatchLayout
 End
+
 Const NPATCH_NINE_PATCH:NPatchLayout
 Const NPATCH_THREE_PATCH_VERTICAL:NPatchLayout
 Const NPATCH_THREE_PATCH_HORIZONTAL:NPatchLayout
+
 Alias TraceLogCallback:Void( Int, CString, Int )
 Alias LoadFileDataCallback:UByte Ptr( CString, UInt Ptr )
 Alias SaveFileDataCallback:bool_( CString, Void Ptr, UInt )
 Alias LoadFileTextCallback:libc.char_t Ptr( CString )
 Alias SaveFileTextCallback:bool_( CString, libc.char_t Ptr )
+
 Function InitWindow:Void( width:Int, height:Int, title:CString )
 Function WindowShouldClose:bool_(  )
 Function CloseWindow:Void(  )
@@ -972,7 +1053,7 @@ Function GetGlyphIndex:Int( font:Font, codepoint:Int )
 Function TextCopy:Int( dst:libc.char_t Ptr, src:CString )
 Function TextIsEqual:bool_( text1:CString, text2:CString )
 Function TextLength:UInt( text:CString )
-Function TextFormat:CString( text:CString )
+'Function TextFormat:CString( text:CString, ... )     ' VARARG FUNCTION, not supported
 Function TextSubtext:CString( text:CString, position:Int, length:Int )
 Function TextReplace:libc.char_t Ptr( text:libc.char_t Ptr, replace:CString, by:CString )
 Function TextInsert:libc.char_t Ptr( text:CString, insert:CString, position:Int )
@@ -1121,15 +1202,15 @@ End
 ################ C2WX OUTPUT LOG ################
 
 Processing:native/src/raylib.h
-***** Warning - function pointer type has const* parameters *****
+***** Warning - function pointer type has Const* parameters *****
 void (int, const char *, int)
-***** Warning - function pointer type has const* parameters *****
+***** Warning - function pointer type has Const* parameters *****
 unsigned char *(const char *, unsigned int *)
-***** Warning - function pointer type has const* parameters *****
+***** Warning - function pointer type has Const* parameters *****
 bool (const char *, void *, unsigned int)
-***** Warning - function pointer type has const* parameters *****
+***** Warning - function pointer type has Const* parameters *****
 char *(const char *)
-***** Warning - function pointer type has const* parameters *****
+***** Warning - function pointer type has Const* parameters *****
 bool (const char *, char *)
 
 c2mx2: **** Success ***** - output saved to raylib.wx
