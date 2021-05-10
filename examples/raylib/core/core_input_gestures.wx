@@ -1,0 +1,134 @@
+#rem
+/*******************************************************************************************
+*
+*   raylib [core] example - Input Gestures Detection
+*
+*   This example has been created using raylib 1.4 (www.raylib.com)
+*   raylib is licensed under an unmodIfied zlib/libpng license (View raylib.h for details)
+*
+*   Copyright (c) 2016 Ramon Santamaria (@raysan5)
+*
+*   Translated to Wonkey by Danilo Krahn, May 2021
+*
+********************************************************************************************/
+#end
+
+#Import "<raylib>"
+
+Using raylib..
+
+Const MAX_GESTURE_STRINGS:Int = 20
+
+Function Main()
+
+    ' Initialization
+    '--------------------------------------------------------------------------------------
+    Const screenWidth:Int  = 800
+    Const screenHeight:Int = 450
+
+    InitWindow(screenWidth, screenHeight, "raylib [core] example - input gestures")
+
+    Local touchPosition := New Vector2(0, 0)
+    Local touchArea := New Rectangle(220, 10, screenWidth - 230.0, screenHeight - 20.0)
+
+    Local gesturesCount:Int = 0
+    Local gestureStrings := New String[MAX_GESTURE_STRINGS]
+
+    Local currentGesture:Int = GESTURE_NONE
+    Local lastGesture:Int = GESTURE_NONE
+
+    'SetGesturesEnabled(%0000000000001001)   ' Enable only some gestures to be detected
+
+    SetTargetFPS(60)                ' Set our game to run at 60 frames-per-second
+    '--------------------------------------------------------------------------------------
+
+    ' Main game loop
+    While Not WindowShouldClose()   ' Detect window close button or ESC key
+
+        ' Update
+        '----------------------------------------------------------------------------------
+        lastGesture    = currentGesture
+        currentGesture = GetGestureDetected()
+        touchPosition  = GetTouchPosition(0)
+
+        If CheckCollisionPointRec(touchPosition, touchArea) And currentGesture <> GESTURE_NONE
+
+            If currentGesture <> lastGesture
+
+                ' Store gesture string
+                Select currentGesture
+                    Case GESTURE_TAP
+	                    gestureStrings[gesturesCount] = "GESTURE TAP"
+                    case GESTURE_DOUBLETAP
+	                    gestureStrings[gesturesCount] = "GESTURE DOUBLETAP"
+                    case GESTURE_HOLD
+	                    gestureStrings[gesturesCount] = "GESTURE HOLD"
+                    case GESTURE_DRAG
+	                    gestureStrings[gesturesCount] = "GESTURE DRAG"
+                    case GESTURE_SWIPE_RIGHT
+	                    gestureStrings[gesturesCount] = "GESTURE SWIPE RIGHT"
+                    case GESTURE_SWIPE_LEFT
+	                    gestureStrings[gesturesCount] = "GESTURE SWIPE LEFT"
+                    case GESTURE_SWIPE_UP
+	                    gestureStrings[gesturesCount] = "GESTURE SWIPE UP"
+                    case GESTURE_SWIPE_DOWN
+	                    gestureStrings[gesturesCount] = "GESTURE SWIPE DOWN"
+                    case GESTURE_PINCH_IN
+	                    gestureStrings[gesturesCount] = "GESTURE PINCH IN"
+                    case GESTURE_PINCH_OUT
+	                    gestureStrings[gesturesCount] = "GESTURE PINCH OUT"
+                End Select
+
+                gesturesCount += 1
+
+                ' Reset gestures strings
+                If gesturesCount >= MAX_GESTURE_STRINGS
+                    For Local i := 0 To MAX_GESTURE_STRINGS-1
+	                    gestureStrings[i] = ""
+	                Next
+
+                    gesturesCount = 0
+                Endif
+            Endif
+        Endif
+        '----------------------------------------------------------------------------------
+
+        ' Draw
+        '----------------------------------------------------------------------------------
+        BeginDrawing()
+
+            ClearBackground(RAYWHITE)
+
+            DrawRectangleRec(touchArea, GRAY)
+            DrawRectangle(225, 15, screenWidth - 240, screenHeight - 30, RAYWHITE)
+
+            DrawText("GESTURES TEST AREA", screenWidth - 270, screenHeight - 40, 20, Fade(GRAY, 0.5))
+
+            For Local i := 0 To gesturesCount-1
+                If i Mod 2 = 0
+	                DrawRectangle(10, 30 + 20*i, 200, 20, Fade(LIGHTGRAY, 0.5))
+                Else
+	                DrawRectangle(10, 30 + 20*i, 200, 20, Fade(LIGHTGRAY, 0.3))
+	            Endif
+
+                If i < gesturesCount - 1
+	                DrawText(gestureStrings[i], 35, 36 + 20*i, 10, DARKGRAY)
+                Else
+	                DrawText(gestureStrings[i], 35, 36 + 20*i, 10, MAROON)
+	            Endif
+            Next
+
+            DrawRectangleLines(10, 29, 200, screenHeight - 50, GRAY)
+            DrawText("DETECTED GESTURES", 50, 15, 10, GRAY)
+
+            If currentGesture <> GESTURE_NONE Then DrawCircleV(touchPosition, 30, MAROON)
+
+        EndDrawing()
+        '----------------------------------------------------------------------------------
+    Wend
+
+    ' De-Initialization
+    '--------------------------------------------------------------------------------------
+    CloseWindow()                   ' Close window and OpenGL context
+    '--------------------------------------------------------------------------------------
+End

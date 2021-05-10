@@ -1,0 +1,143 @@
+#rem
+/*******************************************************************************************
+*
+*   raylib [core] example - 2d camera
+*
+*   This example has been created using raylib 1.5 (www.raylib.com)
+*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*
+*   Copyright (c) 2016 Ramon Santamaria (@raysan5)
+*
+*   Translated to Wonkey by Danilo Krahn, May 2021
+*
+********************************************************************************************/
+#end
+
+#Import "<raylib>"
+
+Using raylib..
+
+Const MAX_BUILDINGS:Int = 100
+
+Function Main()
+
+    ' Initialization
+    '--------------------------------------------------------------------------------------
+    Const screenWidth:Int  = 800
+    Const screenHeight:Int = 450
+
+    InitWindow(screenWidth, screenHeight, "raylib [core] example - 2d camera")
+
+    Local player := New Rectangle( 400, 280, 40, 40 )
+    Local buildings := New Rectangle[MAX_BUILDINGS]
+    Local buildColors := New Color[MAX_BUILDINGS]
+
+    Local spacing:Int = 0
+
+    For Local i := 0 To MAX_BUILDINGS-1
+        buildings[i].width = GetRandomValue(50, 200)
+        buildings[i].height = GetRandomValue(100, 800)
+        buildings[i].y = screenHeight - 130.0 - buildings[i].height
+        buildings[i].x = -6000.0 + spacing
+
+        spacing += Int(buildings[i].width)
+
+        buildColors[i] = New Color( GetRandomValue(200, 240), GetRandomValue(200, 240), GetRandomValue(200, 250), 255 )
+    Next
+
+    Local camera := New Camera2D
+    camera.target = New Vector2( player.x + 20.0, player.y + 20.0 )
+    camera.offset = New Vector2( screenWidth/2.0, screenHeight/2.0 )
+    camera.rotation = 0.0
+    camera.zoom = 1.0
+
+    SetTargetFPS(60)                   ' Set our game to run at 60 frames-per-second
+    '--------------------------------------------------------------------------------------
+
+    ' Main game loop
+    While Not WindowShouldClose()      ' Detect window close button or ESC key
+
+        ' Update
+        '----------------------------------------------------------------------------------
+
+        ' Player movement
+        If IsKeyDown(KEY_RIGHT)
+	        player.x += 2
+        Elseif IsKeyDown(KEY_LEFT)
+	        player.x -= 2
+	    Endif
+
+        ' Camera target follows player
+        camera.target = New Vector2( player.x + 20, player.y + 20 )
+
+        ' Camera rotation controls
+        If IsKeyDown(KEY_A)
+	        camera.rotation -= 1.0
+        Elseif IsKeyDown(KEY_S)
+	        camera.rotation += 1.0
+	    Endif
+
+        ' Limit camera rotation to 80 degrees (-40 to 40)
+        If camera.rotation >  40 Then camera.rotation =  40
+        If camera.rotation < -40 Then camera.rotation = -40
+
+        ' Camera zoom controls
+        camera.zoom += GetMouseWheelMove()*0.05
+
+        If camera.zoom > 3.0 Then camera.zoom = 3.0
+        If camera.zoom < 0.1 Then camera.zoom = 0.1
+
+        ' Camera reset (zoom and rotation)
+        If IsKeyPressed(KEY_R)
+            camera.zoom = 1.0
+            camera.rotation = 0.0
+        Endif
+        '----------------------------------------------------------------------------------
+
+        ' Draw
+        '----------------------------------------------------------------------------------
+        BeginDrawing()
+
+            ClearBackground(RAYWHITE)
+
+            BeginMode2D(camera)
+
+                DrawRectangle(-6000, 320, 13000, 8000, DARKGRAY)
+
+                For Local i := 0 To MAX_BUILDINGS-1
+	                DrawRectangleRec(buildings[i], buildColors[i])
+	            Next
+
+                DrawRectangleRec(player, RED)
+
+                DrawLine(Int(camera.target.x), -screenHeight*10, Int(camera.target.x), screenHeight*10, GREEN)
+                DrawLine(-screenWidth*10, Int(camera.target.y), screenWidth*10, Int(camera.target.y), GREEN)
+
+            EndMode2D()
+
+            DrawText("SCREEN AREA", 640, 10, 20, RED)
+
+            DrawRectangle(0, 0, screenWidth, 5, RED)
+            DrawRectangle(0, 5, 5, screenHeight - 10, RED)
+            DrawRectangle(screenWidth - 5, 5, 5, screenHeight - 10, RED)
+            DrawRectangle(0, screenHeight - 5, screenWidth, 5, RED)
+
+            DrawRectangle( 10, 10, 250, 113, Fade(SKYBLUE, 0.5))
+            DrawRectangleLines( 10, 10, 250, 113, BLUE)
+
+            DrawText("Free 2d camera controls:", 20, 20, 10, BLACK)
+            DrawText("- Right/Left to move Offset", 40, 40, 10, DARKGRAY)
+            DrawText("- Mouse Wheel to Zoom in-out", 40, 60, 10, DARKGRAY)
+            DrawText("- A / S to Rotate", 40, 80, 10, DARKGRAY)
+            DrawText("- R to reset Zoom and Rotation", 40, 100, 10, DARKGRAY)
+
+        EndDrawing()
+        '----------------------------------------------------------------------------------
+    Wend
+
+    ' De-Initialization
+    '--------------------------------------------------------------------------------------
+    CloseWindow()        ' Close window and OpenGL context
+    '--------------------------------------------------------------------------------------
+
+End

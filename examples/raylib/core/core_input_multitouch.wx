@@ -1,0 +1,94 @@
+#rem
+/*******************************************************************************************
+*
+*   raylib [core] example - Input multitouch
+*
+*   This example has been created using raylib 2.1 (www.raylib.com)
+*   raylib is licensed under an unmodIfied zlib/libpng license (View raylib.h for details)
+*
+*   Example contributed by Berni (@Berni8k) and reviewed by Ramon Santamaria (@raysan5)
+*
+*   Copyright (c) 2019 Berni (@Berni8k) and Ramon Santamaria (@raysan5)
+*
+*   Translated to Wonkey by Danilo Krahn, May 2021
+*
+********************************************************************************************/
+#end
+
+#Import "<raylib>"
+
+Using raylib..
+
+Const MAX_TOUCH_POINTS:Int = 10
+
+Function Main()
+
+    ' Initialization
+    '--------------------------------------------------------------------------------------
+    Const screenWidth:Int  = 800
+    Const screenHeight:Int = 450
+
+    InitWindow(screenWidth, screenHeight, "raylib [core] example - input multitouch")
+
+    Local ballPosition := New Vector2(-100.0, -100.0)
+    Local ballColor:Color = BEIGE
+
+    Local touchCounter:Int = 0
+    Local touchPosition := New Vector2(0,0)
+
+    SetTargetFPS(60)                ' Set our game to run at 60 frames-per-second
+    '---------------------------------------------------------------------------------------
+
+    ' Main game loop
+    While Not WindowShouldClose()   ' Detect window close button or ESC key
+
+        ' Update
+        '----------------------------------------------------------------------------------
+        ballPosition = GetMousePosition()
+
+        ballColor = BEIGE
+
+        If IsMouseButtonDown(MOUSE_LEFT_BUTTON)   Then ballColor = MAROON
+        If IsMouseButtonDown(MOUSE_MIDDLE_BUTTON) Then ballColor = LIME
+        If IsMouseButtonDown(MOUSE_RIGHT_BUTTON)  Then ballColor = DARKBLUE
+
+        If IsMouseButtonPressed(MOUSE_LEFT_BUTTON)   Then touchCounter = 10
+        If IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON) Then touchCounter = 10
+        If IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)  Then touchCounter = 10
+
+        If touchCounter > 0 Then touchCounter -= 1
+	     
+        '----------------------------------------------------------------------------------
+        ' Draw
+        '----------------------------------------------------------------------------------
+        BeginDrawing()
+
+            ClearBackground(RAYWHITE)
+
+            ' Multitouch
+            For Local i:Int = 0 To MAX_TOUCH_POINTS-1
+                touchPosition = GetTouchPosition(i)                    ' Get the touch point
+
+                If (touchPosition.x >= 0) And (touchPosition.y >= 0)   ' Make sure point is not (-1,-1) as this means there is no touch for it
+                    ' Draw circle and touch index number
+                    DrawCircleV(touchPosition, 34, ORANGE)
+                    DrawText(String(i), Int(touchPosition.x) - 10, Int(touchPosition.y) - 70, 40, BLACK)
+                Endif
+            Next
+
+            ' Draw the normal mouse location
+            DrawCircleV(ballPosition, 30 + (touchCounter*3.0), ballColor)
+
+            DrawText("move ball with mouse and click mouse button to change color", 10, 10, 20, DARKGRAY)
+            DrawText("touch the screen at multiple locations to get multiple balls", 10, 30, 20, DARKGRAY)
+
+        EndDrawing()
+        '----------------------------------------------------------------------------------
+    Wend
+
+    ' De-Initialization
+    '--------------------------------------------------------------------------------------
+    CloseWindow()                   ' Close window and OpenGL context
+    '--------------------------------------------------------------------------------------
+
+End

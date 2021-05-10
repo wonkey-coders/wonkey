@@ -1,0 +1,70 @@
+#rem
+/*******************************************************************************************
+*
+*   raylib [core] example - Mouse input
+*
+*   This example has been created using raylib 1.0 (www.raylib.com)
+*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*
+*   Copyright (c) 2014 Ramon Santamaria (@raysan5)
+*
+*   Translated to Wonkey by Danilo Krahn, May 2021
+*
+********************************************************************************************/
+#end
+
+#Import "<raylib>"
+
+Using raylib..
+
+Function Main()
+
+    ' Initialization
+    '--------------------------------------------------------------------------------------
+    Const screenWidth:Int  = 800
+    Const screenHeight:Int = 450
+
+    InitWindow(screenWidth, screenHeight, "raylib [core] example - mouse input")
+
+    Local ballPosition := New Vector2(-100.0, -100.0)
+    Local ballColor:Color = DARKBLUE
+
+    SetTargetFPS(60)                ' Set our game to run at 60 frames-per-second
+    '---------------------------------------------------------------------------------------
+
+    ' Main game loop
+    While Not WindowShouldClose()   ' Detect window close button or ESC key
+
+        ' Update
+        '----------------------------------------------------------------------------------
+        ballPosition = GetMousePosition()
+
+        If IsMouseButtonPressed(MOUSE_LEFT_BUTTON)
+	        ballColor = MAROON
+        Elseif IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON)
+	        ballColor = LIME
+        Elseif IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)
+	        ballColor = DARKBLUE
+	    Endif
+        '----------------------------------------------------------------------------------
+
+        ' Draw
+        '----------------------------------------------------------------------------------
+        BeginDrawing()
+
+            ClearBackground(RAYWHITE)
+
+            DrawCircleV(ballPosition, 40, ballColor)
+
+            DrawText("move ball with mouse and click mouse button to change color", 10, 10, 20, DARKGRAY)
+
+        EndDrawing()
+        '----------------------------------------------------------------------------------
+    Wend
+
+    ' De-Initialization
+    '--------------------------------------------------------------------------------------
+    CloseWindow()                   ' Close window and OpenGL context
+    '--------------------------------------------------------------------------------------
+
+End
