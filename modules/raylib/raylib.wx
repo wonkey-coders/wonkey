@@ -297,6 +297,7 @@ Struct RayHitInfo
 End
 
 Struct BoundingBox
+	Method New(min:Vector3, max:Vector3)
 	Field min:Vector3
 	Field max:Vector3
 End
