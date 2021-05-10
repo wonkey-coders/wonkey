@@ -1,0 +1,301 @@
+#rem
+/*******************************************************************************************
+*
+*   raylib [core] example - 2d camera platformer
+*
+*   This example has been created using raylib 2.5 (www.raylib.com)
+*   raylib is licensed under an unmodIfied zlib/libpng license (View raylib.h for details)
+*
+*   Example contributed by arvyy (@arvyy) and reviewed by Ramon Santamaria (@raysan5)
+*
+*   Copyright (c) 2019 arvyy (@arvyy)
+*
+*   Translated to Wonkey by Danilo Krahn, May 2021
+*
+********************************************************************************************/
+#end
+
+#Import "<raylib>"
+
+Using raylib..
+
+Const G:Int                 = 400
+Const PLAYER_JUMP_SPD:Float = 350.0
+Const PLAYER_HOR_SPD:Float  = 200.0
+
+Struct Player
+    Field position:Vector2
+    Field speed:Float
+    Field canJump:Bool
+End
+
+Struct EnvItem
+	Method New(r:Rectangle, block:Int, col:Color)
+		Self.rect     = r
+		Self.blocking = block
+		Self.color    = col
+	End
+    Field rect:Rectangle
+    Field blocking:Int
+    Field color:Color
+End
+
+Alias CameraUpdater:Void(camera:Camera2D Ptr, player:Player Ptr, envItem:EnvItem[], delta:Float, width:Int, height:Int)
+
+Function fmaxf:Float(a:Float, b:Float)
+	If a > b Then Return a
+	Return b
+End
+
+Function fminf:Float(a:Float, b:Float)
+	If a < b Then Return a
+	Return b
+End
+
+
+Function Main()
+
+    ' Initialization
+    '--------------------------------------------------------------------------------------
+    Const screenWidth:Int  = 800
+    Const screenHeight:Int = 450
+
+    InitWindow(screenWidth, screenHeight, "raylib [core] example - 2d camera platformer")
+
+    Local player:Player
+    player.position = New Vector2(400, 280)
+    player.speed = 0
+    player.canJump = False
+
+    Local envItems := New EnvItem[](
+        New EnvItem( New Rectangle(  0,   0, 1000, 400 ), 0, LIGHTGRAY ),
+        New EnvItem( New Rectangle(  0, 400, 1000, 200 ), 1, GRAY ),
+        New EnvItem( New Rectangle(300, 200,  400,  10 ), 1, GRAY ),
+        New EnvItem( New Rectangle(250, 300,  100,  10 ), 1, GRAY ),
+        New EnvItem( New Rectangle(650, 300,  100,  10 ), 1, GRAY ) )
+
+    'Local envItemsLength:Int = envItems.Length * sizeof(envItems[0])
+
+    Local camera:Camera2D
+    camera.target = player.position
+    camera.offset = New Vector2( screenWidth/2.0, screenHeight/2.0 )
+    camera.rotation = 0.0
+    camera.zoom = 1.0
+
+    ' Store pointers to the multiple update camera functions
+    Local cameraUpdaters := New CameraUpdater[](
+        UpdateCameraCenter,
+        UpdateCameraCenterInsideMap,
+        UpdateCameraCenterSmoothFollow,
+        UpdateCameraEvenOutOnLanding,
+        UpdateCameraPlayerBoundsPush )
+
+    Local cameraOption:Int = 0
+
+    Local cameraDescriptions := New String[](
+        "Follow player center",
+        "Follow player center, but clamp to map edges",
+        "Follow player center smoothed",
+        "Follow player center horizontally updateplayer center vertically after landing",
+        "Player push camera on getting too close to screen edge" )
+
+    SetTargetFPS(60)
+    '--------------------------------------------------------------------------------------
+
+    ' Main game loop
+    While Not WindowShouldClose()
+
+        ' Update
+        '----------------------------------------------------------------------------------
+        Local deltaTime:Float = GetFrameTime()
+
+        UpdatePlayer(Varptr player, envItems, deltaTime)
+
+        camera.zoom += Float(GetMouseWheelMove())*0.05
+
+        If camera.zoom > 3.0  Then camera.zoom = 3.0
+        If camera.zoom < 0.25 Then camera.zoom = 0.25
+
+        If IsKeyPressed(KEY_R)
+            camera.zoom = 1.0
+            player.position = New Vector2( 400, 280 )
+        Endif
+
+        If IsKeyPressed(KEY_C) Then cameraOption = (cameraOption + 1) Mod cameraUpdaters.Length
+
+        ' Call update camera function by its pointer
+        cameraUpdaters[cameraOption](Varptr camera, Varptr player, envItems, deltaTime, screenWidth, screenHeight)
+        '----------------------------------------------------------------------------------
+
+        ' Draw
+        '----------------------------------------------------------------------------------
+        BeginDrawing()
+
+            ClearBackground(LIGHTGRAY)
+
+            BeginMode2D(camera)
+
+                For Local i := 0 To envItems.Length-1
+	                DrawRectangleRec(envItems[i].rect, envItems[i].color)
+	            Next
+
+                Local playerRect := New Rectangle( player.position.x - 20, player.position.y - 40, 40, 40 )
+                DrawRectangleRec(playerRect, RED)
+
+            EndMode2D()
+
+            DrawText("Controls:", 20, 20, 10, BLACK)
+            DrawText("- Right/Left to move", 40, 40, 10, DARKGRAY)
+            DrawText("- Space to jump", 40, 60, 10, DARKGRAY)
+            DrawText("- Mouse Wheel to Zoom in-out, R to reset zoom", 40, 80, 10, DARKGRAY)
+            DrawText("- C to change camera mode", 40, 100, 10, DARKGRAY)
+            DrawText("Current camera mode:", 20, 120, 10, BLACK)
+            DrawText(cameraDescriptions[cameraOption], 40, 140, 10, DARKGRAY)
+
+        EndDrawing()
+        '----------------------------------------------------------------------------------
+    Wend
+
+    ' De-Initialization
+    '--------------------------------------------------------------------------------------
+    CloseWindow()        ' Close window and OpenGL context
+    '--------------------------------------------------------------------------------------
+
+End
+
+Function UpdatePlayer(player:Player Ptr, envItems:EnvItem[], delta:Float)
+
+    If IsKeyDown(KEY_LEFT)  Then player->position.x -= PLAYER_HOR_SPD*delta
+    If IsKeyDown(KEY_RIGHT) Then player->position.x += PLAYER_HOR_SPD*delta
+
+    If IsKeyDown(KEY_SPACE) And player->canJump
+        player->speed = -PLAYER_JUMP_SPD
+        player->canJump = False
+    Endif
+
+    Local hitObstacle:Int = 0
+    For Local i := 0 To envItems.Length-1
+        If envItems[i].blocking And
+		   envItems[i].rect.x <= player->position.x And
+		   envItems[i].rect.x + envItems[i].rect.width >= player->position.x And
+		   envItems[i].rect.y >= player->position.y And
+		   envItems[i].rect.y < player->position.y + player->speed * delta
+            hitObstacle = 1
+            player->speed = 0.0
+            player->position.y = envItems[i].rect.y
+        Endif
+    Next
+
+    If Not hitObstacle
+        player->position.y += player->speed*delta
+        player->speed += G*delta
+        player->canJump = false
+    Else
+	    player->canJump = true
+	Endif
+End
+
+Function UpdateCameraCenter(camera:Camera2D Ptr, player:Player Ptr, envItems:EnvItem[], delta:Float, width:Int, height:Int)
+	If camera And player
+        camera->offset = New Vector2( width/2.0, height/2.0 )
+        camera->target = player->position
+    Endif
+End
+
+Function UpdateCameraCenterInsideMap(camera:Camera2D Ptr, player:Player Ptr, envItems:EnvItem[], delta:Float, width:Int, height:Int)
+    camera->target = player->position
+    camera->offset = New Vector2( width/2.0, height/2.0 )
+    Local minX:Float = 1000, minY:Float = 1000, maxX:Float = -1000, maxY:Float = -1000
+
+    For Local i := 0 To envItems.Length-1
+        minX = fminf(envItems[i].rect.x, minX)
+        maxX = fmaxf(envItems[i].rect.x + envItems[i].rect.width, maxX)
+        minY = fminf(envItems[i].rect.y, minY)
+        maxY = fmaxf(envItems[i].rect.y + envItems[i].rect.height, maxY)
+    Next
+
+    Local cam:Camera2D
+    cam.offset = camera->offset
+    cam.target = camera->target
+    cam.rotation = camera->rotation
+    cam.zoom = camera->zoom
+
+    Local max:Vector2 = GetWorldToScreen2D( New Vector2( maxX, maxY ), cam)
+    Local min:Vector2 = GetWorldToScreen2D( New Vector2( minX, minY ), cam)
+
+    If max.x < width  Then camera->offset.x = width  - (max.x - width/2)
+    If max.y < height Then camera->offset.y = height - (max.y - height/2)
+    If min.x > 0      Then camera->offset.x = width/2  - min.x
+    If min.y > 0      Then camera->offset.y = height/2 - min.y
+End
+
+Function UpdateCameraCenterSmoothFollow(camera:Camera2D Ptr, player:Player Ptr, envItems:EnvItem[], delta:Float, width:Int, height:Int)
+
+    Global minSpeed:Float = 30
+    Global minEffectLength:Float = 10
+    Global fractionSpeed:Float = 0.8
+
+    camera->offset = New Vector2( width/2.0, height/2.0 )
+    Local diff:Vector2 = New Vector2( player->position.x - camera->target.x,
+                                      player->position.y - camera->target.y )
+    Local length:Float = Sqrt((diff.x*diff.x) + (diff.y*diff.y))
+
+    If length > minEffectLength
+        Local speed:Float = fmaxf(fractionSpeed*length, minSpeed)
+        camera->target.x += diff.x * (speed*delta/length)
+        camera->target.y += diff.y * (speed*delta/length)
+    Endif
+End
+
+Function UpdateCameraEvenOutOnLanding(camera:Camera2D Ptr, player:Player Ptr, envItems:EnvItem[], delta:Float, width:Int, height:Int)
+
+    Global evenOutSpeed:Float = 700
+    Global eveningOut:Int = False
+    Global evenOutTarget:Float
+
+    camera->offset = New Vector2( width/2.0, height/2.0 )
+    camera->target.x = player->position.x
+
+    If eveningOut
+        If evenOutTarget > camera->target.y
+            camera->target.y += evenOutSpeed*delta
+
+            If camera->target.y > evenOutTarget
+                camera->target.y = evenOutTarget
+                eveningOut = 0
+            Endif
+        Else
+            camera->target.y -= evenOutSpeed*delta
+
+            If camera->target.y < evenOutTarget
+                camera->target.y = evenOutTarget
+                eveningOut = 0
+            Endif
+        Endif
+    Else
+        If player->canJump And player->speed = 0 And player->position.y <> camera->target.y
+            eveningOut = 1
+            evenOutTarget = player->position.y
+        Endif
+    Endif
+End
+
+Function UpdateCameraPlayerBoundsPush(camera:Camera2D Ptr, player:Player Ptr, envItems:EnvItem[], delta:Float, width:Int, height:Int)
+
+    Global bbox:Vector2 = New Vector2( 0.2, 0.2 )
+
+    Local cam:Camera2D
+    cam.offset = camera->offset
+    cam.target = camera->target
+    cam.rotation = camera->rotation
+    cam.zoom = camera->zoom
+
+    Local bboxWorldMin:Vector2 = GetScreenToWorld2D( New Vector2( (1 - bbox.x)*0.5*width, (1 - bbox.y)*0.5*height ), cam)
+    Local bboxWorldMax:Vector2 = GetScreenToWorld2D( New Vector2( (1 + bbox.x)*0.5*width, (1 + bbox.y)*0.5*height ), cam)
+    camera->offset = New Vector2( (1 - bbox.x)*0.5 * width, (1 - bbox.y)*0.5*height )
+
+    If player->position.x < bboxWorldMin.x Then camera->target.x = player->position.x
+    If player->position.y < bboxWorldMin.y Then camera->target.y = player->position.y
+    If player->position.x > bboxWorldMax.x Then camera->target.x = bboxWorldMin.x + (player->position.x - bboxWorldMax.x)
+    If player->position.y > bboxWorldMax.y Then camera->target.y = bboxWorldMin.y + (player->position.y - bboxWorldMax.y)
+End
