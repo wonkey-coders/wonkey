@@ -9,6 +9,10 @@ Namespace miniaudio
 #import "WX_CC_OPTS_LINUX=-DMINIAUDIO_IMPLEMENTATION"
 #import "WX_CC_OPTS_WINDOWS=-DMINIAUDIO_IMPLEMENTATION"
 
+#import "WX_CPP_OPTS_MACOS=-DMINIAUDIO_IMPLEMENTATION"
+#import "WX_CPP_OPTS_LINUX=-DMINIAUDIO_IMPLEMENTATION"
+#import "WX_CPP_OPTS_WINDOWS=-DMINIAUDIO_IMPLEMENTATION"
+
 #Import "native/*.h"
 
 #Import "<miniaudio.h>"
@@ -16,6 +20,156 @@ Namespace miniaudio
 Extern
 
 '***** File: miniaudio.h *****
+
+Const MA_VERSION_MAJOR:int
+Const MA_VERSION_MINOR:int
+Const MA_VERSION_REVISION:int
+Const MA_VERSION_STRING:Cstring
+
+Const MA_LOG_LEVEL_VERBOSE:int
+Const MA_LOG_LEVEL_INFO:int
+Const MA_LOG_LEVEL_WARNING:int
+Const MA_LOG_LEVEL_ERROR:int
+
+Const MA_LOG_LEVEL:Int
+
+Const MA_CHANNEL_NONE:int                                
+Const MA_CHANNEL_MONO:int                                
+Const MA_CHANNEL_FRONT_LEFT:int                          
+Const MA_CHANNEL_FRONT_RIGHT:int                         
+Const MA_CHANNEL_FRONT_CENTER:int                        
+Const MA_CHANNEL_LFE:int                                 
+Const MA_CHANNEL_BACK_LEFT:int                           
+Const MA_CHANNEL_BACK_RIGHT:int                          
+Const MA_CHANNEL_FRONT_LEFT_CENTER:int                   
+Const MA_CHANNEL_FRONT_RIGHT_CENTER:int                  
+Const MA_CHANNEL_BACK_CENTER:int                         
+Const MA_CHANNEL_SIDE_LEFT:int                           
+Const MA_CHANNEL_SIDE_RIGHT:int                          
+Const MA_CHANNEL_TOP_CENTER:int                          
+Const MA_CHANNEL_TOP_FRONT_LEFT:int                      
+Const MA_CHANNEL_TOP_FRONT_CENTER:int                    
+Const MA_CHANNEL_TOP_FRONT_RIGHT:int                     
+Const MA_CHANNEL_TOP_BACK_LEFT:int                       
+Const MA_CHANNEL_TOP_BACK_CENTER:int                     
+Const MA_CHANNEL_TOP_BACK_RIGHT:int                      
+Const MA_CHANNEL_AUX_0:int                               
+Const MA_CHANNEL_AUX_1:int                               
+Const MA_CHANNEL_AUX_2:int                               
+Const MA_CHANNEL_AUX_3:int                               
+Const MA_CHANNEL_AUX_4:int                               
+Const MA_CHANNEL_AUX_5:int                               
+Const MA_CHANNEL_AUX_6:int                               
+Const MA_CHANNEL_AUX_7:int                               
+Const MA_CHANNEL_AUX_8:int                               
+Const MA_CHANNEL_AUX_9:int                               
+Const MA_CHANNEL_AUX_10:int                              
+Const MA_CHANNEL_AUX_11:int                              
+Const MA_CHANNEL_AUX_12:int                              
+Const MA_CHANNEL_AUX_13:int                              
+Const MA_CHANNEL_AUX_14:int                              
+Const MA_CHANNEL_AUX_15:int                              
+Const MA_CHANNEL_AUX_16:int                              
+Const MA_CHANNEL_AUX_17:int                              
+Const MA_CHANNEL_AUX_18:int                              
+Const MA_CHANNEL_AUX_19:int                              
+Const MA_CHANNEL_AUX_20:int                              
+Const MA_CHANNEL_AUX_21:int                              
+Const MA_CHANNEL_AUX_22:int                              
+Const MA_CHANNEL_AUX_23:int                              
+Const MA_CHANNEL_AUX_24:int                              
+Const MA_CHANNEL_AUX_25:int                              
+Const MA_CHANNEL_AUX_26:int                              
+Const MA_CHANNEL_AUX_27:int                              
+Const MA_CHANNEL_AUX_28:int                              
+Const MA_CHANNEL_AUX_29:int                              
+Const MA_CHANNEL_AUX_30:int                              
+Const MA_CHANNEL_AUX_31:int                              
+Const MA_CHANNEL_LEFT:int                                
+Const MA_CHANNEL_RIGHT:int                               
+Const MA_CHANNEL_POSITION_COUNT:int                      
+
+Const MA_SUCCESS:int
+Const MA_ERROR:int
+Const MA_INVALID_ARGS:int
+Const MA_INVALID_OPERATION:int
+Const MA_OUT_OF_MEMORY:int
+Const MA_OUT_OF_RANGE:int
+Const MA_ACCESS_DENIED:int
+Const MA_DOES_NOT_EXIST:int
+Const MA_ALREADY_EXISTS:int
+Const MA_TOO_MANY_OPEN_FILES:int
+Const MA_INVALID_FILE:int
+Const MA_TOO_BIG:int
+Const MA_PATH_TOO_LONG:int
+Const MA_NAME_TOO_LONG:int
+Const MA_NOT_DIRECTORY:int
+Const MA_IS_DIRECTORY:int
+Const MA_DIRECTORY_NOT_EMPTY:int
+Const MA_END_OF_FILE:int
+Const MA_NO_SPACE:int
+Const MA_BUSY:int
+Const MA_IO_ERROR:int
+Const MA_INTERRUPT:int
+Const MA_UNAVAILABLE:int
+Const MA_ALREADY_IN_USE:int
+Const MA_BAD_ADDRESS:int
+Const MA_BAD_SEEK:int
+Const MA_BAD_PIPE:int
+Const MA_DEADLOCK:int
+Const MA_TOO_MANY_LINKS:int
+Const MA_NOT_IMPLEMENTED:int
+Const MA_NO_MESSAGE:int
+Const MA_BAD_MESSAGE:int
+Const MA_NO_DATA_AVAILABLE:int
+Const MA_INVALID_DATA:int
+Const MA_TIMEOUT:int
+Const MA_NO_NETWORK:int
+Const MA_NOT_UNIQUE:int
+Const MA_NOT_SOCKET:int
+Const MA_NO_ADDRESS:int
+Const MA_BAD_PROTOCOL:int
+Const MA_PROTOCOL_UNAVAILABLE:int
+Const MA_PROTOCOL_NOT_SUPPORTED:int
+Const MA_PROTOCOL_FAMILY_NOT_SUPPORTED:int
+Const MA_ADDRESS_FAMILY_NOT_SUPPORTED:int
+Const MA_SOCKET_NOT_SUPPORTED:int
+Const MA_CONNECTION_RESET:int
+Const MA_ALREADY_CONNECTED:int
+Const MA_NOT_CONNECTED:int
+Const MA_CONNECTION_REFUSED:int
+Const MA_NO_HOST:int
+Const MA_IN_PROGRESS:int
+Const MA_CANCELLED:int
+Const MA_MEMORY_ALREADY_MAPPED:int
+Const MA_AT_END:int
+
+'/* General miniaudio-specific errors. */
+Const MA_FORMAT_NOT_SUPPORTED:int
+Const MA_DEVICE_TYPE_NOT_SUPPORTED:int
+Const MA_SHARE_MODE_NOT_SUPPORTED:int
+Const MA_NO_BACKEND:int
+Const MA_NO_DEVICE:int
+Const MA_API_NOT_FOUND:int
+Const MA_INVALID_DEVICE_CONFIG:int
+Const MA_LOOP:int
+
+'/* State errors. */
+Const MA_DEVICE_NOT_INITIALIZED:int
+Const MA_DEVICE_ALREADY_INITIALIZED:int
+Const MA_DEVICE_NOT_STARTED:int
+Const MA_DEVICE_NOT_STOPPED:int
+
+'/* Operation errors. */
+Const MA_FAILED_TO_INIT_BACKEND:int
+Const MA_FAILED_TO_OPEN_BACKEND_DEVICE:int
+Const MA_FAILED_TO_START_BACKEND_DEVICE:int
+Const MA_FAILED_TO_STOP_BACKEND_DEVICE:int
+
+Const MA_MIN_CHANNELS:int
+Const MA_MAX_CHANNELS:int
+
+Const MA_MAX_FILTER_ORDER:int
 
 Alias ma_int8:Byte
 Alias ma_uint8:UByte

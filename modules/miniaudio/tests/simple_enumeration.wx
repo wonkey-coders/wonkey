@@ -1,0 +1,40 @@
+
+#Import "<libc>"
+#Import "<miniaudio>"
+
+Using libc
+Using miniaudio
+
+Function Main()
+	Local result:ma_result
+	Local context:ma_context
+	Local playbackDeviceInfos:ma_device_info ptr
+	Local playbackDeviceCount:ma_uint32
+	Local captureDeviceInfos:ma_device_info ptr
+	Local captureDeviceCount:ma_uint32
+	
+	If ma_context_init(Null, 0, Null, Varptr context) <> MA_SUCCESS
+		Print "Failed to initialize context"
+		libc.exit_(-2)
+	End
+	
+	result = ma_context_get_devices(Varptr context, Varptr playbackDeviceInfos, Varptr playbackDeviceCount, Varptr captureDeviceInfos, Varptr captureDeviceCount)
+    If result <> MA_SUCCESS
+        Print "Failed to retrieve device information.\n"
+        libc.exit_(-3)
+    End
+
+    Print "Playback Devices\n"
+    For Local iDevice := 0 Until playbackDeviceCount
+        Print "    "+iDevice + ": " + String.FromCString(playbackDeviceInfos[iDevice].name)
+    Next
+
+
+    Print "Capture Devices\n"
+    For Local iDevice := 0 Until captureDeviceCount
+        Print "    "+iDevice + ": " + String.FromCString(captureDeviceInfos[iDevice].name)
+    Next
+
+
+    ma_context_uninit(Varptr context)
+End
