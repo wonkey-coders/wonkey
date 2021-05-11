@@ -160,7 +160,7 @@ Class DebugView Extends DockingView
 			Local stdout:=_console.ReadStdout()
 			If Not stdout Exit
 			
-			If stdout="{{!DEBUG!}}~n"
+			If stdout="{{*** DEBUG ***}}~n"
 				DebugStop()
 				Continue
 			End
