@@ -5,14 +5,6 @@ Namespace miniaudio
 
 #Import "<libc>"
 
-#import "WX_CC_OPTS_MACOS=-DMINIAUDIO_IMPLEMENTATION"
-#import "WX_CC_OPTS_LINUX=-DMINIAUDIO_IMPLEMENTATION"
-#import "WX_CC_OPTS_WINDOWS=-DMINIAUDIO_IMPLEMENTATION"
-
-#import "WX_CPP_OPTS_MACOS=-DMINIAUDIO_IMPLEMENTATION"
-#import "WX_CPP_OPTS_LINUX=-DMINIAUDIO_IMPLEMENTATION"
-#import "WX_CPP_OPTS_WINDOWS=-DMINIAUDIO_IMPLEMENTATION"
-
 #Import "native/*.h"
 
 #Import "<miniaudio.h>"
@@ -28,6 +20,8 @@ Namespace miniaudio
 	#Import "<libm.a>"
 	#Import "<libdl.a>"
 #endif
+
+#Import "native/miniaudio.c"
 
 Extern
 
