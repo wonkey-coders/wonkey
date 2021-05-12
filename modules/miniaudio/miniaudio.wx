@@ -25,6 +25,10 @@ Namespace miniaudio
 
 Extern
 
+'additional
+Struct ConstVoid="const void"
+End
+
 '***** File: miniaudio.h *****
 
 Const MA_VERSION_MAJOR:int
@@ -780,7 +784,7 @@ Const ma_backend_opensl:ma_backend
 Const ma_backend_webaudio:ma_backend
 Const ma_backend_custom:ma_backend
 Const ma_backend_null:ma_backend
-Alias ma_device_callback_proc:Void( ma_device Ptr, Void Ptr, Void Ptr, ma_uint32 )
+Alias ma_device_callback_proc:Void( ma_device Ptr, Void Ptr, ConstVoid Ptr, ma_uint32 )
 Alias ma_stop_proc:Void( ma_device Ptr )
 Alias ma_log_proc:Void( ma_context Ptr, ma_device Ptr, ma_uint32, CString )
 Enum ma_device_type
