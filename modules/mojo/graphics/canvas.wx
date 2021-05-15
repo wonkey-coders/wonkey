@@ -68,21 +68,21 @@ Class Canvas
 	End
 
 	#rem wonkeydoc @hidden Creates a canvas that renders to the backbuffer.
-	#end	
+	#end
 	Method New( width:Int,height:Int )
 		
 		Init( Null,New GraphicsDevice( width,height ) )
 	End
 
 	#rem wonkeydoc @hidden Resizes a canvas that renders to the backbuffer.
-	#end	
+	#end
 	Method Resize( size:Vec2i )
 		
 		_device.Resize( size )
 	End
 
 	#rem wonkeydoc @hidden
-	#end	
+	#end
 	Method BeginRender( bounds:Recti,matrix:AffineMat3f )
 	
 		Flush()
@@ -115,7 +115,7 @@ Class Canvas
 	End
 	
 	#rem wonkeydoc @hidden
-	#end	
+	#end
 	Method EndRender()
 	
 		If _lighting EndLighting()
@@ -398,12 +398,12 @@ Class Canvas
 '				Local y0:float = Round( ty - g.offset.x )
 '				Local x1:float = x0 + g.rect.Height
 '				Local y1:float = y0 - g.rect.Width
-'	
+'
 '				AddVertex( x0,y0, s0,t0 )
 '				AddVertex( x1,y0, s0,t1 )
 '				AddVertex( x1,y1, s1,t1 )
 '				AddVertex( x0,y1, s1,t0 )
-'				
+'
 '				ty -= g.rect.Width
 
 				Local x0:float = Round( tx + g.offset.y )
@@ -625,6 +625,14 @@ Class Canvas
 
 
 	Method DrawRoundedRect( x:float, y:float, width:float, height:float, radius:float )
+		radius += 3
+
+		If radius < 3 Then
+			DrawRect( x, y, width, height )
+			Print radius
+			Return
+		End If
+
 		Local n:float = radius * 0.75
 		local pointX:float[] = New float[n]
 		local pointY:float[] = New float[n]
@@ -634,11 +642,12 @@ Class Canvas
 		local px:float
 		local py:float
 
-		local div:float = (Pi*0.5) / n
+		Local div:float = (Pi*0.5) / n
 		local theta:float = Pi
 		n -= 1
 		
 		local k:int
+		local k1:int
 		For k = 0 to n
 			pointX[k] = Cos( theta ) * radius
 			pointY[k] = Sin( theta ) * radius
@@ -650,28 +659,37 @@ Class Canvas
 		local y1:float = y + height
 		local y1r:float = y1 - radius
 
-		AddDrawOp( _shader, _material, _blendMode, n*4, 1 )
+		AddDrawOp( _shader, _material, _blendMode,	pointX.Length*4, 1 )
 
-		For k = 0 to n
+		AddPointVertex( (x0+x1r)*0.5, (y0+y1r)*0.5, 0,0 )
+
+		For k = n To 1 Step -1
 			AddPointVertex( x0+pointX[k], y0+pointY[k], 0,0 )
+		Next
+
+		For k = 1 To n
+			AddPointVertex( x0+pointX[k], y1r-pointY[k], 0,0 )
 		Next
 		
 		For k = n To 0 Step -1
-			AddPointVertex( x1r-pointX[k], y0+pointY[k], 0,0 )
-		Next
-
-		For k = 0 To n
 			AddPointVertex( x1r-pointX[k], y1r-pointY[k], 0,0 )
 		Next
 
-		For k = n to 0 Step -1
-			AddPointVertex( x0+pointX[k], y1r-pointY[k], 0,0 )
+		For k = 0 To n
+			AddPointVertex( x1r-pointX[k], y0+pointY[k], 0,0 )
 		Next
-	End
 
+		AddPointVertex( x0+pointX[n], y0+pointY[n], 0,0 )
+	End
 	
 	Method DrawFrameRoundedRect( x:float, y:float, width:float, height:float, radius:float )
 '		canvas.DrawRect( x, y, width, height )
+		radius += 2
+		If radius < 2 Then
+			DrawFrame( x, y, width, height )
+			Return
+		End If
+
 		Local n:float = radius * 0.75
 		local pointX:float[] = New float[n]
 		local pointY:float[] = New float[n]
@@ -904,8 +922,8 @@ Class Canvas
 		
 		AddVertex( x0, y, 0,0 )
 		AddVertex( x, y0, 1,0 )
-		AddVertex( x1,y,  1,1 )
-		AddVertex( x,y1,  0,1 )
+		AddVertex( x1,y,	1,1 )
+		AddVertex( x,y1,	0,1 )
 	End
 
 	Method DrawFrameSquare( x:Float, y:Float, w:Float )
@@ -931,8 +949,8 @@ Class Canvas
 		
 		AddVertex( x0, y0, 0,0 )
 		AddVertex( x1, y0, 1,0 )
-		AddVertex( x1, y1,  1,1 )
-		AddVertex( x0, y1,  0,1 )
+		AddVertex( x1, y1,	1,1 )
+		AddVertex( x0, y1,	0,1 )
 	End
 
 	Method DrawSquare( x:Float, y:Float, w:Float, srcImage:Image, shader:Shader, material:UniformBlock )
@@ -1024,8 +1042,8 @@ Class Canvas
 	End
 
 	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
-						 col0:UInt, col1:UInt, col2:Uint,
-						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float )
+						col0:UInt, col1:UInt, col2:Uint,
+						u0:float, v0:float, u1:float, v1:float, u2:float, v2:float )
 		AddDrawOp( _shader, _material, _blendMode, 3,1 )
 
 		AddVertex( x0,y0, u0,v0, col0 )
@@ -1034,8 +1052,8 @@ Class Canvas
 	End
 
 	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
-						 col0:UInt, col1:UInt, col2:Uint,
-						 srcImage:Image, shader:Shader, material:UniformBlock )
+						col0:UInt, col1:UInt, col2:Uint,
+						srcImage:Image, shader:Shader, material:UniformBlock )
 		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
 
 		AddVertex( x0,y0, 0,0, col0 )
@@ -1044,9 +1062,9 @@ Class Canvas
 	End
 
 	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
-						 col0:UInt, col1:UInt, col2:Uint,
-						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
-						 srcImage:Image, shader:Shader, material:UniformBlock )
+						col0:UInt, col1:UInt, col2:Uint,
+						u0:float, v0:float, u1:float, v1:float, u2:float, v2:float,
+						srcImage:Image, shader:Shader, material:UniformBlock )
 		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
 
 		AddVertex( x0,y0, u0,v0, col0 )
@@ -1055,9 +1073,9 @@ Class Canvas
 	End
 
 	Method DrawTriangle( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
-						 col0:UInt, col1:UInt, col2:Uint,
-						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
-						 srcImage:Image, shader:Shader )
+						col0:UInt, col1:UInt, col2:Uint,
+						u0:float, v0:float, u1:float, v1:float, u2:float, v2:float,
+						srcImage:Image, shader:Shader )
 		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode,3,1 )
 
 		AddVertex( x0,y0, u0,v0, col0 )
@@ -1066,48 +1084,48 @@ Class Canvas
 	End
 
 	Method DrawTriangleXYZ( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
-						 col0:UInt, col1:UInt, col2:Uint,
-						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
-						 srcImage:Image, shader:Shader, material:UniformBlock, 
-						 xp0:float, yp0:float, zp0:float, 
-						 xp1:float, yp1:float, zp1:float, 
-						 xp2:float, yp2:float, zp2:float  )
+						col0:UInt, col1:UInt, col2:Uint,
+						u0:float, v0:float, u1:float, v1:float, u2:float, v2:float,
+						srcImage:Image, shader:Shader, material:UniformBlock,
+						xp0:float, yp0:float, zp0:float,
+						xp1:float, yp1:float, zp1:float,
+						xp2:float, yp2:float, zp2:float	)
 		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
 
-		AddVertex( x0,y0,  u0,v0,  col0,  xp0,yp0,zp0 )
-		AddVertex( x1,y1,  u1,v1,  col1,  xp1,yp1,zp1 )
-		AddVertex( x2,y2,  u2,v2,  col2,  xp2,yp2,zp2 )
+		AddVertex( x0,y0,	u0,v0,	col0,	xp0,yp0,zp0 )
+		AddVertex( x1,y1,	u1,v1,	col1,	xp1,yp1,zp1 )
+		AddVertex( x2,y2,	u2,v2,	col2,	xp2,yp2,zp2 )
 	End
 
 	Method DrawTriangleXYZNormal( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
-						 col0:UInt, col1:UInt, col2:Uint,
-						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
-						 srcImage:Image, shader:Shader, material:UniformBlock, 
-						 xp0:float, yp0:float, zp0:float,
-						 xp1:float, yp1:float, zp1:float,
-						 xp2:float, yp2:float, zp2:float,
-						 nx:float, ny:float, nz:float )
+						col0:UInt, col1:UInt, col2:Uint,
+						u0:float, v0:float, u1:float, v1:float, u2:float, v2:float,
+						srcImage:Image, shader:Shader, material:UniformBlock,
+						xp0:float, yp0:float, zp0:float,
+						xp1:float, yp1:float, zp1:float,
+						xp2:float, yp2:float, zp2:float,
+						nx:float, ny:float, nz:float )
 		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
 
-		AddVertexNormal( x0,y0,  u0,v0,  col0,  xp0,yp0,zp0,  nx,ny,nz )
-		AddVertexNormal( x1,y1,  u1,v1,  col1,  xp1,yp1,zp1,  nx,ny,nz )
-		AddVertexNormal( x2,y2,  u2,v2,  col2,  xp2,yp2,zp2,  nx,ny,nz )
+		AddVertexNormal( x0,y0,	u0,v0,	col0,	xp0,yp0,zp0,	nx,ny,nz )
+		AddVertexNormal( x1,y1,	u1,v1,	col1,	xp1,yp1,zp1,	nx,ny,nz )
+		AddVertexNormal( x2,y2,	u2,v2,	col2,	xp2,yp2,zp2,	nx,ny,nz )
 	End
 
 	Method DrawTriangleXYZNormal2( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float,
-						 col0:UInt, col1:UInt, col2:Uint,
-						 u0:float, v0:float, u1:float, v1:float, u2:float, v2:float, 
-						 u10:float, v10:float, u11:float, v11:float, u12:float, v12:float, 
-						 srcImage:Image, shader:Shader, material:UniformBlock, 
-						 xp0:float, yp0:float, zp0:float,
-						 xp1:float, yp1:float, zp1:float,
-						 xp2:float, yp2:float, zp2:float,
-						 nx:float, ny:float, nz:float )
+						col0:UInt, col1:UInt, col2:Uint,
+						u0:float, v0:float, u1:float, v1:float, u2:float, v2:float,
+						u10:float, v10:float, u11:float, v11:float, u12:float, v12:float,
+						srcImage:Image, shader:Shader, material:UniformBlock,
+						xp0:float, yp0:float, zp0:float,
+						xp1:float, yp1:float, zp1:float,
+						xp2:float, yp2:float, zp2:float,
+						nx:float, ny:float, nz:float )
 		AddDrawOp( shader, material, srcImage.BlendMode, 3,1 )
 
-		AddVertexNormal2( x0,y0,  u0,v0,  u10,v10,  col0,  xp0,yp0,zp0,  nx,ny,nz )
-		AddVertexNormal2( x1,y1,  u1,v1,  u11,v11,  col1,  xp1,yp1,zp1,  nx,ny,nz )
-		AddVertexNormal2( x2,y2,  u2,v2,  u12,v12,  col2,  xp2,yp2,zp2,  nx,ny,nz )
+		AddVertexNormal2( x0,y0,	u0,v0,	u10,v10,	col0,	xp0,yp0,zp0,	nx,ny,nz )
+		AddVertexNormal2( x1,y1,	u1,v1,	u11,v11,	col1,	xp1,yp1,zp1,	nx,ny,nz )
+		AddVertexNormal2( x2,y2,	u2,v2,	u12,v12,	col2,	xp2,yp2,zp2,	nx,ny,nz )
 	End
 
 
@@ -1210,9 +1228,9 @@ Class Canvas
 	Method DrawQuadImage( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image )
 '		Local vs:=image.Vertices
 '		Local ts:=image.TexCoords
-'		
+'
 '		AddDrawOp( image.Shader,image.Material,image.BlendMode,4,1 )
-'		
+'
 '		AddVertex( vs.min.x+tx,vs.min.y+ty,ts.min.x,ts.min.y )
 '		AddVertex( vs.max.x+tx,vs.min.y+ty,ts.max.x,ts.min.y )
 '		AddVertex( vs.max.x+tx,vs.max.y+ty,ts.max.x,ts.max.y )
@@ -1243,7 +1261,7 @@ Class Canvas
 	End method
 
 	Method DrawQuadIntersectImage( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image )
-		LineIntersect( x0, y0, x2, y2,  x1, y1, x3, y3 )
+		LineIntersect( x0, y0, x2, y2,	x1, y1, x3, y3 )
 
 		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 3,1 )
 		AddVertex( x0,y0, 0,0 )
@@ -1267,7 +1285,7 @@ Class Canvas
 	End
 
 	Method DrawQuadIntersectImage( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, shader:Shader )
-		LineIntersect( x0, y0, x2, y2,  x1, y1, x3, y3 )
+		LineIntersect( x0, y0, x2, y2,	x1, y1, x3, y3 )
 
 		AddDrawOp( shader, srcImage.Material, srcImage.BlendMode, 3,1 )
 		AddVertex( x0,y0, 0,0 )
@@ -1329,7 +1347,7 @@ Class Canvas
 	#end
 	Method DrawQuadImageIcon( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, iconNumber:Int, iconCount:Int )
 		If iconCount < 0 Then Return
-    
+	
 		Local vs := srcImage.Vertices
 		Local wd:double = (vs.max.x - vs.min.x) / iconCount
 		'vs.max.x = vs.min.x + wd
@@ -1344,10 +1362,10 @@ Class Canvas
 '		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, srcImage.TextureFilter, 4,1 )
 '		AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
 '		AddDrawOp( srcImage.Material, 4, 1 )
-		AddVertex( x0, y0,  tc.min.x, tc.min.y )
-		AddVertex( x1, y1,  tc.max.x, tc.min.y )
-		AddVertex( x2, y2,  tc.max.x, tc.max.y )
-		AddVertex( x3, y3,  tc.min.x, tc.max.y )
+		AddVertex( x0, y0,	tc.min.x, tc.min.y )
+		AddVertex( x1, y1,	tc.max.x, tc.min.y )
+		AddVertex( x2, y2,	tc.max.x, tc.max.y )
+		AddVertex( x3, y3,	tc.min.x, tc.max.y )
 
 '		AddVertex( x0,y0,0,0 )
 '		AddVertex( x1,y1,1,0 )
@@ -1390,10 +1408,10 @@ Class Canvas
 		AddDrawOp( srcVoxImage.Image.Shader, srcVoxImage.Image.Material, srcVoxImage.Image.BlendMode, 4,1 )
 '		AddDrawOp( srcVoxImage.Image.Shader, srcVoxImage.Image.Material, srcVoxImage.Image.BlendMode, srcVoxImage.Image.TextureFilter, 4,1 )
 
-		AddVertex( x0, y0,  tc.min.x, tc.min.y )
-		AddVertex( x1, y1,  tc.max.x, tc.min.y )
-		AddVertex( x2, y2,  tc.max.x, tc.max.y )
-		AddVertex( x3, y3,  tc.min.x, tc.max.y )
+		AddVertex( x0, y0,	tc.min.x, tc.min.y )
+		AddVertex( x1, y1,	tc.max.x, tc.min.y )
+		AddVertex( x2, y2,	tc.max.x, tc.max.y )
+		AddVertex( x3, y3,	tc.min.x, tc.max.y )
 	End
 	
 
@@ -1420,7 +1438,7 @@ Class Canvas
   #end
 	Method DrawImageIcon( image:Image, tx:Float, ty:Float, iconNumber:Int, iconCount:Int, rotate:float = 0 )
 		If iconCount < 0 Then Return
-    
+	
 		Local vs:=image.Vertices
 		Local wd:double = (vs.max.x - vs.min.x) / iconCount
 		vs.max.x = vs.min.x + wd
@@ -1455,12 +1473,12 @@ Class Canvas
 '			AddDrawOp( image.Shader, image.Material, image.BlendMode, image.TextureFilter, 4,1 )
 '			AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
 '			AddDrawOp( image.Material,4,1 )
-			AddVertex( x + tx, y + ty,  tc.min.x, tc.min.y )
-			AddVertex( x1 + tx, y1 + ty,  tc.max.x, tc.min.y )
-			AddVertex( x2 + tx, y2 + ty,  tc.max.x, tc.max.y )
-			AddVertex( x3 + tx, y3 + ty,  tc.min.x, tc.max.y )
+			AddVertex( x + tx, y + ty,	tc.min.x, tc.min.y )
+			AddVertex( x1 + tx, y1 + ty,	tc.max.x, tc.min.y )
+			AddVertex( x2 + tx, y2 + ty,	tc.max.x, tc.max.y )
+			AddVertex( x3 + tx, y3 + ty,	tc.min.x, tc.max.y )
 
-		Else	
+		Else
 			Local x:float = vs.min.x + tx
 			Local x1:float = vs.max.x + tx
 			Local y:float = vs.min.y + ty
@@ -1470,10 +1488,10 @@ Class Canvas
 '			AddDrawOp( image.Shader, image.Material, image.BlendMode, image.TextureFilter, 4,1 )
 '			AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
 '			AddDrawOp( image.Material,4,1 )
-			AddVertex( x, y,  tc.min.x, tc.min.y )
-			AddVertex( x1, y,  tc.max.x, tc.min.y )
-			AddVertex( x1, y1,  tc.max.x, tc.max.y )
-			AddVertex( x, y1,  tc.min.x, tc.max.y )
+			AddVertex( x, y,	tc.min.x, tc.min.y )
+			AddVertex( x1, y,	tc.max.x, tc.min.y )
+			AddVertex( x1, y1,	tc.max.x, tc.max.y )
+			AddVertex( x, y1,	tc.min.x, tc.max.y )
 		End If
 		
 	End
@@ -1481,7 +1499,7 @@ Class Canvas
 
 	Method DrawImageIconSize( image:Image, tx:Float, ty:Float, tx1:int, ty1:int, iconNumber:Int, iconCount:Int )
 		If iconCount < 0 Then Return
-    
+	
 		Local vs:=image.Vertices
 		Local wd:double = (vs.max.x - vs.min.x) / iconCount
 		vs.max.x = vs.min.x + wd
@@ -1500,10 +1518,10 @@ Class Canvas
 '		AddDrawOp( image.Shader, image.Material, image.BlendMode, image.TextureFilter, 4,1 )
 '		AddDrawOp( _shader,_material,_blendMode,_textureFilter,4,1 )
 '		AddDrawOp( image.Material,4,1 )
-		AddVertex( x, y,  tc.min.x, tc.min.y )
-		AddVertex( x1, y,  tc.max.x, tc.min.y )
-		AddVertex( x1, y1,  tc.max.x, tc.max.y )
-		AddVertex( x, y1,  tc.min.x, tc.max.y )
+		AddVertex( x, y,	tc.min.x, tc.min.y )
+		AddVertex( x1, y,	tc.max.x, tc.min.y )
+		AddVertex( x1, y1,	tc.max.x, tc.max.y )
+		AddVertex( x, y1,	tc.min.x, tc.max.y )
 		
 	End
 
@@ -1561,10 +1579,10 @@ Class Canvas
 		AddDrawOp( srcImage.Shader, srcImage.Material, srcImage.BlendMode, 4,1 )
 
 'jl modded
-		AddVertex( x0, y0,  tx0, ty0,  0, 0 )
-		AddVertex( x1, y1,  tx1, ty0,  1, 0 )
-		AddVertex( x2, y2,  tx1, ty1,  1, 1 )
-		AddVertex( x3, y3,  tx0, ty1,  0, 1 )
+		AddVertex( x0, y0,	tx0, ty0,	0, 0 )
+		AddVertex( x1, y1,	tx1, ty0,	1, 0 )
+		AddVertex( x2, y2,	tx1, ty1,	1, 1 )
+		AddVertex( x3, y3,	tx0, ty1,	0, 1 )
 	End
 
 	Method DrawImageQuad( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int, shader:Shader, inset:float = 0.0015 )
@@ -1583,10 +1601,10 @@ Class Canvas
 '		AddVertex( x1, y1,  tx1, ty0 )
 '		AddVertex( x2, y2,  tx1, ty1 )
 '		AddVertex( x3, y3,  tx0, ty1 )
-		AddVertex( x0, y0,  tx0, ty0,  0, 0 )
-		AddVertex( x1, y1,  tx1, ty0,  1, 0 )
-		AddVertex( x2, y2,  tx1, ty1,  1, 1 )
-		AddVertex( x3, y3,  tx0, ty1,  0, 1 )
+		AddVertex( x0, y0,	tx0, ty0,	0, 0 )
+		AddVertex( x1, y1,	tx1, ty0,	1, 0 )
+		AddVertex( x2, y2,	tx1, ty1,	1, 1 )
+		AddVertex( x3, y3,	tx0, ty1,	0, 1 )
 	End
 
 	Method DrawImageQuad( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int, shader:Shader, mat:UniformBlock, inset:float = 0.0015 )
@@ -1605,10 +1623,10 @@ Class Canvas
 '		AddVertex( x1, y1,  tx1, ty0 )
 '		AddVertex( x2, y2,  tx1, ty1 )
 '		AddVertex( x3, y3,  tx0, ty1 )
-		AddVertex( x0, y0,  tx0, ty0,  0, 0 )
-		AddVertex( x1, y1,  tx1, ty0,  1, 0 )
-		AddVertex( x2, y2,  tx1, ty1,  1, 1 )
-		AddVertex( x3, y3,  tx0, ty1,  0, 1 )
+		AddVertex( x0, y0,	tx0, ty0,	0, 0 )
+		AddVertex( x1, y1,	tx1, ty0,	1, 0 )
+		AddVertex( x2, y2,	tx1, ty1,	1, 1 )
+		AddVertex( x3, y3,	tx0, ty1,	0, 1 )
 	End
 
 	Method DrawImageQuadPure( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int )
@@ -1628,10 +1646,10 @@ Class Canvas
 '		AddVertex( x1, y1,  tx1, ty0 )
 '		AddVertex( x2, y2,  tx1, ty1 )
 '		AddVertex( x3, y3,  tx0, ty1 )
-		AddVertex( x0, y0,  tx0, ty0,  0, 0 )
-		AddVertex( x1, y1,  tx1, ty0,  1, 0 )
-		AddVertex( x2, y2,  tx1, ty1,  1, 1 )
-		AddVertex( x3, y3,  tx0, ty1,  0, 1 )
+		AddVertex( x0, y0,	tx0, ty0,	0, 0 )
+		AddVertex( x1, y1,	tx1, ty0,	1, 0 )
+		AddVertex( x2, y2,	tx1, ty1,	1, 1 )
+		AddVertex( x3, y3,	tx0, ty1,	0, 1 )
 	End
 
 	Method DrawImageQuadPure( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int, fx:Shader )
@@ -1651,10 +1669,10 @@ Class Canvas
 '		AddVertex( x1, y1,  tx1, ty0 )
 '		AddVertex( x2, y2,  tx1, ty1 )
 '		AddVertex( x3, y3,  tx0, ty1 )
-		AddVertex( x0, y0,  tx0, ty0,  0, 0 )
-		AddVertex( x1, y1,  tx1, ty0,  1, 0 )
-		AddVertex( x2, y2,  tx1, ty1,  1, 1 )
-		AddVertex( x3, y3,  tx0, ty1,  0, 1 )
+		AddVertex( x0, y0,	tx0, ty0,	0, 0 )
+		AddVertex( x1, y1,	tx1, ty0,	1, 0 )
+		AddVertex( x2, y2,	tx1, ty1,	1, 1 )
+		AddVertex( x3, y3,	tx0, ty1,	0, 1 )
 	End
 
 	Method DrawImageQuadPure( x0:Float, y0:Float, x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float, srcImage:Image, srcX:Int, srcY:Int, srcX1:Int, srcY1:Int, fx:Shader, mat:UniformBlock )
@@ -1674,10 +1692,10 @@ Class Canvas
 '		AddVertex( x1, y1,  tx1, ty0 )
 '		AddVertex( x2, y2,  tx1, ty1 )
 '		AddVertex( x3, y3,  tx0, ty1 )
-		AddVertex( x0, y0,  tx0, ty0,  0, 0 )
-		AddVertex( x1, y1,  tx1, ty0,  1, 0 )
-		AddVertex( x2, y2,  tx1, ty1,  1, 1 )
-		AddVertex( x3, y3,  tx0, ty1,  0, 1 )
+		AddVertex( x0, y0,	tx0, ty0,	0, 0 )
+		AddVertex( x1, y1,	tx1, ty0,	1, 0 )
+		AddVertex( x2, y2,	tx1, ty1,	1, 1 )
+		AddVertex( x3, y3,	tx0, ty1,	0, 1 )
 	End
 
 	Method SetUserUniformCallback(callback:Void(canvas:Canvas, uniforms:UniformBlock))
@@ -1692,7 +1710,7 @@ Class Canvas
 		_pmcolor2 = UInt(_color2.a) Shl 24 | UInt(_color2.b) Shl 16 | UInt(_color2.g) Shl 8 | UInt(_color2.r)
 	End
 
-	Method SetXYZ( x:float,  y:float,  z:float )
+	Method SetXYZ( x:float,	y:float,	z:float )
 		_xyzPosition.x = x
 		_xyzPosition.y = y
 		_xyzPosition.z = z
@@ -1713,7 +1731,7 @@ Class Canvas
 
 	
 	#rem wonkeydoc The current render target.
-	#end	
+	#end
 	Property RenderTarget:RenderTarget()
 	
 		Return _rtarget
@@ -1786,7 +1804,7 @@ Class Canvas
 	End
 	
 	#rem wonkeydoc The current drawing blend mode.
-	#end	
+	#end
 	Property BlendMode:BlendMode()
 	
 		Return _blendMode
@@ -1802,7 +1820,7 @@ Class Canvas
 	
 	Set to false for a groovy retro effect.
 	
-	#end	
+	#end
 	Property TextureFilteringEnabled:Bool()
 		
 		Return Not _device.RetroMode
@@ -1844,7 +1862,7 @@ Class Canvas
 	End
 
 	#rem wonkeydoc The current line width for use with DrawLine.
-	#end	
+	#end
 	Property LineWidth:Float()
 
 		Return _lineWidth
@@ -1855,7 +1873,7 @@ Class Canvas
 	End
 	
 	#rem wonkeydoc Smoothing enabled for DrawLine.
-	#end	
+	#end
 	Property LineSmoothing:Bool()
 	
 		Return _lineSmoothing
@@ -1869,7 +1887,7 @@ Class Canvas
 	
 	Set font to null to use the default mojo font.
 	
-	#end	
+	#end
 	Property Font:Font()
 	
 		Return _font
@@ -1883,11 +1901,11 @@ Class Canvas
 	
 	#rem wonkeydoc The current drawing alpha level.
 	
-	Note that [[Alpha]] and the alpha component of [[Color]] are multiplied together to produce the final alpha value for rendering. 
+	Note that [[Alpha]] and the alpha component of [[Color]] are multiplied together to produce the final alpha value for rendering.
 	
 	This allows you to use [[Alpha]] as a 'master' alpha level.
 
-	#end	
+	#end
 	Property Alpha:Float()
 	
 		Return _alpha
@@ -1902,7 +1920,7 @@ Class Canvas
 	
 	#rem wonkeydoc The current drawing color.
 	
-	Note that [[Alpha]] and the alpha component of [[Color]] are multiplied together to produce the final alpha value for rendering. 
+	Note that [[Alpha]] and the alpha component of [[Color]] are multiplied together to produce the final alpha value for rendering.
 	
 	This allows you to use [[Alpha]] as a 'master' alpha level.
 
@@ -2627,7 +2645,7 @@ Class Canvas
 	@param sx X axis scale factor for drawing.
 	@param sy Y axis scale factor for drawing.
 	@param sv X/Y scale factor for drawing.
-	#end	
+	#end
 	Method DrawImage( image:Image, tx:Float, ty:Float, shader:Shader = null )
 	
 		Local vs:=image.Vertices
@@ -3007,7 +3025,7 @@ Class Canvas
 	#end
 	Method Flush()
 		
-		If _drawOps.Empty 
+		If _drawOps.Empty
 			_device.FlushTarget()
 			Return
 		Endif
@@ -3019,7 +3037,7 @@ Class Canvas
 		_drawVB.Unlock()
 		
 		'Render ambient
-		'		
+		'
 		RenderDrawOps( 0 )
 		
 		If _lighting
@@ -3037,7 +3055,7 @@ Class Canvas
 			RenderDrawOps( 2 )
 
 			'back to rendertarget
-			'			
+			'
 			_device.RenderTarget=_rtarget
 			
 		Endif
@@ -3147,7 +3165,7 @@ Class Canvas
 	'***** INTERNAL *****
 	
 	#rem wonkeydoc @hidden
-	#end	
+	#end
 	Property GraphicsDevice:GraphicsDevice()
 		
 		If _lighting Return Null
@@ -3211,7 +3229,7 @@ Class Canvas
 	Global _gbrtargets:=New RenderTarget[2]
 
 'jl added
-'------------------------------------------------------------	
+'------------------------------------------------------------
 	Field _userUniformCallback:Void(canvas:Canvas, uniform:UniformBlock)
 	Field _pmcolor2:UInt=~0
 	Field _color2:Color
@@ -3390,7 +3408,7 @@ Class Canvas
 		_vp->color=color
 
 'jl added
-'------------------------------------------------------------		
+'------------------------------------------------------------
 		_vp->color2 = _pmcolor2
 		_vp->xyzPosition = _xyzPosition
 '------------------------------------------------------------
@@ -3407,7 +3425,7 @@ Class Canvas
 		_vp->color=color
 
 'jl added
-'------------------------------------------------------------		
+'------------------------------------------------------------
 		_vp->color2 = _pmcolor2
 		_vp->xyzPosition = _xyzPosition
 '------------------------------------------------------------
@@ -3424,7 +3442,7 @@ Class Canvas
 		_vp->texCoord1.y=_tanvec.y
 		_vp->color=_pmcolor
 'jladded
-'------------------------------------------------------------		
+'------------------------------------------------------------
 		_vp->color2 = _pmcolor2
 		_vp->xyzPosition = _xyzPosition
 '------------------------------------------------------------
@@ -3433,7 +3451,7 @@ Class Canvas
 
 'jladded
 '------------------------------------------------------------
-	Method AddVertex( tx:Float,ty:Float, s0:Float,t0:Float,  s1:float,t1:float )
+	Method AddVertex( tx:Float,ty:Float, s0:Float,t0:Float,	s1:float,t1:float )
 		_vp->position.x = _matrix.i.x * tx + _matrix.j.x * ty + _matrix.t.x
 		_vp->position.y = _matrix.i.y * tx + _matrix.j.y * ty + _matrix.t.y
 		_vp->texCoord0.x = s0
@@ -3512,7 +3530,7 @@ Class Canvas
 		_vp->color=_pmcolor
 
 'jladded
-'------------------------------------------------------------		
+'------------------------------------------------------------
 		_vp->color2 = _pmcolor2
 		_vp->xyzPosition = _xyzPosition
 '------------------------------------------------------------
@@ -3520,7 +3538,7 @@ Class Canvas
 	End
 
 	'Drawing
-	'	
+	'
 	Method AddDrawOp( shader:Shader,material:UniformBlock,blendMode:BlendMode,primOrder:int,primCount:Int )
 
 		If _drawNV+primCount*primOrder>_drawVB.Length
@@ -3591,7 +3609,7 @@ Class Canvas
 			For Local useruniform:=Eachin UserUniforms
 				useruniform.callback(useruniform, _uniforms)
 			Next
-		End If 
+		End If
 '------------------------------------------------------------
 
 		If _dirty & Dirty.Scissor
