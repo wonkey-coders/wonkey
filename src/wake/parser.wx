@@ -799,7 +799,7 @@ Class Parser
 				For Local decl:=Eachin decls
 					stmts.Push( New VarDeclStmtExpr( Cast<VarDecl>(decl),decl.srcpos,decl.endpos ) )
 				Next
-			Case "end","endif","endselect","endtry","wend","next","until","forever","else","elseif","setter","getter","case","default","catch"
+			Case "end","endif","endselect","endtry","endfor","endwhile","wend","next","until","forever","else","elseif","setter","getter","case","default","catch"
 				Exit
 			Default
 				Try
@@ -927,7 +927,11 @@ Class Parser
 		Local stmts:=ParseStmts( True )
 		
 		Try
-			If CParse( "end" ) Then CParse( "while" ) Else Parse( "wend" )
+			If CParse( "end" )
+			    CParse( "while" )
+			Else
+				If Not CParse( "endwhile" ) Then Parse( "wend" )
+			Endif
 			ParseEol()
 		Catch ex:ParseEx
 			SkipToNextLine()
@@ -1037,7 +1041,11 @@ Class Parser
 		Local stmts:=ParseStmts( True )
 		
 		Try
-			If CParse( "end" ) CParse( "for" ) Else Parse( "next" )
+			If CParse( "end" )
+				CParse( "for" )
+			Else
+				If Not CParse( "endfor" ) Then Parse( "next" )
+			Endif
 			ParseEol()
 		Catch ex:ParseEx
 			SkipToNextLine()
