@@ -32,8 +32,8 @@ Class WonkeyKeywords Extends KeywordsPlugin
 		s+="While;Wend;"
 		s+="Repeat;Until;Forever;"
 		s+="For;To;Step;Next;"
-		s+="Select;Case;Default;"
-		s+="Try;Catch;Throw;Throwable;"
+		s+="Select;Case;Default;EndSelect;"
+		s+="Try;Catch;EndTry;Throw;Throwable;"
 		s+="Return;Print;Static;Cast;Extension;"
 		s+="Typeof;Array"
 		Return s
