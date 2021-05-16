@@ -35,8 +35,8 @@ Function InitToker:Void()
 	keyWords+="While;Wend;"
 	keyWords+="Repeat;Until;Forever;"
 	keyWords+="For;To;Step;Next;"
-	keyWords+="Select;Case;Default;"
-	keyWords+="Try;Catch;Throw;Throwable;Variant;CString;WString;TypeInfo;Typeof;"
+	keyWords+="Select;Case;Default;EndSelect;"
+	keyWords+="Try;Catch;EndTry;Throw;Throwable;Variant;CString;WString;TypeInfo;Typeof;"
 	keyWords+="Return;Print;Static;Cast;"
 	keyWords+="Extension;Protocol;Finalize;Delete"
 
