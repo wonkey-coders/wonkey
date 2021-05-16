@@ -225,8 +225,19 @@ Class Toker
 		
 			While _pos<_len
 				Local ch:=_text[_pos]
-				If ch=CHAR_QUOTE Exit
-				_pos+=1
+				If ch=CHAR_TILDE And _text[_pos+1]=CHAR_TILDE     ' ~~  - double-tilde = escape sequence
+					_pos+=2
+				'Elseif ch=CHAR_TILDE And _text[_pos+1]=CHAR_QUOTE ' ~"  - tilde + doublequote = escape sequence
+				'	_pos+=2
+				Elseif ch=CHAR_QUOTE
+					If _text[_pos+1]=CHAR_QUOTE                   ' ""  - double-doublequote = escape sequence
+						_pos+=2
+					Else
+						Exit                                      ' "   - single doublequote = end of string
+					Endif
+				Else
+					_pos+=1
+				Endif
 				If ch=CHAR_EOL
 					_linePos=_pos
 					_line+=1

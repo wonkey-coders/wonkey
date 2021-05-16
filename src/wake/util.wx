@@ -238,6 +238,7 @@ Function DequoteWxString:String( str:String )
 	Endif
 	
 	str=str.Slice( 1,-1 )
+	str=str.Replace("~q~q","~q") ' replace all "" with "
 	
 	Local out:="",i0:=0
 
@@ -251,6 +252,8 @@ Function DequoteWxString:String( str:String )
 		Select str[i+1]
 		Case CHAR_TILDE	'~
 			rep=STRING_TILDE
+		'Case CHAR_QUOTE	'"
+		'	rep=STRING_QUOTE
 		Case 113		'q
 			rep=STRING_QUOTE
 		Case 110		'n
