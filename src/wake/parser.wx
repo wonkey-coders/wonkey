@@ -174,7 +174,16 @@ Class Parser
 	
 		Local decls:=New Stack<Decl>
 		
-		While Toke And Toke<>"end"
+		While Toke And (Toke<>"end" And
+			            Toke<>"endclass" And
+			            Toke<>"endstruct" And
+			            Toke<>"endinterface" And
+			            Toke<>"endfunction" And
+			            Toke<>"endmethod" And
+			            Toke<>"endlambda" And
+			            Toke<>"endoperator" And
+			            Toke<>"endenum" And
+			            Toke<>"endproperty")
 		
 			Try
 			
@@ -427,8 +436,13 @@ Class Parser
 		decl.members=ParseDecls( mflags,False )
 		
 		Try
-			Parse( "end" )
-			CParse( decl.kind )
+			If     decl.kind = "class"     And CParse( "endclass"     )
+			Elseif decl.kind = "struct"    And CParse( "endstruct"    )
+			Elseif decl.kind = "interface" And CParse( "endinterface" )
+			Else
+				Parse( "end" )
+				CParse( decl.kind )
+			Endif
 			ParseEol()
 		Catch ex:ParseEx
 			SkipToNextLine()
@@ -449,6 +463,9 @@ Class Parser
 		Local type:FuncTypeExpr
 		Local whereExpr:Expr
 		Local symbol:String
+		Local originalKind:String = kind
+		
+		originalKind = kind
 	
 		Try
 
@@ -634,11 +651,18 @@ Class Parser
 			Case "getter"
 				If Not (flags & DECL_SETTER) Error( "Getter must appear after setter" )
 			Default
-				Parse( "end" )
-				If flags & (DECL_GETTER|DECL_SETTER)
-					CParse( "property" )
-				Else
-					CParse( kind )
+				If CParse( "end" )
+					If flags & (DECL_GETTER|DECL_SETTER)
+						CParse( "property" )
+					Else
+						If Not CParse( kind ) Then CParse( originalKind )
+					Endif
+				Elseif originalKind = "function" And CParse( "endfunction" )
+				Elseif originalKind = "method"   And CParse( "endmethod"   )
+				Elseif originalKind = "operator" And CParse( "endoperator" )
+				Elseif originalKind = "operator" And CParse( "endmethod"   )
+				Elseif originalKind = "lambda"   And CParse( "endlambda"   )
+				Elseif originalKind = "property" And CParse( "endproperty" ) And flags & (DECL_GETTER|DECL_SETTER)
 				Endif
 				If kind<>"lambda" ParseEol()
 			End
@@ -714,8 +738,11 @@ Class Parser
 		
 		Try
 		
-			Parse( "end" )
-			CParse( "enum" )
+			If CParse( "end" )
+				CParse( "enum" )
+			Else
+				Parse( "endenum" )
+			End
 			ParseEol()
 			
 		Catch ex:ParseEx
@@ -799,7 +826,7 @@ Class Parser
 				For Local decl:=Eachin decls
 					stmts.Push( New VarDeclStmtExpr( Cast<VarDecl>(decl),decl.srcpos,decl.endpos ) )
 				Next
-			Case "end","endif","endselect","endtry","endfor","endwhile","wend","next","until","forever","else","elseif","setter","getter","case","default","catch"
+			Case "end","endif","endselect","endtry","endfor","endwhile","wend","next","until","forever","else","elseif","setter","getter","case","default","catch","endclass","endstruct","endinterface","endenum","endproperty","endfunction","endmethod","endoperator","endlambda"
 				Exit
 			Default
 				Try
