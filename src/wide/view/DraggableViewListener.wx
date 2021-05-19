@@ -56,6 +56,8 @@ Class DraggableViewListener<TItem,THolder>
 	
 	Method OnMouseEvent( event:MouseEvent )
 	
+		If event.Button <> MouseButton.Left Then Return
+	
 		Select event.Type
 			
 			Case EventType.MouseDown
@@ -123,7 +125,9 @@ Class DraggableViewListener<TItem,THolder>
 		
 		_detached=True
 		
-		Local holder:=GetHolder( _item.View )
+		Local holder:=GetHolder( _item?.View )
+		If Not holder Then Return
+
 		_view=holder.Detach( _item )
 		
 		_window.AddChildView( _view )
@@ -140,7 +144,9 @@ Class DraggableViewListener<TItem,THolder>
 	End
 	
 	Method UpdateDetached()
-		
+
+		If Not _view Then Return
+
 		Local r:=_view.Frame
 		Local sz:=r.Size
 		r.TopLeft=Mouse.Location+New Vec2i( 0,-10 )
