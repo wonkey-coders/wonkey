@@ -8,6 +8,7 @@ Class EditActions
 	Field redo:Action
 	Field cut:Action
 	Field copy:Action
+	Field copyFenced:Action
 	Field paste:Action
 	Field selectAll:Action
 	Field expandSelection:Action
@@ -56,6 +57,11 @@ Class EditActions
 		copy.Triggered=OnCopy
 		copy.HotKey=Key.C
 		copy.HotKeyModifiers=Modifier.Menu|Modifier.Ignore
+
+		copyFenced=New Action( "Copy (Fenced Code Block)" )
+		copyFenced.Triggered=OnCopyFencedCodeBlock
+		'copyFenced.HotKey=Key.C
+		'copyFenced.HotKeyModifiers=Modifier.Menu|Modifier.Ignore
 		
 		paste=New Action( "Paste" )
 		paste.Triggered=OnPaste
@@ -119,6 +125,7 @@ Class EditActions
 		redo.Enabled=tv And tv.CanRedo
 		cut.Enabled=tv And tv.CanCut
 		copy.Enabled=tv And tv.CanCopy
+		copyFenced.Enabled=tv And tv.CanCopy
 		paste.Enabled=tv And tv.CanPaste
 		selectAll.Enabled=tv
 	End
@@ -202,6 +209,13 @@ Class EditActions
 		Local tv:=Cast<TextView>( App.KeyView )
 		
 		If tv tv.Copy()
+	End
+
+	Method OnCopyFencedCodeBlock()
+
+		Local tv:=Cast<TextView>( App.KeyView )
+		
+		If tv tv.CopyFencedCodeBlock()
 	End
 
 	Method OnPaste()

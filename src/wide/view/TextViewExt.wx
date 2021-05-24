@@ -822,6 +822,16 @@ Class TextView Extends ScrollableView
 		Local text:=_doc.Text.Slice( min,max )
 		App.ClipboardText=text
 	End
+
+	#rem wonkeydoc Performs a fenced copy (add triple backticks).
+	#end
+	Method CopyFencedCodeBlock()
+		
+		Local min:=Min( _anchor,_cursor )
+		Local max:=Max( _anchor,_cursor )
+		Local text:=_doc.Text.Slice( min,max )
+		App.ClipboardText="```monkey~n"+text+"~n```"
+	End
 	
 	#rem wonkeydoc Performs a paste.
 	#end
