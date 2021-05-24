@@ -274,7 +274,7 @@ Class document_container Extends litehtml.document_container
 		
 		Select marker->marker_type
 		Case litehtml.list_style_type_disc
-			canvas.DrawOval( marker->pos.x,marker->pos.y,marker->pos.width,marker->pos.height )
+			canvas.DrawOval( marker->pos.x+marker->pos.width*0.5,marker->pos.y+marker->pos.height*0.5,marker->pos.width*0.5,marker->pos.height*0.5 )
 		Default
 			canvas.DrawRect( marker->pos.x,marker->pos.y,marker->pos.width,marker->pos.height )
 		End

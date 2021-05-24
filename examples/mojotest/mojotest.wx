@@ -55,7 +55,7 @@ Class MojoTest Extends Window
 		canvas.Alpha=1
 		
 		canvas.Color=New Color( 0,.5,1 )
-		canvas.DrawOval( 64,64,640-128,480-128 )
+		canvas.DrawOval( 320,240,320-64,240-64 )
 
 		canvas.Color=New Color( 1,0,.5 )
 		canvas.DrawLine( 32,32,640-32,480-32 )

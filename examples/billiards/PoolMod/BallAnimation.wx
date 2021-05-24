@@ -355,7 +355,7 @@ Class Ball3d
 		Local link:List<Node3d>.Node=nodeList.FirstNode()
 		While link.Value
 			Local node:Node3d=link.Value
-			If(node.z>-1.0) canvas.DrawOval(x+node.x,y+node.y,1.0,1.0)
+			If(node.z>-1.0) canvas.DrawOval(x+node.x+0.5,y+node.y+0.5,0.5,0.5)
 			link=link.Succ
 		End
 	End
