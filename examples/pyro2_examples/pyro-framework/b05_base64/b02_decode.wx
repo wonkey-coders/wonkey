@@ -1,0 +1,12 @@
+#Import "<pyro-framework>"															' Import pyro framework.
+
+Using pyro.framework..
+
+Function Main()
+
+	Local base64:=New Base64
+
+	Local data:="SSBsb3ZlIFdvbmtleSBBbmQgUHlybyAy"
+	Print base64.Decode( data )
+
+End

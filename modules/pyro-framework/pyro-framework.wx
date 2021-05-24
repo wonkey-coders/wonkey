@@ -1,0 +1,36 @@
+Namespace pyro.framework
+
+#Import "assets/"
+
+#Import "<std>"
+#Import "<mojo>"
+
+Using std..
+Using mojo..
+
+#Import "arrays"
+#Import "base64"
+#Import "bitmapfont"
+#Import "collisionlayer"
+#Import "commoncode"
+#Import "config"
+#Import "contentmanager"
+#Import "debugtools"
+#Import "deltatimer"
+#Import "drawdata"
+#Import "font"
+#Import "highscoremanager"
+#Import "input"
+#Import "loaderscreen"
+#Import "message"
+#Import "filesystem"
+#Import "gfx"
+#Import "globals"
+#Import "math"
+#Import "objectpool"
+#Import "pathfinder"
+#Import "register"
+#Import "screenmanager"
+#Import "strings"
+#Import "taskmanager"
+#Import "texturepacker"

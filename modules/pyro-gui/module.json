@@ -1,0 +1,8 @@
+{
+	"module":"pyro-gui",
+	"about":"The pyro-gui module",
+	"author":"Playniax",
+	"version":"1.0.8",
+	"support":"http://www.playniax.com",
+	"depends":["std","mojo","pyro-framework"]
+}

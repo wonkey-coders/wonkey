@@ -1,4 +1,4 @@
-
+﻿
 *wake-mx2*
 *wide-mx2*
 
@@ -42,10 +42,6 @@ __NEWPAGES__/
 /modules/portmidi
 /modules/png2polygon
 /modules/timelinefx
-/modules/pyro-framework
-/modules/pyro-gui
-/modules/pyro-scenegraph
-/modules/pyro-tiled
 /modules/box2d
 /modules/box2dxt
 /modules/steamworks

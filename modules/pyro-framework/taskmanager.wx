@@ -1,0 +1,232 @@
+Namespace pyro.framework.taskmanager
+
+#rem wonkeydoc @hidden
+#end
+Function CopyTask:Task( source:Task,copy:Task=New Task )
+
+	If source=Null Return Null
+	If copy=Null Return Null
+
+	copy._enabled=source._enabled
+	copy.Name=source.Name
+	copy.Order=source.Order
+	copy.Pausable=source.Pausable
+	copy.StartTime=source.StartTime
+	copy._taskManager=source._taskManager
+	copy._updateCounter=source._updateCounter
+
+	Return copy
+
+End
+
+#rem wonkeydoc Whether tasks are paused.
+#end
+Function DebugPause:Bool()
+	Return _debugPause
+End
+
+#rem wonkeydoc Whether tasks are paused.
+
+Pauses all tasks even the ones that are not pause sensitive.
+
+#end
+Function DebugPause( debugPause:Bool )
+
+	If debugPause=True _pauseTime=Millisecs() Else _timeShift+=Millisecs()-_pauseTime
+	
+	_debugPause=debugPause
+
+End
+
+Function Frozen:Bool()
+	If DebugPause()=True Return True
+	If Pause()=True Return True
+	Return False
+End
+
+#rem wonkeydoc @hidden
+#end
+Function Milliseconds:Int()
+
+	If _pause=True Or _debugPause=True Return _pauseTime-_timeShift
+
+	Return Millisecs()-_timeShift
+
+End
+
+#rem wonkeydoc Whether tasks are paused.
+#end
+Function Pause:Bool()
+	Return _pause
+End
+
+#rem wonkeydoc Whether tasks are paused.
+
+Pauses tasks that are pause sensitive.
+
+#end
+Function Pause( pause:Bool )
+
+	If pause=True _pauseTime=Millisecs() Else _timeShift+=Millisecs()-_pauseTime
+
+	_pause=pause
+
+End
+
+#rem wonkeydoc Toggle Pause state.
+#end
+Function TogglePause()
+	Pause( Not Pause() )
+End
+
+#rem wonkeydoc Toggle DebugPause state.
+#end
+Function ToggleDebugPause()
+	DebugPause( Not DebugPause() )
+End
+
+#rem wonkeydoc The Task class.
+#end
+Class Task
+
+	Field Identifier:=""
+	#rem wonkeydoc Name.
+	#end
+	Field Name:=""
+	#rem wonkeydoc @hidden
+	#end
+	Field Order:=0
+	#rem wonkeydoc Whether the task is pause sensitive.
+	#end
+	Field Pausable:=True
+	#rem wonkeydoc @hidden
+	#end
+	Field StartTime:=Milliseconds()
+
+	#rem wonkeydoc Whether the task is enabled.
+	#end
+	Property Enabled:Bool() Virtual
+		Return _enabled
+	Setter( enabled:Bool ) Virtual
+		_enabled=enabled
+	End
+
+	#rem wonkeydoc Task manager.
+	#end
+	Property TaskManager:TaskManager()
+		Return _taskManager
+	Setter( taskManager:TaskManager )
+		If _taskManager _taskManager.Tasks.RemoveEach( Self )
+		_taskManager=taskManager
+		If _taskManager _taskManager.Tasks.Push( Self )
+	End	
+
+	#rem wonkeydoc Called by the task manager.
+	#end
+	Method OnUpdate() Virtual
+	End
+
+	#rem wonkeydoc @hidden
+	#end
+	Field _enabled:=True
+	#rem wonkeydoc @hidden
+	#end
+	Field _taskManager:TaskManager
+	#rem wonkeydoc @hidden
+	#end
+	Field _updateCounter:=0
+
+End
+
+#rem wonkeydoc The TaskManager class.
+#end
+Class TaskManager
+
+	#rem wonkeydoc Name.
+	#end
+	Field Name:=""
+	#rem wonkeydoc Tasks.
+	#end
+	Field Tasks:=New Stack<Task>
+
+	#rem wonkeydoc Whether tasks are paused.
+
+	Pauses all tasks even the ones that are not pause sensitive.
+
+	#end
+	Property DebugPause:Bool()
+
+		Return _debugPause
+
+	Setter( debugPause:Bool )
+
+		If debugPause=True _pauseTime=Millisecs() Else _timeShift+=Millisecs()-_pauseTime
+
+		_debugPause=debugPause
+
+	End
+
+	#rem wonkeydoc Whether tasks are paused.
+
+	Pauses tasks that are pause sensitive.
+
+	#end
+	Property Pause:Bool()
+
+		Return _pause
+
+	Setter( pause:Bool )
+
+		If pause=True _pauseTime=Millisecs() Else _timeShift+=Millisecs()-_pauseTime
+
+		_pause=pause
+
+	End
+
+	Method Update()
+
+		Update( _updateCounter )
+
+		_updateCounter+=1
+
+	End
+
+	Method Update( updateCounter:Int )
+
+		Local i:=0
+	
+		While i<Tasks.Length
+		
+			Local task:=Tasks.Get( i )
+
+			If _debugPause=True i+=1 ; Continue
+			If task._updateCounter=updateCounter i+=1 ; Continue
+			If task._enabled=False i+=1 ; Continue
+			If task.Pausable=True And _pause=True i+=1 ; Continue
+
+			Local tasks:=Tasks.Length
+
+			task.OnUpdate()
+
+			If Tasks.Length<tasks i+=( Tasks.Length-tasks )
+
+			If i<0 Exit
+
+			i+=1
+
+		Wend
+
+	End
+
+	Private
+	
+	Field _updateCounter:=0
+
+End
+
+Private
+
+Global _debugPause:=False
+Global _pause:=False
+Global _pauseTime:=0
+Global _timeShift:=0
