@@ -703,6 +703,142 @@ wxString wxString::replace( const wxString &str,const wxString &repl )const{
 	return rep;
 }
 
+wxString wxString::fmt( wxArray<wxString> args )const{
+
+	wxString result( data(), length() );
+
+	if( args.length() != 0 ) {
+		args.retain();
+		for( int i=0; i<args.length(); i++ ) {
+			result = result.replace( wxString(L"{",1) + wxString(i) + wxString(L"}",1), args[i]);
+		}
+		args.release();
+	}
+
+	return result;
+}
+
+wxString wxString::fmt( wxString arg00 )const{
+	wxArray<wxString> arr(1);
+	arr[0] = arg00;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01 )const{
+	wxArray<wxString> arr(2);
+	arr[0] = arg00; arr[1] = arg01;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02 )const{
+	wxArray<wxString> arr(3);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03 )const{
+	wxArray<wxString> arr(4);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04 )const{
+	wxArray<wxString> arr(5);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05 )const{
+	wxArray<wxString> arr(6);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06 )const{
+	wxArray<wxString> arr(7);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07 )const{
+	wxArray<wxString> arr(8);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08 )const{
+	wxArray<wxString> arr(9);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09 )const{
+	wxArray<wxString> arr(10);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10 )const{
+	wxArray<wxString> arr(11);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11 )const{
+	wxArray<wxString> arr(12);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10; arr[11] = arg11;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12 )const{
+	wxArray<wxString> arr(13);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10; arr[11] = arg11; arr[12] = arg12;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13 )const{
+	wxArray<wxString> arr(14);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10; arr[11] = arg11; arr[12] = arg12; arr[13] = arg13;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14 )const{
+	wxArray<wxString> arr(15);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10; arr[11] = arg11; arr[12] = arg12; arr[13] = arg13; arr[14] = arg14;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15 )const{
+	wxArray<wxString> arr(16);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10; arr[11] = arg11; arr[12] = arg12; arr[13] = arg13; arr[14] = arg14; arr[15] = arg15;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15, wxString arg16 )const{
+	wxArray<wxString> arr(17);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10; arr[11] = arg11; arr[12] = arg12; arr[13] = arg13; arr[14] = arg14; arr[15] = arg15; arr[16] = arg16;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15, wxString arg16, wxString arg17 )const{
+	wxArray<wxString> arr(18);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10; arr[11] = arg11; arr[12] = arg12; arr[13] = arg13; arr[14] = arg14; arr[15] = arg15; arr[16] = arg16; arr[17] = arg17;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15, wxString arg16, wxString arg17, wxString arg18 )const{
+	wxArray<wxString> arr(19);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10; arr[11] = arg11; arr[12] = arg12; arr[13] = arg13; arr[14] = arg14; arr[15] = arg15; arr[16] = arg16; arr[17] = arg17; arr[18] = arg18;
+	return fmt( arr );
+}
+
+wxString wxString::fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15, wxString arg16, wxString arg17, wxString arg18, wxString arg19 )const{
+	wxArray<wxString> arr(20);
+	arr[0] = arg00; arr[1] = arg01; arr[2] = arg02; arr[3] = arg03; arr[4] = arg04; arr[5] = arg05; arr[6] = arg06; arr[7] = arg07; arr[8] = arg08; arr[9] = arg09; arr[10] = arg10; arr[11] = arg11; arr[12] = arg12; arr[13] = arg13; arr[14] = arg14; arr[15] = arg15; arr[16] = arg16; arr[17] = arg17; arr[18] = arg18; arr[19] = arg19;
+	return fmt( arr );
+}
+
+
 int wxString::compare( const wxString &t )const{
 	int len=length()<t.length() ? length() : t.length();
 	for( int i=0;i<len;++i ){

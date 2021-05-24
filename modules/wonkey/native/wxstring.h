@@ -247,6 +247,28 @@ class wxString{
 	
 	wxString replace( const wxString &str,const wxString &repl )const;
 	
+	wxString fmt( wxArray<wxString> args )const;
+	wxString fmt( wxString arg00 )const;
+	wxString fmt( wxString arg00, wxString arg01 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15, wxString arg16 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15, wxString arg16, wxString arg17 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15, wxString arg16, wxString arg17, wxString arg18 )const;
+	wxString fmt( wxString arg00, wxString arg01, wxString arg02, wxString arg03, wxString arg04, wxString arg05, wxString arg06, wxString arg07, wxString arg08, wxString arg09, wxString arg10, wxString arg11, wxString arg12, wxString arg13, wxString arg14, wxString arg15, wxString arg16, wxString arg17, wxString arg18, wxString arg19 )const;
+	
 	wxArray<wxString> split( wxString sep )const;
 	
 	wxString join( wxArray<wxString> bits )const;

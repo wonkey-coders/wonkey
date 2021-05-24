@@ -319,6 +319,43 @@ Struct @String ="wxString"
 	#end
 	Method Replace:String( find:String,replace:String )="replace"
 	
+	#rem wonkeydoc String interpolation ( {0},{1},{2},{3},{...},{19} )
+
+	Returns the string with placeholders {0},{1},{2},... replaced with the corresponding argument.
+
+	Up to 20 placeholders ({0} to {19}) can be used directly using the parameters 'arg00' to 'arg19'.
+	
+	If more than 20 placeholders are required, use a String-Array as the only argument.
+
+	@param args String Array with the replacements.
+	
+	@param arg00 arg00 to arg19 are used for replacing the placeholders {0},{1},{2},{3},{...},{19}
+	
+	@return The string with all placeholders replaced with the replacements.
+
+	#end
+	Method Fmt:String( args:String[] )="fmt"
+	Method Fmt:String( arg00:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String, arg11:String)="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String, arg11:String, arg12:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String, arg11:String, arg12:String, arg13:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String, arg11:String, arg12:String, arg13:String, arg14:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String, arg11:String, arg12:String, arg13:String, arg14:String, arg15:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String, arg11:String, arg12:String, arg13:String, arg14:String, arg15:String, arg16:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String, arg11:String, arg12:String, arg13:String, arg14:String, arg15:String, arg16:String, arg17:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String, arg11:String, arg12:String, arg13:String, arg14:String, arg15:String, arg16:String, arg17:String, arg18:String )="fmt"
+	Method Fmt:String( arg00:String, arg01:String, arg02:String, arg03:String, arg04:String, arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String, arg11:String, arg12:String, arg13:String, arg14:String, arg15:String, arg16:String, arg17:String, arg18:String, arg19:String )="fmt"
+
 	#rem wonkeydoc Splits this string.
 	
 	Splits this string into an array of strings.

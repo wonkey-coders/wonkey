@@ -233,3 +233,141 @@ Function LSet:String(input:String, width:Int, ch:String = " ")
 	Return input.PadRight(width, ch)
 End
 
+#rem wonkeydoc String interpolation ( {0},{1},{2},{3},{...},{19} )
+
+Returns the input string with placeholders {0},{1},{2},... replaced with the corresponding argument.
+
+Up to 20 placeholders ({0} to {19}) can be used directly using the parameters 'arg00' to 'arg19'.
+
+If more than 20 placeholders are required, use a String-Array as the 2nd argument.
+
+@param input The String containing the placeholders.
+
+@param args String Array with the replacements.
+
+@param arg00 arg00 to arg19 are used for replacing the placeholders {0},{1},{2},{3},{...},{19}
+
+@return The string with all placeholders replaced with the replacements.
+
+#end
+Function Fmt:String(input:String, args:String[])
+    Return input.Fmt(args)
+End
+
+Function Fmt:String(input:String, arg00:String)
+    Return input.Fmt(New String[1](arg00))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String)
+    Return input.Fmt(New String[2](arg00, arg01))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String)
+    Return input.Fmt(New String[3](arg00, arg01, arg02))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String)
+    Return input.Fmt(New String[4](arg00, arg01, arg02, arg03))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String)
+    Return input.Fmt(New String[5](arg00, arg01, arg02, arg03, arg04))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String)
+    Return input.Fmt(New String[6](arg00, arg01, arg02, arg03, arg04, arg05))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String)
+    Return input.Fmt(New String[7](arg00, arg01, arg02, arg03, arg04, arg05, arg06))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String)
+    Return input.Fmt(New String[8](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String)
+    Return input.Fmt(New String[9](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String)
+    Return input.Fmt(New String[10](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String)
+    Return input.Fmt(New String[11](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String,
+	                arg11:String)
+    Return input.Fmt(New String[12](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10, arg11))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String,
+	                arg11:String, arg12:String)
+    Return input.Fmt(New String[13](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10, arg11, arg12))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String,
+	                arg11:String, arg12:String, arg13:String)
+    Return input.Fmt(New String[14](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10, arg11, arg12, arg13))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String,
+	                arg11:String, arg12:String, arg13:String, arg14:String)
+    Return input.Fmt(New String[15](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10, arg11, arg12, arg13, arg14))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String,
+	                arg11:String, arg12:String, arg13:String, arg14:String, arg15:String)
+    Return input.Fmt(New String[16](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10, arg11, arg12, arg13, arg14, arg15))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String,
+	                arg11:String, arg12:String, arg13:String, arg14:String, arg15:String, arg16:String)
+    Return input.Fmt(New String[17](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10, arg11, arg12, arg13, arg14, arg15, arg16))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String,
+	                arg11:String, arg12:String, arg13:String, arg14:String, arg15:String, arg16:String,
+	                arg17:String)
+    Return input.Fmt(New String[18](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String,
+	                arg11:String, arg12:String, arg13:String, arg14:String, arg15:String, arg16:String,
+	                arg17:String, arg18:String)
+    Return input.Fmt(New String[19](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18))
+End
+
+Function Fmt:String(input:String, arg00:String, arg01:String, arg02:String, arg03:String, arg04:String,
+	                arg05:String, arg06:String, arg07:String, arg08:String, arg09:String, arg10:String,
+	                arg11:String, arg12:String, arg13:String, arg14:String, arg15:String, arg16:String,
+	                arg17:String, arg18:String, arg19:String)
+    Return input.Fmt(New String[20](arg00, arg01, arg02, arg03, arg04, arg05, arg06, arg07, arg08, arg09,
+                                    arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19))
+End
+
