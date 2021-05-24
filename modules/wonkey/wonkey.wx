@@ -34,6 +34,7 @@ Namespace wonkey
 
 #Import "types"
 #Import "strings_converter"
+#Import "strings_chars"
 #Import "strings_chartype"
 #Import "strings_functions"
 #Import "math"
