@@ -510,77 +510,110 @@ Class Canvas
 		DrawFrameOval( x, y, width, width )
 	End
 	
-	Method DrawFrameOval( x:Float, y:Float, width:Float, height:Float )
-		Local xr := width'/2
-		local yr := height'/2
-		
-		Local dx_x := xr*_matrix.i.x
-		Local dx_y := xr*_matrix.i.y
-		Local dy_x := yr*_matrix.j.x
-		Local dy_y := yr*_matrix.j.y
-		Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
-		Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+    #rem wonkeydoc Draws an frame around an oval.
 
-		Local n := (Max( Int( dx+dy ),13 ) & ~3)
-		
-		Local x0 := x'+xr
-		local y0 := y'+yr
-		
-		local th:float = .5*Pi*2/n
-		local px:float
-		local py:float
-		local pxo:float = x0+Cos( th ) * xr
-		local pyo:float = y0+Sin( th ) * yr
-		
-'		AddDrawOp( _shader, _material, _blendMode, n, 1 )
-		
-		For Local i:=1 to n
-			th = (i+.5)*Pi*2/n
-			px = x0+Cos( th ) * xr
-			py = y0+Sin( th ) * yr
-'			AddPointVertex( px,py,0,0 )
-			DrawLine( px, py, pxo, pyo )
-			pxo = px
-			pyo = py
-		Next
-	End
+    Draws an framed oval in the current [[Color]] using the current [[BlendMode]].
 
-	Method DrawFrameOval( x:Float, y:Float, width:Float, height:Float, fromAngle:float, toAngle:float )
-		Local xr := width'/2
-		local yr := height'/2
-		
-		Local dx_x := xr*_matrix.i.x
-		Local dx_y := xr*_matrix.i.y
-		Local dy_x := yr*_matrix.j.x
-		Local dy_y := yr*_matrix.j.y
-		Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
-		Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+    The oval vertex coordinates are also transform by the current [[Matrix]].
 
-		Local n := (Max( Int( dx+dy ),13 ) & ~3)*0.2
-		
-		Local x0 := x'+xr
-		local y0 := y'+yr
-		
-		local th:float = .5*Pi*2/n
-		local px:float
-		local py:float
-		
-'		AddDrawOp( _shader, _material, _blendMode, n, 1 )
-		
-		local div:float = (toAngle - fromAngle) / n
-		th = fromAngle
-		local pxo:float = x0+Cos( th ) * xr
-		local pyo:float = y0+Sin( th ) * yr
-		th += div
-		For Local i:=1 to n
-			px = x0+Cos( th ) * xr
-			py = y0+Sin( th ) * yr
-			DrawLine( px, py, pxo, pyo )
-			pxo = px
-			pyo = py
-			th += div
-		Next
-	End
+    @param x Center x coordinate for the oval.
+
+    @param y Center y coordinate for the oval.
+
+    @param xRadius X axis radius for the oval.
+
+    @param yRadius Y axis radius for the oval.
+
+    #end
+    Method DrawFrameOval( x:Float, y:Float, xRadius:Float, yRadius:Float )
+        Local xr := xRadius
+        Local yr := yRadius
+        
+        Local dx_x := xr*_matrix.i.x
+        Local dx_y := xr*_matrix.i.y
+        Local dy_x := yr*_matrix.j.x
+        Local dy_y := yr*_matrix.j.y
+        Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
+        Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+
+        Local n := (Max( Int( dx+dy ),13 ) & ~3)
+        
+        Local x0 := x
+        local y0 := y
+        
+        local th:float = .5*Pi*2/n
+        local px:float
+        local py:float
+        local pxo:float = x0+Cos( th ) * xr
+        local pyo:float = y0+Sin( th ) * yr
+        
+        For Local i:=1 to n
+            th = (i+.5)*Pi*2/n
+            px = x0+Cos( th ) * xr
+            py = y0+Sin( th ) * yr
+            DrawLine( px, py, pxo, pyo )
+            pxo = px
+            pyo = py
+        Next
+    End
+
+    #rem wonkeydoc Draws an frame around an oval with a start and en angle IN RADIANS.
+
+    Draws an framed oval in the current [[Color]] using the current [[BlendMode]].
+
+    The oval vertex coordinates are also transform by the current [[Matrix]].
+
+    @param x Center x coordinate for the oval.
+
+    @param y Center y coordinate for the oval.
+
+    @param xRadius X axis radius for the oval.
+
+    @param yRadius Y axis radius for the oval.
+
+    @param fromAngle the start angle in radians.
+
+    @param toAngle the end angle in radians.
+
+    Pi2 is a complete circle. 0 is east, PiHalf is south, etc.
+
+    Radians run clockise. Use Deg2Rad() to convert Degrees to Radians.
+
+    #end
+    Method DrawFrameOval( x:Float, y:Float, xRadius:Float, yRadius:Float, fromAngle:float, toAngle:float )
+        Local xr := xRadius
+        Local yr := yRadius
+        
+        Local dx_x := xr*_matrix.i.x
+        Local dx_y := xr*_matrix.i.y
+        Local dy_x := yr*_matrix.j.x
+        Local dy_y := yr*_matrix.j.y
+        Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
+        Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+
+        Local n := (Max( Int( dx+dy ),13 ) & ~3)*0.2
+        
+        Local x0 := x
+        local y0 := y
+        
+        local th:float = .5*Pi*2/n
+        local px:float
+        local py:float
+        
+        local div:float = (toAngle - fromAngle) / n
+        th = fromAngle
+        local pxo:float = x0+Cos( th ) * xr
+        local pyo:float = y0+Sin( th ) * yr
+        th += div
+        For Local i:=1 to n
+            px = x0+Cos( th ) * xr
+            py = y0+Sin( th ) * yr
+            DrawLine( px, py, pxo, pyo )
+            pxo = px
+            pyo = py
+            th += div
+        Next
+    End
 
 	Method DrawFrameOvalDepth( x:Float, y:Float, width:Float, height:Float, depth:float, scale:float )
 		Local xr := width
@@ -2381,57 +2414,118 @@ Class Canvas
 	
 	The oval vertex coordinates are also transform by the current [[Matrix]].
 
-	@param x Top left x coordinate for the oval.
+    @param x Center x coordinate for the oval.
 
-	@param y Top left y coordinate for the oval.
+    @param y Center y coordinate for the oval.
 
-	@param width Width of the oval.
+    @param xRadius X axis radius for the oval.
 
-	@param height Height of the oval.
+    @param yRadius Y axis radius for the oval.
 
 	#end
-	Method DrawOval( x:Float,y:Float,width:Float,height:Float )
-	
-		Local xr:=width/2,yr:=height/2
-		
-		Local dx_x:=xr*_matrix.i.x
-		Local dx_y:=xr*_matrix.i.y
-		Local dy_x:=yr*_matrix.j.x
-		Local dy_y:=yr*_matrix.j.y
-		Local dx:=Sqrt( dx_x*dx_x+dx_y*dx_y )
-		Local dy:=Sqrt( dy_x*dy_x+dy_y*dy_y )
+    Method DrawOval( x:Float, y:Float, xRadius:Float, yRadius:Float )
+        Local xr:float = xRadius
+        Local yr:float = yRadius
+        
+        Local dx_x:=xr*_matrix.i.x
+        Local dx_y:=xr*_matrix.i.y
+        Local dy_x:=yr*_matrix.j.x
+        Local dy_y:=yr*_matrix.j.y
+        Local dx:=Sqrt( dx_x*dx_x+dx_y*dx_y )
+        Local dy:=Sqrt( dy_x*dy_x+dy_y*dy_y )
 
-		Local n:=Max( Int( dx+dy ),12 ) & ~3
-		
-		Local x0:=x+xr,y0:=y+yr
-		
-		AddDrawOp( _shader,_material,_blendMode,n,1 )
-		
-		For Local i:=0 Until n
-			Local th:=(i+.5)*Pi*2/n
-			Local px:=x0+Cos( th ) * xr
-			Local py:=y0+Sin( th ) * yr
-			AddPointVertex( px,py,0,0 )
-		Next
-		
-		If _outlineMode=OutlineMode.None Return
-		
-		For Local i:=0 until n
+        Local n:=Max( Int( dx+dy ),12 ) & ~3
+        
+        Local x0:float = x
+        Local y0:float = y
+        
+        AddDrawOp( _shader,_material,_blendMode,n,1 )
+        
+        For Local i:=0 Until n
+            Local th:=(i+.5)*Pi*2/n
+            Local px:=x0+Cos( th ) * xr
+            Local py:=y0+Sin( th ) * yr
+            AddPointVertex( px,py,0,0 )
+        Next
+        
+        If _outlineMode=OutlineMode.None Return
+        
+        For Local i:=0 until n
+            Local th0:=(i+.5)*TwoPi/n
+            Local px0:=x0+Cos( th0 ) * xr
+            Local py0:=y0+Sin( th0 ) * yr
+            
+            Local th1:=(i+1.5)*TwoPi/n
+            Local px1:=x0+Cos( th1 ) * xr
+            Local py1:=y0+Sin( th1 ) * yr
+            
+            DrawOutlineLine( px0,py0,px1,py1 )
+        Next
+    End
 
-			Local th0:=(i+.5)*TwoPi/n
-			Local px0:=x0+Cos( th0 ) * xr
-			Local py0:=y0+Sin( th0 ) * yr
-			
-			Local th1:=(i+1.5)*TwoPi/n
-			Local px1:=x0+Cos( th1 ) * xr
-			Local py1:=y0+Sin( th1 ) * yr
-			
-			DrawOutlineLine( px0,py0,px1,py1 )
-		
-		Next
-		
-	End
-	
+    #rem wonkeydoc Draws a filled oval with a start and end angle in Radians.
+
+    Draws a filled oval in the current [[Color]] using the current [[BlendMode]].
+
+    The oval vertex coordinates are also transform by the current [[Matrix]].
+
+    @param x Center x coordinate for the oval.
+
+    @param y Center y coordinate for the oval.
+
+    @param xRadius X axis radius for the oval.
+
+    @param yRadius Y axis radius for the oval.
+
+    @param fromAngle the start angle in radians.
+
+    @param toAngle the end angle in radians.
+
+    Pi2 is a complete circle. 0 is east, PiHalf is south, etc.
+
+    Radians run clockise. Use Deg2Rad() to convert Degrees to Radians.
+
+    #end
+    Method DrawOval( x:Float, y:Float, xRadius:Float, yRadius:Float, fromAngle:float, toAngle:float )
+        Local xr := xRadius
+        Local yr := yRadius
+        
+        Local dx_x := xr*_matrix.i.x
+        Local dx_y := xr*_matrix.i.y
+        Local dy_x := yr*_matrix.j.x
+        Local dy_y := yr*_matrix.j.y
+        Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
+        Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+
+        Local n := (Max( Int( dx+dy ),13 ) & ~3)*0.2
+        
+        Local x0 := x
+        local y0 := y
+        
+        local th:float = .5*Pi*2/n
+        local px:float
+        local py:float
+
+        AddDrawOp( _shader, _material, _blendMode,  n+1, 1 )
+
+        AddPointVertex( x,y, 0,0 )
+        
+        local div:float = (toAngle - fromAngle) / n
+        th = fromAngle
+        local pxo:float = x0+Cos( th ) * xr
+        local pyo:float = y0+Sin( th ) * yr
+        th += div
+        For Local i:=1 to n
+            px = x0+Cos( th ) * xr
+            py = y0+Sin( th ) * yr
+            AddPointVertex( px,py, 0,0 )
+            pxo = px
+            pyo = py
+            th += div
+        Next
+        AddPointVertex( pxo,pyo, 0,0 )
+    End
+
 	#rem wonkeydoc Draws an ellipse.
 
 	Draws an ellipse in the current [[Color]] using the current [[BlendMode]].
@@ -2449,7 +2543,7 @@ Class Canvas
 	#end
 	Method DrawEllipse( x:Float,y:Float,xRadius:Float,yRadius:Float )
 		
-		DrawOval( x-xRadius,y-yRadius,xRadius*2,yRadius*2 )
+		DrawOval( x,y, xRadius,yRadius )
 	End
 	
 	#rem wonkeydoc Draws a circle.
@@ -2465,7 +2559,7 @@ Class Canvas
 	#end
 	Method DrawCircle( x:Float,y:Float,radius:Float )
 		
-		DrawOval( x-radius,y-radius,radius*2,radius*2 )
+		DrawOval( x,y, radius,radius )
 	End
 
 	#rem wonkeydoc Draws a polygon.
