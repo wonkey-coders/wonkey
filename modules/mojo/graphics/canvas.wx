@@ -510,9 +510,9 @@ Class Canvas
 		DrawFrameOval( x, y, width, width )
 	End
 	
-    #rem wonkeydoc Draws an frame around an oval.
+    #rem wonkeydoc Draws a frame around an oval with optional start and end angles in Radians.
 
-    Draws an framed oval in the current [[Color]] using the current [[BlendMode]].
+    Draws a framed oval in the current [[Color]] using the current [[BlendMode]].
 
     The oval vertex coordinates are also transform by the current [[Matrix]].
 
@@ -523,6 +523,14 @@ Class Canvas
     @param xRadius X axis radius for the oval.
 
     @param yRadius Y axis radius for the oval.
+
+    @param fromAngle the start angle in radians (optional).
+
+    @param toAngle the end angle in radians (optional).
+
+    Pi2 is a complete circle. 0 is east, PiHalf is south, etc.
+
+    Radians run clockise. Use Deg2Rad() to convert Degrees to Radians.
 
     #end
     Method DrawFrameOval( x:Float, y:Float, xRadius:Float, yRadius:Float )
@@ -557,29 +565,6 @@ Class Canvas
         Next
     End
 
-    #rem wonkeydoc Draws an frame around an oval with a start and en angle IN RADIANS.
-
-    Draws an framed oval in the current [[Color]] using the current [[BlendMode]].
-
-    The oval vertex coordinates are also transform by the current [[Matrix]].
-
-    @param x Center x coordinate for the oval.
-
-    @param y Center y coordinate for the oval.
-
-    @param xRadius X axis radius for the oval.
-
-    @param yRadius Y axis radius for the oval.
-
-    @param fromAngle the start angle in radians.
-
-    @param toAngle the end angle in radians.
-
-    Pi2 is a complete circle. 0 is east, PiHalf is south, etc.
-
-    Radians run clockise. Use Deg2Rad() to convert Degrees to Radians.
-
-    #end
     Method DrawFrameOval( x:Float, y:Float, xRadius:Float, yRadius:Float, fromAngle:float, toAngle:float )
         Local xr := xRadius
         Local yr := yRadius
@@ -2408,11 +2393,11 @@ Class Canvas
 		DrawRect( New Rectf( x,y,x+width,y+height ),srcImage,New Recti( srcX,srcY,srcX+srcWidth,srcY+srcHeight ) )
 	End
 	
-	#rem wonkeydoc Draws an oval.
+    #rem wonkeydoc Draws a filled oval with optional start and end angles in Radians.
 
-	Draws an oval in the current [[Color]] using the current [[BlendMode]].
-	
-	The oval vertex coordinates are also transform by the current [[Matrix]].
+    Draws a filled oval in the current [[Color]] using the current [[BlendMode]].
+
+    The oval vertex coordinates are also transform by the current [[Matrix]].
 
     @param x Center x coordinate for the oval.
 
@@ -2422,7 +2407,15 @@ Class Canvas
 
     @param yRadius Y axis radius for the oval.
 
-	#end
+    @param fromAngle the start angle in radians (optional).
+
+    @param toAngle the end angle in radians (optional).
+
+    Pi2 is a complete circle. 0 is east, PiHalf is south, etc.
+
+    Radians run clockise. Use Deg2Rad() to convert Degrees to Radians.
+
+    #end
     Method DrawOval( x:Float, y:Float, xRadius:Float, yRadius:Float )
         Local xr:float = xRadius
         Local yr:float = yRadius
@@ -2463,29 +2456,6 @@ Class Canvas
         Next
     End
 
-    #rem wonkeydoc Draws a filled oval with a start and end angle in Radians.
-
-    Draws a filled oval in the current [[Color]] using the current [[BlendMode]].
-
-    The oval vertex coordinates are also transform by the current [[Matrix]].
-
-    @param x Center x coordinate for the oval.
-
-    @param y Center y coordinate for the oval.
-
-    @param xRadius X axis radius for the oval.
-
-    @param yRadius Y axis radius for the oval.
-
-    @param fromAngle the start angle in radians.
-
-    @param toAngle the end angle in radians.
-
-    Pi2 is a complete circle. 0 is east, PiHalf is south, etc.
-
-    Radians run clockise. Use Deg2Rad() to convert Degrees to Radians.
-
-    #end
     Method DrawOval( x:Float, y:Float, xRadius:Float, yRadius:Float, fromAngle:float, toAngle:float )
         Local xr := xRadius
         Local yr := yRadius
