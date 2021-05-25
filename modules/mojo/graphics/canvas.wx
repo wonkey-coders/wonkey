@@ -566,37 +566,33 @@ Class Canvas
     End
 
     Method DrawFrameOval( x:Float, y:Float, xRadius:Float, yRadius:Float, fromAngle:float, toAngle:float )
-        Local xr := xRadius
-        Local yr := yRadius
+        Local xr:float = xRadius
+        Local yr:float = yRadius
         
-        Local dx_x := xr*_matrix.i.x
-        Local dx_y := xr*_matrix.i.y
-        Local dy_x := yr*_matrix.j.x
-        Local dy_y := yr*_matrix.j.y
-        Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
-        Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+        Local dx_x:float = xr*_matrix.i.x
+        Local dx_y:float = xr*_matrix.i.y
+        Local dy_x:float = yr*_matrix.j.x
+        Local dy_y:float = yr*_matrix.j.y
+        Local dx:float = Sqrt( dx_x*dx_x+dx_y*dx_y )
+        Local dy:float = Sqrt( dy_x*dy_x+dy_y*dy_y )
 
-        Local n := (Max( Int( dx+dy ),13 ) & ~3)*0.2
+        Local n:int = (Max( Int( dx+dy ),13 ) & ~3)*0.2
+        local th:float = (toAngle - fromAngle) / n
         
-        Local x0 := x
-        local y0 := y
-        
-        local th:float = .5*Pi*2/n
+        local pxo:float = x + Cos( fromAngle ) * xr
+        local pyo:float = y + Sin( fromAngle ) * yr
         local px:float
         local py:float
         
-        local div:float = (toAngle - fromAngle) / n
-        th = fromAngle
-        local pxo:float = x0+Cos( th ) * xr
-        local pyo:float = y0+Sin( th ) * yr
-        th += div
-        For Local i:=1 to n
-            px = x0+Cos( th ) * xr
-            py = y0+Sin( th ) * yr
-            DrawLine( px, py, pxo, pyo )
+        local k:int
+        For k = 1 To n
+            fromAngle += th
+            px = x + Cos( fromAngle ) * xr
+            py = y + Sin( fromAngle ) * yr
+            
+            DrawLine( pxo,pyo, px,py )
             pxo = px
             pyo = py
-            th += div
         Next
     End
 
@@ -2456,43 +2452,37 @@ Class Canvas
         Next
     End
 
-    Method DrawOval( x:Float, y:Float, xRadius:Float, yRadius:Float, fromAngle:float, toAngle:float )
-        Local xr := xRadius
-        Local yr := yRadius
+    Method DrawOval( x:Float, y:Float, xRadius:Float, yRadius:Float, fromAngle:float, toAngle:Float )
+        Local xr:float = xRadius
+        Local yr:float = yRadius
         
-        Local dx_x := xr*_matrix.i.x
-        Local dx_y := xr*_matrix.i.y
-        Local dy_x := yr*_matrix.j.x
-        Local dy_y := yr*_matrix.j.y
-        Local dx := Sqrt( dx_x*dx_x+dx_y*dx_y )
-        Local dy := Sqrt( dy_x*dy_x+dy_y*dy_y )
+        Local dx_x:float = xr*_matrix.i.x
+        Local dx_y:float = xr*_matrix.i.y
+        Local dy_x:float = yr*_matrix.j.x
+        Local dy_y:float = yr*_matrix.j.y
+        Local dx:float = Sqrt( dx_x*dx_x+dx_y*dx_y )
+        Local dy:float = Sqrt( dy_x*dy_x+dy_y*dy_y )
 
-        Local n := (Max( Int( dx+dy ),13 ) & ~3)*0.2
+        Local n:int = (Max( Int( dx+dy ),13 ) & ~3)*0.2
+        local th:float = (toAngle - fromAngle) / n
         
-        Local x0 := x
-        local y0 := y
-        
-        local th:float = .5*Pi*2/n
-        local px:float
-        local py:float
-
-        AddDrawOp( _shader, _material, _blendMode,  n+1, 1 )
-
+        AddDrawOp( _shader, _material, _blendMode,  n+2, 1 )
         AddPointVertex( x,y, 0,0 )
+
+        local pxo:float = x + Cos( fromAngle ) * xr
+        local pyo:float = y + Sin( fromAngle ) * yr
+        AddPointVertex( pxo,pyo, 0,0 )
         
-        local div:float = (toAngle - fromAngle) / n
-        th = fromAngle
-        local pxo:float = x0+Cos( th ) * xr
-        local pyo:float = y0+Sin( th ) * yr
-        th += div
-        For Local i:=1 to n
-            px = x0+Cos( th ) * xr
-            py = y0+Sin( th ) * yr
-            AddPointVertex( px,py, 0,0 )
-            pxo = px
-            pyo = py
-            th += div
+        local k:int
+        For k = 1 To n
+            fromAngle += th
+            pxo = x + Cos( fromAngle ) * xr
+            pyo = y + Sin( fromAngle ) * yr
+            AddPointVertex( pxo,pyo, 0,0 )
         Next
+
+        pxo = x + Cos( toAngle ) * xr
+        pyo = y + Sin( toAngle ) * yr
         AddPointVertex( pxo,pyo, 0,0 )
     End
 
