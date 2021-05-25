@@ -89,7 +89,7 @@ Class CheckButton Extends DockingView
 	@param buttonSide: "left", "right", "top", or "bottom"
 
 	#end
-	Property CheckBoxSide:String()
+	Property CheckButtonSide:String()
 		Return _side
 	Setter( buttonSide:String )
 		Local side:String
