@@ -6,20 +6,16 @@ Using mojox..
 #rem wonkeydoc The CheckGroup class.
 #end
 Class CheckGroup
-
 	Field CheckedChanged:Void()
 
 	Property Checked:CheckButton()
-	
 		Return _checked
 	End
 
 	Private
 	
 	Field _views:=New Stack<CheckButton>
-	
 	Field _checked:CheckButton
-	
 End
 
 #rem wonkeydoc The CheckButton class.
@@ -40,6 +36,14 @@ Class CheckButton Extends DockingView
 		_checkBox.Icon=_checkBox.RenderStyle.Icons[0]
 		_checkBox.Layout="float"
 		_checkBox.Gravity=New Vec2f( .5, .5 )
+
+		_label = New Label(text, icon)
+		Select buttonSide
+			Case "top", "bottom" _side=buttonSide; _label.TextGravity=New Vec2f( .5, .5 )
+			Case "right"         _side=buttonSide; _label.TextGravity=New Vec2f(  1, .5 )
+			Default              _side="left"; _label.TextGravity=New Vec2f( 0, .5 )
+		End Select
+		_label.Style=GetStyle( "CheckButton" )
 		
 		Local clicked:=Lambda()
 			If _group And Checked Return
@@ -49,21 +53,16 @@ Class CheckButton Extends DockingView
 		End
 		
 		_checkBox.Clicked+=clicked
-		
-		_label = New Label(text, icon)
-		Select buttonSide
-			Case "top", "bottom" _side=buttonSide; _label.TextGravity=New Vec2f( .5, .5 )
-			Case "right"         _side=buttonSide; _label.TextGravity=New Vec2f(  1, .5 )
-			Default              _side="left"; _label.TextGravity=New Vec2f(  0, .5 )
-		End Select
-		_label.Style=GetStyle( "CheckButton" )
+		_label.Clicked+=clicked
+
+		TextClickable = False
 		
 		ContentView = _label
 		AddView(_checkBox,_side)
 
 		If group Group=group
 	End
-	
+
 	#rem wonkeydoc The CheckGroup the button belongs to.
 	#end
 	Property Group:CheckGroup()
@@ -77,26 +76,45 @@ Class CheckButton Extends DockingView
 			SetChecked( True )
 		Endif
 	End
-	
+
+	#rem wonkeydoc The CheckButton Text.
+	@param text The new text for the CheckButton
+	#end
 	Property Text:String()
 		Return _label.Text
 	Setter( text:String )
 		_label.Text = text
 	End
-	
-	#rem wonkeydoc The side of the CheckBox
-	
-	@param buttonSide: "left", "right", "top", or "bottom"
 
+	#rem wonkeydoc The CheckButton Text Gravity.
+	@param gravity The new text gravity (text align) for the CheckButton
 	#end
-	Property CheckButtonSide:String()
+	Property TextGravity:Vec2f()
+		Return _label.TextGravity
+	Setter( gravity:Vec2f )
+		_label.TextGravity = gravity
+	End
+	
+	#rem wonkeydoc Set if the text is clickable.
+	@param clickable True makes the text clickable, False unclickable
+	#end
+	Property TextClickable( clickable:Bool )
+		_label.AcceptsKeyEvents=clickable
+		_label.AcceptsMouseEvents=clickable
+	End
+
+	#rem wonkeydoc The side of the CheckButton.
+	Changing the ButtonSide will also reset the [[TextGravity]] to default.
+	@param buttonSide "left", "right", "top", or "bottom"
+	#end
+	Property ButtonSide:String()
 		Return _side
 	Setter( buttonSide:String )
 		Local side:String
 		Select buttonSide
 			Case "top", "bottom" side=buttonSide; _label.TextGravity=New Vec2f( .5, .5 )
 			Case "right"         side=buttonSide; _label.TextGravity=New Vec2f(  1, .5 )
-			Default              side="left"; _label.TextGravity=New Vec2f(  0, .5 )
+			Default              side="left"; _label.TextGravity=New Vec2f( 0, .5 )
 		End Select
 		If side <> _side
 			Local v := _checkBox
@@ -109,20 +127,14 @@ Class CheckButton Extends DockingView
 	#rem wonkeydoc The button's checked state.
 	#end
 	Property Checked:Bool()
-	
 		Return _checked
-		
 	Setter( checked:Bool )
 		If checked=_checked Return
-		
 		If _group
 			If Not checked Return
-
 			If _group._checked _group._checked.SetChecked( False )
-
 			_group._checked=Self
 		Endif
-
 		SetChecked( checked )
 	End
 	
