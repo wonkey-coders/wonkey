@@ -1,0 +1,544 @@
+#Import "gui/"
+#Import "scene/"
+#Import "sprites/"
+
+#Import "<std>"
+#Import "<mojo>"
+#Import "<pyro-framework>"
+#Import "<pyro-gui>"
+#Import "<pyro-scenegraph>"
+
+Using std..
+Using mojo..
+Using pyro.framework..
+Using pyro.gui..
+Using pyro.scenegraph..
+
+Const FACEBOOK:="https://www.facebook.com/pages/Playniax/289410737764922"
+Const PLAYNIAX:="http://www.playniax.com"
+Const TWITTER:="https://twitter.com/playniax"
+
+Const SPEED:=3
+
+Global camera:Camera
+Global collisionLayer:Layer
+Global font:Font
+Global game:Game
+Global level:=0
+Global levels:=New String[]( "asset::level01/scene.txt" )
+Global menu:Menu
+Global pauseButton:Button
+Global pickups:=0
+Global player:Player
+Global scene:Scene
+Global sceneBuilder:SceneLoader
+Global virtualResolution:=New Vec2i( 1024,768 )
+
+Class Button Extends GuiButton
+
+	Method OnReleased() Override
+		Select Name
+			Case "start"
+				game.Set()
+			Case "pause"
+				If Pause()
+					Game.guiPage=0
+					Pause( False )
+				Else
+					Game.guiPage=1
+					Pause( True )
+				Endif
+			Case "continue"
+				Game.guiPage=0
+				Pause( False )
+			Case "home"
+				Game.guiPage=0
+				Pause( False )
+				menu.Set()
+			Case "info"
+				Menu.guiPage=1
+			Case "back"
+				Menu.guiPage=0
+			Case "facebook"
+				OpenUrl( FACEBOOK )
+			Case "twitter"
+				OpenUrl( TWITTER )
+			Case "playniax"
+				OpenUrl( PLAYNIAX )
+		End Select
+	End
+
+End
+
+Class Checkbox Extends GuiCheckbox
+
+	Method OnReleased() Override
+		If Frame=0 Print Name+" = On ( Frame 0 )"
+		If Frame=1 Print Name+" = Off ( Frame 1 )"
+	End
+
+End
+
+Class Game Extends Screen
+
+	Global fade:=1.0
+	Global guiLayer:=New GuiLayer[3]
+	Global guiPage:=0
+
+	Method New()
+
+		scene=New Scene( ScreenManager )
+
+		camera=New Camera( scene )
+		camera.ClearColor=New Color( .25,0,0,1 )
+
+		' The game screen uses 3 layers to display in-game pause button, home button, game over message etc:
+		guiLayer[0]=New GuiLayer( ScreenManager )																																		' Create the gui layer for the pause button.
+		guiLayer[1]=New GuiLayer( ScreenManager )																																		' Create the gui layer for the paused mode.
+		guiLayer[2]=New GuiLayer( ScreenManager )																																		' Create the gui layer for the game over screen.
+
+		' Create the paused window:
+		Local pausedWindow:=New GuiImage
+		pausedWindow.Layer=guiLayer[1]
+		pausedWindow.Location=New Vec2f( PercentageOf( 50,virtualResolution.X ),PercentageOf( 50,virtualResolution.Y ) )																' Uses PercentageOf to calculate location.
+		pausedWindow.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::paused_window.png" )
+
+		' Create the 'pause' button:
+		pauseButton=New Button
+		pauseButton.Layer=guiLayer[0]
+		pauseButton.Name="pause"
+		pauseButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::pause_idle.png" )
+		pauseButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::pause_down.png" )
+		pauseButton.Location=New Vec2f( PercentageOf( 95,virtualResolution.X ),PercentageOf( 5,virtualResolution.Y ) )
+		pauseButton.Pausable=False																																						' Button ignores pause mode.
+
+		' Create the 'sound' button:
+		Local soundButton:=New Checkbox
+		soundButton.Layer=guiLayer[1]
+		soundButton.Name="sound"
+		soundButton.Surface.DrawData( GuiState.Idle,0 ).Image=Content.GetImage( "asset::sound_on_idle.png" )
+		soundButton.Surface.DrawData( GuiState.Down,0 ).Image=Content.GetImage( "asset::sound_on_down.png" )
+		soundButton.Surface.DrawData( GuiState.Idle,1 ).Image=Content.GetImage( "asset::sound_off_idle.png" )
+		soundButton.Surface.DrawData( GuiState.Down,1 ).Image=Content.GetImage( "asset::sound_off_down.png" )
+		soundButton.Location=New Vec2f( pausedWindow.X-pausedWindow.Width*.5+PercentageOf( 50,pausedWindow.Width ),pausedWindow.Y-pausedWindow.Height*.5+PercentageOf( 71,pausedWindow.Height ) )
+		soundButton.Pausable=False																																						' Button ignores pause mode.
+
+		' Create the 'continue' button:
+		Local homeButton:=New Button
+		homeButton.Layer=guiLayer[1]
+		homeButton.Name="home"
+		homeButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::home_idle.png" )
+		homeButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::home_down.png" )
+		homeButton.Location=New Vec2f( soundButton.X-soundButton.Width-8,soundButton.Y )
+		homeButton.Pausable=False																																						' Button ignores pause mode.
+
+		' Create the 'continue' button:
+		Local continueButton:=New Button
+		continueButton.Layer=guiLayer[1]
+		continueButton.Name="continue"
+		continueButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::right_idle.png" )
+		continueButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::right_down.png" )
+		continueButton.Location=New Vec2f( soundButton.X+soundButton.Width+8,soundButton.Y )
+		continueButton.Pausable=False																																					' Button ignores pause mode.
+
+		sceneBuilder=New SceneLoader
+		sceneBuilder.Load( "asset::background.txt" )
+		sceneBuilder.Build( scene )
+
+		scene.Layers.Get( 0 ).Multiplier=New Vec2f( .2, 1 )
+		scene.Layers.Get( 1 ).Multiplier=New Vec2f( .4, 1 )
+		scene.Layers.Get( 2 ).Multiplier=New Vec2f( .6, 1 )
+		scene.Layers.Get( 3 ).Multiplier=New Vec2f( .8, 1 )
+		scene.Layers.Get( 5 ).Multiplier=New Vec2f
+
+		' Load the monkey frames
+		Local image:=Image.Load( "asset::monkey.png" )
+		Local data:=LoadString( "asset::monkey.txt" )
+
+		Local gfxMonkey:=TexturePacker.GrabImages( image,data )
+
+		player=New Player
+		player.Layer=scene.Layers.Get( 6 )
+		player.Images=gfxMonkey
+		player.TaskManager=scene.TaskManager
+		player.Tattooed=True
+		player.Floating=True
+		
+	End
+
+	Method LoadLevel( path:String )
+
+		sceneBuilder.Load( path )
+		sceneBuilder.Build( scene )
+
+		collisionLayer=scene.GetLayer( "collision" )
+		collisionLayer.Enabled=False
+
+		pickups=Count( player.Layer,141 )
+
+	End
+
+	Method OnKeyEvent( event:KeyEvent ) Override
+		guiLayer[guiPage].SendKeyEvent( event )
+	End
+
+	Method OnMouseEvent( event:MouseEvent ) Override
+		guiLayer[guiPage].SendMouseEvent( event )
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+
+		scene.Draw( canvas )
+
+		DrawFader( canvas,fade )																							' Fade overlay.
+
+		guiLayer[guiPage].Draw( canvas )																					' Render the gui components.
+
+		If player.state=0
+			canvas.Font=font
+			canvas.Color=New Color( .5,1,0 )
+			canvas.DrawText( "Tap left mouse or space to start / jump",ScreenManager.Width*.5,ScreenManager.Height-font.Height-8,.5,0 )
+		Endif
+
+	End
+
+	Method OnStart() Override
+
+		LoadLevel( levels[level] )
+
+		' Set player start values:
+		player.FlippedX=1
+		player.Frame=0
+		player.Location=New Vec2f( 96,640 )
+		player.state=0
+		player.jumpY=0.0
+
+		camera.X=0
+		camera.Y=scene.Height-virtualResolution.Y
+
+	End
+
+	Method OnStop() Override
+		scene.ClearLayers()
+		level=0
+		fade=1
+		GCCollect()
+	End
+
+	Method OnUpdate() Override
+
+		scene.Update()																											' Update the scenegraph.
+		guiLayer[guiPage].Update()																								' Update the gui components.
+
+		If Keyboard.KeyHit( Key.Escape )
+			If Pause()
+				Pause( False )
+				guiPage=0
+			Else
+				Pause( True )
+				guiPage=1
+			Endif
+		Endif
+
+		' Fade logic:
+		If Pause()
+			fade-=.1
+			If fade<.25 fade=.25
+		Else
+			fade+=.1
+			If fade>1 fade=1
+		Endif
+
+	End
+
+End
+
+Class Menu Extends Screen
+
+	Global guiLayer:=New GuiLayer[2]
+	Global guiPage:=0
+	
+	Method New()
+
+		' Create the gui layers:
+		guiLayer[0]=New GuiLayer( ScreenManager )
+		guiLayer[1]=New GuiLayer( ScreenManager )
+
+		' Create the background:
+		Local background1:=New GuiImage
+		background1.Layer=guiLayer[0]
+		background1.Location=New Vec2f( PercentageOf( 50,virtualResolution.X ),PercentageOf( 50,virtualResolution.Y ) )
+		background1.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::gui_background.png" )
+	
+		Local logo:=New GuiImage
+		logo.Layer=guiLayer[0]
+		logo.Location=New Vec2f( PercentageOf( 50,virtualResolution.X ),PercentageOf( 50,virtualResolution.Y ) )
+		logo.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::logo.png" )
+
+		' Create the 'sound' button:
+		Local soundButton:=New Checkbox
+		soundButton.Layer=guiLayer[0]
+		soundButton.Surface.DrawData( GuiState.Idle,0 ).Image=Content.GetImage( "asset::sound_on_idle.png" )
+		soundButton.Surface.DrawData( GuiState.Down,0 ).Image=Content.GetImage( "asset::sound_on_down.png" )
+		soundButton.Surface.DrawData( GuiState.Idle,1 ).Image=Content.GetImage( "asset::sound_off_idle.png" )
+		soundButton.Surface.DrawData( GuiState.Down,1 ).Image=Content.GetImage( "asset::sound_off_down.png" )
+		soundButton.Location=New Vec2f( PercentageOf( 8,virtualResolution.X ),PercentageOf( 90,virtualResolution.Y ) )
+		soundButton.Pausable=False																								' Button ignores pause mode
+
+		' Create the 'info' button
+		Local infoButton:=New Button
+		infoButton.Layer=guiLayer[0]
+		infoButton.Name="info"
+		infoButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::info_idle.png" )
+		infoButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::info_down.png" )
+		infoButton.Location=New Vec2f( soundButton.X+soundButton.Width+8,soundButton.Y )
+		infoButton.Pausable=False																								' Button ignores pause mode.
+
+		' Create the 'start game' button
+		Local startButton:=New Button
+		startButton.Layer=guiLayer[0]
+		startButton.Name="start"
+		startButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::start_idle.png" )
+		startButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::start_down.png" )
+		startButton.Location=New Vec2f( 521,521 )
+		startButton.Pausable=False																								' Button ignores pause mode.
+
+		' Create the 'twitter' button
+		Local twitterButton:=New Button
+		twitterButton.Layer=guiLayer[0]
+		twitterButton.Name="twitter"
+		twitterButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::twitter_idle.png" )
+		twitterButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::twitter_down.png" )
+		twitterButton.Location=New Vec2f( PercentageOf( 83,virtualResolution.X ),PercentageOf( 90,virtualResolution.Y ) )
+		twitterButton.Pausable=False																				' Button ignores pause mode.
+
+		' Create the 'facebook' button
+		Local facebookButton:=New Button
+		facebookButton.Layer=guiLayer[0]
+		facebookButton.Name="facebook"
+		facebookButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::facebook_idle.png" )
+		facebookButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::facebook_down.png" )
+		facebookButton.Location=New Vec2f( twitterButton.X+twitterButton.Width+8,twitterButton.Y )
+		facebookButton.Pausable=False																				' Button ignores pause mode.
+
+		' Create the background:
+		Local background2:=New GuiImage
+		background2.Layer=guiLayer[1]
+		background2.Location=New Vec2f( PercentageOf( 50,virtualResolution.X ),PercentageOf( 50,virtualResolution.Y ) )
+		background2.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::gui_background.png" )
+	
+		Local info:=New GuiImage
+		info.Layer=guiLayer[1]
+		info.Location=New Vec2f( PercentageOf( 50,virtualResolution.X ),PercentageOf( 50,virtualResolution.Y )	)	' Uses PercentageOf to calculate location.
+		info.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::info.png" )
+
+		' Create the 'back' button
+		Local backButton:=New Button
+		backButton.Layer=guiLayer[1]
+		backButton.Name="back"
+		backButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::left_idle.png" )
+		backButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::left_down.png" )
+		backButton.Location=New Vec2f( PercentageOf( 8,virtualResolution.X ),PercentageOf( 90,virtualResolution.Y ) )
+		backButton.Pausable=False																					' Button ignores pause mode.
+
+		' Create the 'playniax' button
+		Local playniaxButton:=New Button
+		playniaxButton.Layer=guiLayer[1]
+		playniaxButton.Name="playniax"
+		playniaxButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::logo_playniax.png" )
+		playniaxButton.Surface.DrawData( GuiState.Down ).Scale=New Vec2f( .95,.95 )
+		playniaxButton.Location=New Vec2f( PercentageOf( 92,virtualResolution.X ),PercentageOf( 90,virtualResolution.Y ) )
+		playniaxButton.Pausable=False																				' Button ignores pause mode.
+
+	End
+
+	Method OnKeyEvent( event:KeyEvent ) Override
+		guiLayer[guiPage].SendKeyEvent( event )
+	End
+
+	Method OnMouseEvent( event:MouseEvent ) Override
+		guiLayer[guiPage].SendMouseEvent( event )
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+	
+		guiLayer[guiPage].Draw( canvas )
+		
+	End
+
+	Method OnUpdate() Override
+
+		guiLayer[guiPage].Update()
+
+	End
+
+End
+
+Class Player Extends LayerSprite
+
+	Field jumpY:=0.0
+	Field state:=0
+
+	Method OnUpdate() Override
+
+		If state>0
+
+			For Local s:=0 Until SPEED
+	
+				X+=FlippedX
+
+				For Local y:=-32 To 32 Step 32
+					Local objects:=collisionLayer.GetLayerObjects( X+32,Y+y )
+					If objects.Length>0 And FlippedX=1 And objects.Get( 0 ).GlobalProperties And objects.Get( 0 ).GlobalProperties.ReadInt( "gid" )=161
+						X+=32
+						FlippedX=-1
+					Endif
+				Next
+
+				For Local y:=-32 To 32 Step 32
+					Local objects:=collisionLayer.GetLayerObjects( X-32,Y+y )
+					If objects.Length>0 And FlippedX=-1 And objects.Get( 0 ).GlobalProperties And objects.Get( 0 ).GlobalProperties.ReadInt( "gid" )=161
+						X-=32
+						FlippedX=1
+					Endif
+				Next
+
+				If state=1
+				
+					Frame+=.3
+					Frame=Frame Mod Frames
+					
+					If ( Not pauseButton.PointInside( View.MouseLocation ) And Mouse.ButtonHit( MouseButton.Left ) ) Or Keyboard.KeyHit( Key.Space )
+						jumpY=-6
+						state=2
+					Endif
+	
+				Endif
+	
+				If state=1
+
+					Local sprites:=collisionLayer.GetLayerObjects( X,Y+64 )
+					If sprites.Length=0
+						jumpY=1
+						state=2
+					Endif
+
+				Endif
+				
+				If state=2
+				
+					Y+=jumpY
+	
+					jumpY+=.1
+
+					Local sprites:=collisionLayer.GetLayerObjects( X,Y+64 )
+					If sprites.Length>0
+						Local sprite:=sprites.Get( 0 )
+						If sprite And Y+64<sprite.Y And jumpY>0
+							Y=sprite.Y-80
+							state=1
+						Endif
+					Endif
+
+				Endif
+
+				For Local x:=-32 To 32 Step 32
+					For Local y:=-32 To 32 Step 32
+						Local objects:=Layer.GetLayerObjects( X+x,Y+y )
+						If objects.Length>0
+							If objects.Get( 0 ).GlobalProperties And objects.Get( 0 ).GlobalProperties.ReadInt( "gid" )=141
+								objects.Get( 0 ).Remove()
+								pickups-=1
+								Print pickups
+							Endif
+						Endif
+					Next
+				Next
+
+			Next
+	
+			UpdateCamera()
+
+		Endif
+
+		If state=0
+			If ( Not pauseButton.PointInside( View.MouseLocation ) And Mouse.ButtonHit( MouseButton.Left ) ) Or Keyboard.KeyHit( Key.Space )
+				state=1
+			Endif
+		Endif
+
+	End
+
+	Method UpdateCamera()
+
+		If FlippedX=1
+
+			If X>virtualResolution.x*.5 And X<=scene.Width-virtualResolution.X*.5
+				camera.X=X-virtualResolution.X*.5
+			Endif
+
+		Endif
+
+		If FlippedX=-1
+
+			If X>virtualResolution.x*.5+32 And X<=scene.Width-virtualResolution.X*.5+32
+				camera.X=X-virtualResolution.X*.5-32
+			Endif
+
+		Endif
+#rem
+		If Y<scene.Height-virtualResolution.Y*.5
+			camera.Y=Y-virtualResolution.Y*.5
+		Else
+			camera.Y=scene.Height-virtualResolution.Y
+		Endif
+#end
+	End
+
+End
+
+Class MainWindow Extends ScreenManager
+
+	Method New( title:String,width:Int,height:Int,flags:WindowFlags=WindowFlags.Resizable )
+
+		Super.New( title,width,height,flags )
+
+		ClearColor=New Color( 0,0,.2 )
+
+		Layout="letterbox"
+
+		font=Font.Load( "asset::fonts/DejaVuSans.ttf",40 )
+
+		game=New Game
+		menu=New Menu
+''		game.Set()
+
+	End
+
+	Method OnMeasure:Vec2i() Override
+		Return virtualResolution
+	End
+
+End
+
+Function Count:Int( layer:Layer,gid:Int )
+
+	Local count:=0
+
+	For Local obj:=Eachin layer.GetAllLayerObjects()
+		If obj.GlobalProperties And obj.GlobalProperties.ReadInt( "gid" )=gid count+=1
+	Next
+
+	Return count
+
+End
+
+Function Main()
+
+	New AppInstance
+	
+	New MainWindow( "Jungle",640,480 )
+
+	App.Run()
+
+End

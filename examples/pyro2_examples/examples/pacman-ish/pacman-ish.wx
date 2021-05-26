@@ -1,0 +1,504 @@
+#Import "assets/"
+
+#Import "<std>"
+#Import "<mojo>"
+#Import "<pyro-framework>"
+#Import "<pyro-scenegraph>"
+
+Using std..
+Using mojo..
+
+Using pyro.framework..
+Using pyro.scenegraph..
+
+Const TILE_SIZE:=32
+
+Const PLAYER_SPEED:=3
+
+Global camera:Camera
+Global candyLayer:Layer
+Global collisionLayer:Layer
+Global collisionMap:Int[,]
+Global game:Game
+Global ghosts:=New Stack<Ghost>
+Global player:Player
+Global scene:Scene
+Global sceneBuilder:SceneLoader
+Global virtualResolution:=New Vec2i( 1024,768 )
+
+Class Ghost Extends LayerSprite
+
+	Field imagePointer:Image[]											' Used to temp store the original images for a reset after killable mode.
+	Field killableTimer:=0												' The timer that determines how long the ghost is killable.
+	Field pathFinder:=New Pathfinder									' A path finder for each ghost.
+	Field pathIndex:=0
+	Field points:=0
+	Field speed:=Rnd( 1,3 )
+	Field state:=0
+
+	Method New( location:Vec2f,colorId:Int )
+
+		Layer=candyLayer												' Attach to the layer.
+		Images=LoadAnimation( "sprites/ghost_"+colorId+"_.png",2 )		' Load the correct image.
+		Location=location
+		CollisionWrite=True
+		Scale=New Vec2f													' Make 'inivisible' by setting scaling to 0 for nice 'appear' effect.
+		points=colorId*100												' Set the score reward based on colorID.
+		TaskManager=scene.TaskManager
+		imagePointer=Images												' Store the image pointer for reset.
+
+		Handle=New Vec2f( .5,.675 )										' We change the Y handle a bit to have the ghost display higher.
+
+		ghosts.Push( Self )
+
+	End
+
+	Method OnUpdate() Override
+
+		Frame+=.05
+		Frame=Frame Mod Frames
+
+		If player.state=1 Return
+
+		' When ghosts appear they have a nice 'appear' effect:
+		ScaleX+=.05
+		ScaleY+=.05
+		If ScaleX>1
+			ScaleX=1
+			ScaleY=1
+		Endif
+
+		If state=0
+
+			' Get the correct start and finish data for the path finder:
+			Local start:=New Vec2i( Int( X )/TILE_SIZE,Int( Y )/TILE_SIZE )
+			Local finish:=New Vec2i( Int( player.X )/TILE_SIZE,Int( player.Y )/TILE_SIZE )
+
+			' Prepare the map:
+			pathFinder.SetMap( collisionMap,start,finish )
+			
+			' If a path was found:
+			If pathFinder.Search()
+				Print "path = "+pathFinder.GetPathString()+" | Length = "+pathFinder.Length
+				pathIndex=0
+				state=1
+			Endif
+
+		Endif
+
+		For Local s:=0 Until speed
+
+			If state=1
+
+				' Get the direction from the path finder:
+				Local direction:=pathFinder.GetPathArray()[pathIndex/TILE_SIZE]
+
+				' Ghost movements:
+				If direction="L"
+					X-=1
+				Endif
+	
+				If direction="R"
+					X+=1
+				Endif
+	
+				If direction="U"
+					Y-=1
+				Endif
+	
+				If direction="D"
+					Y+=1
+				Endif
+	
+				' Next direction from array:
+				pathIndex+=1
+
+				' Pause the ghost a bit ( random between 1 and 3 seconds ) when when it arrives at the path finder finish to give the player a break:
+				If pathIndex>=( pathFinder.Length )*TILE_SIZE
+					state=0
+				Endif
+	
+			Endif
+
+		Next
+
+		If killableTimer<>0 And Millisecs()>killableTimer
+			Images=imagePointer																' Restore the correct images when ghost is no longer killable.
+			killableTimer=0
+		Endif
+
+	End
+
+	Method Remove() Override
+		ghosts.RemoveEach( Self )
+		Super.Remove()
+	End
+
+End
+
+Class Game Extends Screen
+
+	Field state:=0
+	Field waveTimer:=0
+
+	Method New()
+
+		scene=New Scene( ScreenManager )
+
+		camera=New Camera( scene )
+		camera.ClearColor=New Color( .25,0,0,1 )
+
+		sceneBuilder=New SceneLoader
+		sceneBuilder.Load( "scene/level01.txt" )
+		sceneBuilder.Build( scene )
+
+		scene.CollisionMonitor=New CollisionMonitor
+
+		collisionLayer=scene.GetLayer( "collisions" )
+		collisionLayer.Visible=False
+
+		candyLayer=scene.GetLayer( "candy" )
+
+		CreateCollisionMap()
+
+		' Create player sprite:
+		player=New Player( New Vec2f( 512+16,704+16 ) )
+
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+		scene.Draw( canvas )
+	End
+
+	Method OnUpdate() Override
+		UpdateGame()
+		scene.Update()
+	End
+
+	Method UpdateGame()
+
+		If player.state<>2
+
+			' Create ghost waves every 20 seconds:
+			If state=0
+				New Ghost( New Vec2f( 416+16,416+16 ),1 )
+				New Ghost( New Vec2f( 448+16,416+16 ),2 )
+				New Ghost( New Vec2f( 480+16,416+16 ),3 )
+				New Ghost( New Vec2f( 512+16,416+16 ),4 )
+				waveTimer=Millisecs()+20000						' Next wave in 20 seconds.
+				state=1
+			Endif
+	
+			' 20 seconds have passed?
+			If state=1
+				If Millisecs()>waveTimer
+					state=0
+				Endif
+			Endif
+
+		Endif
+
+	End
+
+End
+
+Class Message Extends LayerLabel
+
+	Field fadeSpeed:=0.0
+	Field zoomSpeed:=0.0
+
+	Method New( text:String,location:Vec2f,fadeSpeed:Float,zoomSpeed:Float )
+
+		Layer=candyLayer
+		Font=Content.GetFont( "fonts/arialbd.ttf",32 )
+		Text=text
+		Location=location
+		TaskManager=Layer.TaskManager
+
+		Self.fadeSpeed=fadeSpeed
+		Self.zoomSpeed=zoomSpeed
+
+	End
+
+	Method OnUpdate() Override
+
+		ScaleX+=zoomSpeed
+		ScaleY+=zoomSpeed
+
+		Alpha-=fadeSpeed
+		If Alpha<0 Remove()
+
+	End
+
+End
+
+Class Player Extends LayerSprite
+
+	Field speedX:=0.0
+	Field speedY:=0.0
+	Field state:=0
+
+	Method New( location:Vec2f )
+
+		Layer=candyLayer
+		Images=LoadAnimation( "sprites/pac_right.png",3 )
+		Location=location
+		CollisionRead=True																				' Enable collision monitor
+		TaskManager=scene.TaskManager
+		Floating=True
+
+	End
+
+	Method CheckSolidTiles:Bool( x:Int,y:Int )
+
+		Local sprites:=collisionLayer.GetLayerObjects( X+x*TILE_SIZE,Y+y*TILE_SIZE )
+		If sprites.Length=0 Return False
+		
+		Local globalProperties:=sprites.Get( 0 ).GlobalProperties
+		If globalProperties=Null Return False
+		
+		If globalProperties.ReadInt( "gid" )=31 Return True
+
+		Return False
+
+	End
+
+	' Circle type collisions
+	Method CollisionMethod:Bool( layerObject:LayerObject ) Override
+		Return Collision.Circles( X,Y,10,layerObject.X,layerObject.Y,10 )
+	End
+
+	Method OnCollision( layerObject:LayerObject ) Override
+
+		Local ghost:=Cast<Ghost>( layerObject )																	' Cast to ghost.
+
+		If ( ghost And ghost.killableTimer<>0 )
+			New Message( ghost.points,Location,.05,0 )
+			ghost.Remove()
+		Else
+			If state=0
+				New Message( "GAME OVER",virtualResolution*.5,.01,.002 )										' Show game over message.
+				state=1
+			Endif
+		Endif
+		
+	End
+	
+	Method OnUpdate() Override
+
+		If state=0
+
+			' Controls:
+	
+			If Keyboard.KeyDown( Key.Left )
+	
+				If Not speedY And Not CheckSolidTiles( -1,0 )
+	
+					Images=LoadAnimation( "sprites/pac_left.png",3 )
+	
+					speedX=-1
+					speedY=0
+	
+				Endif
+	
+			Endif
+	
+			If Keyboard.KeyDown( Key.Right )
+	
+				If Not speedY And Not CheckSolidTiles( 1,0 )
+	
+					Images=LoadAnimation( "sprites/pac_right.png",3 )
+	
+					speedX=1
+					speedY=0
+	
+				Endif
+	
+			Endif
+	
+			If Keyboard.KeyDown( Key.Up )
+	
+				If Not speedX And Not CheckSolidTiles( 0,-1 )
+	
+					Images=LoadAnimation( "sprites/pac_up.png",3 )
+	
+					speedX=0
+					speedY=-1
+	
+				Endif
+	
+			Endif
+	
+			If Keyboard.KeyDown( Key.Down )
+	
+				If Not speedX And Not CheckSolidTiles( 0,1 )
+	
+					Images=LoadAnimation( "sprites/pac_down.png",3 )
+	
+					speedX=0
+					speedY=1
+	
+				Endif
+	
+			Endif
+	
+			For Local s:=0 Until PLAYER_SPEED
+	
+				' Move
+				X+=speedX
+				Y+=speedY
+
+				If speedX And Int( ( X-TILE_SIZE*0.5 )/TILE_SIZE )*TILE_SIZE=X-TILE_SIZE*0.5 And ( Keyboard.KeyDown( Key.Up ) Or Keyboard.KeyDown( Key.Down ) )
+					If CheckSolidTiles( 0,-1 )=False speedX=0
+					If CheckSolidTiles( 0,1 )=False speedX=0
+				Endif
+
+				If speedY And Int( ( Y-TILE_SIZE*0.5 )/TILE_SIZE )*TILE_SIZE=Y-TILE_SIZE*0.5 And ( Keyboard.KeyDown( Key.Left ) Or Keyboard.KeyDown( Key.Right ) )
+					If CheckSolidTiles( -1,0 )=False speedY=0
+					If CheckSolidTiles( 1,0 )=False speedY=0
+				Endif
+
+				If speedX<0 And Int( ( X-TILE_SIZE*0.5 )/TILE_SIZE )*TILE_SIZE=X-TILE_SIZE*0.5
+					If CheckSolidTiles( -1,0 )=True speedX=0
+				Endif
+
+				If speedX>0 And Int( ( X-TILE_SIZE*0.5 )/TILE_SIZE )*TILE_SIZE=X-TILE_SIZE*0.5
+					If CheckSolidTiles( 1,0 )=True speedX=0
+				Endif
+
+				If speedY<0 And Int( ( Y-TILE_SIZE*0.5 )/TILE_SIZE )*TILE_SIZE=Y-TILE_SIZE*0.5
+					If CheckSolidTiles( 0,-1 )=True speedY=0
+				Endif
+
+				If speedY>0 And Int( ( Y-TILE_SIZE*0.5 )/TILE_SIZE )*TILE_SIZE=Y-TILE_SIZE*0.5
+					If CheckSolidTiles( 0,1 )=True speedY=0
+				Endif
+
+				' 27 is small point, 28 big point
+	
+				Local sprites:=candyLayer.GetLayerObjects( X,Y )
+
+				If sprites And sprites.Length<>0
+
+					Local sprite:=sprites.Get( 0 )
+
+					If sprite<>Self
+					
+						sprite.Remove()
+
+						Local properties:=sprite.GlobalProperties
+						If properties<>Null
+			
+							Local gid:=properties.ReadInt( "gid" )
+							If gid=28
+								For Local i:=0 Until ghosts.Length
+									ghosts.Get( i ).Images=LoadAnimation( "sprites/ghost_"+0+"_.png",2 )
+									ghosts.Get( i ).killableTimer=Millisecs()+8000
+								Next
+							Endif
+
+						Endif
+
+					Endif
+
+				Endif
+					
+				If speedX<>0 Or speedY<>0
+					Frame+=.1
+					Frame=Frame Mod Frames
+				Endif
+	
+			Next
+
+		Endif
+
+		' You are dead!
+		If state=1
+
+			ScaleX-=.05
+			ScaleY-=.05
+			If ScaleX<0
+				ScaleX=0
+				ScaleY=0
+				state=2
+				Layer=Null
+			Endif
+
+		Endif
+
+	End
+
+End
+
+Class MainWindow Extends ScreenManager
+
+	Method New( title:String,width:Int,height:Int,flags:WindowFlags=WindowFlags.Resizable )
+
+		Super.New( title,width,height,flags )
+
+		Layout="letterbox"
+
+		game=New Game
+
+	End
+
+	Method OnMeasure:Vec2i() Override
+		Return virtualResolution
+	End
+
+End
+
+' Creates a collision map from a tilemap:
+' Values <>0 are not passable.
+' Gid 31 is used to set a 1 in the path finder data grid.
+' A special tile layer is used to define the collisions or tiles that can't be passed.
+' You can load the tilemap with the Tiled map editor.
+Function CreateCollisionMap()
+
+	collisionMap=New Int[32,24]																' Init the map ( array )
+
+	For Local x:=0 Until collisionMap.GetSize( 0 )
+
+		For Local y:=0 Until collisionMap.GetSize( 1 )
+
+			Local sprites:=collisionLayer.GetLayerObjects( x,y,False )
+			If sprites=Null continue														' Should not be needed? ( pyro bug? )
+			If sprites.Length=0 Continue
+
+			Local properties:=sprites.Get( 0 ).GlobalProperties
+			If properties=Null Continue
+
+			Local gid:=properties.ReadInt( "gid" )
+			If gid=31 collisionMap[x,y]=1
+
+		Next
+
+	Next
+
+End
+
+Function LoadAnimation:Image[]( path:String,frames:Int )
+
+	Local image:=New Image[frames]
+
+	For Local i:=0 Until frames
+		Local frame:=""
+		If i<1000 frame="0"+i
+		If i<100 frame="00"+i
+		If i<10 frame="000"+i
+		image[i]=Content.GetImage( path.Replace( ".",frame+"." ) )
+	Next
+
+	Return image
+
+End
+
+Function Main()
+
+	New AppInstance
+	
+	New MainWindow( "Pacman-ish",640,480 )
+
+	App.Run()
+
+End

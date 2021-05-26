@@ -1,0 +1,268 @@
+#Import "particles/"
+#Import "scene/"
+#Import "sprites/"
+
+#Import "<std>"
+#Import "<mojo>"
+#Import "<pyro-framework>"
+#Import "<pyro-scenegraph>"
+
+Using std..
+Using mojo..
+Using pyro.framework..
+Using pyro.scenegraph..
+
+Const VIRTUAL_RESOLUTION:=New Vec2i( 1024,768 )
+
+Global camera:=New Camera[2]
+Global collisionLayer:=New CollisionLayer<LayerObject>( 8 )
+Global explosion:Emitter
+Global game:Game
+Global player:=New Player[2]
+Global scene:Scene
+Global sceneBuilder:SceneLoader
+Global smoke:Emitter
+
+Class Bullet Extends LayerSprite
+
+	Global collisionMask:Int[]
+
+	Field speed:=New Vec2f
+	Field ttl:=30
+
+	Method New( image:Image,scoreCollector:Player )
+
+		Layer=scene.Layers[1]
+		Image=image
+		Location=scoreCollector.Location
+		Rotation=scoreCollector.Rotation
+
+		ScoreSystem=New ScoreSystem
+		CollisionRead=True
+
+		ScoreCollector=scoreCollector
+
+		speed=New Vec2f( Cos( Rotation )*16,Sin( Rotation )*16 )
+
+		speed+=scoreCollector.speed											' Add ships speed to bullet.
+		Location-=scoreCollector.speed										' Compensate for the first update.
+
+		TaskManager=scene.TaskManager
+
+	End
+
+	Method CollisionMethod:Bool( layerObject:LayerObject ) Override
+		Return Collision.Circles( X,Y,16,layerObject.X,layerObject.Y,16 )
+	End
+
+	Method OnCollision( layerObject:LayerObject ) Override
+		UpdateScoreSystem( layerObject )
+	End
+
+	Method OnOutro( layerObject:LayerObject ) Override
+		smoke.Play( Layer,Location )
+	End
+
+	Method OnUpdate() Override
+
+		Location+=speed
+		
+		ttl-=1
+		If ttl<0 Remove()
+
+		If collisionLayer.Get( Location,collisionMask )
+			OnOutro( Null )
+			Remove()
+		Endif
+
+	End
+
+End
+
+Class Game Extends Screen
+
+	Method New()
+
+		' Create scene:
+		scene=New Scene( ScreenManager )
+		scene.CollisionMonitor=New CollisionMonitor
+
+		' Create cameras for the scene:		
+		camera[0]=New Camera( scene )
+		camera[0].ClearColor=New Color( .25,0,0,1 )
+
+		camera[1]=New Camera( scene )
+		camera[1].ClearColor=New Color( .25,0,0,1 )
+
+		' Init splitscreen:
+		SetHorizontalSplitScreen( camera[0],camera[1],VIRTUAL_RESOLUTION )
+		
+		' Load scene:
+		sceneBuilder=New SceneLoader
+		sceneBuilder.Load( "asset::scene.txt" )
+		sceneBuilder.Build( scene )
+
+		scene.Layers[0].Multiplier=New Vec2f( .5,.5 )
+
+		' Build collision layer:
+		Local sprites:=scene.Layers[1].GetAllLayerObjects()
+		For Local i:=0 Until sprites.Length
+			Local properties:=sprites.Get( i ).Properties
+			If properties<>Null
+				Local collisionMask:=properties.ReadString( "collisionMask" )
+				If collisionMask
+					collisionMask="asset::"+collisionMask
+					collisionLayer.Draw( sprites.Get( i ).Location,sprites.Get( i ),collisionLayer.Load( collisionMask ) )
+				Endif
+			Endif
+		Next
+
+		' Create players:
+		player[0]=New Player( New Image[]( Image.Load( "asset::p10000.png" ),Image.Load( "asset::p10001.png" ) ),New Vec2f( VIRTUAL_RESOLUTION.X*.25,VIRTUAL_RESOLUTION.Y*.5 ),Key.Left,Key.Right,Key.Up,Key.M ) 
+		player[1]=New Player( New Image[]( Image.Load( "asset::p20000.png" ),Image.Load( "asset::p20001.png" ) ),New Vec2f( VIRTUAL_RESOLUTION.X*.25+128,VIRTUAL_RESOLUTION.Y*.5 ),Key.Z,Key.X,Key.C,Key.V )
+
+		' Load collision mask for players:
+		Bullet.collisionMask=collisionLayer.Load( "asset::bullet.txt" )
+		Player.collisionMask=collisionLayer.Load( "asset::player.txt" )
+
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+
+		scene.Draw( canvas )
+
+'		If Keyboard.KeyDown( Key.Space ) collisionLayer.Draw( canvas )
+
+	End
+
+	Method OnUpdate() Override
+
+		scene.Update()
+
+		' Sync cameras with players:
+		camera[0].X=player[0].X-VIRTUAL_RESOLUTION.X*.25
+		camera[0].Y=player[0].Y-VIRTUAL_RESOLUTION.Y*.5
+
+		camera[1].X=player[1].X-VIRTUAL_RESOLUTION.X*.25
+		camera[1].Y=player[1].Y-VIRTUAL_RESOLUTION.Y*.5
+
+	End
+
+End
+
+Class Player Extends LayerSprite
+
+	Global collisionMask:Int[]
+
+	Field fire:=Key.None
+	Field fireDelay:=0
+	Field left:=Key.None
+	Field right:=Key.None
+	Field speed:=New Vec2f
+	Field throttle:=Key.None
+
+	Method New( images:Image[],location:Vec2f,left:Key,right:Key,throttle:Key,fire:Key )
+
+		Layer=scene.Layers[1]
+		Images=images
+		Location=location
+		Rotation=270/360.0*TwoPi
+
+		ScoreSystem=New ScoreSystem
+		CollisionRead=True
+		CollisionWrite=True
+
+		ScoreSystem.Stamina=10
+
+		TaskManager=scene.TaskManager
+
+		Self.left=left
+		Self.right=right
+		Self.throttle=throttle
+		Self.fire=fire
+
+	End
+
+	Method OnCollision( layerObject:LayerObject ) Override
+		UpdateScoreSystem( layerObject )
+	End
+
+	Method OnOutro( layerObject:LayerObject ) Override
+		explosion.Play( Layer,Location )
+	End
+
+	Method OnUpdate() Override
+
+		' Player turn control:
+		If Keyboard.KeyDown( left ) Rotation-=.1
+		If Keyboard.KeyDown( right ) Rotation+=.1
+
+		' Player throttle control:
+		If Keyboard.KeyDown( throttle )
+
+			speed.X+=Cos( Rotation )*.2
+			speed.Y+=Sin( Rotation )*.2
+
+		Endif
+
+		Location+=speed
+
+		' Fire bullets:
+		If Keyboard.KeyDown( fire ) And fireDelay<Millisecs()
+			New Bullet( Image.Load( "asset::bullet.png" ),Self )
+			fireDelay=Millisecs()+100
+		Endif
+
+		' Animate:
+		Frame+=.5
+		Frame=Frame Mod Images.Length
+
+		' Gravity:
+		speed.Y+=.025
+
+		' Slow down:
+		speed*=New Vec2f( .99,.99 )
+
+		If collisionLayer.Get( Location,collisionMask )
+			OnOutro( Null )
+			Remove()
+		Endif
+
+	End
+
+End
+
+Class MainWindow Extends ScreenManager
+
+	Method New( title:String,width:Int,height:Int,flags:WindowFlags=WindowFlags.Resizable )
+
+		Super.New( title,width,height,flags )
+
+		' Load particle effects:
+		explosion=New Emitter( "asset::explosion.txt" )
+		smoke=New Emitter( "asset::smoke.txt" )
+
+		Layout="letterbox"
+
+		ClearColor=New Color( 0,0,.5 )
+
+		game=New Game
+		game.Set()
+
+	End
+
+	Method OnMeasure:Vec2i() Override
+		Return VIRTUAL_RESOLUTION
+	End
+
+End
+
+Function Main()
+
+	New AppInstance
+	
+	New MainWindow( "Gravity Zone",640,480 )
+
+	App.Run()
+
+End

@@ -1,0 +1,132 @@
+class=Layer
+name=layer 0
+
+class=Layer
+name=layer 1
+
+class=Layer
+name=layer 2
+
+class=Layer
+name=layer 3
+
+class=Layer
+name=layer 4
+
+class=Layer
+name=layer 5
+
+class=Layer
+verticalCells=32
+horizontalCells=32
+name=layer 6
+
+class=Layer
+verticalCells=32
+horizontalCells=32
+name=collision
+
+class=LayerSprite
+imagePath=bg1.png
+layer=layer 0
+tattooed=True
+x=900
+y=384
+
+class=LayerSprite
+imagePath=bg1.png
+layer=layer 0
+tattooed=True
+x=2700
+y=384
+
+class=LayerSprite
+imagePath=bg2.png
+layer=layer 1
+tattooed=True
+x=900
+y=384
+
+class=LayerSprite
+imagePath=bg2.png
+layer=layer 1
+tattooed=True
+x=2700
+y=384
+
+class=LayerSprite
+imagePath=bg2.png
+layer=layer 1
+tattooed=True
+x=4500
+y=384
+
+class=LayerSprite
+imagePath=bg3.png
+layer=layer 2
+tattooed=True
+x=900
+y=384
+
+class=LayerSprite
+imagePath=bg3.png
+layer=layer 2
+tattooed=True
+x=2700
+y=384
+
+class=LayerSprite
+imagePath=bg3.png
+layer=layer 2
+tattooed=True
+x=4500
+y=384
+
+class=LayerSprite
+imagePath=bg3.png
+layer=layer 2
+tattooed=True
+x=6300
+y=384
+
+class=LayerSprite
+imagePath=bg3.png
+layer=layer 2
+tattooed=True
+x=8100
+y=384
+
+class=LayerSprite
+imagePath=st.png
+layer=layer 3
+tattooed=True
+x=558
+y=572
+
+class=LayerSprite
+imagePath=st.png
+layer=layer 3
+tattooed=True
+x=1838
+y=572
+
+class=LayerSprite
+imagePath=t1.png
+layer=layer 4
+tattooed=True
+x=1085
+y=501
+
+class=LayerSprite
+imagePath=t2.png
+layer=layer 4
+tattooed=True
+x=3072.5
+y=451.5
+
+class=LayerSprite
+imagePath=mist.png
+layer=layer 5
+tattooed=True
+x=512
+y=500

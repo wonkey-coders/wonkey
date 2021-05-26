@@ -1,0 +1,264 @@
+#Import "fonts/"
+#Import "particles/"
+#Import "sprites/"
+
+#Import "<std>"
+#Import "<mojo>"
+#Import "<pyro-framework>"
+#Import "<pyro-scenegraph>"
+
+Using std..
+Using mojo..
+Using pyro.framework..
+Using pyro.scenegraph..
+
+Global camera:Camera
+Global collisionLayer:=New CollisionLayer <LayerObject>( 1 )
+Global explosion:Emitter
+Global layer:Layer
+Global leaf:=New Leaf[2]
+Global player:Player
+Global scene:Scene
+Global virtualResolution:=New Vec2i( 600,600 )
+
+Class Fire Extends LayerSprite
+
+	Field glowSpeed:=.01
+
+	Method New( layer:Layer,image:Image )
+		Super.New( layer,image )
+	End
+
+	Method OnUpdate() Override
+
+		Alpha+=glowSpeed
+
+		If Alpha<0
+			Alpha=0
+			glowSpeed=-glowSpeed
+		Endif
+
+		If Alpha>1
+			Alpha=1
+			glowSpeed=-glowSpeed
+		Endif
+
+	End
+
+End
+
+Class Leaf Extends LayerSprite
+	Global angle:=0.0
+	Method New()
+		Layer=layer
+		Image=Content.GetImage( "asset::leaves.png" )
+		Location=New Vec2f( 300,300)
+		Scale=New Vec2f( 1.4,1.4 )
+	End
+End
+
+Class Player Extends LayerSprite
+
+	Global collisionMask:Int[]
+	Global shadow:=New Image[2]
+
+	Field sticky:=False
+
+	Method AtLocation:Bool( location:Vec2i )
+
+		If X<location.X-Width/2 Return False
+		If Y<location.Y-Height/2 Return False
+		If X>location.X+Width/2 Return False
+		If Y>location.Y+Height/2 Return False
+
+		Return True
+
+	End
+
+	Method Draw( canvas:Canvas ) Override
+
+		canvas.PushMatrix()
+
+		canvas.BlendMode=BlendMode
+		canvas.Color=Color
+
+		DrawImage( canvas,shadow[0],Location.X+8,Location.Y+8,0,Scale.X,Scale.Y )
+		Super.Draw( canvas )
+		DrawImage( canvas,shadow[1],Location.X,Location.Y,0,Scale.X,Scale.Y )
+
+		canvas.PopMatrix()
+
+	End
+
+	Method Inflation ()
+
+		If ScaleX<1
+			ScaleX+=.05
+			ScaleY+=.05
+			If ScaleX>1
+				ScaleX=1
+				ScaleY=1
+			Endif
+		Endif
+
+	End
+
+	Method MoveTowards:Bool( location:Vec2i,steps:Float=10 )
+
+		X+=( location.X-X )/steps
+		Y+=( location.Y-Y )/steps
+
+		If Round( X )=location.X And Round( Y )=location.Y Return True
+
+		Return False
+		
+	End
+
+	Method OnUpdate() Override
+
+		Inflation()
+
+		If Mouse.ButtonDown( MouseButton.Left )
+			If PointInside( camera,View.MouseLocation ) sticky=True
+		Else
+			sticky=False
+		Endif
+
+		If sticky And Not AtLocation( View.MouseLocation )
+			If Not MoveTowards ( View.MouseLocation )
+				Frame-=1
+				If Frame<0 Frame=Frames
+			Endif
+		Endif
+
+		Rotation=ATan2( Y-View.MouseLocation.Y,X-View.MouseLocation.X )
+
+		If collisionMask And collisionLayer.Get( Location,collisionMask )
+			explosion.Play( Layer,Location )
+			New TextMessage( "OOPS, TRY AGAIN!" )
+			Location=New Vec2f( 200,100 )
+			Scale=New Vec2f( 0,0 )
+			sticky=False
+		Endif
+
+		If AtLocation( New Vec2i( 310,302 ) )
+			New TextMessage( "YOU DID IT!" )
+			Enabled=False
+		Endif
+
+	End
+	
+End
+
+Class TextMessage Extends LayerLabel
+
+	Method New( text:String )
+
+		Layer=layer
+		Font=Content.GetFont( "asset::arialbd.ttf",48 )
+		Text=text
+		Location=New Vec2f( 300,300 )
+		
+		TaskManager=scene.TaskManager
+
+	End
+
+	Method OnUpdate() Override
+
+''		ScaleX+=.01
+''		ScaleY+=.01
+
+		Alpha-=.01
+		If Alpha<0 Remove()
+
+	End
+
+End
+
+Class MainWindow Extends Window
+
+	Method New( title:String,width:Int,height:Int,flags:WindowFlags=WindowFlags.Resizable )
+
+		Super.New( title,width,height,flags )
+
+		Layout="letterbox"
+
+		ClearColor=New Color( 0,0,.1 )
+
+		scene=New Scene( Self )
+
+		camera=New Camera( scene )
+
+		layer=New Layer( scene )
+
+		Local background:=New LayerSprite( layer,Image.Load( "asset::bg.png" ) )
+		background.Location=New Vec2f( 300,300)
+
+		Local ring:=New LayerSprite( layer,Image.Load( "asset::ring.png" ) )
+		ring.Location=New Vec2f( 300,300)
+
+		Local fire:=New Fire( layer,Image.Load( "asset::ring.png" ) )
+		fire.TaskManager=scene.TaskManager
+		fire.Location=New Vec2f( 300,300)
+		fire.BlendMode=mojo.graphics.BlendMode.Additive
+
+		collisionLayer.Draw( fire.Location,fire,collisionLayer.Load( "asset::ring.txt" ) )
+
+		player=New Player
+		player.Layer=layer
+		player.Images=LoadFrames( "asset::ball.png",17 )
+		player.Location=New Vec2f( 200,100 )
+		player.Scale=New Vec2f
+		player.TaskManager=scene.TaskManager
+
+		player.collisionMask=collisionLayer.Load( "asset::ball.txt" )
+
+		player.shadow[0]=Image.Load( "asset::ballshadow1.png" )
+		player.shadow[1]=Image.Load( "asset::ballshadow2.png" )
+
+		Local location:=New Vec2f[]( New Vec2f( 65,66 ),New Vec2f( 180,24 ),New Vec2f( 475,24 ),New Vec2f( 535,138 ),New Vec2f( 513,522 ),New Vec2f( 105,557 ),New Vec2f( 45,554 ) )
+
+		For Local i:=0 Until location.Length
+			Local sprite:=New LayerSprite( layer,Content.GetImage( "asset::"+i+".png" ) )
+			sprite.Location=location[i]
+		Next
+
+		leaf[0]=New Leaf
+		leaf[1]=New Leaf
+
+		explosion=New Emitter( "asset::explosion.txt" )
+
+		New TextMessage( "GET TO THE CENTER!" )
+
+	End
+
+	Method OnMeasure:Vec2i() Override
+		Return virtualResolution
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+	
+		App.RequestRender()
+
+		scene.Update()
+
+		scene.Draw( canvas )
+		
+		leaf[0].Rotation=Sin( Leaf.angle/360.0*TwoPi )/5
+		leaf[1].Rotation=Sin( Leaf.angle/360.0*TwoPi )/5/2+90/360.0*TwoPi
+
+		Leaf.angle+=1
+
+	End
+
+End
+
+Function Main()
+
+	New AppInstance
+	
+	New MainWindow( "Spiral",600,600 )
+	
+	App.Run()
+
+End
