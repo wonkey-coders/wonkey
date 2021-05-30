@@ -23,7 +23,7 @@ inline wxString wxDBType( wxFloat *p ){ return "Float"; }
 inline wxString wxDBType( wxDouble *p ){ return "Double"; }
 inline wxString wxDBType( wxString *p ){ return "String"; }
 
-inline wxString wxDBValue( void *p ){ return "?????"; }
+inline wxString wxDBValue( void *p ){ return wxString( wxULong(p) ); } // return "?????"
 inline wxString wxDBValue( wxBool *p ){ return *p ? "True" : "False"; }
 inline wxString wxDBValue( wxByte *p ){ return wxString(*p); }
 inline wxString wxDBValue( wxUByte *p ){ return wxString(*p); }
@@ -99,6 +99,7 @@ namespace wxDB{
 	extern int nextSeq;
 	extern wxDBContext *currentContext;
 #endif
+	extern wxDBContext mainContext;
 	
 	void init();
 	void stop();
@@ -110,10 +111,13 @@ namespace wxDB{
 
 struct wxDBBlock{
 	wxDBVar *locals;
-	wxDBBlock():locals( wxDB::currentContext->locals ){
+    wxDBBlock(){
+        if(!wxDB::currentContext) return;
+	    locals = wxDB::currentContext->locals;
 		if( wxDB::currentContext->stepMode=='l' ) --wxDB::currentContext->stopped;
 	}
 	~wxDBBlock(){
+        if(!wxDB::currentContext) return;
 		if( wxDB::currentContext->stepMode=='l' ) ++wxDB::currentContext->stopped;
 		wxDB::currentContext->locals=locals;
 	}
@@ -125,15 +129,19 @@ struct wxDBFrame : public wxDBBlock{
 	const char *srcFile;
 	int srcPos;
 	int seq;
-	
-	wxDBFrame( const char *decl,const char *srcFile ):succ( wxDB::currentContext->frames ),decl( decl ),srcFile( srcFile ),seq( ++wxDB::nextSeq ){
+
+	wxDBFrame( const char *decl,const char *srcFile ):decl( decl ),srcFile( srcFile ),seq( ++wxDB::nextSeq ){
+        if(!wxDB::currentContext) return;
+        succ = wxDB::currentContext->frames;
 		wxDB::currentContext->frames=this;
 		if( wxDB::currentContext->stepMode=='s' ) --wxDB::currentContext->stopped;
 	}
 	
 	~wxDBFrame(){
+        if(!wxDB::currentContext) return;
 		if( wxDB::currentContext->stepMode=='s' ) ++wxDB::currentContext->stopped;
 		wxDB::currentContext->frames=succ;
+        if(wxDB::currentContext != &wxDB::mainContext) wxDB::currentContext=nullptr;
 	}
 };
 
@@ -145,7 +153,10 @@ struct wxDBLoop : public wxDBBlock{
 };
 
 inline void wxDBStmt( int srcPos ){
-	wxDB::currentContext->frames->srcPos=srcPos;
+    if(!wxDB::currentContext) return;
+    if(wxDB::currentContext->frames) {
+        wxDB::currentContext->frames->srcPos=srcPos;
+    }
 	if( wxDB::currentContext->stopped>0 ) wxDB::stopped();
 }
 
@@ -159,10 +170,13 @@ template<class T> void wxDBEmit( const char *name,wxGCVar<T> *p ){
 }
 
 template<class T> void wxDBLocal( const char *name,T *var ){
-	wxDB::currentContext->locals->name=name;
-	wxDB::currentContext->locals->type=&wxDBVarType_t<T>::info;
-	wxDB::currentContext->locals->var=var;
-	++wxDB::currentContext->locals;
+    if(!wxDB::currentContext) return;
+    if(wxDB::currentContext->locals) {
+        wxDB::currentContext->locals->name=name;
+        wxDB::currentContext->locals->type=&wxDBVarType_t<T>::info;
+        wxDB::currentContext->locals->var=var;
+        ++wxDB::currentContext->locals;
+    }
 }
 
 #endif

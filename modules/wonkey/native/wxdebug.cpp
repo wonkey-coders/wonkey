@@ -130,6 +130,7 @@ namespace wxDB{
 	}
 	
 	void emitStack(){
+	    if(!currentContext) return;
 		wxDBVar *ev=currentContext->locals;
 		
 		for( wxDBFrame *f=currentContext->frames;f;f=f->succ ){
@@ -186,16 +187,18 @@ namespace wxDB{
 #ifdef __EMSCRIPTEN__
 			emscripten_resume_main_loop();
 #endif
-			switch( e[0] ){
-			case 'r':currentContext->stopped=0;currentContext->stepMode=0;break;
-			case 'e':currentContext->stopped=1;currentContext->stepMode=0;break;
-			case 's':currentContext->stopped=1;currentContext->stepMode='s';break;
-			case 'l':currentContext->stopped=0;currentContext->stepMode='l';break;
-			case '@':emit( e+1 );continue;
-			case 'q':exit( 0 );break;
-			default:
-				wx_printf( "Unrecognized debug cmd: %s\n",buf );fflush( stdout );
-				exit( -1 );
+			if(currentContext) {
+                switch( e[0] ){
+                case 'r':currentContext->stopped=0;currentContext->stepMode=0;break;
+                case 'e':currentContext->stopped=1;currentContext->stepMode=0;break;
+                case 's':currentContext->stopped=1;currentContext->stepMode='s';break;
+                case 'l':currentContext->stopped=0;currentContext->stepMode='l';break;
+                case '@':emit( e+1 );continue;
+                case 'q':exit( 0 );break;
+                default:
+                    wx_printf( "Unrecognized debug cmd: %s\n",buf );fflush( stdout );
+                    exit( -1 );
+                }
 			}
 			return;
 		}
@@ -204,15 +207,19 @@ namespace wxDB{
 	wxArray<wxString> stack(){
 	
 		int n=0;
-		for( wxDBFrame *frame=currentContext->frames;frame;frame=frame->succ ) ++n;
+		if(currentContext) {
+            for (wxDBFrame *frame = currentContext->frames; frame; frame = frame->succ) ++n;
+        }
 		
 		//TODO: Fix GC issues! Can't have a free local like this in case wxString ctors cause gc sweep!!!!
 		wxArray<wxString> st=wxArray<wxString>( n );
 		
 		int i=0;
-		for( wxDBFrame *frame=currentContext->frames;frame;frame=frame->succ ){
-			st[i++]=WX_T( frame->srcFile )+" ["+wxString( frame->srcPos>>12 )+"] "+frame->decl;
-		}
+        if(currentContext) {
+            for (wxDBFrame *frame = currentContext->frames; frame; frame = frame->succ) {
+                st[i++] = WX_T(frame->srcFile) + " [" + wxString(frame->srcPos >> 12) + "] " + frame->decl;
+            }
+        }
 		
 		return st;
 	}
