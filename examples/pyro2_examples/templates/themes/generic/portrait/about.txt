@@ -1,0 +1,33 @@
+name=about
+
+name=about
+x=320
+y=480
+
+name=logo
+x=320
+y=175
+
+name=text
+x=320
+y=361
+
+name=programming by
+x=320
+y=442
+
+name=programmer
+x=320
+y=478
+
+name=graphics by
+x=320
+y=536
+
+name=artist
+x=320
+y=572
+
+name=back
+x=320
+y=817

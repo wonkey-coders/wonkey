@@ -1,0 +1,1146 @@
+Enum Compression
+	none=0
+	gzip=1
+	zlib=2
+End
+
+Enum Encoding
+	xml=0
+	csv=1
+	base64=2
+End
+
+Enum Orientation
+	orthogonal=0
+	isometric=1
+	staggered=2
+End
+
+Class TiledException Extends Throwable
+
+    Field message:=""
+    
+    Method New (msg:String)
+        Self.message = msg
+    End
+
+End
+
+Class Tiled
+
+	Property Data:String[]()
+		_data=ResizeArray( _data,_dataIndex+1 )
+		Return _data
+	End
+
+	Property ProcessInvisibles:Bool()
+		Return _processInvisibles
+	Setter( processInvisibles:Bool )
+		_processInvisibles=processInvisibles
+	End
+
+	Property Version:String()
+		Return _GetStringAttribute( _xmlData.Root,"version","1.0" )
+	End
+
+	Method LoadMap( filePath:String )
+
+		_data=New String[AutoResize]
+		_dataIndex=0
+	
+		Local parser:=New XMLParser
+	
+		_xmlData=parser.ParseFile( filePath )
+
+		Local prefix:=ExtractDir( filePath )
+		If prefix="" prefix+="asset::"
+
+		_CreateData( prefix )
+
+	End
+
+	Method CopyExternals( sourceDir:String,destinationDir:String,toConsole:Bool=False )
+
+		sourceDir=sourceDir.Replace( "\","/" )
+		destinationDir=destinationDir.Replace( "\","/" )
+
+		If Not sourceDir.EndsWith( "/" ) sourceDir+="/"
+		If Not destinationDir.EndsWith( "/" ) destinationDir+="/"
+
+		For Local i:=0 Until _externals.Length
+
+			Local file:=StripDir( _externals[i] )
+
+			If toConsole=True Print "Copying "+sourceDir+_externals[i]+" to "+destinationDir+file
+
+			CopyFile( sourceDir+"/"+_externals[i],destinationDir+"/"+file )
+			
+			_externals[i]=file
+
+		Next
+
+	End
+
+'	Private
+
+	Method _CreateData( prefix:String )
+
+		Local node:=_xmlData.Root
+
+		If node.Members.Length=0 Return
+
+		_height=_GetIntAttribute( node,"height" )
+		_width=_GetIntAttribute( node,"width" )
+		_orientation=_GetOrientation( _GetStringAttribute( node,"orientation" ) )
+		_tileWidth=_GetIntAttribute( node,"tilewidth" )
+		_tileHeight=_GetIntAttribute( node,"tileheight" )
+		_halfTileWidth=_tileWidth*.5
+		_halfTileHeight=_tileHeight*.5
+
+		_data[_dataIndex]+="height="+_height*_tileHeight+"~n"
+		_data[_dataIndex]+="orientation="+_orientation+"~n"
+		_data[_dataIndex]+="tileHeight="+_tileHeight+"~n"
+		_data[_dataIndex]+="tileWidth="+_tileWidth+"~n"
+		_data[_dataIndex]+="width="+_width*_tileWidth+"~n"
+
+		If node.Members.Length>0
+
+			For Local mapchild:=Eachin node.Members
+
+				Select mapchild.Name
+
+					Case "tileset"
+
+						_GetTileSet( mapchild,Int( mapchild.GetAttribute( "firstgid" ) ),prefix )
+
+					Case "layer"
+
+						_GetTileLayer( mapchild )
+
+					Case "objectgroup"
+					
+						_GetLayerSpriteGroup( mapchild )
+
+					Case "imagelayer"
+					
+						_GetImageLayer( mapchild )
+
+					Case "properties"
+
+						Local properties:=_GetProperties( node )
+						If properties
+							_data[_dataIndex]+="properties="+properties+"~n"
+						Endif
+
+				End Select
+
+			Next
+			
+		Endif
+
+	End
+
+	Method _GetCompression:Int( compression:String )
+	
+		Select compression
+
+			Case "gzip"
+				Return Compression.gzip
+
+			Case "zlib"
+				Return Compression.zlib
+
+			Default
+				Return Compression.none
+
+		End Select
+
+		Return 0
+
+	End
+
+	Method _GetEncoding:Int( encoding:String )
+	
+		Select encoding
+		
+			Case "csv"
+				Return Encoding.csv
+
+			Case "base64"
+				Return Encoding.base64
+
+			Default
+				Return Encoding.xml
+
+		End Select
+
+		Return 0
+
+	End
+
+	Method _GetGlobalProperties:String( node:XMLElement )
+
+		Local data:=""
+
+		For Local i1:=0 Until node.Members.Length
+
+			If node.Members.Get( i1 ).Name="properties"
+
+				For Local i2:=0 Until node.Members.Get( i1 ).Members.Length
+
+					If node.Members.Get( i1 ).Members.Get( i2 ).Name="property"
+
+						Local name:=node.Members.Get( i1 ).Members.Get( i2 ).GetAttribute( "name","default" )
+						Local value:=node.Members.Get( i1 ).Members.Get( i2 ).GetAttribute( "value","" )
+
+						If data data+="~n"
+
+						data+=name+"="+value
+
+					Endif
+
+				Next
+
+				Return data
+
+			Endif
+
+		Next
+
+		Return data
+
+	End
+
+	Method _GetImageLayer( node:XMLElement )
+
+		If node.HasAttribute( "visible" )
+			If _processInvisibles=False And node.GetAttribute( "visible" )=0 Return
+		Endif
+
+		Local name:=_GetStringAttribute( node,"name" )
+		Local properties:=_GetProperties( node )
+		
+		If _data[_dataIndex] _dataIndex+=1
+		If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+		_data[_dataIndex]+="class=Layer"+"~n"
+
+'		_data[_dataIndex]+="cellHeight="+_tileHeight+"~n"
+'		_data[_dataIndex]+="cellWidth="+_tileWidth+"~n"
+
+		If name<>"" _data[_dataIndex]+="name="+name+"~n"
+		If properties<>"" _data[_dataIndex]+="properties="+properties+"~n"
+
+		If node.HasAttribute( "visible" )
+			If node.GetAttribute( "visible" )<>0 _data[_dataIndex]+="visible=True"+"~n" Else _data[_dataIndex]+="visible=False"+"~n"
+		Endif
+
+		For Local images:=Eachin node.Members
+			If images.Name="image"
+				If images.HasAttribute( "source" )
+					If _data[_dataIndex] _dataIndex+=1
+					If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+					Local source:=_GetStringAttribute( images,"source" )
+					Local x:=_GetIntAttribute( node,"x" )
+					Local y:=_GetIntAttribute( node,"y" )
+					_data[_dataIndex]+="class=LayerSprite"+"~n"
+					_data[_dataIndex]+="handleX=0"+"~n"
+					_data[_dataIndex]+="handleY=0"+"~n"
+					_data[_dataIndex]+="imagePath="+StripDir( source )+"~n"
+					_data[_dataIndex]+="layer="+name+"~n"
+					_data[_dataIndex]+="x="+x+"~n"
+					_data[_dataIndex]+="y="+y+"~n"
+					_externals.Push( source )
+				Endif
+			Endif
+		Next
+
+	End
+
+	Method _GetLayerSpriteGroup( node:XMLElement )
+
+		If node.HasAttribute( "visible" )
+			If _processInvisibles=False And node.GetAttribute( "visible" )=0 Return
+		Endif
+
+		Local name:=_GetStringAttribute( node,"name" )
+		Local properties:=_GetProperties( node )
+
+		If _data[_dataIndex] _dataIndex+=1
+		If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+		_data[_dataIndex]+="class=Layer"+"~n"
+
+'		_data[_dataIndex]+="cellHeight="+_tileHeight+"~n"
+'		_data[_dataIndex]+="cellWidth="+_tileWidth+"~n"
+
+		If name<>"" _data[_dataIndex]+="name="+name+"~n"
+		If properties<>"" _data[_dataIndex]+="properties="+properties+"~n"
+
+		If node.HasAttribute( "visible" )
+			If node.GetAttribute( "visible" )<>0 _data[_dataIndex]+="visible=True"+"~n" Else _data[_dataIndex]+="visible=False"+"~n"
+		Endif
+
+		For Local i:=0 Until node.Members.Length
+			If node.Members.Get( i ).Name="object"
+				_GetLayerSprite( name,node.Members.Get( i ) )
+			Endif
+		Next
+		
+	End
+
+	Method _GetLayerSprite( layerName:String,node:XMLElement )
+
+		Local name:=_GetStringAttribute( node,"name" )
+		Local height:=_GetIntAttribute( node,"height" )
+		Local id:=_GetIntAttribute( node,"id" )
+		Local properties:=_GetProperties( node )
+		Local rotation:=_GetIntAttribute( node,"rotation" )
+		Local type:=_GetStringAttribute( node,"type" )
+		Local width:=_GetIntAttribute( node,"width" )
+		Local x:=_GetIntAttribute( node,"x" )
+		Local y:=_GetIntAttribute( node,"y" )
+
+		Local shape:=""
+		Local visible:=""
+
+		If node.HasAttribute( "visible" )
+			If node.GetAttribute( "visible" )<>0 visible="True"+"~n" Else visible="False"
+		Endif
+
+		If id
+			If properties properties+=","
+			properties+="[id="+id+"]"
+		Endif
+
+		If type
+			If properties properties+=","
+			properties+="[type="+type+"]"
+		Endif
+
+		If node.HasAttribute( "gid" )
+
+			If _data[_dataIndex] _dataIndex+=1
+			If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+			_data[_dataIndex]+="class=LayerSprite"+"~n"
+
+			Local data:=Int( node.GetAttribute( "gid" ) )
+
+			If BitTest( FlippedX,data ) _data[_dataIndex]+="flippedX=-1~n"
+			If BitTest( FlippedY,data ) _data[_dataIndex]+="flippedY=-1~n"
+			If BitTest( FlippedXY,data ) _data[_dataIndex]+="flippedXY=-1~n"
+
+			Local gid:=data&$fffffff
+
+			If ( gid<_gid.Length And _gid[gid] )
+				_data[_dataIndex]+="frameTime="+_frameTime[gid]+"~n"
+				_data[_dataIndex]+="imagePath=gid_"+_gid[gid]+".png"+"~n"
+			Else
+				_data[_dataIndex]+="imagePath=gid_"+gid+".png"+"~n"
+			Endif
+
+			_data[_dataIndex]+="handleX=0"+"~n"
+			_data[_dataIndex]+="handleY=1"+"~n"
+
+			If height _data[_dataIndex]+="height="+height+"~n"
+			_data[_dataIndex]+="layer="+layerName+"~n"
+			If name<>"" _data[_dataIndex]+="name="+name+"~n"
+			If _orientation<>0 _data[_dataIndex]+="orientation="+_orientation+"~n"
+			If properties<>"" _data[_dataIndex]+="properties="+properties+"~n"
+			If rotation<>0 _data[_dataIndex]+="rotation="+rotation+"~n"
+			If visible<>"" _data[_dataIndex]+="visible="+visible+"~n"
+			If width _data[_dataIndex]+="width="+width+"~n"
+			_data[_dataIndex]+="x="+x+"~n"
+			_data[_dataIndex]+="y="+y+"~n"
+			''Print x+"|"+y
+		Else
+
+			shape="rectangle"
+
+		Endif
+
+		If _orientation=1
+			x+=_tileHeight*.5
+			y-=_tileHeight*.5
+		Endif
+
+		Local child:XMLElement
+
+		For Local i:=0 Until node.Members.Length
+
+			child=node.Members.Get( i )
+
+			Select child.Name
+
+				Case "ellipse"
+				
+					shape=child.Name
+
+				Case "polygon"
+				
+					shape=child.Name
+
+				Case "polyline"
+				
+					shape=child.Name
+
+			End Select
+
+		Next
+
+		Select shape
+
+			Case "ellipse"
+
+				If _data[_dataIndex] _dataIndex+=1
+				If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+				_data[_dataIndex]+="class=LayerEllipse"+"~n"
+				_data[_dataIndex]+="handleX=0"+"~n"
+				_data[_dataIndex]+="handleY=0"+"~n"
+				_data[_dataIndex]+="height="+height+"~n"
+				_data[_dataIndex]+="layer="+layerName+"~n"
+				If name<>"" _data[_dataIndex]+="name="+name+"~n"
+				If _orientation<>0 _data[_dataIndex]+="orientation="+_orientation+"~n"
+				If properties<>"" _data[_dataIndex]+="properties="+properties+"~n"
+				If rotation<>0 _data[_dataIndex]+="rotation="+-rotation+"~n"
+				If visible<>"" _data[_dataIndex]+="visible="+visible+"~n"
+				_data[_dataIndex]+="x="+x+"~n"
+				_data[_dataIndex]+="y="+y+"~n"
+				_data[_dataIndex]+="width="+width+"~n"
+
+			Case "polygon"
+
+				If child.HasAttribute( "points" )
+
+					Local verts:=child.GetAttribute( "points" ).Replace( " ","," )
+
+					If _data[_dataIndex] _dataIndex+=1
+					If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+	
+					_data[_dataIndex]+="class=LayerPolygon"+"~n"
+					_data[_dataIndex]+="handleX=0"+"~n"
+					_data[_dataIndex]+="handleY=0"+"~n"
+					_data[_dataIndex]+="layer="+layerName+"~n"
+					If name<>"" _data[_dataIndex]+="name="+name+"~n"
+					If _orientation<>0 _data[_dataIndex]+="orientation="+_orientation+"~n"
+					If properties<>"" _data[_dataIndex]+="properties="+properties+"~n"
+					If rotation<>0 _data[_dataIndex]+="rotation="+-rotation+"~n"
+					_data[_dataIndex]+="vertices="+verts+"~n"
+					If visible<>"" _data[_dataIndex]+="visible="+visible+"~n"
+					_data[_dataIndex]+="x="+x+"~n"
+					_data[_dataIndex]+="y="+y+"~n"
+
+				Endif
+
+			Case "polyline"
+
+				If child.HasAttribute( "points" )
+
+					Local verts:=child.GetAttribute( "points" ).Replace( " ","," )
+
+					If _data[_dataIndex] _dataIndex+=1
+					If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+	
+					_data[_dataIndex]+="class=LayerPolygon"+"~n"
+					_data[_dataIndex]+="handleX=0"+"~n"
+					_data[_dataIndex]+="handleY=0"+"~n"
+					_data[_dataIndex]+="layer="+layerName+"~n"
+					If name<>"" _data[_dataIndex]+="name="+name+"~n"
+					If _orientation<>0 _data[_dataIndex]+="orientation="+_orientation+"~n"
+					If properties<>"" _data[_dataIndex]+="properties="+properties+"~n"
+					If rotation<>0 _data[_dataIndex]+="rotation="+-rotation+"~n"
+					_data[_dataIndex]+="type=1"+"~n"
+					_data[_dataIndex]+="vertices="+verts+"~n"
+					If visible<>"" _data[_dataIndex]+="visible="+visible+"~n"
+					_data[_dataIndex]+="x="+x+"~n"
+					_data[_dataIndex]+="y="+y+"~n"
+
+				Endif
+
+			Case "rectangle"
+
+				If _data[_dataIndex] _dataIndex+=1
+				If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+				_data[_dataIndex]+="class=LayerRectangle"+"~n"
+				_data[_dataIndex]+="handleX=0"+"~n"
+				_data[_dataIndex]+="handleY=0"+"~n"
+				_data[_dataIndex]+="height="+height+"~n"
+				_data[_dataIndex]+="layer="+layerName+"~n"
+				If name<>"" _data[_dataIndex]+="name="+name+"~n"
+				If _orientation<>0 _data[_dataIndex]+="orientation="+_orientation+"~n"
+				If properties<>"" _data[_dataIndex]+="properties="+properties+"~n"
+				If rotation<>0 _data[_dataIndex]+="rotation="+-rotation+"~n"
+				If visible<>"" _data[_dataIndex]+="visible="+visible+"~n"
+				_data[_dataIndex]+="x="+x+"~n"
+				_data[_dataIndex]+="y="+y+"~n"
+				_data[_dataIndex]+="width="+width+"~n"
+
+		End Select
+
+	End
+	
+	Method _GetTileSet( node:XMLElement,firstgid:Int,prefix:String )
+
+		If node.HasAttribute( "source" )
+
+			Local parser:=New XMLParser()
+			Local tilesetdoc:=parser.ParseFile( prefix+node.GetAttribute( "source" ) )
+
+		    _GetTileSet( tilesetdoc.Root,firstgid,prefix )
+
+		Else
+
+			If node.Members.Length>0
+
+				For Local i:=0 Until node.Members.Length
+
+					If node.Members.Get( i ).Name="image"
+
+						Local margin:=_GetIntAttribute( node,"margin" )
+						Local name:=_GetStringAttribute( node,"name" )
+						Local padding:=_GetBoolAttribute( node,"padding" )
+						Local properties:=_GetProperties( node )
+						Local source:=_GetStringAttribute( node.Members.Get( i ),"source" )
+						Local spacing:=_GetIntAttribute( node,"spacing" )
+						Local tileHeight:=_GetIntAttribute( node,"tileheight" )
+						Local tileWidth:=_GetIntAttribute( node,"tilewidth" )
+
+						_tileset.CreateTileset( Image.Load( prefix+source ),tileWidth,tileHeight,margin,spacing,padding )
+
+#rem
+						If _data[_dataIndex] _dataIndex+=1
+						If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+						_data[_dataIndex]+="bitmap="+source+"~n"
+						_data[_dataIndex]+="class=Tileset"+"~n"
+						_data[_dataIndex]+="margin="+margin+"~n"
+						If name<>"" _data[_dataIndex]+="name="+name+"~n"
+
+						If padding _data[_dataIndex]+="padding=True"+"~n" Else _data[_dataIndex]+="padding=False"+"~n"
+
+						If properties
+							If name properties=properties.Replace( "[","["+name+"." )
+							_data[_dataIndex]+="properties="+properties+"~n"
+						Endif
+
+						_data[_dataIndex]+="spacing="+spacing+"~n"
+						_data[_dataIndex]+="tileHeight="+tileHeight+"~n"
+						_data[_dataIndex]+="tileWidth="+tileWidth+"~n"
+#end
+					Else If node.Members.Get( i ).Name="tile"
+
+						Local id:=_GetIntAttribute( node.Members.Get( i ),"id" )
+						Local terrain:=_GetStringAttribute( node.Members.Get( i ),"terrain" )
+						Local probability:=_GetFloatAttribute( node.Members.Get( i ),"probability" )
+
+						Local gid:=id+firstgid
+						Local globalProperties:=_GetGlobalProperties( node.Members.Get( i ) )
+
+						_SetAnimation( gid,firstgid,node.Members.Get( i ) )
+
+						If globalProperties
+
+							If node.Members.Get( i ).HasAttribute( "id" ) globalProperties+="id="+id+"~n"
+							If node.Members.Get( i ).HasAttribute( "probability" ) globalProperties+="probability="+probability+"~n"
+							If node.Members.Get( i ).HasAttribute( "terrain" ) globalProperties+="terrain="+terrain+"~n"
+
+							_tileset._tilesetTile[ gid ]._properties=globalProperties.Trim()
+
+						Endif
+
+					Endif
+
+				Next
+
+			Endif
+
+		End
+				
+	End
+
+	Method _GetTileLayer( node:XMLElement )
+
+		If node.HasAttribute( "visible" )
+			If _processInvisibles=False And node.GetAttribute( "visible" )=0 Return
+		Endif
+
+		Local name:=_GetStringAttribute( node,"name" )
+		Local properties:=_GetProperties( node )
+
+		If _data[_dataIndex] _dataIndex+=1
+		If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+		_data[_dataIndex]+="class=Layer"+"~n"
+
+		_data[_dataIndex]+="cellHeight="+_tileHeight+"~n"
+		_data[_dataIndex]+="cellWidth="+_tileWidth+"~n"
+
+		If name<>"" _data[_dataIndex]+="name="+name+"~n"
+		If properties<>"" _data[_dataIndex]+="properties="+properties+"~n"
+
+		If node.HasAttribute( "visible" )
+			If node.GetAttribute( "visible" )<>0 _data[_dataIndex]+="visible=True"+"~n" Else _data[_dataIndex]+="visible=False"+"~n"
+		Endif
+
+		For Local i:=0 Until node.Members.Length
+			If node.Members.Get( i ).Name="data"
+				_GetTileData( name,node.Members.Get( i ) )
+			Endif
+		Next
+
+	End
+
+	Method _GetTileData( layerName:String,node:XMLElement )
+
+		Local compression:=_GetCompression( _GetStringAttribute( node,"compression" ) )
+		Local encoding:=_GetEncoding( _GetStringAttribute( node,"encoding" ) )
+
+		If encoding=Encoding.base64 And compression<>Compression.none
+			Throw New TiledException( "Compression is currently not supported.~n~nPlease turn compression off in Tiled before exporting data!" )
+		Endif
+
+		Select encoding
+		
+			Case Encoding.xml
+
+				Local counter:=0
+
+				For Local i:=0 Until node.Members.Length
+
+					If node.Members.Get( i ).Name="tile"
+
+						Local data:=0
+
+						If node.Members.Get( i ).HasAttribute( "gid" ) data=Int( node.Members.Get( i ).GetAttribute( "gid" ) )
+
+						If data=0
+							counter+=1
+							Continue
+						Endif
+
+						Local gid:=data&$fffffff
+						
+						If _data[_dataIndex] _dataIndex+=1
+						If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+						_data[_dataIndex]+="class=LayerSprite~n"
+	
+						If BitTest( FlippedX,data ) _data[_dataIndex]+="flippedX=-1~n"
+						If BitTest( FlippedY,data ) _data[_dataIndex]+="flippedY=-1~n"
+						If BitTest( FlippedXY,data ) _data[_dataIndex]+="flippedXY=-1~n"
+	
+						If ( gid<_gid.Length And _gid[gid] )
+							_data[_dataIndex]+="frameTime="+_frameTime[gid]+"~n"
+							_data[_dataIndex]+="imagePath=gid_"+_gid[gid]+".png"+"~n"
+						Else
+							_data[_dataIndex]+="imagePath=gid_"+gid+".png"+"~n"
+						Endif
+
+						_data[_dataIndex]+="layer="+layerName+"~n"
+
+						_data[_dataIndex]+="globalPropertiesPath=gid_"+gid+".txt"+"~n"
+						_data[_dataIndex]+="identifier="+gid+"~n"
+
+						Local x:=0
+						Local y:=0
+						Local tileX:=counter Mod _width
+						Local tileY:=counter/_width
+
+						Local offsetX:=_tileset.GetImage( gid ).Handle.X*_tileset.GetTilesetTile( gid )._width
+						Local offsetY:=_tileset.GetImage( gid ).Handle.Y*_tileset.GetTilesetTile( gid )._height
+	
+						offsetY+=_tileHeight-_tileset.GetTilesetTile( gid )._height
+	
+						Select _orientation
+	
+						Case 0
+
+							x=tileX*_tileWidth+offsetX
+							y=tileY*_tileHeight+offsetY
+
+						Case 1
+	
+							x=( tileX*_halfTileWidth )-( tileY*_halfTileWidth )+offsetX
+							y=( tileX*_halfTileHeight )+( tileY*_halfTileHeight )+offsetY
+
+						End Select
+
+						_data[_dataIndex]+="x="+x+"~n"
+						_data[_dataIndex]+="y="+y+"~n"
+
+						counter+=1
+
+					Endif
+
+				Next
+
+			Case Encoding.csv
+
+				Local csv:String[]=node.Value.Split( "," )
+
+				For Local i:=0 Until csv.Length				
+
+					Local data:=Int( csv[i].Trim() )
+					
+					If data=0 Continue
+
+					Local gid:=data&$FFFFFFF
+
+					If _data[_dataIndex] _dataIndex+=1
+					If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+					_data[_dataIndex]+="class=LayerSprite~n"
+
+					If BitTest( FlippedX,data ) _data[_dataIndex]+="flippedX=-1~n"
+					If BitTest( FlippedY,data ) _data[_dataIndex]+="flippedY=-1~n"
+					If BitTest( FlippedXY,data ) _data[_dataIndex]+="flippedXY=-1~n"
+
+					If ( gid<_gid.Length And _gid[gid] )
+						_data[_dataIndex]+="frameTime="+_frameTime[gid]+"~n"
+						_data[_dataIndex]+="imagePath=gid_"+_gid[gid]+".png"+"~n"
+					Else
+						_data[_dataIndex]+="imagePath=gid_"+gid+".png"+"~n"
+					Endif
+
+					_data[_dataIndex]+="layer="+layerName+"~n"
+
+					_data[_dataIndex]+="globalPropertiesPath=gid_"+gid+".txt"+"~n"
+					_data[_dataIndex]+="identifier="+gid+"~n"
+
+					Local x:=0
+					Local y:=0
+					Local tileX:=i Mod _width
+					Local tileY:=i/_width
+
+					Local offsetX:=_tileset.GetTilesetTile( gid )._width*_tileset.GetImage( gid ).Handle.X
+					Local offsetY:=_tileset.GetTilesetTile( gid )._height*_tileset.GetImage( gid ).Handle.Y
+
+					offsetY+=_tileHeight-_tileset.GetTilesetTile( gid )._height
+
+					Select _orientation
+
+					Case 0
+
+						x=tileX*_tileWidth+offsetX
+						y=tileY*_tileHeight+offsetY
+
+					Case 1
+
+						x=( tileX*_halfTileWidth )-( tileY*_halfTileWidth )+offsetX
+						y=( tileX*_halfTileHeight )+( tileY*_halfTileHeight )+offsetY
+
+					End Select
+					
+					_data[_dataIndex]+="x="+x+"~n"
+					_data[_dataIndex]+="y="+y+"~n"
+
+				Next
+				
+			Case Encoding.base64
+
+				Local bytes:Int[]=Base64.DecodeBytes( node.Value )
+
+				For Local i:=0 Until bytes.Length Step 4
+
+					Local data:Int=bytes[i]
+
+					If data=0 Continue
+
+					data+=bytes[i+1] Shl 8
+					data+=bytes[i+2] Shl 16
+					data+=bytes[i+3] Shl 24
+					
+					Local gid:=data&$FFFFFFF
+
+					If _data[_dataIndex] _dataIndex+=1
+					If _data.Length<=_dataIndex _data=ResizeArray( _data,_dataIndex+AutoResize )
+
+					_data[_dataIndex]+="class=LayerSprite~n"
+
+					If BitTest( FlippedX,data ) _data[_dataIndex]+="flippedX=-1~n"
+					If BitTest( FlippedY,data ) _data[_dataIndex]+="flippedY=-1~n"
+					If BitTest( FlippedXY,data ) _data[_dataIndex]+="flippedXY=-1~n"
+
+					If ( gid<_gid.Length And _gid[gid] )
+						_data[_dataIndex]+="frameTime="+_frameTime[gid]+"~n"
+						_data[_dataIndex]+="imagePath=gid_"+_gid[gid]+".png"+"~n"
+					Else
+						_data[_dataIndex]+="imagePath=gid_"+gid+".png"+"~n"
+					Endif
+
+					_data[_dataIndex]+="layer="+layerName+"~n"
+
+					_data[_dataIndex]+="globalPropertiesPath=gid_"+gid+".txt"+"~n"
+					_data[_dataIndex]+="identifier="+gid+"~n"
+
+					Local x:=0
+					Local y:=0
+					Local tileX:=( i/4 ) Mod _width
+					Local tileY:=( i/4 )/_width
+
+					Local offsetX:=_tileset.GetImage( gid ).Handle.X*_tileset.GetTilesetTile( gid )._width
+					Local offsetY:=_tileset.GetImage( gid ).Handle.Y*_tileset.GetTilesetTile( gid )._height
+
+					offsetY+=_tileHeight-_tileset.GetTilesetTile( gid )._height
+
+					Select _orientation
+
+					Case 0
+
+						x=tileX*_tileWidth+offsetX
+						y=tileY*_tileHeight+offsetY
+
+					Case 1
+
+						x=( tileX*_halfTileWidth )-( tileY*_halfTileWidth )+offsetX
+						y=( tileX*_halfTileHeight )+( tileY*_halfTileHeight )+offsetY
+
+					End Select
+
+					_data[_dataIndex]+="x="+x+"~n"
+					_data[_dataIndex]+="y="+y+"~n"
+
+				Next
+
+		End Select
+
+	End
+
+	Method _GetOrientation:Int( orientation:String )
+		
+		Select orientation
+		
+			Case "orthogonal"
+				Return Orientation.orthogonal
+
+			Case "isometric"
+				Return Orientation.isometric
+
+			Case "staggered"
+				Return Orientation.staggered
+
+			Default
+				Return Orientation.orthogonal
+
+		End Select
+
+		Return 0
+
+	End
+
+	Method _GetProperties:String( node:XMLElement )
+
+		Local data:=""
+
+		For Local i1:=0 Until node.Members.Length
+
+			If node.Members.Get( i1 ).Name="properties"
+
+				For Local i2:=0 Until node.Members.Get( i1 ).Members.Length
+
+					If node.Members.Get( i1 ).Members.Get( i2 ).Name="property"
+
+						Local name:=node.Members.Get( i1 ).Members.Get( i2 ).GetAttribute( "name","default" )
+						Local value:=node.Members.Get( i1 ).Members.Get( i2 ).GetAttribute( "value","" )
+
+						If data data+=","
+
+						data+=( "["+name+"="+value+"]" )
+
+					Endif
+
+				Next
+
+				Return data
+
+			Endif
+
+		Next
+
+		Return data
+
+	End
+
+	Method _SetAnimation( gid:Int,firstgid:Int,node:XMLElement )
+
+		For Local i1:=0 Until node.Members.Length
+
+			If node.Members.Get( i1 ).Name="animation"
+
+				For Local i2:=0 Until node.Members.Get( i1 ).Members.Length
+
+					If node.Members.Get( i1 ).Members.Get( i2 ).Name="frame"
+
+						If Not node.Members.Get( i1 ).Members.Get( i2 ).HasAttribute( "tileid" ) Continue
+						If Not node.Members.Get( i1 ).Members.Get( i2 ).HasAttribute( "duration" ) Continue
+
+						Local tileid:=Int( node.Members.Get( i1 ).Members.Get( i2 ).GetAttribute( "tileid" ) )
+						Local frameTime:=Int( node.Members.Get( i1 ).Members.Get( i2 ).GetAttribute( "duration" ) )
+
+						If _gid.Length<gid+1
+							_frameTime=ResizeArray( _frameTime,gid+1 )
+							_gid=ResizeArray( _gid,gid+1 )
+						Endif
+
+						If _frameTime[gid] _frameTime[gid]+=","
+						If _gid[gid] _gid[gid]+=".png,gid_"
+
+						_frameTime[gid]+=frameTime
+						_gid[gid]+=( tileid+firstgid )
+
+					Endif
+
+				Next
+
+			Endif
+
+		Next
+
+	End
+
+	Function _GetBoolAttribute:Bool( node:XMLElement,attribute:String,defaultAttribute:Bool=False )
+
+		If node.HasAttribute( attribute )
+			If node.GetAttribute( attribute )<>0 Return True
+		Endif
+
+		Return defaultAttribute
+
+	End
+	
+	Function _GetFloatAttribute:Int( node:XMLElement,attribute:String,defaultAttribute:Float=0.0 )
+		If node.HasAttribute( attribute ) Return Float( node.GetAttribute( attribute ) )
+		Return defaultAttribute
+	End
+	
+	Function _GetIntAttribute:Int( node:XMLElement,attribute:String,defaultAttribute:Int=0 )
+		If node.HasAttribute( attribute ) Return Int( node.GetAttribute( attribute ) )
+		Return defaultAttribute
+	End
+	
+	Function _GetStringAttribute:String( node:XMLElement,attribute:String,defaultAttribute:String="" )
+		If node.HasAttribute( attribute ) Return node.GetAttribute( attribute )
+		Return defaultAttribute
+	End
+
+	Const AutoResize:=1024
+	Const FlippedX:=31
+    Const FlippedY:=30
+    Const FlippedXY:=29
+
+	Field _data:String[]
+	Field _dataIndex:=0
+	Field _externals:=New Stack<String>
+	Field _frameTime:String[]
+	Field _gid:String[]
+	Field _halfTileHeight:=0
+	Field _halfTileWidth:=0
+	Field _height:Int
+	Field _orientation:String
+	Field _processInvisibles:=True
+	Field _tileHeight:Int
+	Field _tileWidth:Int
+	Field _tileset:=New Tileset
+	Field _width:Int
+	Field _xmlData:XMLDocument
+
+End
+
+Class Tileset
+
+	Property MaxGid:Int()
+		Return _tilesetTile.Length-1
+	End
+
+	Method BordersDuplicated:Bool()
+
+		For Local i:=0 Until _tilesetTile.Length
+			Local tilesetTile:=_tilesetTile[i]
+			If tilesetTile<>Null And tilesetTile._image<>Null And tilesetTile._padding=False Return False
+		Next
+
+		Return True
+
+	End
+
+	Method CreateTileset( image:Image,tileWidth:Int,tileHeight:Int,margin:Int=0,spacing:Int=0,padding:Bool=False,handle:Vec2f=New Vec2f( .5,.5 ) )
+
+		DebugAssert( image, "Error loading tileset image!" )
+
+		Local width:=Int( image.Width/( tileWidth+spacing ) )
+		Local height:=Int( image.Height/( tileHeight+spacing ) )
+
+		Local firstGid:=_tilesetTile.Length
+
+		Local tiles:=_tilesetTile.Length
+
+		_tilesetTile=ResizeArray( _tilesetTile,firstGid+width*height )
+
+		Local x:=0
+		Local y:=margin
+
+		For Local h:=0 Until height
+
+			x=margin
+
+			For Local w:=0 Until width
+			
+				Local gid:=firstGid+h*width+w
+
+				_tilesetTile[ gid ]=New TilesetTile
+
+				_tilesetTile[ gid ]._image=New Image( image,New Recti( x,y,x+tileWidth,y+tileHeight ) )
+				_tilesetTile[ gid ]._image.Handle=handle
+				_tilesetTile[ gid ]._localId=gid-firstGid+1
+				_tilesetTile[ gid ]._width=tileWidth
+				_tilesetTile[ gid ]._height=tileHeight
+				_tilesetTile[ gid ]._padding=padding
+
+				If padding
+					_tilesetTile[ gid ]._width-=2
+					_tilesetTile[ gid ]._height-=2
+				Endif
+
+				gid+=1
+
+				x+=tileWidth+spacing
+
+			Next
+
+			y+=tileHeight+spacing
+
+		Next
+
+	End
+
+	Method DuplicateBorders( border:Int=0 )
+
+		For Local i:=0 Until _tilesetTile.Length
+			Local tilesetTile:=_tilesetTile[i]
+			If tilesetTile<>Null And tilesetTile._image<>Null And tilesetTile._padding=False
+				tilesetTile._image=DuplicateBorders( tilesetTile._image,border )
+				tilesetTile._padding=True
+			Endif
+		Next
+
+	End
+
+	Method DuplicateBorders:Image( sourceImage:Image,border:Int=0 )
+
+		Local image:=New Image( sourceImage.Width+border*2,sourceImage.Height+border*2,TextureFlags.Dynamic )
+
+		Local canvas:=New Canvas( image )
+
+		Local width:=sourceImage.Width
+		Local height:=sourceImage.Height
+		
+		image.Handle=sourceImage.Handle
+
+		sourceImage.Handle=New Vec2f( 0,0 )
+
+		canvas.Clear( New Color( 0,0,0,0 ) )
+		canvas.DrawImage( sourceImage,border,border )
+
+		If border>0
+
+			canvas.DrawRect( 0,0,border,height,sourceImage,0,0,border,height )
+			canvas.DrawRect( width+border,0,border,height,sourceImage,width-border,0,border,height )
+			canvas.DrawRect( 0,0,width,border,sourceImage,0,0,width,border )
+			canvas.DrawRect( 0,height+border,width,border,sourceImage,0,height-border,width,border )
+	
+			canvas.DrawRect( 0,0,border,border,sourceImage,0,0 )
+			canvas.DrawRect( width+border,0,border,border,sourceImage,width,0 )
+			canvas.DrawRect( 0,height+border,border,border,sourceImage,0,height )
+			canvas.DrawRect( width+border,height+border,border,border,sourceImage,width,height )
+
+		Endif
+
+		canvas.Flush()
+
+'		sourceImage.Discard()
+
+		Return image
+
+	End
+
+	Method GetImage:Image( gid:Int )
+		Return _tilesetTile[gid]._image
+	End
+
+	Method GetTilesetTile:TilesetTile( gid:Int )
+		If gid<1 Or gid>MaxGid Return Null
+		Return _tilesetTile[gid]
+	End
+
+	Method SaveTiles( destinationDir:String )
+
+		destinationDir=destinationDir.Replace( "\","/" )
+
+		If Not destinationDir.EndsWith( "/" ) destinationDir+="/"
+
+		For Local gid:=1 Until _pixmaps.Length
+
+			_tilesetTile[ gid ]._properties=SortString( _tilesetTile[ gid ]._properties )
+			SaveString( _tilesetTile[ gid ]._properties,destinationDir+"gid_"+gid+".txt" )
+
+			_pixmaps[gid].Save( destinationDir+"gid_"+gid+".png" )
+
+''			_pixmaps[gid].Discard()
+
+		Next
+
+	End
+
+	Method ToPixmaps( destinationDir:String )
+
+		destinationDir=destinationDir.Replace( "\","/" )
+
+		If Not destinationDir.EndsWith( "/" ) destinationDir+="/"
+
+		_pixmaps=New Pixmap[_tilesetTile.Length]
+
+		For Local gid:=1 Until _tilesetTile.Length
+
+			Local image:=_tilesetTile[ gid ]._image
+			Local canvas:=New Canvas( image )
+
+			_pixmaps[gid]=canvas.CopyPixmap( canvas.Viewport )
+
+			_pixmaps[gid].Save( destinationDir+"gid_"+gid+".png" )
+
+''			_pixmaps[gid].Discard()
+
+		Next
+
+	End
+
+	Method Draw( canvas:Canvas,x:Int,y:Int,width:Int,height:Int,firstGid:Int=1 )
+
+		For Local h:=0 Until width
+			For Local v:=0 Until height
+				Local gid:=firstGid+v*width+h
+				If gid>0 And gid<MaxGid canvas.DrawImage( _tilesetTile[gid]._image,x+( h*_tilesetTile[gid]._image.Width ),y+( v*_tilesetTile[gid]._image.Height ) )
+			Next
+		Next
+
+	End
+
+	Field _pixmaps:Pixmap[]
+	Field _tilesetTile:=New TilesetTile[1]
+
+End
+
+Class TilesetTile
+
+	Field _height:=0
+	Field _image:Image
+	Field _localId:=0
+	Field _padding:=False
+	Field _properties:String
+	Field _value:=0
+	Field _width:=0
+
+End

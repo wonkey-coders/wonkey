@@ -1,0 +1,311 @@
+#Import "<std>"
+#Import "<mojo>"
+
+#Import "assets/"
+
+Using std..
+Using mojo..
+
+Class MainWindow Extends Window
+
+	Method New( title:String,width:Int,height:Int,flags:WindowFlags=WindowFlags.Resizable )
+
+		Super.New( title,width,height,flags )
+
+		_image=Image.Load( "asset::platform.png" )
+		_image.Handle=New Vec2f( .5,.5 )
+		
+	End
+
+	Method AddDot( x:Int,y:Int )
+		_dots=_dots.Resize( _dots.Length+2 )
+		_dots[_dots.Length-2]=x
+		_dots[_dots.Length-1]=y
+	End
+
+	Method DataToConsole()
+
+		Local p:=""
+
+		For Local i:=_dots.Length-2 To 0 Step -2
+			If p p=p+", "
+			p+=_dots[i]+".0,"+_dots[i+1]+".0"
+		Next
+
+		If p Print p+"~n"
+
+	End
+
+	Method DrawDots( canvas:Canvas,size:Int=3,lines:Bool=False )
+
+		canvas.PushMatrix()
+
+		For Local Dot:=0 Until _dots.Length Step 2
+
+			If lines And Dot<_dots.Length-3
+				canvas.DrawLine( _location.X+_dots[Dot],_location.Y+_dots[Dot+1], _location.X+_dots[Dot+2],_location.Y+_dots[Dot+3] )
+			Endif
+
+			If size>0 canvas.DrawEllipse( _location.X+_dots[Dot],_location.Y+_dots[Dot+1],size,size )
+
+		Next
+
+		If lines And _dots.Length>=6
+			canvas.DrawLine( _location.X+_dots[0],_location.Y+_dots[1], _location.X+_dots[_dots.Length-2],_location.Y+_dots[_dots.Length-1] )
+		Endif
+
+		canvas.PopMatrix()
+
+	End
+
+	Method Editor()
+
+		Local x:Float=Mouse.X-_location.X
+		Local y:Float=Mouse.Y-_location.Y
+
+		x-=Width*.5
+		y-=Height*.5
+
+		x+=_camera.X
+		y+=_camera.Y
+
+		x/=_zoom
+		y/=_zoom
+
+		If _editState=0
+
+			If Mouse.ButtonDown( MouseButton.Left )
+
+				_index=MouseOverDot()
+				
+				If _index=-1
+
+					AddDot( x,y )
+					
+					_editState=1
+
+				Else
+
+					_editState=2
+
+				Endif
+
+			Endif
+
+		Endif
+
+		If _editState=1
+			If Not Mouse.ButtonDown( MouseButton.Left ) _editState=0
+		Endif
+
+		If _editState=2
+
+			SetDot( _index,x,y )
+
+			If Not Mouse.ButtonDown( MouseButton.Left ) _editState=0
+
+		Endif
+
+		If Mouse.ButtonDown( MouseButton.Right )
+
+			For Local i:=0 Until _dots.Length Step 2
+
+				Local x:=_location.X+_dots[i]
+				Local y:=_location.Y+_dots[i+1]
+
+				If MouseOverDot( x,y ) _dots=RemoveDot( i )
+
+			Next
+
+		Endif
+
+	End
+
+	Method Keys()
+
+		If Keyboard.KeyDown( Key.Left )
+			_camera.X-=4
+		Endif
+	
+		If Keyboard.KeyDown( Key.Right )
+			_camera.X+=4
+		Endif
+	
+		If Keyboard.KeyDown( Key.Up )
+			_camera.Y-=4
+		Endif
+	
+		If Keyboard.KeyDown( Key.Down )
+			_camera.Y+=4
+		Endif
+
+		If Keyboard.KeyDown( Key.PageUp )
+			_zoom+=.1
+		Endif
+
+		If Keyboard.KeyHit( Key.D ) DataToConsole()
+
+		If Keyboard.KeyHit( Key.L )
+
+			Local imagePath:=RequestFile( "Vertex Editor","Image Files:png,jpg;All Files:*" )
+			If imagePath
+				_image=Image.Load( imagePath )
+				_image.Handle=New Vec2f( .5,.5 )
+				_camera=New Vec2f
+				_zoom=1
+				_dots=Null
+			Endif
+
+		Endif
+
+		If Keyboard.KeyDown( Key.PageDown )
+			_zoom-=.1
+		Endif
+
+		If Keyboard.KeyHit( Key.KeyDelete )
+			_dots=Null
+		Endif
+
+		If Keyboard.KeyHit( Key.Space )
+			_showDots=Not _showDots
+		Endif
+
+		If _zoom<1
+			_zoom=1
+		Endif
+
+	End
+
+	Method MouseOverDot:Bool( x:Float,y:Float )
+
+		Local mouseX:Float=Mouse.X
+		Local mouseY:Float=Mouse.Y
+
+		mouseX-=Width*.5
+		mouseY-=Height*.5
+
+		mouseX+=_camera.X
+		mouseY+=_camera.Y
+
+		mouseX/=_zoom
+		mouseY/=_zoom
+
+		If mouseX<x-3 Return False
+		If mouseX>x+3 Return False
+		If mouseY<y-3 Return False
+		If mouseY>y+3 Return False
+
+		Return True
+
+	End
+
+	Method MouseOverDot:Int()
+
+		For Local i:=0 Until _dots.Length Step 2
+
+			Local x:=_location.X
+			Local y:=_location.Y
+
+			x+=_dots[i]
+			y+=_dots[i+1]
+
+			If MouseOverDot( x,y ) Return i
+
+		Next
+
+		Return -1
+
+	End
+
+	Method OnKeyEvent( event:KeyEvent ) Override
+	
+		Select event.Type
+	
+		Case EventType.KeyChar
+			' Do something..
+		End
+
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+	
+		App.RequestRender()
+
+		Editor()
+		Keys()
+
+		canvas.PushMatrix()
+
+		canvas.Translate( Width*.5,Height*.5 )
+		canvas.Translate( -_camera.X,-_camera.Y )
+		canvas.Scale( _zoom,_zoom )
+
+		If _showImage=True And _image<>Null canvas.DrawImage( _image,0,0 )
+
+		If _showDots=True
+
+			canvas.Color=_color
+	
+			DrawDots( canvas,3,True )
+
+		Endif
+
+		canvas.PopMatrix()
+
+		If Keyboard.KeyDown( Key.F1 )
+			canvas.Color=New Color( 1,1,0 )
+			canvas.DrawText( "Cursor keys = Move camera, Page up/down = Zoom, Spacebar = Toggle lines, D = Data to console, L = Load image.",8,8 )
+		Else
+			canvas.Color=New Color( 0,1,0 )
+			canvas.DrawText( "F1 = Help",8,8 )
+		Endif
+
+	End
+
+	Method RemoveDot:Int[]( index:Int )
+	
+		Local a:=New Int[_dots.Length-2]
+
+		Local index1:=0
+
+		For Local index2:=0 Until _dots.Length Step 2
+
+			If index2<>index
+				a[index1]=_dots[index2]
+				a[index1+1]=_dots[index2+1]
+				index1=index1+2
+			Endif
+
+		Next
+
+		Return a
+
+	End
+
+	Method SetDot( index:Int,x:Int,y:Int )
+		_dots[index]=x
+		_dots[index+1]=y
+	End
+
+	Field _camera:=New Vec2f
+	Field _dots:Int[]
+	Field _editState:=0
+	Field _image:Image
+	Field _index:=0
+	Field _color:=New Color( 0,1,0,.35 )
+	Field _location:=New Vec2f
+	Field _showDots:=True
+	Field _showImage:=True
+	Field _zoom:=1.0
+
+End
+
+Function Main()
+
+	New AppInstance
+	
+	New MainWindow( "Vertex Editor",1024,768 )
+	
+	App.Run()
+
+End

@@ -1,0 +1,17 @@
+name=help
+
+name=help
+x=320
+y=480
+
+name=logo
+x=320
+y=219
+
+name=text
+x=320
+y=430
+
+name=back
+x=331
+y=843

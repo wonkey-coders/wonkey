@@ -1,0 +1,17 @@
+name=paused
+
+name=window
+x=320
+y=480
+
+name=background
+x=270
+y=165
+
+name=continue
+x=270
+y=101
+
+name=quit
+x=270
+y=238

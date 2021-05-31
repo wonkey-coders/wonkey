@@ -1,0 +1,362 @@
+' Pyro 2 Tiled Converter.
+
+' Converts Tiled maps to Pyro 2 scenegraph format.
+
+#Import "assets/"
+
+#Import "<std>"
+#Import "<mojo>"
+#Import "<pyro-framework>"
+#Import "<pyro-gui>"
+#Import "<pyro-scenegraph>"
+
+#Import "imports/tiled"
+#Import "imports/xml"
+
+Using std..
+Using mojo..
+Using pyro.framework..
+Using pyro.gui..
+Using pyro.scenegraph..
+
+Const VERSION:="v1.0.1"
+Const APP_TITLE:="Pyro 2 Tiled Converter "+VERSION
+
+Const BUTTON_WIDTH:=128
+Const BUTTON_HEIGHT:=40
+Const GUI_START_X:=16
+Const GUI_START_Y:=16
+
+Global assetsDir:String
+Global button:=New GuiButton[2]
+Global camera:Camera
+Global guiLayer:GuiLayer
+Global importer:Tiled
+Global layersTool:LayersTool
+Global scene:Scene
+Global sceneBuilder:SceneLoader
+Global settings:= New Config
+Global tempDir:String
+
+Class Checkbox Extends GuiCheckbox
+	Field layerIndex:=0
+	Method OnReleased() Override
+		scene.GetLayer( layerIndex ).Enabled=Frame
+	End
+End
+
+Class CheckboxLabel Extends GuiLabel
+''	Global active:CheckboxLabel
+	Field layerIndex:=0
+End
+
+Class LayersTool Extends GuiGroup
+
+	Field previousScene:Scene
+
+	Method New( layer:GuiLayer )
+		Layer=layer
+		Handle=New Vec2f
+	End
+
+	Method OnUpdate() Override
+
+		If scene=Null Return
+
+		If previousScene<>scene Update()
+
+		previousScene=scene
+
+	End
+
+	Method Update()
+
+		Local x:=0
+		Local y:=0
+
+		Local checkboxLabel:CheckboxLabel
+
+		Clear()
+
+		For Local i:=0 Until scene.Layers.Length
+
+			Local checkbox:=New Checkbox
+			checkbox.Group=Self
+			checkbox.Surface.DrawData( GuiState.Idle,0 ).Image=Content.GetImage( "green/checkbox1.png" )
+			checkbox.Surface.DrawData( GuiState.RollOver,0 ).Image=Content.GetImage( "green/checkbox2.png" )
+			checkbox.Surface.DrawData( GuiState.Down,0 ).Image=Content.GetImage( "green/checkbox3.png" )
+			checkbox.Surface.DrawData( GuiState.Idle,1 ).Image=Content.GetImage( "green/checkbox4.png" )
+			checkbox.Surface.DrawData( GuiState.RollOver,1 ).Image=Content.GetImage( "green/checkbox5.png" )
+			checkbox.Surface.DrawData( GuiState.Down,1 ).Image=Content.GetImage( "green/checkbox6.png" )
+			checkbox.Handle=New Vec2f( 0,0 )
+			checkbox.layerIndex=i
+
+			checkboxLabel=New CheckboxLabel
+			checkboxLabel.Group=Self
+			checkboxLabel.Label.Font=Content.GetFont( "pyro-framework/fonts/arial.ttf",16 )
+			checkboxLabel.Handle=New Vec2f( 0,0 )
+			checkboxLabel.layerIndex=i
+
+			checkbox.Frame=scene.Layers[i].Enabled
+			checkbox.Location=New Vec2f( x,y )
+			checkbox.Name=scene.Layers[i].Name
+
+			checkboxLabel.Label.Text=scene.Layers[i].Name
+			checkboxLabel.Location=New Vec2f( x+checkbox.Width*1.5,y )
+	
+			y+=checkbox.Height*1.5
+
+		Next
+
+		Height=GetContentHeight()
+		Width=GetContentWidth()
+
+	end
+
+End
+	
+Class MainWindow Extends Window
+
+	Method New( title:String,width:Int,height:Int,flags:WindowFlags=WindowFlags.Resizable )
+
+		Super.New( title,width,height,flags )
+
+		ClearColor=New Color( 0,0,.25 )
+
+		InitGui()
+
+		assetsDir=AppDir()+"assets/"
+
+		tempDir=AppDir()+"temp/"
+		CreateDir( tempDir )
+
+		If GetFileType( AppDir()+"settings.ini" )=FileType.File
+			settings.Load( AppDir()+"settings.ini" )
+		Endif
+
+	End
+
+	Method InitGui()
+
+		Local x:=GUI_START_X+BUTTON_WIDTH*.5
+		Local y:=GUI_START_Y+BUTTON_HEIGHT*.5
+
+		guiLayer=New GuiLayer( Self )
+
+		button[0]=New GuiButton
+		button[0].Layer=guiLayer
+		button[0].Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "button.png" )
+		button[0].Surface.DrawData( GuiState.Idle ).Color=New Color( .75,.75,.75,1 )
+		button[0].Surface.DrawData( GuiState.Down ).Scale=New Vec2f( .98,.98 )
+		button[0].Surface.PatchData=New Int[](8)
+		button[0].Width=BUTTON_WIDTH
+		button[0].Height=BUTTON_HEIGHT
+		button[0].Location=New Vec2f( x,y )
+		button[0].Label.Text="Import map"
+		button[0].Label.Font=Content.GetFont( "pyro-framework/fonts/arial.ttf",16 )
+		button[0].Label.DrawData( GuiState.Idle ).Color=New Color( .75,.75,.75,1 )
+		button[0].Label.DrawData( GuiState.Down ).Scale=button[0].Surface.DrawData( GuiState.Down ).Scale
+
+		x+=BUTTON_WIDTH+8
+
+		button[1]=New GuiButton
+		button[1].Layer=guiLayer
+		button[1].Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "button.png" )
+		button[1].Surface.DrawData( GuiState.Idle ).Color=New Color( .75,.75,.75,1 )
+		button[1].Surface.DrawData( GuiState.Ghost ).Color=New Color( .25,.25,.25,.5 )
+		button[1].Surface.DrawData( GuiState.Down ).Scale=New Vec2f( .98,.98 )
+		button[1].Surface.PatchData=New Int[](8)
+		button[1].Width=BUTTON_WIDTH
+		button[1].Height=BUTTON_HEIGHT
+		button[1].Location=New Vec2f( x,y )
+		button[1].Label.Text="Export map"
+		button[1].Label.Font=Content.GetFont( "pyro-framework/fonts/arial.ttf",16 )
+		button[1].Label.DrawData( GuiState.Idle ).Color=New Color( .75,.75,.75,1 )
+		button[1].Label.DrawData( GuiState.Ghost ).Color=New Color( .5,.5,.5,.5 )
+		button[1].Label.DrawData( GuiState.Down ).Scale=button[0].Surface.DrawData( GuiState.Down ).Scale
+
+		layersTool=New LayersTool( guiLayer )
+		layersTool.Location=New Vec2f( GUI_START_X,GUI_START_Y+button[0].Height+16 )
+
+	End
+
+	Method LoadMap()
+
+		importer=Null
+		scene=Null
+		sceneBuilder=Null
+
+		Local projectFolder:=settings.ReadString( "projectFolder" )
+	
+		Local file:=RequestFile( "Select Tilemap...","Tilemap Files:tmx;All Files:*",,projectFolder )
+		If file="" Return
+
+		settings.WriteString( "projectFolder",ExtractDir( file ) )
+		SaveString( settings.ToString(),AppDir()+"settings.ini" )
+
+		Try
+	
+			importer=New Tiled
+			importer.LoadMap( file )
+		
+			importer._tileset.DuplicateBorders()
+		
+			importer._tileset.ToPixmaps( assetsDir )								' Saving the tile images to the assets folder!
+			
+			importer.CopyExternals( ExtractDir( file ),assetsDir )					' Copying layer images to the assets folder!
+
+			scene=New Scene( Self )
+	
+			camera=New Camera( scene )
+'			camera.Scale=New Vec2f( .5,.5 )
+				
+			sceneBuilder=New SceneLoader
+			sceneBuilder.ImportData( importer.Data )
+''			sceneBuilder.Load( "scene.txt" )
+			sceneBuilder.Build( scene )
+
+		Catch err:TiledException
+	
+			Notify( Title,err.message )
+	
+		End
+	
+	End
+
+	Method OnKeyEvent( event:KeyEvent ) Override
+		guiLayer.SendKeyEvent( event )
+	End
+
+	Method OnMouseEvent( event:MouseEvent ) Override
+		guiLayer.SendMouseEvent( event )
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+
+		App.RequestRender()
+
+		If scene<>Null
+			button[1].Ghost=False
+		Else
+			button[1].Ghost=True
+		Endif
+
+		If scene<>Null scene.Update()
+		guiLayer.Update()
+		If scene<>Null scene.Draw( canvas )
+		guiLayer.Draw( canvas )
+
+		If scene<>Null
+
+			If Keyboard.KeyDown( Key.Left ) camera.X-=32
+			If Keyboard.KeyDown( Key.Right ) camera.X+=32
+			If Keyboard.KeyDown( Key.Up ) camera.Y-=32
+			If Keyboard.KeyDown( Key.Down ) camera.Y+=32
+
+		Endif
+
+		If button[0].Released=True
+			button[0].Released=False
+			LoadMap()
+		Endif
+
+		If button[1].Released=True And button[1].Ghost=False ' Fix button responding when ghosted!
+			button[1].Released=False
+			ExportMap()
+		Endif
+
+	End
+
+	Method ExportMap( file:String )
+
+		Local dir:=ExtractDir( file )
+
+		Window.Title=APP_TITLE+" / Exporting images"
+
+		importer._tileset.SaveTiles( dir )											' Saving the tile images!
+
+		importer.CopyExternals( assetsDir,dir )										' Copying layer images to the assets folder!
+
+		GCSuspend()
+
+		' Merge all data:
+		Local data:=""
+		For Local i:=0 Until importer.Data.Length
+			If data data+="~n"
+			Window.Title=APP_TITLE+" / Exporting object "+i+" of "+importer.Data.Length
+			data+=importer.Data[i]
+		Next
+
+		GCResume()
+
+		Window.Title=APP_TITLE+" / Saving data"
+
+		SaveString( data,file )														' Save the data.
+
+		Window.Title=APP_TITLE
+
+		Notify( Window.Title,"Scene was saved successfully, app will close now..." )
+
+		App.Terminate()
+
+	End
+	
+	Method ExportMap()
+
+		Local exportFolder:=settings.ReadString( "exportFolder",tempDir )
+
+		Local file:=RequestFile( "Save Scene...","Scene Files:txt;All Files:*",True,exportFolder )
+		If file="" Return
+	
+		Local dir:=ExtractDir( file )
+
+		Local files:=LoadDir( dir )
+		If files.Length>0
+			If Proceed( Title, "Directory is not empty!~n~nProceed?~n~n( existing files will be overwritten )" )<>1 Return
+		Endif
+
+		settings.WriteString( "exportFolder",ExtractDir( file ) )
+		SaveString( settings.ToString(),AppDir()+"settings.ini" )
+
+		Window.Title=APP_TITLE+" / Exporting images"
+
+		importer._tileset.SaveTiles( dir )											' Saving the tile images!
+
+		importer.CopyExternals( assetsDir,dir )										' Copying layer images to the assets folder!
+
+		GCSuspend()
+
+		' Merge all data:
+		Local data:=""
+		For Local i:=0 Until importer.Data.Length
+			If data data+="~n"
+			Window.Title=APP_TITLE+" / Exporting object "+i+" of "+importer.Data.Length
+			data+=importer.Data[i]
+		Next
+		GCResume()
+
+		Window.Title=APP_TITLE+" / Saving data"
+
+		SaveString( data,file )													' Save the data.
+
+		Window.Title=APP_TITLE
+
+		Notify( Window.Title,"Scene was saved successfully, app will close now..." )
+
+		OpenUrl( dir )
+		
+		App.Terminate()
+	
+	End
+
+End
+
+Function Main()
+
+	New AppInstance
+	
+	New MainWindow( APP_TITLE,800,600 )
+
+	App.Run()
+
+End

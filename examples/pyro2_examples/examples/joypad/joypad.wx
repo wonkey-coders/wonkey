@@ -1,0 +1,135 @@
+#Import "assets/"
+
+#Import "<std>"
+#Import "<mojo>"
+#Import "<pyro-framework>"
+#Import "<pyro-gui>"
+
+Using std..
+Using mojo..
+Using pyro.framework..
+Using pyro.gui..
+
+Global guiLayer:GuiLayer
+
+Class Joypad
+
+	' Backing fields for the 4 buttons:
+	Field buttonLeft:GuiButton
+	Field buttonRight:GuiButton
+	Field buttonUp:GuiButton
+	Field buttonDown:GuiButton
+	Field surface:GuiImage
+
+	' Constructor:
+	Method New( layer:GuiLayer,name:String )
+
+		Local image:=Content.GetImage( "asset::gui/surface.png" )
+
+		surface=New GuiImage( layer,Content.GetImage( "asset::gui/surface.png" ) )
+		surface.Location=New Vec2f( 0,0 )
+
+		' Create the four buttons:
+		buttonLeft=New GuiButton
+		buttonLeft.Layer=layer
+		buttonLeft.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::gui/button.png" )
+		buttonLeft.Rotation=180/360.0*TwoPi
+		buttonLeft.Scale=New Vec2f( .95,.95 )
+		buttonLeft.Name=name+".left"																	' Trick to cause an event!
+
+		buttonRight=New GuiButton
+		buttonRight.Layer=layer
+		buttonRight.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::gui/button.png" )
+		buttonRight.Scale=New Vec2f( .95,.95 )
+		buttonRight.Name=name+".right"																	' Trick to cause an event!
+
+		buttonUp=New GuiButton
+		buttonUp.Layer=layer
+		buttonUp.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::gui/button.png" )
+		buttonUp.Rotation=270/360.0*TwoPi
+		buttonUp.Scale=New Vec2f( .95,.95 )
+		buttonUp.Name=name+".up"																		' Trick to cause an event!
+
+		buttonDown=New GuiButton
+		buttonDown.Layer=layer
+		buttonDown.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::gui/button.png" )
+		buttonDown.Rotation=90/360.0*TwoPi
+		buttonDown.Scale=New Vec2f( .95,.95 )
+		buttonDown.Name=name+".down"																	' Trick to cause an event!
+
+		Set( 0,0 )
+
+	End
+
+	' Helper for setting the joypad:
+	Method Set( x:Int,y:Int,scale:Float=1,distance:Float=42 )
+
+		surface.Location=New Vec2f( x,y )
+
+		buttonLeft.Location=New Vec2f( x-scale*distance,y )
+		buttonRight.Location=New Vec2f( x+scale*distance,y )
+		buttonUp.Location=New Vec2f( x,y+scale*( -distance ) )
+		buttonDown.Location=New Vec2f( x,y+scale*( distance ) )
+		
+		buttonLeft.Scale=New Vec2f( scale,scale )
+		buttonRight.Scale=New Vec2f( scale,scale )
+		buttonUp.Scale=New Vec2f( scale,scale )
+		buttonDown.Scale=New Vec2f( scale,scale )
+
+	End
+
+End
+
+Class MainWindow Extends Window
+
+	Method New( title:String,width:Int,height:Int,flags:WindowFlags=WindowFlags.Resizable )
+
+		Super.New( title,width,height,flags )
+
+		guiLayer=New GuiLayer( Self )																			' Create the gui layer
+
+		' Create joypad:
+		Local joypad:=New Joypad( guiLayer,"joypad" )
+		joypad.Set( 248,300 )
+
+		' Create button a:
+		Local buttonA:=New GuiButton
+		buttonA.Layer=guiLayer
+		buttonA.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::gui/buttona1.png" )
+		buttonA.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::gui/buttona2.png" )
+		buttonA.Name="button a"
+		buttonA.Location=New Vec2f( 600,340 )
+
+		' Create button b:
+		Local buttonB:=New GuiButton
+		buttonB.Layer=guiLayer
+		buttonB.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::gui/buttonb1.png" )
+		buttonB.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::gui/buttonb2.png" )
+		buttonB.Name="button b"
+		buttonB.Location=New Vec2f( 690,340 )
+
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+
+		App.RequestRender()
+
+		guiLayer.Update()
+		guiLayer.Draw( canvas )
+
+		Message.Show()
+		Message.Clear()
+
+	End
+
+End
+
+Function Main()
+
+	New AppInstance
+	
+	New MainWindow( "Joypad",1024,480 )
+	
+	App.Run()
+
+End

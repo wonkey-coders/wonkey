@@ -1,0 +1,17 @@
+name=help
+
+name=background
+x=320
+y=480
+
+name=logo
+x=320
+y=175
+
+name=text
+x=320
+y=363
+
+name=back
+x=320
+y=817

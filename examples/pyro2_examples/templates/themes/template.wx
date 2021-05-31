@@ -1,0 +1,624 @@
+' Choose one of the themes below:
+
+#Import "generic/portrait/"																									' Change cars in cartoon if you want the cartoon theme!
+'#Import "cars/portrait/"																									' Change cars in cartoon if you want the cartoon theme!
+'#Import "cartoon/portrait/"																									' Change cars in cartoon if you want the cartoon theme!
+
+#Import "<std>"
+#Import "<mojo>"
+#Import "<pyro-framework>"
+#Import "<pyro-gui>"
+#Import "<pyro-scenegraph>"
+
+Using std..
+Using mojo..
+Using pyro.framework..
+Using pyro.gui..
+Using pyro.scenegraph..
+
+' Your web links:
+Const FACEBOOK:="https://www.facebook.com/pages/Playniax/289410737764922"
+Const TWITTER:="https://twitter.com/playniax"
+Const PLAYNIAX:="http://www.playniax.com"
+
+' Window / device dimensions:
+Const WINDOW_WIDTH:=320
+Const WINDOW_HEIGHT:=480
+
+Const VIRTUAL_RESOLUTION:=New Vec2i( 640,960 )																					' Virtual resolution settings.
+
+' Backing globals for screens:
+Global game:Game
+Global loader:Loader
+Global menu:Menu
+
+Class Button Extends GuiButton
+
+	' Button responses:
+	Method OnReleased() Override
+		Select Name
+			Case "start"
+				game.Set()
+			Case "pause"
+				If Pause()
+					Game.guiPage=0
+					Pause( False )
+				Else
+					Game.guiPage=1
+					Pause( True )
+				Endif
+			Case "continue"
+				Game.guiPage=0
+				Pause( False )
+			Case "quit"
+				Game.guiPage=Menu.START
+				Pause( False )
+				menu.Set()
+			Case "settings"
+				Menu.guiPage=Menu.SETTINGS
+			Case "about"
+				Menu.guiPage=Menu.ABOUT
+			Case "help"
+				Menu.guiPage=Menu.HELP
+			Case "back"
+				Menu.guiPage=Menu.START
+		End Select
+	End
+
+End
+
+' Sound buttons:
+Class Checkbox Extends GuiCheckbox
+
+	Method OnReleased() Override
+		If Frame=0 Print Name+" = On ( Frame 0 )"
+		If Frame=1 Print Name+" = Off ( Frame 1 )"
+	End
+
+End
+
+Class Game Extends Screen
+
+	Const PAUSE:=0
+	Const PAUSED:=1
+
+	' Backing globals for scenegraph objects:
+	Global camera:Camera
+	Global actionLayer:Layer
+	Global scene:Scene
+
+	' Backing globals for gui:
+	Global guiLayer:=New GuiLayer[2]
+	Global guiPage:=PAUSE
+
+	Method New()
+
+		' Init simple scenegraph:
+		scene=New Scene( ScreenManager )
+		camera=New Camera( scene )
+		actionLayer=New Layer( scene )
+
+		' Pause gui layer:
+		guiLayer[PAUSE]=New GuiLayer( ScreenManager )																																		' Create the gui layer for the pause button.
+		guiLayer[PAUSE].Name="pause"
+
+		' Create the pause button:
+		Local pauseButton:=New Button
+		pauseButton.Layer=guiLayer[PAUSE]
+		pauseButton.Name="pause"
+		pauseButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::pause_idle.png" )
+		pauseButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::pause_down.png" )
+		pauseButton.Location=New Vec2f( PercentageOf( 95,VIRTUAL_RESOLUTION.X ),PercentageOf( 5,VIRTUAL_RESOLUTION.Y ) )
+		pauseButton.Pausable=False																																						' Button ignores pause mode.
+
+		' Paused gui layer ( when game is actually paused ):
+		guiLayer[PAUSED]=New GuiLayer( ScreenManager )																																	' Create the gui layer for the pause button.
+		guiLayer[PAUSED].Name="paused"
+
+		' Create the paused window ( group ):
+		Local pausedWindow:=New GuiGroup
+		pausedWindow.Layer=guiLayer[PAUSED]
+		pausedWindow.Name="window"
+		pausedWindow.Width=Content.GetImage( "asset::paused_window.png" ).Width																											' Set the group width same as image.
+		pausedWindow.Height=Content.GetImage( "asset::paused_window.png" ).Height																										' Set the group height same as image.
+		pausedWindow.Location=VIRTUAL_RESOLUTION/2																																		' Centered screen.
+
+		' Create the window image:
+		Local background:=New GuiImage
+		background.Group=pausedWindow
+		background.Name="background"
+		background.Location=New Vec2f( pausedWindow.Width/2,pausedWindow.Height/2 )
+		background.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::paused_window.png" )
+
+		' Create the continue button:
+		Local continueButton:=New Button
+		continueButton.Group=pausedWindow
+		continueButton.Name="continue"
+		continueButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::continue_idle.png" )
+		continueButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::continue_down.png" )
+		continueButton.Location=New Vec2f( 270,104 )
+		continueButton.Pausable=False																																					' Button ignores pause mode.
+
+		' Create the quit button:
+		Local quitButton:=New Button
+		quitButton.Group=pausedWindow
+		quitButton.Name="quit"
+		quitButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::quit_idle.png" )
+		quitButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::quit_down.png" )
+		quitButton.Location=New Vec2f( 270,226 )
+		quitButton.Pausable=False																																						' Button ignores pause mode.
+
+		New GuiLoader( "asset::paused.txt",guiLayer[PAUSED] )
+
+	End
+
+	Method OnKeyEvent( event:KeyEvent ) Override
+
+		Select event.Type
+		Case EventType.KeyDown
+			Select event.Key
+				Case Key.Escape
+					menu.Set()
+			End
+		End
+
+	End
+
+	Method OnMouseEvent( event:MouseEvent ) Override
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+	
+		' Render scenegraph and gui:
+
+		scene.Draw( canvas )
+
+		guiLayer[guiPage].Draw( canvas )			
+		
+	End
+
+	Method OnStart() Override
+	End
+
+	Method OnStop() Override
+
+		guiPage=PAUSE
+
+	End
+
+	Method OnUpdate() Override
+
+		' Update scenegraph and gui:
+
+		scene.Update()
+
+		guiLayer[guiPage].Update()																																						' Update gui layer(s).
+
+	End
+
+	Method RunOnce() Override
+	End
+
+End
+
+Class Loader Extends LoaderScreen
+
+	' Backing fields for gui:
+	Field guiLayer:GuiLayer
+	Field progressBar:GuiHProgressBar
+
+	Method New()
+
+		' Init gui components:
+		guiLayer=New GuiLayer( ScreenManager )
+		guiLayer.Width=Content.GetImage( "asset::gui_background.png" ).Width
+		guiLayer.Height=Content.GetImage( "asset::gui_background.png" ).Height
+		guiLayer.Location=VIRTUAL_RESOLUTION/2-New Vec2i( guiLayer.Width,guiLayer.Height )/2
+
+		' Create the background:
+		Local background:=New GuiImage
+		background.Layer=guiLayer
+		background.Location=New Vec2f( PercentageOf( 50,VIRTUAL_RESOLUTION.X ),PercentageOf( 50,VIRTUAL_RESOLUTION.Y ) )
+		background.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::gui_background.png" )
+	
+		' Your logo:
+		Local logo:=New GuiImage
+		logo.Layer=guiLayer
+		logo.Location=New Vec2f( PercentageOf( 50,VIRTUAL_RESOLUTION.X ),PercentageOf( 50,VIRTUAL_RESOLUTION.Y ) )
+		logo.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::playniax_logo.png" )
+
+		' Create the progress bar:
+		progressBar=New GuiHProgressBar
+		progressBar.Layer=guiLayer
+		progressBar.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::loaderbar.png" )
+		progressBar.Indicator.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::loaderbar_progress.png" )
+		progressBar.Indicator.DrawData( GuiState.Idle ).Location=New Vec2f( 3,3 )
+		progressBar.Location=New Vec2f( PercentageOf( 50,VIRTUAL_RESOLUTION.X ),PercentageOf( 90,VIRTUAL_RESOLUTION.Y ) )
+
+	End
+	
+	Method OnLoading() Override
+
+		' Loading steps ( Add or remove as many as you need ) :
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+		If Loading()
+			Print "Replace this print command with a load command... ( Current step is "+CurrentStep+" of "+LoadingSteps+" in total )"
+		Endif
+
+	End
+
+	Method OnKeyEvent( event:KeyEvent ) Override
+	End
+	
+	Method OnMouseEvent( event:MouseEvent ) Override
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+
+		' Render gui stuff:
+
+		Super.OnRender( canvas )
+		guiLayer.Draw( canvas )
+
+		' Update the progress bar:
+		progressBar.Maximum=LoadingSteps
+		progressBar.Value=CurrentStep
+
+	End
+
+	Method OnStart() Override
+	End
+
+	Method OnStop() Override
+	End
+
+	Method OnUpdate() Override
+		' Update gui stuff:
+		guiLayer.Update()
+	End
+
+	Method RunOnce() Override
+	End
+
+End
+
+Class Menu Extends Screen
+
+	Const START:=0
+	Const SETTINGS:=1
+	Const ABOUT:=2
+	Const HELP:=3
+
+	' Backing globlas for gui:
+	Global guiLayer:=New GuiLayer[4]
+	Global guiPage:=START
+	
+	Method New()
+
+		' Create the gui layer:
+		guiLayer[START]=New GuiLayer( ScreenManager )
+		guiLayer[START].Name="start"
+		guiLayer[START].Width=Content.GetImage( "asset::gui_background.png" ).Width
+		guiLayer[START].Height=Content.GetImage( "asset::gui_background.png" ).Height
+		guiLayer[START].Location=VIRTUAL_RESOLUTION/2-New Vec2i( guiLayer[START].Width,guiLayer[START].Height )/2
+
+		' Create the background:
+		Local startBackground:=New GuiImage
+		startBackground.Layer=guiLayer[START]
+		startBackground.Name="background"
+		startBackground.Location=VIRTUAL_RESOLUTION/2
+		startBackground.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::gui_background.png" )
+	
+		' Create the logo:
+		Local startLogo:=New GuiImage
+		startLogo.Layer=guiLayer[START]
+		startLogo.Name="logo"
+		startLogo.Location=New Vec2f( PercentageOf( 50,VIRTUAL_RESOLUTION.X ),PercentageOf( 50,VIRTUAL_RESOLUTION.Y ) )
+		startLogo.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::logo.png" )
+
+		' Create the 'start game' button:
+		Local startButton:=New Button
+		startButton.Layer=guiLayer[START]
+		startButton.Name="start"
+		startButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::start_idle.png" )
+		startButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::start_down.png" )
+
+		' Create the 'settings' button:
+		Local settingsButton:=New Button
+		settingsButton.Layer=guiLayer[START]
+		settingsButton.Name="settings"
+		settingsButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::settings_idle.png" )
+		settingsButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::settings_down.png" )
+
+		' Create the 'about' button:
+		Local aboutButton:=New Button
+		aboutButton.Layer=guiLayer[START]
+		aboutButton.Name="about"
+		aboutButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::about_idle.png" )
+		aboutButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::about_down.png" )
+
+		' Create the 'help' button:
+		Local helpButton:=New Button
+		helpButton.Layer=guiLayer[START]
+		helpButton.Name="help"
+		helpButton.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::help_idle.png" )
+		helpButton.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::help_down.png" )
+
+		New GuiLoader( "asset::start.txt",guiLayer[START] )																' Loads the positions from a file.
+
+		guiLayer[START].ZSort()																							' Sort the z of the gui objects.
+
+		' Create the gui layer:
+		guiLayer[SETTINGS]=New GuiLayer( ScreenManager )
+		guiLayer[SETTINGS].Name="settings"
+		guiLayer[SETTINGS].Width=Content.GetImage( "asset::gui_background.png" ).Width
+		guiLayer[SETTINGS].Height=Content.GetImage( "asset::gui_background.png" ).Height
+		guiLayer[SETTINGS].Location=VIRTUAL_RESOLUTION/2-New Vec2i( guiLayer[SETTINGS].Width,guiLayer[SETTINGS].Height )/2
+
+		' Create the background:
+		Local settingsBackground:=New GuiImage
+		settingsBackground.Layer=guiLayer[SETTINGS]
+		settingsBackground.Name="background"
+		settingsBackground.Location=VIRTUAL_RESOLUTION/2
+		settingsBackground.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::gui_background.png" )
+
+		' Create the logo:
+		Local settingsLogo:=New GuiImage
+		settingsLogo.Layer=guiLayer[SETTINGS]
+		settingsLogo.Name="logo"
+		settingsLogo.Location=startLogo.Location
+		settingsLogo.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::logo.png" )
+
+		' Create settings text:
+		Local settingsText:=New GuiImage
+		settingsText.Layer=guiLayer[SETTINGS]
+		settingsText.Name="text"
+		settingsText.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::settings.png" )
+
+		' Create the 'start game' button:
+		Local musicButton:=New Checkbox
+		musicButton.Layer=guiLayer[SETTINGS]
+		musicButton.Name="music"
+		musicButton.Surface.DrawData( GuiState.Idle,0 ).Image=Content.GetImage( "asset::music_on.png" )
+		musicButton.Surface.DrawData( GuiState.Down,0 ).Image=Content.GetImage( "asset::music_nop.png" )
+		musicButton.Surface.DrawData( GuiState.Idle,1 ).Image=Content.GetImage( "asset::music_off.png" )
+		musicButton.Surface.DrawData( GuiState.Down,1 ).Image=Content.GetImage( "asset::music_nop.png" )
+
+		' Create the 'settings' button:
+		Local sfxButton:=New Checkbox
+		sfxButton.Layer=guiLayer[SETTINGS]
+		sfxButton.Name="sfx"
+		sfxButton.Surface.DrawData( GuiState.Idle,0 ).Image=Content.GetImage( "asset::sfx_on.png" )
+		sfxButton.Surface.DrawData( GuiState.Down,0 ).Image=Content.GetImage( "asset::sfx_nop.png" )
+		sfxButton.Surface.DrawData( GuiState.Idle,1 ).Image=Content.GetImage( "asset::sfx_off.png" )
+		sfxButton.Surface.DrawData( GuiState.Down,1 ).Image=Content.GetImage( "asset::sfx_nop.png" )
+
+		' Create the 'about' button:
+		Local backButtonSettings:=New Button
+		backButtonSettings.Layer=guiLayer[SETTINGS]
+		backButtonSettings.Name="back"
+		backButtonSettings.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::back_idle.png" )
+		backButtonSettings.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::back_down.png" )
+
+		New GuiLoader( "asset::settings.txt",guiLayer[SETTINGS] )																' Loads the positions from a file.
+
+		' Create the gui layer:
+		guiLayer[ABOUT]=New GuiLayer( ScreenManager )
+		guiLayer[ABOUT].Name="about"
+		guiLayer[ABOUT].Width=Content.GetImage( "asset::gui_background.png" ).Width
+		guiLayer[ABOUT].Height=Content.GetImage( "asset::gui_background.png" ).Height
+		guiLayer[ABOUT].Location=VIRTUAL_RESOLUTION/2-New Vec2i( guiLayer[ABOUT].Width,guiLayer[ABOUT].Height )/2
+
+		' Create the background:
+		Local aboutBackground:=New GuiImage
+		aboutBackground.Layer=guiLayer[ABOUT]
+		aboutBackground.Name="background"
+		aboutBackground.Location=VIRTUAL_RESOLUTION/2
+		aboutBackground.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::gui_background.png" )
+
+		' Create the logo:
+		Local aboutLogo:=New GuiImage
+		aboutLogo.Layer=guiLayer[ABOUT]
+		aboutLogo.Name="logo"
+		aboutLogo.Location=startLogo.Location
+		aboutLogo.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::logo.png" )
+
+		' Create about text:
+		Local aboutText:=New GuiImage
+		aboutText.Layer=guiLayer[ABOUT]
+		aboutText.Name="text"
+		aboutText.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::about.png" )
+
+		Local programmingBy:=New GuiLabel
+		programmingBy.Layer=guiLayer[ABOUT]
+		programmingBy.Name="programming by"
+		programmingBy.Label.Font=Content.GetFont( "asset::font",28 )
+		programmingBy.Label.Text="Programming by"
+		programmingBy.Color=Color.Black
+
+		Local programmer:=New GuiLabel
+		programmer.Layer=guiLayer[ABOUT]
+		programmer.Name="programmer"
+		programmer.Label.Font=Content.GetFont( "asset::font",42 )
+		programmer.Label.Text="Tony Smits"
+
+		Local graphicsBy:=New GuiLabel
+		graphicsBy.Layer=guiLayer[ABOUT]
+		graphicsBy.Name="graphics by"
+		graphicsBy.Label.Font=Content.GetFont( "asset::font",28 )
+		graphicsBy.Label.Text="Graphics by"
+		graphicsBy.Color=Color.Black
+
+		Local artist:=New GuiLabel
+		artist.Layer=guiLayer[ABOUT]
+		artist.Name="artist"
+		artist.Label.Font=Content.GetFont( "asset::font",42 )
+		artist.Label.Text="Peter van Driel"
+
+		' Create the back button:
+		Local backButtonAbout:=New Button
+		backButtonAbout.Layer=guiLayer[ABOUT]
+		backButtonAbout.Name="back"
+		backButtonAbout.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::back_idle.png" )
+		backButtonAbout.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::back_down.png" )
+
+		New GuiLoader( "asset::about.txt",guiLayer[ABOUT] )																' Loads the positions from a file.
+
+		' Create the gui layer:
+		guiLayer[HELP]=New GuiLayer( ScreenManager )
+		guiLayer[HELP].Name="help"
+		guiLayer[HELP].Width=Content.GetImage( "asset::gui_background.png" ).Width
+		guiLayer[HELP].Height=Content.GetImage( "asset::gui_background.png" ).Height
+		guiLayer[HELP].Location=VIRTUAL_RESOLUTION/2-New Vec2i( guiLayer[HELP].Width,guiLayer[HELP].Height )/2
+
+		' Create the background:
+		Local helpBackground:=New GuiImage
+		helpBackground.Layer=guiLayer[HELP]
+		helpBackground.Name="help"
+		helpBackground.Location=VIRTUAL_RESOLUTION/2
+		helpBackground.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::gui_background.png" )
+
+		' Create the logo:
+		Local helpLogo:=New GuiImage
+		helpLogo.Layer=guiLayer[HELP]
+		helpLogo.Name="logo"
+		helpLogo.Location=startLogo.Location
+		helpLogo.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::logo.png" )
+
+		' Create help text:
+		Local helpText:=New GuiImage
+		helpText.Layer=guiLayer[HELP]
+		helpText.Name="text"
+		helpText.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::help.png" )
+
+		' Create the back button:
+		Local backButtonHelp:=New Button
+		backButtonHelp.Layer=guiLayer[HELP]
+		backButtonHelp.Name="back"
+		backButtonHelp.Surface.DrawData( GuiState.Idle ).Image=Content.GetImage( "asset::back_idle.png" )
+		backButtonHelp.Surface.DrawData( GuiState.Down ).Image=Content.GetImage( "asset::back_down.png" )
+
+		New GuiLoader( "asset::help.txt",guiLayer[HELP] )																' Loads the positions from a file.
+
+	End
+
+	Method OnKeyEvent( event:KeyEvent ) Override
+
+		Select event.Type
+		Case EventType.KeyDown
+			Select event.Key
+				Case Key.Escape
+					guiPage=START
+			End
+		End
+
+	End
+
+	Method OnMouseEvent( event:MouseEvent ) Override
+	End
+
+	Method OnRender( canvas:Canvas ) Override
+
+		' Render gui objects:
+		guiLayer[guiPage].Draw( canvas )
+		
+	End
+
+	Method OnUpdate() Override
+
+		' Update gui objects:
+		guiLayer[guiPage].Update()
+
+	End
+
+	Method OnStart() Override
+	End
+
+	Method OnStop() Override
+	End
+
+	Method RunOnce() Override
+	End
+
+End
+
+' Player sprite stub:
+Class Player Extends LayerSprite
+End
+
+Class MainWindow Extends ScreenManager
+
+	Method New( title:String,width:Int,height:Int,flags:WindowFlags=WindowFlags.Resizable )
+
+		Super.New( title,width,height,flags )
+
+	End
+
+	Method OnCreateWindow() Override
+
+		ClearColor=New Color( 0,0,.2 )
+
+		Layout="letterbox"
+
+		' Create the screens:
+		loader=New Loader
+		game=New Game
+		menu=New Menu
+
+		loader.FollowUpScreen=menu																				' Show menu after loading screen.
+
+'		loader.Set()
+
+	End
+
+	Method OnMeasure:Vec2i() Override
+		Return VIRTUAL_RESOLUTION
+	End
+
+End
+
+Function Main()
+
+	New AppInstance
+	
+	New MainWindow( "My Project",WINDOW_WIDTH,WINDOW_HEIGHT )
+
+	App.Run()
+
+End
