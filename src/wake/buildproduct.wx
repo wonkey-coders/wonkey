@@ -604,6 +604,8 @@ Class GccBuildProduct Extends BuildProduct
 
 		Local cmd:=LD_CMD+LD_OPTS
 		
+		Local plistFile:String, macApp:String
+				
 		Select opts.target
 		Case "windows"
 		
@@ -622,7 +624,10 @@ Class GccBuildProduct Extends BuildProduct
 			
 				Local appDir:=outputFile
 				If ExtractExt( appDir ).ToLower()<>".app" appDir+=".app"
-				appDir+="/"
+
+				macApp = appDir
+				appDir += "/"
+				plistFile = appDir+"Contents/Info.plist"
 				
 				Local appName:=StripExt( StripDir( outputFile ) )
 				
@@ -652,7 +657,7 @@ Class GccBuildProduct Extends BuildProduct
 					plist+="</dict>~n"
 					plist+="</plist>~n"
 					
-					SaveString( plist,appDir+"Contents/Info.plist" )
+					SaveString( plist,plistFile )
 				
 				Endif
 			
@@ -723,6 +728,23 @@ Class GccBuildProduct Extends BuildProduct
 			Endif
 		Endif
 
+		If opts.target="macos" And opts.appType="gui" And opts.appIcon
+			'
+			' copy icon on macOS
+			'
+			Local appIconDestination:String = assetsDir+StripDir( outputFile )+".icns"
+			If Not CopyFile( opts.appIcon,appIconDestination )
+				Print "Could not copy Icon file."
+				Print "    Icon: "+opts.appIcon
+				Print "    Destination: "+appIconDestination
+			Endif
+			'
+			' touch is required for updating the app icon
+			'
+			Exec("touch ~q"+plistFile+"~q")
+			Exec("touch ~q"+macApp+"~q")
+		Endif
+
 	End
 	
 	Method Run() Override
@@ -775,6 +797,25 @@ Class IosBuildProduct Extends GccBuildProduct
 		Exec( cmd )
 		
 		CopyAssets( opts.product+"assets/" )
+
+		If opts.target="ios" And opts.appIcon
+			'
+			' copy icon on ios
+			'
+			Local appIconDestination:String = opts.product+"Icon.icns"
+			If Not CopyFile( opts.appIcon,appIconDestination )
+				Print "Could not copy Icon file."
+				Print "    Icon: "+opts.appIcon
+				Print "    Destination: "+appIconDestination
+			Endif
+			'
+			' touch is required for updating the app icon
+			'
+			If GetFileType(opts.product+"Info.plist") = FileType.File
+				Exec("touch ~q"+opts.product+"Info.plist~q",True)
+			Endif
+		Endif
+
 	End
 	
 	Method Run() Override
