@@ -2,7 +2,7 @@
 
 Example code for the programming language Wonkey
 
-Dotate to author (book and motivation funds)
+Donate to author (book and motivation funds)
 https://www.paypal.me/RudyvanEtten/5
 
 <br><br>
