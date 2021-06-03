@@ -124,9 +124,9 @@ Struct Color
 	#end
 	Const Aluminum:=New Color( 0.95955910300613745,0.9635188914336692,0.96495768667887971 )
 
-	#rem wonkeydoc Gold. Roughly equivalent to New Color( 1,.89,.61 ).
+	#rem wonkeydoc Gold. Roughly equivalent to New Color( 1,.76,.33 ).
 	#end
-	Const Gold:=New Color( 1,0.88565078560356991,0.6091625017721024 )
+	Const Gold:=New Color( 1,0.76,0.33 )
 
 	#rem wonkeydoc Copper. Roughly equivalent to New Color( .98,.82,.76 ).
 	#end
@@ -165,9 +165,9 @@ Struct Color
 	#rem wonkeydoc C64Liver. Equivalent to New Color( .41,.20,.18 ).
 	#end
 	Const C64Liver        := New Color( .41,.20,.18 )
-	#rem wonkeydoc C64Cyan. Equivalent to New Color( .43,.23,.52 ).
+	#rem wonkeydoc C64Cyan. Equivalent to New Color( .43,.64,.72 ).
 	#end
-	Const C64Cyan         := New Color( .43,.23,.52 )
+	Const C64Cyan         := New Color( .43,.64,.72 )
 	#rem wonkeydoc C64Purple. Equivalent to New Color( .43,.23,.52 ).
 	#end
 	Const C64Purple       := New Color( .43,.23,.52 )
