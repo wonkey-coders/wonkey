@@ -57,3 +57,34 @@ WX_CC_OPTS_EMSCRIPTEN_RELEASE=-O3 -DNDEBUG
 WX_CPP_OPTS_EMSCRIPTEN=-std=c++11 -I. -s USE_SDL=2 -s FULL_ES2=1 -s TOTAL_MEMORY=268435456 -s DISABLE_EXCEPTION_CATCHING=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-warn-absolute-paths
 WX_CPP_OPTS_EMSCRIPTEN_DEBUG=-O2
 WX_CPP_OPTS_EMSCRIPTEN_RELEASE=-O3 -DNDEBUG
+
+
+'--------------------------------------------------------------------------------------
+'----- ANDROID TARGET
+'--------------------------------------------------------------------------------------
+
+WX_ANDROID_NDK=${HOME}/Library/Android/sdk/ndk/22.0.7026061
+
+'Add path to android NDK
+'
+'PATH=${HOME}/Library/Android/sdk/ndk-bundle:${PATH}
+PATH=${WX_ANDROID_NDK}:${PATH}
+
+'Controls APP_ABI in Application.mk for NDK
+'
+'WX_ANDROID_APP_ABI=all
+'WX_ANDROID_APP_ABI=armeabi-v7a x86
+WX_ANDROID_APP_ABI=arm64-v8a x86_64
+
+'Controls APP_PLATFORM in Application.mk for NDK
+'
+WX_ANDROID_APP_PLATFORM=android-16
+
+'Android app compiler Compiler flags
+'
+WX_ANDROID_APP_CFLAGS=-std=gnu99 -fno-stack-protector -w
+WX_ANDROID_APP_CPPFLAGS=-std=c++11 -fno-stack-protector -frtti -fexceptions -w
+
+'Controls version of STL used by android apps.
+'
+WX_ANDROID_APP_STL=c++_static
