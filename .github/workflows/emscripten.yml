@@ -1,0 +1,58 @@
+# This is a basic workflow to help you get started with Actions
+
+name: emscripten
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the develop branch
+  push:
+    branches: [ develop ]
+    #paths-ignore:
+    #  - "**.md"
+  pull_request:
+    branches: [ develop ]
+    #paths-ignore:
+    #  - "**.md"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build-emscripten:
+    # The type of runner that the job will run on (macos-latest)
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: update packages
+        run: sudo apt-get update -y
+
+      - name: install packages
+        run: sudo apt-get install -y xz-utils
+
+      - name: setup emsdk
+        uses: mymindstorm/setup-emsdk@v9
+        with:
+          version: latest
+          #actions-cache-folder: 'emsdk-cache'
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: checkout repository
+        uses: actions/checkout@v2
+
+      # Runs a set of commands using the runners shell
+      - name: print host infos
+        run: |
+          pwd
+          arch
+      
+      #- name: print g++ version
+      #  run: g++ --version
+
+      - name: print wake help
+        run: ./bin/linux/wake
+
+      - name: rebuild modules
+        run: ./bin/linux/wake mods -time -clean -target=emscripten
