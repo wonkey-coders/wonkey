@@ -69,6 +69,10 @@ WX_CPP_OPTS_WINDOWS_RELEASE=-O3 -DNDEBUG
 '
 WX_MSVC_DIR=${ProgramFiles(x86)}\Microsoft Visual Studio\2019\Community\VC
 
+' If you use MS BuildTools 2019:
+'
+'WX_MSVC_DIR=${ProgramFiles(x86)}\Microsoft Visual Studio\2019\BuildTools\VC
+
 WX_MSVC_TOOLS_DIR=${WX_MSVC_DIR}\Tools\MSVC\14.28.29333
 
 WX_WINDOWS_KITS_DIR=${ProgramFiles(x86)}\Windows Kits\10
@@ -87,6 +91,9 @@ WX_MSVC_LIB_X86=${WX_MSVC_TOOLS_DIR}\lib\x86;
 WX_MSVC_LIB_X86=${WX_MSVC_LIB_X86}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\ucrt\x86;
 WX_MSVC_LIB_X86=${WX_MSVC_LIB_X86}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\um\x86;
 
+' RC.exe path, Microsoft's Resource Compiler
+WX_MSVC_RC_X86=${WX_WINDOWS_KITS_DIR}\bin\${WX_WINDOWS_KIT}\x86
+
 WX_MSVC_PATH_X64=${WX_MSVC_TOOLS_DIR}\bin\Hostx64\x64
 
 WX_MSVC_INCLUDE_X64=${WX_MSVC_TOOLS_DIR}\include;
@@ -98,6 +105,9 @@ WX_MSVC_INCLUDE_X64=${WX_MSVC_INCLUDE_X64}${WX_WINDOWS_KITS_DIR}\Include\${WX_WI
 WX_MSVC_LIB_X64=${WX_MSVC_TOOLS_DIR}\lib\x64;
 WX_MSVC_LIB_X64=${WX_MSVC_LIB_X64}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\ucrt\x64;
 WX_MSVC_LIB_X64=${WX_MSVC_LIB_X64}${WX_WINDOWS_KITS_DIR}\Lib\${WX_WINDOWS_KIT}\um\x64;
+
+' RC.exe path, Microsoft's Resource Compiler
+WX_MSVC_RC_X64=${WX_WINDOWS_KITS_DIR}\bin\${WX_WINDOWS_KIT}\x64
 
 
 '--------------------------------------------------------------------------------------

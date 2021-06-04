@@ -705,8 +705,43 @@ Class GccBuildProduct Extends BuildProduct
 		Next
 
 		lnkFiles+=" "+LIB_FILES.Join( " " )
-		
+
 #If __TARGET__="windows"
+		If opts.target="windows" And opts.appIcon
+			'
+			' create icon resources on windows
+			'
+			Local appIconDestination:String = AllocTmpFile( StripDir(outputFile)+"_exeIcon_resource_" ).Replace(".txt","")
+			Local appIconName:String = "."+StripDir(opts.appIcon)
+			If Not CopyFile( opts.appIcon,appIconDestination+appIconName )
+				Print "Could not copy Icon resource."
+				Print "    Icon: "+opts.appIcon
+				Print "    Destination: "+appIconDestination+appIconName
+			Else
+				SaveString("AppIcon ICON ~q"+appIconDestination+appIconName+"~q~n",appIconDestination+appIconName+".rc")
+				If opts.toolchain="gcc"
+					If Not system("windres ~q"+appIconDestination+appIconName+".rc~q ~q"+appIconDestination+appIconName+".o~q > ~q"+appIconDestination+".err~q")
+						lnkFiles += " ~q"+appIconDestination+appIconName+".o~q"
+					Else
+						Print "Could not create icon resource using gcc's windres."
+					Endif
+				Elseif opts.toolchain="msvc"
+					Local rc := GetEnv("WX_MSVC_RC_"+opts.arch)
+					If rc Then rc += "\"
+					If Not system("~q"+rc+"rc.exe~q /nologo /r /fo ~q"+appIconDestination+appIconName+".res~q ~q"+appIconDestination+appIconName+".rc~q > ~q"+appIconDestination+".err~q")
+						lnkFiles += " ~q"+appIconDestination+appIconName+".res~q"
+					Else
+						Print "Could not create icon resource using MSVC RC.exe."
+						If GetFileType(rc+"rc.exe") = FileType.None
+							Print "    not found: ~q"+rc+"rc.exe~q"
+							Print "    please check your environment variable 'WX_MSVC_RC_"+opts.arch+"'"
+						Endif
+					Endif
+				Endif
+			Endif
+		Endif
+
+
 		lnkFiles=lnkFiles.Replace( " -Wl,"," " )
 		Local tmp:=AllocTmpFile( "lnkFiles" )
 		SaveString( lnkFiles,tmp )

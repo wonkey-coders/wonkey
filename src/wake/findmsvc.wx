@@ -42,6 +42,9 @@ Function FindMSVC:Bool()
 
 	Local libsDir:=FindMaxVerDir( wkits+"\Lib" )
 	If Not libsDir Return False
+
+	Local bintoolsDir:=FindMaxVerDir( wkits+"\bin" ) ' bin tools, required for RC.exe
+
 	
 '	Print toolsDir
 '	Print incsDir
@@ -56,15 +59,18 @@ Function FindMSVC:Bool()
 	SetEnv( "WX_MSVC_PATH_X86",toolsDir+"\bin\Hostx86\x86" )
 	SetEnv( "WX_MSVC_INCLUDE_X86",toolsDir+"\include;"+incsDir+"\ucrt;"+incsDir+"\shared;"+incsDir+"\um;"+incsDir+"\winrt" )
 	SetEnv( "WX_MSVC_LIB_X86",toolsDir+"\lib\x86;"+libsDir+"\ucrt\x86;"+libsDir+"\um\x86" )
-	
+	SetEnv( "WX_MSVC_RC_X86",bintoolsDir+"\x86" )
+
 	SetEnv( "WX_MSVC_PATH_X64",toolsDir+"\bin\Hostx64\x64" )
 	SetEnv( "WX_MSVC_INCLUDE_X64",toolsDir+"\include;"+incsDir+"\ucrt;"+incsDir+"\shared;"+incsDir+"\um;"+incsDir+"\winrt" )
 	SetEnv( "WX_MSVC_LIB_X64",toolsDir+"\lib\x64;"+libsDir+"\ucrt\x64;"+libsDir+"\um\x64" )
+	SetEnv( "WX_MSVC_RC_X64",bintoolsDir+"\x64" )
 	
 	Local arch:=GetEnv("WX_ARCH_WINDOWS").ToUpper()
 	Print "WX_MSVC_PATH_"+arch+"='"+GetEnv("WX_MSVC_PATH_"+arch)+"'"
 	Print "WX_MSVC_INCLUDE_"+arch+"='"+GetEnv("WX_MSVC_INCLUDE_"+arch)+"'"
 	Print "WX_MSVC_LIB_"+arch+"='"+GetEnv("WX_MSVC_LIB_"+arch)+"'"
+	Print "WX_MSVC_RC_"+arch+"='"+GetEnv("WX_MSVC_RC_"+arch)+"'"
 
 	Return True
 End
