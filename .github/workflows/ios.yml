@@ -43,4 +43,4 @@ jobs:
         run: ./bin/macos/wake
 
       - name: rebuild modules
-        run: /bin/macos/wake mods -time -clean -target=ios
+        run: ./bin/macos/wake mods -time -clean -target=ios
