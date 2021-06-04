@@ -101,6 +101,7 @@ Function Main()
 		Print "  -build           Parse, semant, translate and build."
 		Print "  -run             The works! The default."
 		Print "  -apptype=        App type to make, one of: gui, console. (Defaults: gui). For web target, one of: wasm, asmjs, wasm+asmjs (Defaults: wasm)"
+		Print "  -icon=           App icon. (macos/ios: .icns file, windows: .ico file)"
 		Print "  -target=         Build target, one of: windows, macos, linux, raspbian, emscripten, android, ios, desktop. Desktop is an alias for current host. (Defaults: desktop)."
 		Print "  -config=         Build config, one of: all, debug, release. (Defaults: 'all' for modules else 'debug')."
 		Print "  -product=        Build product path."
@@ -237,7 +238,9 @@ Function MakeApp:Bool( args:String[] )
 	'DebugStop()
 	
 	Local srcPath:=RealPath( args[0].Replace( "\","/" ) )
-	
+
+	If opts.appIcon Then opts.appIcon = RealPath( opts.appIcon.Replace( "\","/" ) )
+
 	ChangeDir( cd )
 	
 	opts.mainSource=srcPath
@@ -494,6 +497,8 @@ Function ParseOpts:String[]( opts:BuildOpts,args:String[] )
 				Select opt
 				Case "-product"
 					opts.product=path
+				Case "-icon"
+					opts.appIcon=path
 				Case "-apptype"
 					opts.appType=val
 				Case "-target"

@@ -14,6 +14,7 @@ Class BuildOpts
 	Field clean:Bool
 	Field product:String
 	Field appType:String
+	Field appIcon:String
 	Field arch:String
 	Field verbose:Int
 	Field fast:Bool
