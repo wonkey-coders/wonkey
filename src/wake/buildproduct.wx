@@ -769,10 +769,12 @@ Class GccBuildProduct Extends BuildProduct
 				DeleteFile( StripExt( outputFile )+".asm.js" )
 			Endif
 		Endif
-		
+
+#If __TARGET__="windows"
 		If opts.target="windows" And opts.appIcon And icon_resource_output
 			DeleteFile(icon_resource_output)
 		Endif
+#Endif
 
 		If opts.target="macos" And opts.appType="gui" And opts.appIcon
 			'
