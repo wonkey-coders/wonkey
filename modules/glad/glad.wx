@@ -1,6 +1,8 @@
 namespace glad
 
-#If __TARGET__<>"raspbian"
+#if __TARGET__ = "raspbian" or __TARGET__ = "emscripten" or __TARGET__ = "ios" or __TARGET__ = "android"
+	'Exclude targets
+#else
 
 #import "<libc>"
 #import "<glfw>"

@@ -1,5 +1,9 @@
 Namespace raylib
 
+#if __TARGET__ = "raspbian" or __TARGET__ = "emscripten" or __TARGET__ = "ios" or __TARGET__ = "android"
+	'Exclude targets
+#else
+
 #Import "<libc>"
 
 #import "WX_CC_OPTS_MACOS= -DPLATFORM_DESKTOP -DUSE_AUDIO -ObjC"
@@ -1226,3 +1230,6 @@ c2mx2: **** Success ***** - output saved to raylib.wx
 
 
 #End
+
+
+#end
