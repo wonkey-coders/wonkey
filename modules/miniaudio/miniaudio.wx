@@ -3,6 +3,10 @@
 
 Namespace miniaudio
 
+#if __TARGET__ = "raspbian" or __TARGET__ = "emscripten" or __TARGET__ = "ios" or __TARGET__ = "android"
+	'Exclude targets
+#else
+
 #Import "<libc>"
 
 #Import "native/*.h"
@@ -1678,4 +1682,4 @@ Function ma_noise_set_type:ma_result( pNoise:ma_noise Ptr, type:ma_noise_type )
 '***** Extern Structs *****
 
 
-
+#end
