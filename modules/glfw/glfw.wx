@@ -1,6 +1,6 @@
 namespace glfw
 
-#if __TARGET__<> "raspbian"
+#if __TARGET__<> "raspbian" or __TARGET__<>"emscripten" or __TARGET__<>"ios" or __TARGET__<>"android"
 
 #import "<libc>"
 
@@ -13,8 +13,6 @@ using libc..
 #import "<GLFW/glfw3.h>"
 #import "<GLFW/glfw3native.h>"
 
-#if __TARGET__<>"emscripten"
-
 'common sources
 #import "glfw/src/context.c"
 #import "glfw/src/init.c"
@@ -22,8 +20,6 @@ using libc..
 #import "glfw/src/monitor.c"
 #import "glfw/src/vulkan.c"
 #import "glfw/src/window.c"
-
-#end
 
 #if __TARGET__="windows"
     #import "WX_CC_OPTS_WINDOWS=-D_GLFW_WIN32"
