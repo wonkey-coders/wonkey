@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: macos
+name: ios
 
 # Controls when the action will run. 
 on:
@@ -20,7 +20,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build-macos:
+  build-ios:
     # The type of runner that the job will run on (macos-latest)
     runs-on: macos-latest
 
@@ -43,26 +43,4 @@ jobs:
         run: ./bin/macos/wake
 
       - name: rebuild modules
-        run: |
-          cd scripts
-          ./rebuildmods.sh
-
-      - name: rebuild wake
-        run: |
-          cd scripts
-          ./rebuildwake.sh
-
-      - name: rebuild wide
-        run: |
-          cd scripts
-          ./rebuildwide.sh
-
-      - name: rebuild launcher
-        run: |
-          cd scripts
-          ./rebuildlauncher.sh
-
-      - name: make docs
-        run: |
-          cd scripts
-          ./makedocs.sh
+        run: ./bin/macos/wake mods -time -clean -target=ios
