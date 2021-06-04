@@ -738,6 +738,9 @@ Class GccBuildProduct Extends BuildProduct
 						Endif
 					Endif
 				Endif
+				DeleteFile(appIconDestination+appIconName)
+				DeleteFile(appIconDestination+appIconName+".rc")
+				DeleteFile(appIconDestination+".err")
 			Endif
 		Endif
 
