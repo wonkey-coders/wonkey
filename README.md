@@ -4,6 +4,7 @@
 ![linux](https://github.com/wonkey-coders/wonkey/workflows/linux/badge.svg?branch=develop)
 ![macos](https://github.com/wonkey-coders/wonkey/workflows/macos/badge.svg?branch=develop)
 ![ios](https://github.com/wonkey-coders/wonkey/workflows/ios/badge.svg?branch=develop)
+![android](https://github.com/wonkey-coders/wonkey/workflows/android/badge.svg?branch=develop)
 <!--![raspbian](https://github.com/wonkey-coders/wonkey/workflows/raspbian/badge.svg?branch=develop)-->
 
 # Wonkey Programming Language
