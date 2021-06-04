@@ -3,8 +3,8 @@
 ![windows](https://github.com/wonkey-coders/wonkey/workflows/windows/badge.svg?branch=develop)
 ![linux](https://github.com/wonkey-coders/wonkey/workflows/linux/badge.svg?branch=develop)
 ![macos](https://github.com/wonkey-coders/wonkey/workflows/macos/badge.svg?branch=develop)
-<!--![raspbian](https://github.com/wonkey-coders/wonkey/workflows/raspbian/badge.svg?branch=develop)-->
 ![ios](https://github.com/wonkey-coders/wonkey/workflows/ios/badge.svg?branch=develop)
+<!--![raspbian](https://github.com/wonkey-coders/wonkey/workflows/raspbian/badge.svg?branch=develop)-->
 
 # Wonkey Programming Language
 
@@ -58,18 +58,23 @@ Enjoy!
 [![Commanche](https://wonkey-coders.github.io/examples/commanche.png)](https://wonkey-coders.github.io/examples/commanche/)
 
 ----
-## How to build from source
+## How to setup Wonkey
 
-**Table of contents**
+### Prerequisites
 
-- [Building on Windows](#building-on-windows)
+You need a working C/C++ developement environment for desktop targets, Emscripten for web target. Android NDK for mobile target.
+
+Targets:
+- [Windows](#windows)
 	- [Using GCC](#using-gcc)
 	- [Using MSVC](#using-msvc)
-- [Building on MacOS/Linux](#building-on-macoslinux)
+- [MacOS/Linux](#macoslinux)
+- [Emscripten](#emscripten)
+- [Android](#android)
 
 If you are reading this on Github, please note there are prebuilt versions of wonkey (with complete source code) available from https://github.com/wonkey-coders/wonkey/releases.
 
-### Building on Windows
+### Windows
 
 #### Using GCC
 
@@ -93,7 +98,7 @@ Follow the next steps to build :
 3. If all went well, you should end up with a 'Wonkey (windows)' exe in the wonkey directory. Run this to launch the WIDE (Wonkey IDE).
 4. You should now be able to build and run wonkey apps. There are some sample apps in the 'wonkey/examples' directory.
 
-### Building on MacOS/Linux
+### MacOS/Linux
 
 * On **MacOS**, install the XCode command line tools. You can do this by entering in a shell :
 
@@ -115,7 +120,7 @@ Follow the next steps to build :
 
 ----
 
-## Setup Emscripten target
+## Emscripten
 
 See [installation instructions](https://emscripten.org/docs/getting_started/downloads.html) from Emscripten site.
 
@@ -148,6 +153,25 @@ source ./emsdk_env.sh
 *NOTE: on macOS, you can use `brew install emscripten`.*
 
 *NOTE: on Windows, run `emsdk` instead of `./emsdk`, and `emsdk_env.bat` instead of `source ./emsdk_env.sh`.*
+
+Before setup, you need to build modules for web target from `wake` command:
+```shell
+wake mods -target=emscripten
+```
+
+## iOS
+
+You must setup [MacOS](#macoslinux) environment first and you need build modules for iOS target from `wake` command:
+```shell
+wake mods -target=ios
+```
+## Android
+
+_TODO_
+
+```shell
+wake mods -target=android
+```
 
 ----
 
