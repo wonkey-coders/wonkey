@@ -650,8 +650,6 @@ Function ExtractDir:String( path:String )
 	
 	path=path.Replace( "\","/" )
 
-	path=StripSlashes( path )
-
 	If IsRootDir( path ) Return path
 	
 	Local i:=path.FindLast( "/" )
@@ -676,7 +674,7 @@ If `path` does not contain a directory component, `path` is returned without mod
 #end
 Function StripDir:String( path:String )
 
-	path=StripSlashes( path )
+	path=path.Replace( "\","/" )
 
 	If IsRootDir( path ) Return ""
 
