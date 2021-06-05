@@ -46,7 +46,7 @@ Function Main()
 	
 	While Not IsRootDir( CurrentDir() ) And GetFileType( env )<>FILETYPE_FILE
 	
-		ChangeDir( ExtractDir( CurrentDir() ) )
+		ChangeDir( ExtractDir( CurrentDir().Slice(0,-1) ) )
 	Wend
 	
 	If GetFileType( env )<>FILETYPE_FILE Fail( "Unable to locate wake 'bin' directory" )
