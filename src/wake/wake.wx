@@ -104,7 +104,7 @@ Function Main()
 		Print "  -icon=           App icon. (macos/ios: .icns file, windows: .ico file)"
 		Print "  -target=         Build target, one of: windows, macos, linux, raspbian, emscripten, android, ios, desktop. Desktop is an alias for current host. (Defaults: desktop)."
 		Print "  -config=         Build config, one of: all, debug, release. (Defaults: 'all' for modules else 'debug')."
-		Print "  -product=        Build product path."
+		Print "  -product=        Build product path. (default: sourceDir/sourceName.products/target/)"
 		Print ""
 		Print "Sources:"
 		Print "  for make app     Single wonkey source file."
@@ -217,6 +217,30 @@ Function GenInfo:Bool( args:String[] )
 	Return Builder.errors.Length=0
 End
 
+Function PrepareProductsFolder(srcPath:String, opts:BuildOpts)
+	' Set default products path
+	If Not opts.product
+		opts.product=StripExt( srcPath )+".products/"+opts.target.ToLower()+"/"
+		Local appName := StripDir( StripExt( srcPath ) )
+		Select opts.target
+			Case "linux", "raspbian"
+				opts.product += appName
+			Case "macos"
+				opts.product += appName + (opts.appType="gui" ? ".app" Else "")
+			Case "windows"
+				opts.product += appName + ".exe"
+			Case "emscripten"
+				opts.product += appName + ".js"
+			Case "ios", "android"
+				' without filename
+			Default
+				opts.product += appName
+		End
+	Endif
+	' create products directory
+	CreateDir( ExtractDir( opts.product ) )
+End
+
 Function MakeApp:Bool( args:String[] )
 
 	Local opts:=New BuildOpts
@@ -240,6 +264,8 @@ Function MakeApp:Bool( args:String[] )
 	Local srcPath:=RealPath( args[0].Replace( "\","/" ) )
 
 	If opts.appIcon Then opts.appIcon = RealPath( opts.appIcon.Replace( "\","/" ) )
+
+	PrepareProductsFolder(srcPath, opts)
 
 	ChangeDir( cd )
 	
