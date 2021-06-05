@@ -347,7 +347,7 @@ Function FindBinFolder:String( startingFolder:String )
 			Exit
 		Endif
 		
-		ChangeDir( ExtractDir( CurrentDir() ) )
+		ChangeDir( ExtractDir( StripSlashes(CurrentDir()) ) )
 	Wend
 	Local result:=ok ? CurrentDir() Else ""
 	ChangeDir( cur )
