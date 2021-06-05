@@ -1,7 +1,7 @@
 
 Namespace emscripten
 
-#If __TARGET__="emscripten"
+#If __TARGET__="emscripten" or __MAKEDOCS__="true"
 
 #Import "<libc>"
 #Import "<sdl2>"

@@ -21,7 +21,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/aa383751
 
 Namespace win32
 
-#If __TARGET__="windows"
+#If __TARGET__="windows" or __MAKEDOCS__="true"
 
 #Import "<libc>"
 

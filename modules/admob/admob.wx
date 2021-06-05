@@ -3,7 +3,7 @@ Namespace admob
 
 #Import "<std>"
 
-#If __MOBILE_TARGET__
+#If __MOBILE_TARGET__ or __MAKEDOCS__="true"
 
 #Import "<mojo>"
 
@@ -11,7 +11,7 @@ Namespace admob
 
 #Import "admob_android"
 
-#Else If __TARGET__="ios"
+#Else If __TARGET__="ios" or __MAKEDOCS__="true"
 
 #Import "admob_ios"
 

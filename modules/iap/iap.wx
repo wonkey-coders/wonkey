@@ -1,7 +1,7 @@
 
 Namespace iap
 
-#If __MOBILE_TARGET__
+#If __MOBILE_TARGET__ or __MAKEDOCS__="true"
 
 #Import "<std>"
 #Import "<mojo>"
@@ -10,7 +10,7 @@ Namespace iap
 
 #Import "iap_android"
 
-#Elseif __TARGET__="ios"
+#Elseif __TARGET__="ios" or __MAKEDOCS__="true"
 
 #Import "iap_ios"
 

@@ -1,7 +1,7 @@
 
 Namespace jni
 
-#If __TARGET__="android"
+#If __TARGET__="android" or __MAKEDOCS__="true"
 
 #Import "native/jni_glue.cpp"
 #Import "native/jni_glue.h"

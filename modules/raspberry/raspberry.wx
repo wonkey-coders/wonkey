@@ -1,7 +1,7 @@
 
 Namespace raspberry
 
-#If __TARGET__="raspbian"
+#If __TARGET__="raspbian" or __MAKEDOCS__="true"
 
 	#Import "pigpio/pigpio"
 

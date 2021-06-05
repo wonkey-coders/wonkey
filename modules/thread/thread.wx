@@ -1,7 +1,7 @@
 
 Namespace std.thread
 
-#If __THREADS__
+#If __THREADS__ or __MAKEDOCS__="true"
 
 #Import "<std>"
 
