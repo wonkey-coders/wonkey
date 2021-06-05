@@ -57,6 +57,7 @@ Class BuilderInstance
 		ppsyms["__TARGET__"]="~q"+opts.target+"~q"
 		ppsyms["__CONFIG__"]="~q"+opts.config+"~q"
 		ppsyms["__ARCH__"]="~q"+opts.arch+"~q"
+		ppsyms["__APPTYPE__"]="~q"+opts.appType+"~q"
 		ppsyms["__COMPILER__"]="~q"+opts.toolchain+"~q" '//new! maybe '__TOOL_CHAIN__' ? = 'msvc' or 'gcc'
 		
 		Select opts.target
