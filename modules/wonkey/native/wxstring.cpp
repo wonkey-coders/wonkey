@@ -573,27 +573,40 @@ wxString wxString::capitalize()const{
 #endif
 }
 
-wxString wxString::trim()const{
+wxString wxString::trim(int ch)const{
 	const wxChar *beg=data();
 	const wxChar *end=data()+length();
-	while( beg!=end && *beg<=32 ) ++beg;
-	while( beg!=end && *(end-1)<=32 ) --end;
+	if(ch == -1) {
+		while( beg!=end && *beg<=32 ) ++beg;
+		while( beg!=end && *(end-1)<=32 ) --end;
+	} else {
+		while( beg!=end && *beg==ch ) ++beg;
+		while( beg!=end && *(end-1)==ch ) --end;
+	}
 	if( end-beg==length() ) return *this;
 	return wxString( beg,end-beg );
 }
 
-wxString wxString::trimStart()const{
+wxString wxString::trimStart(int ch)const{
 	const wxChar *beg=data();
 	const wxChar *end=data()+length();
-	while( beg!=end && *beg<=32 ) ++beg;
+	if(ch == -1) {
+		while( beg!=end && *beg<=32 ) ++beg;
+	} else {
+		while( beg!=end && *beg==ch ) ++beg;
+	}
 	if( end-beg==length() ) return *this;
 	return wxString( beg,end-beg );
 }
 
-wxString wxString::trimEnd()const{
+wxString wxString::trimEnd(int ch)const{
 	const wxChar *beg=data();
 	const wxChar *end=data()+length();
-	while( beg!=end && *(end-1)<=32 ) --end;
+	if(ch == -1) {
+		while( beg!=end && *(end-1)<=32 ) --end;
+	} else {
+		while( beg!=end && *(end-1)==ch ) --end;
+	}
 	if( end-beg==length() ) return *this;
 	return wxString( beg,end-beg );
 }

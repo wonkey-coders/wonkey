@@ -59,14 +59,17 @@ Function Space:String(count:Int)
     Return " ".Dup(count)
 End
 
-#rem wonkeydoc Left Trim: Returns a String with any leading whitespace removed.
+#rem wonkeydoc Left Trim: Returns a String with any leading whitespace (or optional: character) removed.
 
 LTrim() is the same as `theString.TrimStart()`
 
 @param input the input string
 
+@param ch optional character code
+
 @example
-Print LTrim("  abc") ' output: "abc"
+Print LTrim("  abc")                ' output: "abc"
+Print LTrim("//def//", Chars.Slash) ' output: "def//"
 @end
 
 #end
@@ -74,14 +77,21 @@ Function LTrim:String(input:String)
     Return input.TrimStart()
 End
 
-#rem wonkeydoc Right Trim: Returns a String with any trailing whitespace removed.
+Function LTrim:String(input:String, ch:Int)
+    Return input.TrimStart(ch)
+End
+
+#rem wonkeydoc Right Trim: Returns a String with any trailing whitespace (or optional: character) removed.
 
 RTrim() is the same as `theString.TrimEnd()`
 
 @param input the input string
 
+@param ch optional character code
+
 @example
-Print RTrim("abc  ") ' output: "abc"
+Print RTrim("abc  ")                ' output: "abc"
+Print RTrim("//def//", Chars.Slash) ' output: "//def"
 @end
 
 #end
@@ -89,19 +99,30 @@ Function RTrim:String(input:String)
     Return input.TrimEnd()
 End
 
-#rem wonkeydoc Returns a String with leading and trailing whitespace removed.
+Function RTrim:String(input:String, ch:Int)
+    Return input.TrimEnd(ch)
+End
+
+#rem wonkeydoc Returns a String with leading and trailing whitespace (or optional: character) removed.
 
 Trim() is the same as `theString.Trim()`
 
 @param input the input string
 
+@param ch optional character code
+
 @example
-Print Trim("  abc  ") ' output: "abc"
+Print Trim("  abc  ")              ' output: "abc"
+Print Trim("//def//", Chars.Slash) ' output: "def"
 @end
 
 #end
 Function Trim:String(input:String)
     Return input.Trim()
+End
+
+Function Trim:String(input:String, ch:Int)
+    Return input.Trim(ch)
 End
 
 #rem wonkeydoc Returns the string converted to lowercase

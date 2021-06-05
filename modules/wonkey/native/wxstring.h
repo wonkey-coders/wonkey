@@ -229,11 +229,11 @@ class wxString{
 	
 	wxString capitalize()const;
 	
-	wxString trim()const;
+	wxString trim(int ch=-1)const;
 	
-	wxString trimStart()const;
+	wxString trimStart(int ch=-1)const;
 	
-	wxString trimEnd()const;
+	wxString trimEnd(int ch=-1)const;
 	
 	wxString dup( int n )const;
 

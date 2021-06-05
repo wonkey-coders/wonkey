@@ -246,32 +246,41 @@ Struct @String ="wxString"
 	#end	
 	Method Capitalize:String()="capitalize"
 	
-	#rem wonkeydoc Trim whitespace from a string.
+	#rem wonkeydoc Trim whitespace (or optional: character) from a string.
 	
-	Returns the string with leading and trailing whitespace removed.
+	Returns the string with leading and trailing whitespace (or optional: character) removed.
+
+	@param char optional character code
 	
 	@return The string with leading and trailing whitespace removed.
 	
 	#end
 	Method Trim:String()="trim"
+	Method Trim:String(char:Int)="trim"
 	
-	#rem wonkeydoc Trim whitespace from the start a string.
+	#rem wonkeydoc Trim whitespace (or optional: character) from the start a string.
 	
-	Returns the string with any leading whitespace removed.
+	Returns the string with any leading whitespace (or optional: character) removed.
+
+	@param char optional character code
 	
 	@return The string with any leading whitespace removed.
 	
 	#end
 	Method TrimStart:String()="trimStart"
+	Method TrimStart:String(char:Int)="trimStart"
 	
-	#rem wonkeydoc Trim whitespace from the end of a string.
+	#rem wonkeydoc Trim whitespace (or optional: character) from the end of a string.
 	
-	Returns the string with any trailing whitespace removed.
+	Returns the string with any trailing whitespace (or optional: character) removed.
+
+	@param char optional character code
 
 	@return The string with any trailing whitespace removed.
 	
 	#end
 	Method TrimEnd:String()="trimEnd"
+	Method TrimEnd:String(char:Int)="trimEnd"
 	
 	#rem wonkeydoc Duplicates a string.
 	
