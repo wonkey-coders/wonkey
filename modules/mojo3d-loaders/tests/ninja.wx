@@ -7,6 +7,7 @@ Namespace myapp
 
 #Import "assets/psionic/ninja.b3d"
 #Import "assets/psionic/nskinbl.jpg"
+#Import "../../mojo3D/tests/assets/miramar-skybox.jpg"
 
 Using std..
 Using mojo..
