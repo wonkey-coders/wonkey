@@ -119,7 +119,7 @@ Class BuilderInstance
 	
 		If opts.verbose>=0 Print "Parsing..."
 		
-		Local name:=StripDir( StripExt( opts.mainSource ) )
+		Local name:=StripDir( StripSlashes( StripExt( opts.mainSource ) ) )
 
 		Local module:=New Module( name, opts.mainSource, WAKE_VERSION, profileName )
 		modulesMap[name]=module
@@ -651,7 +651,7 @@ Class BuilderInstance
 		Case ".lib"
 			
 			If opts.toolchain="msvc"
-				product.LIB_FILES.Push( StripDir( path ) )'name )
+				product.LIB_FILES.Push( StripDir( StripSlashes( path ) ) )'name )
 			Else
 				product.LIB_FILES.Push( "-l"+name )
 			Endif
@@ -705,7 +705,7 @@ Class BuilderInstance
 		
 		Local ext:=ExtractExt( path ).ToLower()
 		
-		Local name:=StripDir( StripExt( path ) )
+		Local name:=StripDir( StripSlashes( StripExt( path ) ) )
 
 		If name="*"
 		
@@ -842,7 +842,7 @@ Class BuilderInstance
 			If opts.toolchain="gcc"
 				'OK, this is ugly...
 				ImportLocalFile( ExtractDir( path )+"*.framework" )
-				ImportSystemFile( StripDir( path ) )
+				ImportSystemFile( StripDir( StripSlashes( path ) ) )
 				product.DLL_FILES.Push( path )
 			Endif
 		
