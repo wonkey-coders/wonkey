@@ -238,7 +238,7 @@ Note that only the desktop and web targets have an assets directory. Other targe
 Function AssetsDir:String()
 	If Not _assetsDir
 #If __TARGET__="macos"
-		_assetsDir=ExtractDir( AppDir() )+"Resources/"
+		_assetsDir=ExtractDir( TrimSlashes(AppDir()) )+"Resources/"
 #Else If __DESKTOP_TARGET__ Or __WEB_TARGET__
 		_assetsDir=AppDir()+"assets/"
 #Else If __TARGET__="ios"
@@ -581,7 +581,7 @@ Function RealPath:String( path:String )
 		Case "."
 		Case ".."
 			If Not root root=CurrentDir()
-			root=ExtractDir( root )
+			root=ExtractDir( TrimSlashes(root) )
 		Default
 			root+=t+"/"
 		End
@@ -923,7 +923,7 @@ Function CreateDir:Bool( dir:String,recursive:Bool=True,clean:Bool=False )
 	
 	If recursive
 	
-		Local parent:=ExtractDir( dir )
+		Local parent:=ExtractDir( TrimSlashes(dir) )
 	
 		If parent And Not IsRootDir( parent )
 		
