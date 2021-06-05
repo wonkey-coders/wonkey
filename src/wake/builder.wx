@@ -52,12 +52,12 @@ Class BuilderInstance
 		
 		Builder=self
 		
-		ppsyms["__HOST__"]="~q"+HostOS+"~q"
-		ppsyms["__HOSTOS__"]="~q"+HostOS+"~q"
-		ppsyms["__TARGET__"]="~q"+opts.target+"~q"
-		ppsyms["__CONFIG__"]="~q"+opts.config+"~q"
-		ppsyms["__ARCH__"]="~q"+opts.arch+"~q"
-		ppsyms["__APPTYPE__"]="~q"+opts.appType+"~q"
+		ppsyms["__HOST__"]="~q"+HostOS+"~q"             ' windows, macos, linux, raspbian
+		ppsyms["__HOSTOS__"]="~q"+HostOS+"~q"           ' windows, macos, linux, raspbian
+		ppsyms["__TARGET__"]="~q"+opts.target+"~q"      ' windows, macos, linux, raspbian, emscripten, android, ios
+		ppsyms["__CONFIG__"]="~q"+opts.config+"~q"      ' debug, release, all
+		ppsyms["__ARCH__"]="~q"+opts.arch+"~q"          ' x86, x64, arm32, arm64, arm64e, armv7, armv7s, llvm (emscripten), armeabi-v7a (android)
+		ppsyms["__APPTYPE__"]="~q"+opts.appType+"~q"    ' gui, console, wasm, asmjs, wasm+asmjs
 		ppsyms["__COMPILER__"]="~q"+opts.toolchain+"~q" '//new! maybe '__TOOL_CHAIN__' ? = 'msvc' or 'gcc'
 		
 		Select opts.target
