@@ -50,14 +50,40 @@ Class Product
 			Select target
 				Case "macos"
 					If opts.appType="gui"
+						If Not StripDir(opts.product)
+							Print "Option '-product=' should be complete 'path/filename.app' for target '"+target+"'"
+							Print "Adding: "+appName+".app"
+							opts.product += appName + ".app"
+						Endif
 						If Not opts.product.EndsWith(".app") Then opts.product += ".app"
 					Else
-						If opts.product.EndsWith(".app") Then opts.product = opts.product.Slice(0,-4)
+						If Not StripDir(opts.product)
+							Print "Option '-product=' should be complete 'path/filename' for target '"+target+"'"
+							Print "Adding: "+appName
+							opts.product += appName
+						Endif
+						If opts.product.EndsWith(".app") Then opts.product  = opts.product.Slice(0,-4)
 					Endif
 				Case "windows"
+						If Not StripDir(opts.product)
+							Print "Option '-product=' should be complete 'path/filename.exe' for target '"+target+"'"
+							Print "Adding: "+appName+".exe"
+							opts.product += appName+".exe"
+						Endif
+						If Not opts.product.EndsWith(".exe") Then opts.product += ".exe"
 				Case "emscripten"
+						If Not StripDir(opts.product)
+							Print "Option '-product=' should be complete 'path/filename.js' for target '"+target+"'"
+							Print "Adding: "+appName+".js"
+							opts.product += appName+".js"
+						Endif
+						If Not opts.product.EndsWith(".js") Then opts.product += ".js"
 				Case "ios","android"
-					If Not opts.product.EndsWith(".app")
+					If Not opts.product.EndsWith("/")
+						Print "Option '-product=' should be a path for target '"+target+"'"
+						Print "Adding '/': "+opts.product+"/"
+						opts.product = opts.product+"/"
+					Endif
 				Default
 			End Select
 		Endif
