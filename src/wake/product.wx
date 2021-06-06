@@ -155,9 +155,11 @@ Class Product
 				CreateDir( packageDir )
 				CopyFile( mainDir+"WonkeyGame.java",packageDir+activityName+".java" )
 				DeleteFile( mainDir+"WonkeyGame.java" )
-				DeleteDir(dir+appName)
-				CopyDir(dir+"WonkeyGame",dir+appName,True)
-				DeleteDir(dir+"WonkeyGame")
+				If appName <> "WonkeyGame"
+					DeleteDir(dir+appName)
+					CopyDir(dir+"WonkeyGame",dir+appName,True)
+					DeleteDir(dir+"WonkeyGame")
+				Endif
 			Case "emscripten"
 				Local dir := ExtractDir(opts.product)
 				If appName <> "WonkeyGame"
