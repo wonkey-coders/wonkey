@@ -243,6 +243,10 @@ Function MakeApp:Bool( args:String[] )
 	
 	Local srcPath:=RealPath( args[0].Replace( "\","/" ) )
 
+	If Not GetFileType(srcPath) = FileType.File
+		Fail("Can't find source file '"+srcPath+"'")
+	Endif
+
 	If opts.appIcon Then opts.appIcon = RealPath( opts.appIcon.Replace( "\","/" ) )
 
 	Local product := New Product(WonkeyRootDir, srcPath, opts)
