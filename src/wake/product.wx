@@ -1,0 +1,230 @@
+
+Namespace wx
+
+#Import "<std>"
+#Import "builder"
+
+Using std..
+Using wx..
+
+Class Product
+
+	Field wonkeyRoot:String            ' wonkey root directory
+	Field srcPath:String               ' source code (main file)
+	Field opts:BuildOpts               ' build options
+	Field appName:String               ' app name
+	Field productDir:String            ' output directory
+	Field target:String                ' target name
+	Field productVar:StringMap<String> ' ${NAME} template replacement
+	Field productExt:StringStack       ' file extensions where ${NAME} template replacement is done
+	
+	Method New(_wonkeyRootDir:String, _srcPath:String, _opts:BuildOpts)
+		Self.wonkeyRoot = _wonkeyRootDir
+		Self.srcPath    = _srcPath
+		Self.opts       = _opts
+		Self.appName    = StripDir( StripExt( _srcPath ) )
+		Self.productDir = ExtractDir( opts.product )
+		Self.target     = opts.target.ToLower()
+	End
+
+	Method CheckPath()
+		' Set default products path, if not provided
+		If Not Self.opts.product
+			Self.opts.product = StripExt( srcPath ) + ".products/" + target + "/"
+			Select target
+				Case "linux", "raspbian"
+					opts.product += appName
+				Case "macos"
+					opts.product += appName + (opts.appType="gui" ? ".app" Else "")
+				Case "windows"
+					opts.product += appName + ".exe"
+				Case "emscripten"
+					opts.product += appName + ".js"
+				Case "ios", "android"
+					' without filename
+				Default
+					opts.product += appName
+			End Select
+		Else
+			' Verify
+			Select target
+				Case "macos"
+					If opts.appType="gui"
+						If Not opts.product.EndsWith(".app") Then opts.product += ".app"
+					Else
+						If opts.product.EndsWith(".app") Then opts.product = opts.product.Slice(0,-4)
+					Endif
+				Case "windows"
+				Case "emscripten"
+				Case "ios","android"
+					If Not opts.product.EndsWith(".app")
+				Default
+			End Select
+		Endif
+		' update
+		productDir = ExtractDir( opts.product )
+	End
+
+	Method PrepareFolder()
+		' create products directory
+		'If opts.verbose>0 Then Print "Preparing Product Folder"
+		If Not CreateDir( productDir )
+			Print "Failed to create product directory '"+productDir+"'"
+		Endif
+	End
+
+	Method CopyAndFinalize()
+		' After successful building:
+		' - copy products templates
+		' - replace template variables
+
+		'If opts.verbose>0 Then Print "Finalizing Product"
+
+		Self.productVar = New StringMap<String> ' ${NAME} template replacement
+		Self.productExt = New StringStack       ' file extensions where ${NAME} template replacement is done
+	
+		productVar["APPLICATION_NAME"] = appName
+		
+		'
+		' Add template variables for specific targets
+		'
+		Select target
+			Case "android"
+				productVar["PACKAGE_NAME"] = "com.wx."+appName.Replace(" ", "_")
+				productVar["ACTIVITY_NAME"] = "WonkeyGame" ' appName
+				productExt.Add(".xml")
+				productExt.Add(".java")
+				productExt.Add(".gradle")
+				productExt.Add(".name")
+			Case "emscripten"
+				productExt.Add(".html")
+				productExt.Add(".htm")
+			Case "ios"
+				productExt.Add(".pbxproj")
+		End Select
+		
+		'
+		' Copy template directory
+		'
+		Select target
+			Case "android", "emscripten", "ios"
+				Local templateSrcDir := wonkeyRoot+"products/"+target+"/"
+				If Not GetFileType(templateSrcDir) = FileType.Directory
+					Print "Product template for target '"+target+"' not found at '"+templateSrcDir+"'"
+				Endif
+				CopyProductTemplate(templateSrcDir,productDir)
+		End Select
+
+		'
+		' Final touch
+		'
+		Select target
+			Case "android"
+				Local packageName  := productVar["PACKAGE_NAME"]
+				Local activityName := productVar["ACTIVITY_NAME"]
+				Local dir          := opts.product
+				Local mainDir      := dir+"app/src/main/"
+				Local packageDir   := mainDir+"java/"+packageName.Replace( ".","/" )+"/"
+		
+				CreateDir( packageDir )
+				CopyFile( mainDir+"WonkeyGame.java",packageDir+activityName+".java" )
+				DeleteFile( mainDir+"WonkeyGame.java" )
+				DeleteDir(dir+appName)
+				CopyDir(dir+"WonkeyGame",dir+appName,True)
+				DeleteDir(dir+"WonkeyGame")
+			Case "emscripten"
+				Local dir := ExtractDir(opts.product)
+				If appName <> "WonkeyGame"
+					DeleteFile(dir+appName+".html")
+					CopyFile( dir+"WonkeyGame.html",dir+appName+".html" )
+					DeleteFile(dir+"WonkeyGame.html")
+				Endif
+				DeleteFile(dir+"index.html")
+				CopyFile(dir+appName+".html",dir+"index.html")
+			Case "ios"
+				Local dir := opts.product
+				If appName <> "WonkeyGame"
+					DeleteDir(dir+appName+".xcodeproj",True)
+					CopyDir(dir+"WonkeyGame.xcodeproj",dir+appName+".xcodeproj")
+					DeleteDir(dir+"WonkeyGame.xcodeproj",True)
+				Endif
+		End Select
+
+	End
+	
+	Private
+	
+	Method CopyProductTemplate(srcDir:String, destDir:String)
+		If Not GetFileType(srcDir) = FileType.Directory
+			Print "CopyTemplateContent: Directory '"+srcDir+"' does not exist. Aborting."
+			Return
+		Endif
+		If Not GetFileType(destDir) = FileType.Directory
+			Print "CopyTemplateContent: Directory '"+destDir+"' does not exist. Aborting."
+			Return
+		Endif
+
+		Local directory := LoadDir(srcDir)
+		For Local entry := Eachin directory
+			Select GetFileType(srcDir+entry)
+				Case FileType.Directory
+					If opts.verbose>0 Then Print "copying product directory '" + srcDir+entry + "/' to '" + destDir+entry + "/'"
+					CreateDir(destDir+entry)
+					CopyProductTemplate(srcDir+entry+"/", destDir+entry+"/")
+				Case FileType.File
+					If opts.verbose>0 Then Print "copying product file '" + srcDir+entry + "' to '" + destDir+entry + "'"
+					If Not CopyProductFile(srcDir+entry, destDir+entry)
+						Print "CopyTemplateContent: Error copying file '"+srcDir+entry+"' to '"+destDir+entry+"'"
+					Endif
+			End Select
+		Next
+	End
+	
+	Method CopyProductFile:Bool(srcFile:String, destFile:String)
+		Local ok:Bool
+		Local ext := ExtractExt(srcFile).ToLower()
+		
+		If Not ext Or productExt.Contains(ext)=False Then Return CopyFile(srcFile,destFile)
+		
+		Local tmp:=LoadString( srcFile )
+
+		For Local v := Eachin productVar
+			tmp = tmp.Replace("${"+v.Key+"}", v.Value )
+		Next
+
+		ok = SaveString( tmp,destFile )
+
+		Return ok
+	End
+
+End
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

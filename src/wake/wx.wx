@@ -37,6 +37,8 @@ Namespace wx
 #Import "builder"
 #Import "buildproduct"
 
+#Import "product"
+
 Using std
 Using std.stringio
 Using std.filesystem

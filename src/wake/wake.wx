@@ -5,6 +5,7 @@ Namespace wake
 
 #Import "wx"
 #Import "findmsvc"
+#Import "product"
 
 #Import "newdocs/docsnode"
 #Import "newdocs/docsbuffer"
@@ -23,6 +24,7 @@ Using wx..
 Global opts_time:Bool
 
 Global StartDir:String
+Global WonkeyRootDir:String
 
 Global profileName:String
 
@@ -46,10 +48,12 @@ Function Main()
 	
 	While Not IsRootDir( CurrentDir() ) And GetFileType( env )<>FILETYPE_FILE
 	
-		ChangeDir( ExtractDir( CurrentDir().Slice(0,-1) ) )
+		ChangeDir( ExtractDir( StripSlashes( CurrentDir() ) ) )
 	Wend
 	
 	If GetFileType( env )<>FILETYPE_FILE Fail( "Unable to locate wake 'bin' directory" )
+
+	WonkeyRootDir = CurrentDir()
 
 	CreateDir( "tmp" )
 	
@@ -217,30 +221,6 @@ Function GenInfo:Bool( args:String[] )
 	Return Builder.errors.Length=0
 End
 
-Function PrepareProductsFolder(srcPath:String, opts:BuildOpts)
-	' Set default products path
-	If Not opts.product
-		opts.product=StripExt( srcPath )+".products/"+opts.target.ToLower()+"/"
-		Local appName := StripDir( StripExt( srcPath ) )
-		Select opts.target
-			Case "linux", "raspbian"
-				opts.product += appName
-			Case "macos"
-				opts.product += appName + (opts.appType="gui" ? ".app" Else "")
-			Case "windows"
-				opts.product += appName + ".exe"
-			Case "emscripten"
-				opts.product += appName + ".js"
-			Case "ios", "android"
-				' without filename
-			Default
-				opts.product += appName
-		End
-	Endif
-	' create products directory
-	CreateDir( ExtractDir( opts.product ) )
-End
-
 Function MakeApp:Bool( args:String[] )
 
 	Local opts:=New BuildOpts
@@ -265,7 +245,8 @@ Function MakeApp:Bool( args:String[] )
 
 	If opts.appIcon Then opts.appIcon = RealPath( opts.appIcon.Replace( "\","/" ) )
 
-	PrepareProductsFolder(srcPath, opts)
+	Local product := New Product(WonkeyRootDir, srcPath, opts)
+	product.CheckPath() ' set default products path
 
 	ChangeDir( cd )
 	
@@ -299,15 +280,23 @@ Function MakeApp:Bool( args:String[] )
 	Builder.Semant()
 	If opts.passes=2 Return Builder.errors.Length=0
 	If Builder.errors.Length Return False
-	
+
+	product.PrepareFolder() ' not required before Parse() and Semant()
+
 	Builder.Translate()
 	If opts.passes=3 Return Builder.errors.Length=0
 	If Builder.errors.Length Return False
 	
 	Builder.product.Build()
 	If Builder.errors.Length Return False
+	product.CopyAndFinalize() ' final product preparation after successful build
+	Select opts.target
+		Case "ios"        Print "Application built: "+opts.product+product.appName+".xcodeproj"
+		Case "android"    Print "Application built: "+opts.product+product.appName+"/"
+		Case "emscripten" Print "Application built: "+StripExt(opts.product)+".html"
+		Default           Print "Application built: "+opts.product
+	End Select
 	If opts.passes=4
-		Print "Application built:"+Builder.product.outputFile
 		Return True
 	Endif
 	
