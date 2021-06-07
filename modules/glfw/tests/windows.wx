@@ -4,47 +4,19 @@ namespace glfw.samples
 #import "<glad>"
 #import "<glfw>"
 #import "<std>"
+#Import "<emscripten>"
 
 using libc..
 using glad..
 using glfw..
 using std.memory..
+Using emscripten..
 
-function Main()
-    glfwSetErrorCallback(error_callback)
+Global c:Float = 0.0
+Global window:GLFWwindow ptr
 
-    if not glfwInit() exit_(-1)
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2)
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE)
-
-    local window:GLFWwindow ptr
-    window = glfwCreateWindow(640,480, CStr("glfw window example"), null, null)
-    if not window
-        print "Failed to create GLFW window"
-        glfwTerminate()
-        exit_(-1)
-    end
-    glfwMakeContextCurrent(window)
-
-    ' set the required callback functions
-    glfwSetKeyCallback(window, key_callback)
-
-    if not gladLoadGLLoaderGLFW()
-        print "Failed to initialize OpenGL context"
-        exit_(-1)
-    end
-
-    glfwShowWindow(window)
-    glfwSwapInterval(1)
-
-    local c:= 0.0
-    '// Main loop
-    while not glfwWindowShouldClose(window)
-
+' Main loop
+Function loop()
         ' Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents()
 
@@ -60,8 +32,50 @@ function Main()
 
         ' swap the screen buffers
         glfwSwapBuffers(window)
-    wend
+End
 
+function Main()
+    glfwSetErrorCallback(error_callback)
+
+    if not glfwInit() exit_(-1)
+
+#If __TARGET__="emscripten"
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0)
+#else
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2)
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE)
+#endif
+    window = glfwCreateWindow(640,480, CStr("glfw window example"), null, null)
+    if not window
+        print "Failed to create GLFW window"
+        glfwTerminate()
+        exit_(-1)
+    end
+    glfwMakeContextCurrent(window)
+
+    ' set the required callback functions
+    glfwSetKeyCallback(window, key_callback)
+
+    if not gladLoadGLLoaderGLFW()
+        print "Failed to initialize OpenGL context"
+        exit_(-1)
+    End
+
+    glfwShowWindow(window)
+    glfwSwapInterval(1)
+
+
+#If __TARGET__="emscripten"
+	emscripten_set_main_loop(loop,0,True)
+#else
+    while not glfwWindowShouldClose(window)
+		loop()
+    wend
+#endif
     ' destroy window created
     glfwDestroyWindow(window)
 
