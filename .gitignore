@@ -36,15 +36,57 @@ __NEWPAGES__/
 
 /modules/module-manager/downloads/*.zip
 
-# Stuff in module manager (TODO: install to different modules dir)
-/modules/html-ws
-/modules/tinyaes
-/modules/portmidi
-/modules/png2polygon
-/modules/timelinefx
-/modules/box2d
-/modules/box2dxt
-/modules/steamworks
+# excluding all "modules/*" content but including all integrated modules. So any new/wip module can be edited in wonkey's git dir directly.
+modules/*
+!modules/admob
+!modules/android
+!modules/assimp
+!modules/bullet
+!modules/chipmunk
+!modules/emscripten
+!modules/freetype
+!modules/glad
+!modules/gles20
+!modules/glfw
+!modules/hoedown
+!modules/httprequest
+!modules/iap
+!modules/jni
+!modules/libc
+!modules/litehtml
+!modules/miniaudio
+!modules/miniz
+!modules/mojo
+!modules/mojo3d
+!modules/mojo3d-loaders
+!modules/mojo3d-vr
+!modules/mojox
+!modules/openal
+!modules/opengl
+!modules/pyro-framework
+!modules/pyro-gui
+!modules/pyro-scenegraph
+!modules/pyro-tiled
+!modules/raspberry
+!modules/raylib
+!modules/reflection
+!modules/sdl2
+!modules/sdl2-mixer
+!modules/simplevideo
+!modules/sokol
+!modules/sqlite
+!modules/stb-image
+!modules/stb-image-write
+!modules/stb-truetype
+!modules/stb-vorbis
+!modules/std
+!modules/theoraplayer
+!modules/thread
+!modules/tinyregex
+!modules/tinyxml2
+!modules/win32
+!modules/wonkey
+!modules/zlib
 
 /modules/module-manager/backups
 
