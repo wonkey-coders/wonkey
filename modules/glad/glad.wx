@@ -1,6 +1,6 @@
 namespace glad
 
-#if __TARGET__ = "raspbian" or __TARGET__ = "emscripten" or __TARGET__ = "ios" or __TARGET__ = "android"
+#if __TARGET__ = "raspbian" or __TARGET__ = "ios" or __TARGET__ = "android"
 	'Exclude targets
 #else
 
@@ -12,7 +12,9 @@ using glfw..
 
 #import "native/include/*.h"
 
+#if __TARGET__<>"emscripten"
 #import "<glad/glad.h>"
+#endif
 
 #import "native/src/glad.c"
 
@@ -25,6 +27,8 @@ using glfw..
     '// TODO
 #else if __TARGET__="macos"
     #import "<OpenGL.framework>"
+#Elseif __TARGET__="emscripten"
+    #Import "assets/"
 #end
 
 extern

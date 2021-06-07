@@ -1,6 +1,6 @@
 namespace glfw
 
-#if __TARGET__ = "raspbian" or __TARGET__ = "emscripten" or __TARGET__ = "ios" or __TARGET__ = "android"
+#if __TARGET__ = "raspbian" or __TARGET__ = "ios" or __TARGET__ = "android"
 	'Exclude targets
 #else
 
@@ -8,20 +8,24 @@ namespace glfw
 
 using libc..
 
-#import "glfw/include/*.h"
-#import "glfw/src/*.h"
+#if __TARGET__<>"emscripten"
+	#import "glfw/include/*.h"
+	#import "glfw/src/*.h"
 
-'#import "<GLFW/glfw_config.h>"
-#import "<GLFW/glfw3.h>"
-#import "<GLFW/glfw3native.h>"
+	'#import "<GLFW/glfw_config.h>"
+	#import "<GLFW/glfw3.h>"
+	#import "<GLFW/glfw3native.h>"
 
-'common sources
-#import "glfw/src/context.c"
-#import "glfw/src/init.c"
-#import "glfw/src/input.c"
-#import "glfw/src/monitor.c"
-#import "glfw/src/vulkan.c"
-#import "glfw/src/window.c"
+	'common sources
+	#import "glfw/src/context.c"
+	#import "glfw/src/init.c"
+	#import "glfw/src/input.c"
+	#import "glfw/src/monitor.c"
+	#import "glfw/src/vulkan.c"
+	#import "glfw/src/window.c"
+#else
+	#import "<GLFW/glfw3.h>"
+#endif
 
 #if __TARGET__="windows"
     #import "WX_CC_OPTS_WINDOWS=-D_GLFW_WIN32"
@@ -76,6 +80,11 @@ using libc..
     #import "glfw/src/egl_context.c"
     #import "glfw/src/osmesa_context.c"
 
+#elseif __TARGET__ = "emscripten"
+    #import "WX_CC_OPTS_EMSCRIPTEN= -s USE_GLFW=3 -DGRAPHICS_API_OPENGL_ES2 -Wparentheses-equality"
+    #import "WX_CPP_OPTS_EMSCRIPTEN=-s USE_GLFW=3 -DGRAPHICS_API_OPENGL_ES2 -Wparentheses-equality"
+    #import "WX_LD_OPTS_EMSCRIPTEN= -s USE_GLFW=3 -DGRAPHICS_API_OPENGL_ES2 -Wparentheses-equality -lglfw"
+    #Import "assets/"
 #end
 
 
