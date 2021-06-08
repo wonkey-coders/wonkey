@@ -6,15 +6,31 @@ Namespace raylib
 
 #Import "<libc>"
 
-#import "WX_CC_OPTS_MACOS= -DPLATFORM_DESKTOP -DUSE_AUDIO -ObjC"
-#import "WX_CC_OPTS_LINUX= -DPLATFORM_DESKTOP -DUSE_AUDIO"
-#import "WX_CC_OPTS_WINDOWS= -DPLATFORM_DESKTOP -DUSE_AUDIO -D_CRT_SECURE_NO_WARNINGS"
+#if __TARGET__ = "macos"
 
-#if __TARGET__ = "emscripten"
+	#import "WX_CC_OPTS_MACOS= -DPLATFORM_DESKTOP -DUSE_AUDIO -ObjC"
+
+#elseif __TARGET__ = "linux"
+
+	#import "WX_CC_OPTS_LINUX= -DPLATFORM_DESKTOP -DUSE_AUDIO"
+
+#elseif __TARGET__ = "windows"
+
+	#import "WX_CC_OPTS_WINDOWS= -DPLATFORM_DESKTOP -DUSE_AUDIO -D_CRT_SECURE_NO_WARNINGS"
+
+'#elseif __TARGET__ = "raspbian"
+
+'#elseif __TARGET__ = "android"
+
+'#elseif __TARGET__ = "ios"
+
+#elseif __TARGET__ = "emscripten"
+
     #import "WX_CC_OPTS_EMSCRIPTEN= -s USE_GLFW=3 -s ASYNCIFY -DGRAPHICS_API_OPENGL_ES2 -DPLATFORM_WEB=1 -DUSE_AUDIO"
     #import "WX_CPP_OPTS_EMSCRIPTEN=-s USE_GLFW=3 -s ASYNCIFY -DGRAPHICS_API_OPENGL_ES2 -DPLATFORM_WEB=1 -DUSE_AUDIO"
     #import "WX_LD_OPTS_EMSCRIPTEN= -s USE_GLFW=3 -s ASYNCIFY -DGRAPHICS_API_OPENGL_ES2 -DPLATFORM_WEB=1 -DUSE_AUDIO -lglfw"
     #Import "assets/"
+
 #end
 
 #Import "native/src/*.h"
