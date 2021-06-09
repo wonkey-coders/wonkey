@@ -37,14 +37,14 @@ __NEWPAGES__/
 /modules/module-manager/downloads/*.zip
 
 # Stuff in module manager (TODO: install to different modules dir)
-/modules/html-ws
-/modules/tinyaes
-/modules/portmidi
-/modules/png2polygon
-/modules/timelinefx
-/modules/box2d
-/modules/box2dxt
-/modules/steamworks
+# /modules/html-ws
+# /modules/tinyaes
+# /modules/portmidi
+# /modules/png2polygon
+# /modules/timelinefx
+# /modules/box2d
+# /modules/box2dxt
+# /modules/steamworks
 
 /modules/module-manager/backups
 
