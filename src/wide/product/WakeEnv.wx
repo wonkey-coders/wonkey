@@ -86,14 +86,23 @@ Function LoadEnv()
 	Next
 	
 	SetEnv( "PATH",e_path )
-	
+
 	Local moddirs:=New StringStack
 	moddirs.Add( CurrentDir()+"modules/" )
-	For Local moddir:=Eachin GetEnv( "WX_MODULE_DIRS" ).Split( ";" )
+	Local env_moduleDirs := GetEnv( "WX_MODULE_DIRS" ).Trim()
+	' remove DoubleQuotes
+	If env_moduleDirs.StartsWith("~q") And env_moduleDirs.EndsWith("~q")
+		env_moduleDirs = env_moduleDirs.Slice(1,-1)
+	Endif
+	For Local moddir:=Eachin env_moduleDirs.Split( ";" )
 		moddir=moddir.Replace( "\","/" )
-		If GetFileType( moddir )<>FileType.Directory Continue
+
+		' Starts with Tilde? ($HOME)
+		If moddir.StartsWith("~~/") Then moddir = UserDir() + moddir.Slice(2)
+
 		moddir=RealPath( moddir )
 		If Not moddir.EndsWith( "/" ) moddir+="/"
+		If GetFileType( moddir )<>FileType.Directory Continue
 		If Not moddirs.Contains( moddir ) moddirs.Add( moddir )
 	Next
 	ModuleDirs=moddirs.ToArray()

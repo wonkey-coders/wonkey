@@ -166,6 +166,7 @@ Class BuilderInstance
 						If GetFileType( srcPath )=FileType.File Exit
 						srcPath=""
 					Next
+					If srcPath Then Exit
 				Next
 				If Not srcPath
 					New BuildEx( "Can't find module '"+name+"'" )

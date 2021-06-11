@@ -19,11 +19,26 @@ WX_MSVC_VERSIONS=2019,2017,2015
 '
 WX_ARCH_WINDOWS=x64
 
-'Semi-colon separated list of module root dirs, relative to WX_HOME or absolute.
+'--------------------------------------------------------------------------------------
+'----- External modules folders
+'--------------------------------------------------------------------------------------
 '
-'mx2cc always adds local modules/ dir to start of list.
+' Semi-colon separated list of module root dirs, relative to WX_HOME or absolute.
 '
-'WX_MODULE_DIRS=modules;modules_ext
+' wake always adds local modules/ dir to start of list.
+'
+' Use double-quotes when there are spaces in path!
+'
+' The Tilde character ('~') can be used at the beginning of the path
+' to use the user directory. '~' is equivalent to UserDir() in Wonkey.
+'
+' You can also set the WX_MODULE_DIRS environment variable in your Shell/Terminal:
+'   Linux/macOS/Raspbian: export WX_MODULE_DIRS="modules_ext;~/Wonkey Modules/"
+'   Windows:                 set WX_MODULE_DIRS="modules_ext;~/Wonkey Modules/"
+'
+'WX_MODULE_DIRS="modules_ext;~/Wonkey Modules/"
+
+
 
 'If you change anything below, you should rebuild all!
 

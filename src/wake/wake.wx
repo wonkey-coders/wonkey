@@ -71,11 +71,20 @@ Function Main()
 	
 	Local moddirs:=New StringStack
 	moddirs.Add( CurrentDir()+"modules/" )
-	For Local moddir:=Eachin GetEnv( "WX_MODULE_DIRS" ).Split( ";" )
+	Local env_moduleDirs := GetEnv( "WX_MODULE_DIRS" ).Trim()
+	' remove DoubleQuotes
+	If env_moduleDirs.StartsWith("~q") And env_moduleDirs.EndsWith("~q")
+		env_moduleDirs = env_moduleDirs.Slice(1,-1)
+	Endif
+	For Local moddir:=Eachin env_moduleDirs.Split( ";" )
 		moddir=moddir.Replace( "\","/" )
-		If GetFileType( moddir )<>FileType.Directory Continue
+
+		' Starts with Tilde? ($HOME)
+		If moddir.StartsWith("~~/") Then moddir = UserDir() + moddir.Slice(2)
+
 		moddir=RealPath( moddir )
 		If Not moddir.EndsWith( "/" ) moddir+="/"
+		If GetFileType( moddir )<>FileType.Directory Continue
 		If Not moddirs.Contains( moddir ) moddirs.Add( moddir )
 	Next
 	Module.Dirs=moddirs.ToArray()
@@ -268,11 +277,18 @@ Function MakeApp:Bool( args:String[] )
 	cd=cd.Replace( "\","/" )
 	Local target:=opts.target+" "+opts.config+" "+opts.arch+" "+opts.toolchain+(opts.threads ? " mx" Else "")
 	For Local module:=Eachin EnumModules()
-		Local builddir:=cd+"modules/"+module+"/"+module+".buildv"+WAKE_VERSION+"/"+Builder.profileName
-		If GetFileType(builddir)<>FileType.Directory
+		Local builddir:=module+"/"+module+".buildv"+WAKE_VERSION+"/"+Builder.profileName
+		Local found:Bool = False
+		For Local moduleDir := Eachin Module.Dirs
+			If GetFileType(moduleDir+builddir)=FileType.Directory
+				found = True
+				Exit
+			Endif
+		Next
+		If Not found
 			Print "wake: warning: '"+module+"' module was not built for this target. Use 'wake mods -clean -target="+opts.target+" -config="+opts.config+" "+module+"' command before."
 			builtModsErrors = True
-		End
+		Endif
 	Next
 	If builtModsErrors Then Fail("missing built modules for target '("+target+")'.")
 
@@ -344,6 +360,7 @@ Function MakeMods:Bool( args:String[] )
 					If GetFileType( path )=FileType.File Exit
 					path=""
 				Next
+				If path Then Exit
 			Next
 			If Not path Fail( "Module '"+modid+"' not found" )
 		
@@ -415,6 +432,7 @@ Function MakeDocs:Bool( args:String[] )
 				If GetFileType( path )=FileType.File Exit
 				path=""
 			Next
+			If path Then Exit
 		Next
 		If Not path Fail( "Module '"+modid+"' not found" )
 	
