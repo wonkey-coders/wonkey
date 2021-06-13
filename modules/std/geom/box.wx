@@ -66,25 +66,79 @@ Struct Box<T>
 	Property Depth:T()
 		Return max.z-min.z
 	End
+
+	Operator+:Box( v:T )
+		Return New Box( min+v,max+v )
+	End
 	
 	Operator+:Box( v:Vec3<T> )
 		Return New Box( min+v,max+v )
+	End
+
+	Operator+=( v:T )
+		min+=v
+		max+=v
 	End
 	
 	Operator+=( v:Vec3<T> )
 		min+=v
 		max+=v
 	End
+
+	Operator-:Box( v:T )
+		Return New Box( min-v,max-v )
+	End
 	
 	Operator-:Box( v:Vec3<T> )
 		Return New Box( min-v,max-v )
+	End
+
+	Operator-=( v:T )
+		min-=v
+		max-=v
 	End
 	
 	Operator-=( v:Vec3<T> )
 		min-=v
 		max-=v
 	End
-	
+
+	Operator*:Box( v:T )
+		Return New Box( min*v,max*v )
+	End
+
+	Operator*:Box( v:Vec3<T> )
+		Return New Box( min*v,max*v )
+	End
+
+	Operator*=( v:T )
+		min*=v
+		max*=v
+	End
+
+	Operator*=( v:Vec3<T> )
+		min*=v
+		max*=v
+	End
+
+	Operator/:Box( v:T )
+		Return New Box( min/v,max/v )
+	End
+
+	Operator/:Box( v:Vec3<T> )
+		Return New Box( min/v,max/v )
+	End
+
+	Operator/=( v:T )
+		min/=v
+		max/=v
+	End
+
+	Operator/=( v:Vec3<T> )
+		min/=v
+		max/=v
+	End
+
 	Operator&:Box( box:Box )
 		Return New Box(
 			Max( min.x,box.min.x ),
@@ -141,7 +195,7 @@ Struct Box<T>
 		max.y=Max( max.y,p.y )
 		max.z=Max( max.z,p.z )
 	End
-	
+
 	Method Contains:bool( box:Box )
 		Return min.x>=box.min.x And max.x<=box.max.x And min.y>=box.min.y And max.y<=box.max.y And min.z>=box.min.z And min.z<=box.max.z
 	End
