@@ -74,13 +74,15 @@ Class FileBrowser Extends TreeView
 	the icon for default files is using fileExt "_file".
 	@param fileExt The file extension, without dot ('.').
 	@param path Full image filename
+	@param image Icon image
 	@return True on success, False on failure
 	#end
-	Method SetFileTypeIcon:Bool( fileExt:String, path:String )
+	Method SetFileTypeIcon:Bool( fileExt:String, image:mojo.graphics.Image )
 		Local iconsMap := GetFileTypeIcons()
-		If Not iconsMap Return False
-
-		Local icon:=Image.Load( path )
+		If Not iconsMap Then Return False
+		If Not image Then Return False
+		
+		Local icon:=New mojo.graphics.Image( image, image.Rect )
 		If Not icon Return False
 
 		icon.Scale=App.Theme.Scale
@@ -93,6 +95,10 @@ Class FileBrowser Extends TreeView
 		Self.Update()
 
 		Return True
+	End
+
+	Method SetFileTypeIcon:Bool( fileExt:String, path:String )
+		Return SetFileTypeIcon( fileExt,Image.Load( path ) )
 	End
 	
 	Protected
