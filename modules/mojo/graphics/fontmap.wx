@@ -1,0 +1,1613 @@
+Namespace mojo
+
+#Import "<std>"
+Using std..
+
+
+Class FontMap
+	Field _tileMap:short[, , ]
+	Field _colorMap:short[, , ]
+	Field _map:short[, ]
+	Field _pallete:ColorPalette
+	Field _mapLayer:int = 0
+
+	Field _mapWidth:int[] = New int[32]
+	Field _mapHeight:int[] = New int[32]
+
+
+	Method New( arcadeFont:ArcadeFont, pallete:ColorPalette )
+		_arcadeFont = arcadeFont
+		_pallete = pallete
+	End
+
+	Method New( font1:ArcadeFont, font2:ArcadeFont, pallete:ColorPalette )
+		_font1 = font1
+		_font2 = font2
+		_arcadeFont = font1
+		_pallete = pallete
+	End
+	
+	Property Palette:ColorPalette()
+		Return _pallete
+	Setter( palette:ColorPalette )
+		_pallete = palette
+	End
+
+	Property Font:ArcadeFont()
+		Return _arcadeFont
+	Setter( font:ArcadeFont )
+		_arcadeFont = font
+	End
+	
+	Property Count:int()
+		Return _layerCount
+	End
+	
+	Property CollideTL:bool()
+		Return _collideTL
+	End
+	Property CollideTR:bool()
+		Return _collideTR
+	End
+	Property CollideBL:bool()
+		Return _collideBL
+	End
+	Property CollideBR:bool()
+		Return _collideBR
+	End
+
+	Property DivX:float()
+		Return _divx
+	End
+	Property DivY:float()
+		Return _divy
+	End
+
+
+	
+	Method UseFont( fnt:int )
+		Select Clamp( fnt,  1, 2 )
+			Case 1
+				If _font1 Then _arcadeFont = _font1
+			Case 2
+				If _font2 Then _arcadeFont = _font2
+		End Select
+	End Method
+	
+
+	Method CopyMap( fromMap:FontMap )
+		Local m:int
+		Local x:int
+		Local y:int
+
+		_layerCount = fromMap.Count
+		_tileMap = New short[_layerCount+1, 128, 128]
+		_colorMap = New short[_layerCount+1, 128, 128]
+
+		For m = 0 To fromMap.Count
+			For x = 0 To 127'_mapWidth[ ToMap ]
+				For y = 0 To 127'_mapHeight[ ToMap ]
+					_tileMap[ m, x, y ] = fromMap._tileMap[ m, x, y ]
+					_colorMap[ m, x, y ] = fromMap._colorMap[ m, x, y ]
+				Next
+			Next
+		Next
+	End Method
+	
+	
+	Method Copy( fromMap:int, ToMap:int )
+		Local x:int
+		Local y:int
+		
+		For x = 0 To 127'_mapWidth[ ToMap ]
+			For y = 0 To 127'_mapHeight[ ToMap ]
+				_tileMap[ ToMap, x, y ] = _tileMap[ fromMap, x, y ]
+				_colorMap[ ToMap, x, y ] = _colorMap[ fromMap, x, y ]
+			Next
+		Next
+	End Method
+
+
+	Method CopyIgnoreColor( fromMap:int, ToMap:int, col:int )
+		Local x:int
+		Local y:int
+		
+		For x = 0 To 127
+			For y = 0 To 127
+				If _colorMap[ fromMap, x, y ] = col Then
+					_tileMap[ ToMap, x, y ] = 0
+					_colorMap[ ToMap, x, y ] = 0
+				Else
+					_tileMap[ ToMap, x, y ] = _tileMap[ fromMap, x, y ]
+					_colorMap[ ToMap, x, y ] = _colorMap[ fromMap, x, y ]
+				End If
+			Next
+		Next
+	End Method
+
+
+	Method DjikstraCol( layer:int, xstart:int, ystart:int, ignoreTileAbove:int, count:int = 255 )
+		Local x:int
+		Local y:int
+		
+		Local width:int = _mapWidth[layer]
+		Local height:int = _mapHeight[layer]
+		If xstart < 0 Or xstart > width Then Return
+		If ystart < 0 Or ystart > height Then Return
+'		Print "layer: "+layer+"  w/h: "+width+" "+height+"  start: "+xstart+" "+ystart
+		
+		For x = 0 Until width
+			For y = 0 Until height
+				_colorMap[ layer, x, y ] = 999
+			Next
+		Next
+		
+		_colorMap[ layer, xstart, ystart ] = 0
+
+		Local k:int
+		Local last:int = 0
+		For k = 1 To count
+			For x = 1 To width -2
+				For y = 1 To height -2
+					If _tileMap[ layer, x, y ] < ignoreTileAbove Then
+						If _colorMap[ layer, x-1, y ] = last or _colorMap[ layer, x+1, y ] = last or
+							 	_colorMap[ layer, x, y-1 ] = last or _colorMap[ layer, x, y+1 ] = last Then
+							 	
+							If _colorMap[ layer, x, y ] > last Then
+								_colorMap[ layer, x, y ] = k
+							End If
+							
+'							Print "dj:"+x+" "+y+"  "+k
+						End If
+					End If
+				Next
+			Next
+			last += 1
+		Next
+
+		For x = 0 Until width
+			For y = 0 Until height
+				Clamp( _colorMap[ layer, x, y ], 0, 255 )
+			Next
+		Next
+	End Method
+	
+	
+	Method Reset()
+		_mapLayer = 0
+		_layerCount = -1
+	End Method
+	
+	
+	Method Transfer( map:FontMap, fromMap:int, ToMap:int )
+		Local x:int
+		Local y:int
+		
+		For x = 0 To 127
+			For y = 0 To 127
+				_tileMap[ ToMap, x, y ] = map._tileMap[ fromMap, x, y ]
+				_colorMap[ ToMap, x, y ] = map._colorMap[ fromMap, x, y ]
+			Next
+		Next
+	End Method
+
+
+	Method Clear( fromMap:int )
+		Local x:int
+		Local y:int
+		
+		For x = 0 To 127
+			For y = 0 To 127
+				_tileMap[ fromMap, x, y ] = 0
+				_colorMap[ fromMap, x, y ] = 0
+			Next
+		Next
+	End Method
+
+	Method ClearColor( fromMap:int )
+		Local x:int
+		Local y:int
+		
+		For x = 0 To 127
+			For y = 0 To 127
+				_colorMap[ fromMap, x, y ] = 0
+			Next
+		Next
+	End Method
+
+	Method ClearTile( fromMap:int, tile:int )
+		Local x:int
+		Local y:int
+		
+		For x = 0 To 127
+			For y = 0 To 127
+				If _tileMap[ fromMap, x, y ] = tile Then
+					_tileMap[ fromMap, x, y ] = 0
+					_colorMap[ fromMap, x, y ] = 0
+				End If
+			Next
+		Next
+	End Method
+
+	Method SwapRndTile( fromMap:int, tile:int, ToThing:int )
+		Local x:int
+		Local y:int
+		Local changed:bool = False
+		
+'		repeat
+			For x = 0 To 127
+				For y = 0 To 127
+					If not changed and _tileMap[ fromMap, x, y ] = tile Then
+'						Print "found:"+x
+						If Rnd(100) < 20 Then
+							_tileMap[ fromMap, x, y ] = ToThing
+							_colorMap[ fromMap, x, y ] = 0
+							changed = True
+						End If
+					End If
+				Next
+			Next
+'		Until changed
+	End Method
+
+	Method Reverse( fromMap:int )
+		Local x:int
+		Local y:int
+		
+'		Print _loadX
+		
+		For y = 0 To 127
+			For x = 0 To _loadX
+				_tileMap[ fromMap, 127-x, y ] = _tileMap[ fromMap, x, y ]
+				_colorMap[ fromMap, 127-x, y ] = _colorMap[ fromMap, x, y ]
+			Next
+			For x = 0 To _loadX
+				_tileMap[ fromMap, x, y ] = _tileMap[ fromMap, 127-_loadX+x, y ]
+				_colorMap[ fromMap, x, y ] = _colorMap[ fromMap, 127-_loadX+x, y ]
+			Next
+		Next
+	End Method
+
+	Method Load:bool( filePath:string )
+		'Print "loading..."
+		If Not filePath Return False
+		If ExtractExt( filePath ).ToLower() <> ".mx2map" Then Return False
+
+		Local fStream:Stream = Stream.Open( filePath, "r" )
+		If not fStream Then
+			'Print "XX "+filePath + " not opened"
+			Return False
+		End If
+		
+		Local id:int = fStream.ReadInt()
+		If id <> -9999 Then
+			'Print filePath + " ID error"
+			fStream.Close()
+			Return False
+		End If
+
+		Local layers:int = fStream.ReadInt()
+		'Print "layers To load "+layers
+		_layerCount = layers-1
+
+		_tileMap = New short[layers, 128, 128]
+		_colorMap = New short[layers, 128, 128]
+		_map = New short[128, 128]
+		
+		
+		Local k:int
+		For k = _mapLayer To _mapLayer+layers-1
+			If k < 32 Then
+				LoadLayer( fStream, k )
+			End If
+		Next
+				
+		fStream.Close()
+		
+		_mapLayer = layers-1
+		Return True
+	End Method
+
+
+	Method SetRenderRes( width:int,  height:int, xoffset:int = 0 )
+		_divx = int(float(width) / _mapWidth[ 0 ])
+		_divy = int(float(height) / _mapHeight[ 0 ])
+		_divx2 = _divx+xoffset
+		_renderWidth = width
+		_renderHeight = height
+	End Method
+
+	Method SetRenderResFromLayer( layer:int, width:int,  height:int )
+		_divx = int(float(width) / _mapWidth[ layer ])
+		_divy = int(float(height) / _mapHeight[ layer ])
+	End Method
+
+	Method SetDivRes( divX:float, divY:float,  width:int, height:int )
+		_renderWidth = width
+		_renderHeight = height
+		_divx = divX
+		_divy = divY
+	End Method
+
+	
+	Method SetDiv( divX:float, divY:float )
+		_divx = divX
+		_divy = divY
+	End Method
+
+	Method IntDiv()
+		_divx = int(_divx)
+		_divy = int(_divy)
+	End Method
+
+	Function Chr:String(character:Int)
+    	Return String.FromChar(character)
+	End
+	
+	
+	Method GetBoolFrom:bool( layer:int,  x:int, y:int,  check:string )
+		If check = "" or check.Length > 1 Then Return False
+
+		Return check = Chr( _tileMap[ layer, x, y ] )
+	End Method
+
+
+	Method GetIntFrom:int( layer:int,  x:int, y:int,  count:int = 1 )
+		If count < 1 or count > 6 Then Return 0
+		count -= 1
+		
+		x += count
+		
+		Local k:int
+		Local num:int = 0
+		Local times:int = 1
+		Local input:int
+		
+		For k = 0 To count
+			input = Clamp( _tileMap[ layer, x-k, y ] - 48,  0, 9 )
+			
+			num += input * times
+			times *= 10
+		Next
+		
+		Return num
+	End Method
+	
+	
+	Method Render( canvas:Canvas, layer:int, xs:float, ys:float,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+
+
+	Method RenderIgnore( canvas:Canvas, layer:int, xs:float, ys:float,  ignore:int = 256 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 and _colorMap[layer, x, y] < ignore Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y] )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderReplace( canvas:Canvas, layer:int, xs:float, ys:float,  replace:int, with1:int, with2:int = -1 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 and _tileMap[layer, x, y] = replace Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y] )
+						_arcadeFont.DrawCharSizeWH( canvas, with1, xp, yp, _divx, _divy )
+						canvas.Color = Color.White
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+	Method RenderReplace2( canvas:Canvas, layer:int, xs:float, ys:float,  replace:int, with1:int, with2:int )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 and _tileMap[layer, x, y] = replace Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y] )
+						_arcadeFont.DrawCharSizeWH( canvas, with1, xp, yp, _divx, _divy )
+						canvas.Color = Color.White
+						_arcadeFont.DrawCharSizeWH( canvas, with2, xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+	Method RenderPercent( canvas:Canvas, layer:int, xs:float, ys:float,  percent:float )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+		
+		Local per:float = 1.0 / (_mapHeight[ layer ] * _mapWidth[ layer ])
+		Local count:float = 0
+		
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If percent > count Then
+					If x < 128 And y < 128 Then
+						If _colorMap[layer, x, y] > 0 Then
+							canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y] )
+							_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+						End If
+					End If
+				End If
+				count += per
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderPureAnim( canvas:Canvas, layer:int, xs:float, ys:float,  animFrom:int,  animTo:int,  time:int )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+		Local md:int = (animTo - animFrom)+1
+		
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y] )
+						If _tileMap[layer, x, y] >= animFrom And _tileMap[layer, x, y] <= animTo Then
+							_arcadeFont.DrawCharPureSizeWH( canvas, animFrom + ((_tileMap[layer, x, y]-animFrom+time) Mod md), xp, yp, _divx, _divy )
+						Else
+							_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+						End If
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderPure( canvas:Canvas, layer:int, xs:float, ys:float,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderPure( canvas:Canvas, layer:int, xs:float, ys:float, palette:ColorPalette,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = palette.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method CheckCollide:bool( layer:int, xs:float, ys:float,  color:int,  colx:float, coly:float, wd:int, ht:int )
+		Local x:int
+		Local y:int
+		Local yst:int = 0
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+			yst += 1
+		Wend
+		
+		Local colx1:float = colx + wd
+		Local coly1:float = coly + ht
+		
+		_collideTL = False
+		_collideTR = False
+		_collideBL = False
+		_collideBR = False
+		
+		For y = yst Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] = color Then
+						If colx > xp And colx < xp+_divx Then
+							_collideTL = coly > yp And coly < yp+_divy
+							_collideBL = coly1 > yp And coly1 < yp+_divy
+						End If
+						If colx1 > xp And colx1 < xp+_divx Then
+							_collideTR = coly > yp And coly < yp+_divy
+							_collideBR = coly1 > yp And coly1 < yp+_divy
+						End If
+						If _collideTL or _collideTR or _collideBL or _collideBR Then Return True
+'						If (colx > xp And colx < xp+_divx) or (colx1 > xp And colx1 < xp+_divx) Then
+'							If (coly > yp And coly < yp+_divy) or (coly1 > yp And coly1 < yp+_divy) Then
+'								Return True
+'							End If
+'						End If
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return False
+		Next
+		Return False
+	End Method
+	
+	
+	Method CheckCollide2:bool( layer:int, xs:float, ys:float,  color:int,  colx:float, coly:float, wd:int, ht:int )
+		Local x:int
+		Local y:int
+		Local yst:int = 0
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+			yst += 1
+		Wend
+		
+		Local colx1:float = colx + wd
+		Local coly1:float = coly + ht
+		
+		_collideTL = False
+		_collideTR = False
+		_collideBL = False
+		_collideBR = False
+		
+		For y = yst Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > color Then
+'						Print _colorMap[layer, x, y] +" "+ color
+						If colx > xp And colx < xp+_divx Then
+							_collideTL = coly > yp And coly < yp+_divy
+							_collideBL = coly1 > yp And coly1 < yp+_divy
+						End If
+						If colx1 > xp And colx1 < xp+_divx Then
+							_collideTR = coly > yp And coly < yp+_divy
+							_collideBR = coly1 > yp And coly1 < yp+_divy
+						End If
+						If _collideTL or _collideTR or _collideBL or _collideBR Then Return True
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return False
+		Next
+		Return False
+	End Method
+	
+	
+	Method RenderPureColor( canvas:Canvas, layer:int, xs:float, ys:float,  color:int )
+		Local x:int
+		Local y:int
+		Local yst:int = 0
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+			yst += 1
+		Wend
+		
+		For y = yst Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] = color Then
+'						canvas.Color = palette.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderPure2( canvas:Canvas, layer:int, xs:float, ys:float,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+'		While yp + _divy < 0
+'			yp += _divy
+'		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+
+	Method RenderPure2( canvas:Canvas, font:ArcadeFont, layer:int, xs:float, ys:float,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+'		While yp + _divy < 0
+'			yp += _divy
+'		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						font.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+
+
+	Method RenderPureY( canvas:Canvas, layer:int, xs:float, ys:float,  yps:int,  palette:ColorPalette,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = yps Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = palette.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderVSlicePureY( canvas:Canvas, layer:int, slice:int, xs:float, ys:float,  yps:int,  width:int, height:int, palette:ColorPalette,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = yps Until _mapHeight[ layer ]
+			xp = xs
+'			For x = 0 Until _mapWidth[ layer ]
+'				If x < 128 And y < 128 Then
+					If _colorMap[layer, slice, y] > 0 Then
+						canvas.Color = palette.GetRGBA( _colorMap[layer, slice, y]+colOffset )
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, slice, y], xp, yp, width, height )
+					End If
+'				End If
+'				xp += _divx
+'			Next
+			yp += height
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderColPure( canvas:Canvas, layer:int, xs:float, ys:float )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method Render( canvas:Canvas, layer:int, xs:float, ys:float, palette:ColorPalette,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = palette.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderPalette( canvas:Canvas, layer:int, xs:float, ys:float,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						canvas.DrawRect( xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderPalette( canvas:Canvas, layer:int, xs:float, ys:float, w:float, h:float )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = ys
+		Local xx:int
+		Local yy:int = 0
+		
+		Local divx:float = w / _mapWidth[ layer ]
+		Local divy:float = h / _mapHeight[ layer ]
+
+'		While yp + _divy < 0
+'			yp += _divy
+'		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y] )
+						canvas.DrawRect( xp, yp, divx, divy )
+					End If
+				End If
+				xp += divx
+			Next
+			yp += divy
+
+'			If yp > _renderHeight Then Return
+		Next
+	End Method
+
+
+	Method RenderAtXY( canvas:Canvas, layer:int, xn:int, yn:int,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn * _divy
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xn * _divx
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderAtXYCol( canvas:Canvas, layer:int, xn:int, yn:int,  col:Color )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn * _divy
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+
+		canvas.Color = col
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xn * _divx
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+'						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderOffsetAtXY( canvas:Canvas, layer:int, xn:int, yn:int,  offset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn * _divy
+		Local xx:int
+		Local yy:int = 0
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		Local char:int
+		
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xn * _divx
+			For x = 0 Until _mapWidth[ layer ]
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						char = _tileMap[layer, x, y]+offset
+						If char > -1 And char < 256 Then
+							canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y] )
+							_arcadeFont.DrawCharSizeWH( canvas, char, xp, yp, _divx, _divy )
+						End If
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+
+
+	Method RenderBlockXYWH( canvas:Canvas, layer:int, xs:int, ys:int, w:float, h:float, charStart:int = 0, charEnd:int = 255 )
+		Local x:int
+		Local y:int
+
+		Local xp:float
+		Local yp:float = ys
+		
+		Local divx:float = w / _mapWidth[ layer ]
+		Local divy:float = h / _mapHeight[ layer ]
+
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+
+				If _colorMap[layer, x, y] > 0 and _tileMap[layer, x, y] >= charStart And _tileMap[layer, x, y] <= charEnd Then
+					canvas.DrawRect( xp, yp, divx, divy )
+'					_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, divx, divy )
+				End If
+
+				xp += divx
+			Next
+			yp += divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+
+
+	Method RenderXYWH( canvas:Canvas, layer:int, xs:int, ys:int, w:float, h:float, charStart:int = 0, charEnd:int = 255 )
+		Local x:int
+		Local y:int
+
+		Local xp:float
+		Local yp:float = ys
+		
+		Local divx:float = w / _mapWidth[ layer ]
+		Local divy:float = h / _mapHeight[ layer ]
+
+		For y = 0 Until _mapHeight[ layer ]
+			xp = xs
+			For x = 0 Until _mapWidth[ layer ]
+
+				If _colorMap[layer, x, y] > 0 and _tileMap[layer, x, y] >= charStart And _tileMap[layer, x, y] <= charEnd Then
+					_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, divx, divy )
+				End If
+
+				xp += divx
+			Next
+			yp += divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+
+
+	Method RenderAtXYWHCol( canvas:Canvas, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int, count:int = -1 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+
+'		While yp + _divy < 0
+'			yp += _divy
+'		Wend
+		
+		Local cnt:int = 0
+		width = xs+width
+		height = ys+height
+		
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+						If count > 0 Then
+							cnt += 1
+							If cnt >= count Then Return
+						End If
+					End If
+				End If
+				xp += _divx2
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+
+	Method RenderBoldAtXYWHCol( canvas:Canvas, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int, count:int = -1 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+
+'		While yp + _divy < 0
+'			yp += _divy
+'		Wend
+		
+		Local cnt:int = 0
+		width = xs+width
+		height = ys+height
+		
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp-1, yp, _divx, _divy )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp+1, yp, _divx, _divy )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp-1, _divx, _divy )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp+1, _divx, _divy )
+						If count > 0 Then
+							cnt += 1
+							If cnt >= count Then Return
+						End If
+					End If
+				End If
+				xp += _divx2
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+
+	Method RenderAtXYWH( canvas:Canvas, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		width = xs+width
+		height = ys+height
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+				If x < 128 And y < 128 Then
+'					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+'					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+	Method RenderAtXYWH( canvas:Canvas, layer:int, xn:float, yn:float,  xs:int, ys:int, width:int, height:int,  scalex:float, scaley:float )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+
+		While yp + scaley < 0
+			yp += scaley
+		Wend
+		
+		width = xs+width
+		height = ys+height
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+				If x < 128 And y < 128 Then
+'					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y] )
+						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, scalex, scaley )
+'					End If
+				End If
+				xp += scalex
+			Next
+			yp += scaley
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+	Method RenderPureAtXYWH( canvas:Canvas, font:ArcadeFont, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+		Local col:int
+		
+		width = xs+width
+		height = ys+height
+
+		While yp + _divy < 0
+			yp += _divy
+			ys += 1
+		Wend
+		
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+
+				If x < 128 And y < 128 Then
+					col =  _colorMap[layer, x, y]+colOffset
+					If col > 0 Then
+						canvas.Color = _pallete.GetRGBA( col )
+						font.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+	
+
+	Method RenderPureAtXYWH( canvas:Canvas, font:ArcadeFont, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int,  col:Color )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+'		Local col:int
+		
+		width = xs+width
+		height = ys+height
+
+		While yp + _divy < 0
+			yp += _divy
+			ys += 1
+		Wend
+		
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+
+				If x < 128 And y < 128 Then
+					If _colorMap[layer, x, y] > 0 Then
+						canvas.Color = col'_pallete.GetRGBA( col )
+						font.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+	
+
+	Method RenderPureAtXYWH( canvas:Canvas, font:ArcadeFont, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int,  divx:float, divy:float )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+		Local col:int
+		
+		width = xs+width
+		height = ys+height
+
+		While yp + divy < 0
+			yp += divy
+			ys += 1
+		Wend
+		
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+
+				If x < 128 And y < 128 Then
+					col =  _colorMap[layer, x, y]
+					If col > 0 Then
+						canvas.Color = _pallete.GetRGBA( col )
+						font.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, divx, divy )
+					End If
+				End If
+				xp += divx
+			Next
+			yp += divy
+			If yp > _renderHeight Then Return
+		Next
+	End Method
+	
+		
+	Method RenderPureAtXYWH( canvas:Canvas, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+		Local col:int
+		
+		width = xs+width
+		height = ys+height
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+
+				If x < 128 And y < 128 Then
+					col =  _colorMap[layer, x, y]+colOffset
+'					If col > 0 Then
+						canvas.Color = _pallete.GetRGBA( col )
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+'					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+	
+	Method RenderBlankPureAtXYWH( canvas:Canvas, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+		
+		width = xs+width
+		height = ys+height
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		Local col:int
+		
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+
+				If x < 128 And y < 128 Then
+					col =  _colorMap[layer, x, y]+colOffset
+					If col > 0 Then
+						canvas.Color = Color.Black
+						canvas.DrawRect( xp, yp, _divx, _divy )
+						canvas.Color = _pallete.GetRGBA( col )
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp += _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderRBlankPureAtXYWH( canvas:Canvas, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+
+		Local xx:float = width * _divx
+		
+		height = ys+height
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		Local col:int
+		
+'		canvas.Color = Color.Gold
+'		canvas.DrawFrame( xn, yn, width * 8, height * 8 )
+		
+		For y = ys Until height
+			xp = xn+(width*_divx)-_divx
+			For x = xs To xs+width-1
+
+				If x < 128 And y < 128 Then
+					col =  _colorMap[layer, x, y]+colOffset
+					If col > 0 Then
+						canvas.Color = Color.Black
+						canvas.DrawRect( xp, yp, _divx, _divy )
+						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharRPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+					End If
+				End If
+				xp -= _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+
+	Method RenderRPureAtXYWH( canvas:Canvas, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int,  colOffset:int = 0 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+
+		Local xx:int = width * _divx
+		
+'		width = xs+width
+		height = ys+height
+
+		While yp + _divy < 0
+			yp += _divy
+		Wend
+		
+		For y = ys Until height
+			xp = xn+(width*_divx)-_divx
+			For x = xs To xs+width-1
+'		For y = ys Until height
+'			xp = xn+width+xx-_divx
+'			For x = xs Until width
+
+				If x < 128 And y < 128 Then
+					canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+					_arcadeFont.DrawCharRPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+				End If
+				xp -= _divx
+			Next
+			yp += _divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+
+	Method RenderPure2AtXYWH( canvas:Canvas, layer:int, xn:int, yn:int,  xs:int, ys:int, width:int, height:int, size:int = -1 )
+		Local x:int
+		Local y:int
+		Local xp:float
+		Local yp:float = yn
+		
+		width = xs+width
+		height = ys+height
+
+'		While yp + _divy < 0
+'			yp += _divy
+'		Wend
+		Local divx:float = _divx
+		Local divy:float = _divy
+		If size > -1 Then
+			divx = size
+			divy = size
+		End If
+		
+		For y = ys Until height
+			xp = xn
+			For x = xs Until width
+
+				If x < 128 And y < 128 Then
+'					If _colorMap[layer, x, y] > 0 Then
+'						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+						_arcadeFont.DrawCharPureSizeWH( canvas, _tileMap[layer, x, y], xp, yp, divx, divy )
+'					End If
+
+'						canvas.Color = _pallete.GetRGBA( _colorMap[layer, x, y]+colOffset )
+'						_arcadeFont.DrawCharSizeWH( canvas, _tileMap[layer, x, y], xp, yp, _divx, _divy )
+				End If
+				xp += divx
+			Next
+			yp += divy
+			If yp > _renderHeight Then Return
+
+		Next
+	End Method
+	
+	Field _divx:float
+	Field _divy:float
+	Field _divx2:float
+
+Protected
+
+	Method LoadLayer( Stream:Stream, layer:int )
+		_loadX = Stream.ReadInt()
+		_loadY = Stream.ReadInt()
+		
+		'Print "layer "+layer+" size is "+(_loadX+1)+" "+(_loadY+1)
+
+		Local rt:short
+		Local cl:short
+		
+		Local x:int
+		Local y:int
+		For x = 0 To _loadX
+			For y = 0 To _loadY
+				cl = Stream.ReadShort()
+				rt = Stream.ReadShort()
+				If x < 128 And y < 128 Then
+					_tileMap[ layer, x, y] = Clamp(int(cl), 0, 255)
+					_colorMap[ layer, x, y] = Clamp(int(rt), 0, 255)
+				End If
+			Next
+		Next
+		
+		_mapWidth[ layer ] = _loadX + 1
+		_mapHeight[ layer ] = _loadY + 1
+	End Method
+
+Private	
+	Field _arcadeFont:ArcadeFont
+	Field _font1:ArcadeFont
+	Field _font2:ArcadeFont
+	
+	Field _renderWidth:int
+	Field _renderHeight:int
+
+	Field _loadX:int
+	Field _loadY:int
+	
+	Field _collideTL:Bool
+	Field _collideTR:Bool
+	Field _collideBL:Bool
+	Field _collideBR:Bool
+	
+	Field _layerCount:int = -1
+End

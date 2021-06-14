@@ -1,0 +1,1355 @@
+Namespace mojo
+
+
+#Import "<std>"
+Using std..
+
+
+Class ArcadeFont
+	Const PI:float = 3.14159265359
+	Const PIHALF:float = PI * 0.5
+	Const PITHIRD:float = PI + (PI * 0.5)
+	Const PIHALFISH:float = PI * 0.44
+	Const PIQUARTER:float = PI * 0.25
+
+
+	Method New()
+	End Method
+	
+	
+	Method New( img:Image )
+		Load( img )
+	End Method
+
+
+	Method Load( img:Image )
+		_image = img
+'		if _pixmap <> Null then _pixmap.Discard()
+'		_pixmap = New Pixmap( _image.Width, _image.Height, PixelFormat.RGB24 )
+'		Local img2:Image = New Image( _pixmap, TextureFlags.Dynamic )
+
+		_filePath = img.FilePath
+		_fileTime = GetFileTime( img.FilePath )
+    			
+		_charWidth = _image.Width / 16
+		_charHeight = _image.Height / 16
+		
+		Local chw:int = _charWidth'-1
+		Local chh:int = _charHeight'-1
+
+		Local k:int
+		For k = 0 To 255
+			sx[k] = (k mod 16) * _charWidth
+			sy[k] = (k / 16) * _charHeight
+			sx1[k] = sx[k] + chw
+			sy1[k] = sy[k] + chh
+		Next	
+	End Method
+
+
+	Method Reload:bool()
+		'Print "reload file:"+_image.FilePath+" time:"+GetFileTime( _image.FilePath )
+		
+		Local time:long = GetFileTime( _image.FilePath )
+		If time <= _fileTime Then Return False
+		
+		Return True
+	End Method
+
+
+	Property Image:Image()
+		Return _image
+	End
+	
+	
+	Property Width:int()
+		Return _image.Width
+	End
+
+	Property Height:int()
+		Return _image.Height
+	End
+
+	Property CharWidth:int()
+		Return _charWidth
+	End
+
+	Property CharHeight:int()
+		Return _charHeight
+	End
+
+	Property GetImage:Image()
+		Return _image
+	End
+
+	Property FilePath:string()
+		Return _filePath
+	Setter( filePath:string )
+		_filePath = filePath
+	End
+
+
+	Method GetY:int( xx:int, yy:int, frame:float, width:float, height:float )
+		Return yy + ( Sin( (xx + frame) * width ) * height )
+	End Method
+	
+
+	Method DrawTextSin( canvas:Canvas, text:string,  xx:int, yy:int, size:int,  frame:float, width:float, height:float )
+		Local k:int
+		Local y:int
+		For k = 0 Until text.Length
+			y = GetY( xx, yy, frame, width, height )
+			DrawChar( canvas, text[k],  xx, y, size )
+			xx += size
+'			Print text.Mid( k, 1 )
+		Next
+	End Method
+	
+
+	Method DrawChar( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharS( canvas:Canvas, char:Int, x:float, y:float, scale:float, shader:Shader )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scale
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char], shader )
+	End Method
+
+
+	Method DrawChar180( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		DrawCharIR( canvas, char, x, y, scale, italic )
+	End Method
+
+
+	Method DrawChar90( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuad( x3, y3, x0, y0, x1, y1, x2, y2, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawChar270( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuad( x1, y1, x2, y2, x3, y3, x0, y0, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharI( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuad( x3, y3, x2, y2, x1, y1, x0, y0, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharIR( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuad( x2, y2, x3, y3, x0, y0, x1, y1, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharR( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuad( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharQuadSize( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x0:float, y0:float, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float )
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharQuad( canvas:Canvas, char:Int, x0:float, y0:float, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float )
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharRQuad( canvas:Canvas, char:Int, x0:float, y0:float, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float )
+		canvas.DrawImageQuad( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharQuad2Size( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x0:float, y0:float, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float )
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharQuad2( canvas:Canvas, char:Int, x0:float, y0:float, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float )
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharRQuad2( canvas:Canvas, char:Int, x0:float, y0:float, x1:float, y1:float, x2:float, y2:float, x3:float, y3:float )
+		canvas.DrawImageQuad( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharPure( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuadPure( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharPureShader( canvas:Canvas, char:Int, x:float, y:float, scale:float, fx:Shader, mat:UniformBlock )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scale
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuadPure( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char], fx, mat )
+	End Method
+
+
+	Method DrawCharRPureSize( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuadPure( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharPureSize( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuadPure( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharPureWH( canvas:Canvas, char:Int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + _charWidth
+		Local sy1:int = sy + _charHeight
+
+		canvas.DrawImageQuadPure( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawChar90PureSizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuadPure( x3, y3, x0, y0, x1, y1, x2, y2, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharPureSizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuadPure( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharPureSizeWH( canvas:Canvas, char:Int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		canvas.DrawImageQuadPure( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharRPureSizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuadPure( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharRPureSizeWH( canvas:Canvas, char:Int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		canvas.DrawImageQuad( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharVPureSizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuadPure( x3, y3, x2, y2, x1, y1, x0, y0, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharVPureSizeWH( canvas:Canvas, char:Int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		canvas.DrawImageQuadPure( x3, y3, x2, y2, x1, y1, x0, y0, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharRPure( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuadPure( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharIPure( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		canvas.DrawImageQuadPure( x3, y3, x2, y2, x1, y1, x0, y0, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharWH( canvas:Canvas, char:Int, x:float, y:float, scalex:float, scaley:int )
+		If char > 255 Then Return
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scalex
+		Local y1:float = y
+		Local x2:float = x + scalex
+		Local y2:float = y + scaley
+		Local x3:float = x
+		Local y3:float = y + scaley
+		
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharWH( canvas:Canvas, char:Int, x:float, y:float, scalex:float, scaley:int, shader:Shader, mat:UniformBlock )
+		If char > 255 Then Return
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scalex
+		Local y1:float = y
+		Local x2:float = x + scalex
+		Local y2:float = y + scaley
+		Local x3:float = x
+		Local y3:float = y + scaley
+		
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char], shader, mat )
+	End Method
+
+
+	Method DrawCharRWH( canvas:Canvas, char:Int, x:float, y:float, scalex:float, scaley:int )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scalex
+		Local y1:float = y
+		Local x2:float = x + scalex
+		Local y2:float = y + scaley
+		Local x3:float = x
+		Local y3:float = y + scaley
+
+		canvas.DrawImageQuad( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharRWH( canvas:Canvas, char:Int, x:float, y:float, scalex:float, scaley:int, shader:Shader, mat:UniformBlock )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scalex
+		Local y1:float = y
+		Local x2:float = x + scalex
+		Local y2:float = y + scaley
+		Local x3:float = x
+		Local y3:float = y + scaley
+
+		canvas.DrawImageQuad( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx[char], sy[char], sx1[char], sy1[char], shader, mat )
+	End Method
+
+
+	Method DrawCharSize( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharSizeRot( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float,  rot:float = 0 )
+		Local sc2:float = scale * 0.5
+		sc2 = Sqrt( sc2*sc2 + sc2*sc2 )
+		rot -= PIHALF
+		Local x0:float = x + Cos( rot - PIQUARTER ) * sc2
+		Local y0:float = y + Sin( rot - PIQUARTER ) * sc2
+		Local x1:float = x + Cos( rot + PIQUARTER ) * sc2
+		Local y1:float = y + Sin( rot + PIQUARTER ) * sc2
+		rot += PI
+		Local x2:float = x + Cos( rot - PIQUARTER ) * sc2
+		Local y2:float = y + Sin( rot - PIQUARTER ) * sc2
+		Local x3:float = x + Cos( rot + PIQUARTER ) * sc2
+		Local y3:float = y + Sin( rot + PIQUARTER ) * sc2
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharRSize( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawChar180Size( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		DrawCharIRSize( canvas, char, charWidth,  charHeight, x, y, scale, italic )
+	End Method
+
+
+	Method DrawChar90Size( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuad( x3, y3, x0, y0, x1, y1, x2, y2, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawChar270Size( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuad( x1, y1, x2, y2, x3, y3, x0, y0, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharISize( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuad( x3, y3, x2, y2, x1, y1, x0, y0, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharIRSize( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+
+		canvas.DrawImageQuad( x2, y2, x3, y3, x0, y0, x1, y1, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharSizePure( canvas:Canvas, char:Int, charWidth:float,  charHeight:int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuadPure( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharFrame( canvas:Canvas, char:Int, frame:int, charWidth:float,  charHeight:int, x:float, y:float, scale:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scale
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		Local fw:float = frame * (_charWidth * charWidth)
+		sx += fw
+		sx1 += fw
+		
+		canvas.DrawImageQuadPure( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharRSizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharRSizeWH( canvas:Canvas, char:Int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		canvas.DrawImageQuad( x1, y1, x0, y0, x3, y3, x2, y2, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharSizeWHOffset( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, scaleX:float, scaleY:float,  x:float, y:float, xoff:float, yoff:float, rot:float = 0 )
+		Local rs:float = Sin( -rot )
+		Local rc:float = Cos( -rot )
+		
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		Local x4:float
+		Local y4:float
+		Local x5:float
+		Local y5:float
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		x1 = x + scaleX * rc
+		y1 = y + scaleX * rs
+		x4 = x - scaleY * rs
+		y4 = y + scaleY * rc
+		x2 = x4 + scaleX * rc
+		y2 = y4 + scaleX * rs
+		x3 = x4
+		y3 = y4
+		
+		x4 = x - yoff * rs
+		y4 = y + yoff * rc
+		x5 = x4 + xoff * rc
+		y5 = y4 + xoff * rs
+		
+		xoff = (x5 - x0) - xoff
+		yoff = (y5 - y0) - yoff
+		
+		x0 -= xoff
+		y0 -= yoff
+		x1 -= xoff
+		y1 -= yoff
+		x2 -= xoff
+		y2 -= yoff
+		x3 -= xoff
+		y3 -= yoff
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharSizeWHOffset( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, scaleX:float, scaleY:float,  x:float, y:float, xoff:float, yoff:float, rot:float, shader:Shader )
+		Local rs:float = Sin( -rot )
+		Local rc:float = Cos( -rot )
+		
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		Local x4:float
+		Local y4:float
+		Local x5:float
+		Local y5:float
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		x1 = x + scaleX * rc
+		y1 = y + scaleX * rs
+		x4 = x - scaleY * rs
+		y4 = y + scaleY * rc
+		x2 = x4 + scaleX * rc
+		y2 = y4 + scaleX * rs
+		x3 = x4
+		y3 = y4
+		
+		x4 = x - yoff * rs
+		y4 = y + yoff * rc
+		x5 = x4 + xoff * rc
+		y5 = y4 + xoff * rs
+		
+		xoff = (x5 - x0) - xoff
+		yoff = (y5 - y0) - yoff
+		
+		x0 -= xoff
+		y0 -= yoff
+		x1 -= xoff
+		y1 -= yoff
+		x2 -= xoff
+		y2 -= yoff
+		x3 -= xoff
+		y3 -= yoff
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1, shader )
+	End Method
+
+
+	Method DrawCharSizeWHOffset( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, scaleX:float, scaleY:float,  x:float, y:float, xoff:float, yoff:float, rot:float, shader:Shader, mat:UniformBlock )
+		Local rs:float = Sin( -rot )
+		Local rc:float = Cos( -rot )
+		
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		Local x4:float
+		Local y4:float
+		Local x5:float
+		Local y5:float
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		x1 = x + scaleX * rc
+		y1 = y + scaleX * rs
+		x4 = x - scaleY * rs
+		y4 = y + scaleY * rc
+		x2 = x4 + scaleX * rc
+		y2 = y4 + scaleX * rs
+		x3 = x4
+		y3 = y4
+		
+		x4 = x - yoff * rs
+		y4 = y + yoff * rc
+		x5 = x4 + xoff * rc
+		y5 = y4 + xoff * rs
+		
+		xoff = (x5 - x0) - xoff
+		yoff = (y5 - y0) - yoff
+		
+		x0 -= xoff
+		y0 -= yoff
+		x1 -= xoff
+		y1 -= yoff
+		x2 -= xoff
+		y2 -= yoff
+		x3 -= xoff
+		y3 -= yoff
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1, shader, mat )
+	End Method
+
+
+	Method DrawChar90SizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x1, y1, x2, y2, x3, y3, x0, y0, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawChar180SizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x2, y2, x3, y3, x0, y0, x1, y1, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawChar270SizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x3, y3, x0, y0, x1, y1, x2, y2, _image, sx, sy, sx1, sy1 )
+	End Method
+
+
+	Method DrawCharSizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1 )
+	End Method
+
+	
+	Method DrawCharSizeWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int, x:float, y:float, scaleX:float, scaleY:float, shader:Shader, mat:UniformBlock )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+
+		Local sx:int = (char mod 16) * _charWidth
+		Local sy:int = (char / 16) * _charHeight
+		Local sx1:int = sx + (_charWidth * charWidth)
+		Local sy1:int = sy + (_charHeight * charHeight)
+		
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx, sy, sx1, sy1, shader, mat )
+	End Method
+	
+	
+	Method DrawCharSizeWH( canvas:Canvas, char:Int, x:float, y:float, scaleX:float, scaleY:float )
+		Local x0:float = x
+		Local y0:float = y
+		Local x1:float = x + scaleX
+		Local y1:float = y
+		Local x2:float = x + scaleX
+		Local y2:float = y + scaleY
+		Local x3:float = x
+		Local y3:float = y + scaleY
+		
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharBold( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+		
+		Local offset:int = scale / 10
+
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+		x0 += offset
+		x1 += offset
+		x2 += offset
+		x3 += offset
+
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+
+
+	Method DrawCharBlock( canvas:Canvas, char:Int, x:float, y:float, scale:float, italic:float = 0 )
+		Local it:float = scale * italic
+		Local x0:float = x +it
+		Local y0:float = y
+		Local x1:float = x + scale + it
+		Local y1:float = y
+		Local x2:float = x + scale
+		Local y2:float = y + scale
+		Local x3:float = x
+		Local y3:float = y + scale
+		
+		Local offset:int = scale / 14
+		Local offset2:int = offset + offset
+
+		x0 -= offset
+		x1 -= offset
+		x2 -= offset
+		x3 -= offset
+		y0 -= offset
+		y1 -= offset
+		y2 -= offset
+		y3 -= offset
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+		x0 += offset2
+		x1 += offset2
+		x2 += offset2
+		x3 += offset2
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+		y0 += offset2
+		y1 += offset2
+		y2 += offset2
+		y3 += offset2
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+		x0 -= offset2
+		x1 -= offset2
+		x2 -= offset2
+		x3 -= offset2
+		canvas.DrawImageQuad( x0, y0, x1, y1, x2, y2, x3, y3, _image, sx[char], sy[char], sx1[char], sy1[char] )
+	End Method
+	
+	
+	Method DrawCharCenteredWHScale( canvas:Canvas, char:Int, charWidth:int,  charHeight:int,  cx:float, cy:float, yp:float,  width:float, height:int,  scale:float = 1 )
+		Local textWidth:float = charWidth * width * scale
+		Local x:int = cx - textWidth * .5
+		Local y:float =  cy + (charHeight-cy) * scale
+
+		DrawCharPureSizeWH( canvas, char, charWidth, charHeight, x, y, width*scale*charWidth, height*scale*charHeight )
+	End Method
+	
+
+	Method DrawCharCenteredWH( canvas:Canvas, char:Int, charWidth:int,  charHeight:int,  cx:float, cy:float,  width:float, height:int )
+		Local textWidth:float = charWidth * width
+		Local x:int = cx - textWidth * .5
+		Local y:float =  cy - height
+
+		DrawCharPureSizeWH( canvas, char, charWidth, charHeight, x, y, width*charWidth, height*charHeight )
+	End Method
+
+
+	Method DrawTextWHScale( canvas:Canvas, text:String, cx:float, cy:float, y:float, width:float, height:int, padding:float = 1, scale:float = 1 )
+		Local textWidth:float = text.Length * width * padding * scale
+		y =  cy + (y-cy) * scale
+
+		DrawTextWH( canvas, text, int(cx), int(y), width*scale, height*scale, padding )
+	End Method
+
+
+	Method DrawTextCenteredWHScale( canvas:Canvas, text:String, cx:float, cy:float, y:float, width:float, height:int, padding:float = 1, scale:float = 1 )
+		Local textWidth:float = text.Length * width * padding * scale
+		Local x:int = cx - textWidth * .5
+		y =  cy + (y-cy) * scale
+
+		DrawTextWH( canvas, text, int(x), int(y), width*scale, height*scale, padding )
+	End Method
+
+
+	Method DrawTextCenteredWH( canvas:Canvas, text:String, x:float, y:float, width:float, height:int, padding:float = 1, scale:float = 1 )
+		Local textWidth:float = text.Length * width * padding
+		x -= textWidth * .5
+
+		DrawTextWH( canvas, text, int(x), int(y), width, height, padding )
+	End Method
+
+
+	Method DrawTextCentered( canvas:Canvas, text:String, x:int, y:Int, scale:float, padding:float = 1, italic:float = 0 )
+		Local textWidth:float = text.Length * scale * padding
+		x -= textWidth * .5
+
+		DrawText( canvas, text, x, y, scale, padding, italic )
+	End Method
+	
+	
+	Method DrawTextCenteredSurround( canvas:Canvas, text:String, x:int, y:Int, scale:float, padding:float = 1, italic:float = 0 )
+		Local textWidth:float = text.Length * scale * padding
+		x -= textWidth * .5
+
+		DrawTextSurround( canvas, text, x, y, scale, padding, italic )
+	End Method
+
+	Method DrawTextCenteredFX( canvas:Canvas, fx:int, text:String, x:int, y:Int, scale:float, padding:float = 1, italic:float = 0 )
+		Local textWidth:float = text.Length * scale * padding
+		x -= textWidth * .5
+
+		DrawTextFX( canvas, fx, text, x, y, scale, padding*scale, italic )
+	End Method
+
+
+	Method DrawTextLeftFX( canvas:Canvas, fx:int, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local k:Int
+		Local c:int
+		
+		padding *= scale
+		
+		x -= text.Length * padding
+		
+		DrawTextFX( canvas, fx, text, x, y, scale, padding, italic )
+	End Method
+
+
+	Method DrawTextFX( canvas:Canvas, fx:int, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local k:Int
+		Local c:int
+		
+		Select fx
+			Case 0
+				Local ang:float = Millisecs() * 0.01
+				For k = 0 Until text.Length
+					ang += k * 0.5
+					DrawChar( canvas, text.Mid( k, 1 )[0], x, y+Cos(ang), scale, italic )
+					x += padding
+				Next
+				
+			Default
+				For k = 0 Until text.Length
+					DrawChar( canvas, text.Mid( k, 1 )[0], x, y, scale, italic )
+					x += padding
+				Next
+		End select
+	End Method
+
+
+	Method DrawText( canvas:Canvas, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local k:Int
+		Local c:int
+		
+		padding *= scale
+		
+		For k = 0 Until text.Length
+			DrawChar( canvas, text.Mid( k, 1 )[0], x, y, scale, italic )
+			x += padding
+		Next
+	End Method
+
+
+	Method DrawTextSurround( canvas:Canvas, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local k:Int
+		Local c:int
+		
+		padding *= scale
+		
+		For k = 0 Until text.Length
+			DrawChar( canvas, text.Mid( k, 1 )[0], x-1, y, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x+1, y, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x, y-1, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x, y+1, scale, italic )
+			x += padding
+		Next
+	End Method
+
+
+	Method DrawTextWH( canvas:Canvas, text:String, x:float, y:float, width:float, height:int, padding:float = 1 )
+		Local k:Int
+		Local c:int
+		
+		padding *= width
+		
+		For k = 0 Until text.Length
+			DrawCharWH( canvas, text.Mid( k, 1 )[0], int(x), int(y), width, height )
+			x += padding
+		Next
+	End Method
+
+
+	Method DrawTextBoldWH( canvas:Canvas, text:String, x:float, y:float, width:float, height:int, padding:float = 1 )
+		Local k:Int
+		Local c:int
+		
+		padding *= width
+		
+		For k = 0 Until text.Length
+			DrawCharWH( canvas, text.Mid( k, 1 )[0], x, y, width, height )
+			DrawCharWH( canvas, text.Mid( k, 1 )[0], x+1, y, width, height )
+			x += width
+		Next
+	End Method
+
+
+	Method DrawTextOutline( canvas:Canvas, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local k:Int
+		Local c:int
+		
+		padding *= scale
+		
+		Local offset:float = 0.9
+		
+		For k = 0 Until text.Length
+			DrawChar( canvas, text.Mid( k, 1 )[0], x-offset, y-offset, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x, y-offset, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x+offset, y-offset, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x-offset, y, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x+offset, y, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x-offset, y+offset, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x, y+offset, scale, italic )
+			DrawChar( canvas, text.Mid( k, 1 )[0], x+offset, y+offset, scale, italic )
+			x += padding
+		Next
+	End Method
+
+
+	Method DrawTextLeft( canvas:Canvas, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local k:Int
+		Local c:int
+		
+		padding *= scale
+		
+		x -= text.Length * padding
+		
+		For k = 0 Until text.Length
+			DrawChar( canvas, text.Mid( k, 1 )[0], x, y, scale, italic )
+			x += padding
+		Next
+	End Method
+
+
+	Method DrawTextBlock( canvas:Canvas, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local k:Int
+		Local c:int
+		
+		padding *= scale
+		
+		For k = 0 Until text.Length
+			DrawCharBlock( canvas, text.Mid( k, 1 )[0], x, y, scale, italic )
+			x += padding
+		Next
+	End Method
+
+
+	Method DrawTextCenteredBlock( canvas:Canvas, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local textWidth:int = text.Length * scale * padding
+		x -= textWidth * .5
+
+		DrawTextBlock( canvas, text, x, y, scale, padding, italic )
+	End Method
+
+
+	Method DrawTextCenteredBold( canvas:Canvas, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local textWidth:int = text.Length * scale * padding
+		x -= textWidth * .5
+
+		DrawTextBold( canvas, text, x, y, scale, padding, italic )
+	End Method
+	
+	
+	Method DrawTextBold( canvas:Canvas, text:String, x:float, y:float, scale:float, padding:float = 1, italic:float = 0 )
+		Local k:Int
+		Local c:int
+		
+		padding *= scale
+		
+		For k = 0 Until text.Length
+			DrawCharBold( canvas, text.Mid( k, 1 )[0], x, y, scale, italic )
+			x += padding
+		Next
+	End Method
+
+
+	Method TextWidth:float(text:String, scale:float, padding:float = 1 )
+		Return text.Length * scale * padding
+	End Method
+
+
+private
+	Field _image:Image
+
+	Field _filePath:string
+	Field _fileTime:Long = 0
+
+	Field _charWidth:int
+	Field _charHeight:int
+
+	Field sx:int[] = New int[257]
+	Field sy:int[] = New int[257]
+	Field sx1:int[] = new int[257]
+	Field sy1:int[] = new int[257]
+End

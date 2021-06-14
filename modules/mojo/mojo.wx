@@ -43,6 +43,9 @@ Using mojo..
 'jl added
 '------------------------------------------------------------
 #Import "graphics/imageslice"
+#Import "graphics/colorpalette"
+#Import "graphics/arcadefont"
+#Import "graphics/fontmap"
 '------------------------------------------------------------
 
 '2d graphics stuff

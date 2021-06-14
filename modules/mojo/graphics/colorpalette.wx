@@ -1,0 +1,839 @@
+Namespace mojo
+
+#Import "<std>"
+Using std..
+
+'a color palette is a collection of user defined colors up to 256
+'color palettes can be in the following formats:
+'.mx2palette - from the color palette program
+'.mx2tagz - from the color tagz program
+'.pal - from jasc paint
+'.ase - from adobe - photoshop, etc
+
+
+class ColorPalette
+	Field COLOR_USED:bool[] = New bool[256]
+	Field VOXEL_PALETTE:uint[] = New uint[256]
+	Field VOXEL_PALETTE1:uint[] = New uint[256]
+	
+	Field Red:UByte[] = New ubyte[256]
+	Field Green:UByte[] = New ubyte[256]
+	Field Blue:UByte[] = New ubyte[256]
+
+	Field g_paletteCount:int = 255
+	Field g_paletteX:int = 16
+	Field g_paletteY:int = 16
+	
+	Field _filePath:string
+	Field _fileTime:long = 0
+	Field _colorCount:int
+	
+	Const _hex:string = "0123456789abcdef"
+
+	
+
+	Method New( )
+		ResetRGBColors()
+	End Method
+
+	Method New( filePath:string, data:int = 2 )
+		Load( filePath, data )
+	End Method
+	
+	
+	Method Reload:bool()
+		Local time:long = GetFileTime( _filePath )
+'		Print _fileTime+" "+time+" "+_filePath
+		If time <= _fileTime Then Return False
+		
+		Return True
+	End Method
+
+
+	Property FilePath:string()
+		Return _filePath
+	End
+
+	Property GridX:int()
+		Return g_paletteX
+	Setter( gridX:int )
+		g_paletteX = Clamp( gridX, 1, 32 )
+	End
+
+	Property GridY:int()
+		Return g_paletteY
+	Setter( gridY:int )
+		g_paletteY = Clamp( gridY, 1, 32 )
+	End
+
+	Property GridCount:int()
+		Return g_paletteX * g_paletteY
+	End
+
+	Property Count:int()
+		Return _colorCount
+	end
+	
+
+	Method SetGridXY( gridX:int,	gridY:int )
+		g_paletteX = Clamp( gridX, 1, 32 )
+		g_paletteY = Clamp( gridY, 1, 32 )
+	End Method
+	Method SetGridSize( gridX:int,	gridY:int )
+		g_paletteX = Clamp( gridX, 1, 32 )
+		g_paletteY = Clamp( gridY, 1, 32 )
+	End Method
+	
+	
+	Method SetRGBA( pos:int, col:Color )
+		If pos < 0 or pos > 255 Then Return
+		
+		VOXEL_PALETTE[ pos ] = ($ff Shl 24) | ((int(col.b*255) & $ff) Shl 16) | ((int(col.g*255) & $ff) Shl 8) | (int(col.r*255) & $ff)
+	End Method
+	
+	Method SetRGBA( pos:int, r:int, g:int, b:int, a:int )
+		If pos < 0 or pos > 255 Then Return
+
+		VOXEL_PALETTE[ pos ] = ((a & $ff) Shl 24) | ((r & $ff) Shl 16) | ((g & $ff) Shl 8) | (b & $ff)
+'		Print pos +" "+VOXEL_PALETTE[ pos ]
+'		Print pos+"  "+r+" "+g+" "+b
+	End Method
+	
+	
+	Method GetRandom:Color()
+		Return GetRGBA(Rnd(_colorCount))
+	End Method
+	
+	
+	Method SetRGB()
+		Local k:int
+		Local argb:UInt
+		
+		For k = 0 To 255
+			argb = VOXEL_PALETTE[ k ]
+			Red[k] = argb & $ff
+			Green[k] = (argb Shr 8) & $ff
+			Blue[k] = (argb Shr 16) & $ff
+		Next
+	End Method
+
+	
+	Method GetR:int( pos:uInt )
+		pos = Clamp( int(pos), 0, 255 )
+
+		Local argb:UInt = VOXEL_PALETTE[ pos ]
+'		Local a:int = (argb Shr 24) & $ff
+'		Local b:int = (argb Shr 16) & $ff
+'		Local g:int = (argb Shr 8) & $ff
+		Return argb & $ff
+	End Method
+
+	Method GetG:int( pos:uInt )
+		pos = Clamp( int(pos), 0, 255 )
+
+		Local argb:UInt = VOXEL_PALETTE[ pos ]
+'		Local a:int = (argb Shr 24) & $ff
+'		Local b:int = (argb Shr 16) & $ff
+		return (argb Shr 8) & $ff
+'		Return = argb & $ff
+	End Method
+
+	Method GetB:int( pos:uInt)
+		pos = Clamp( int(pos), 0, 255 )
+
+		Local argb:UInt = VOXEL_PALETTE[ pos ]
+'		Local a:int = (argb Shr 24) & $ff
+		return (argb Shr 16) & $ff
+'		Local g:int = (argb Shr 8) & $ff
+'		Return = argb & $ff
+	End Method
+
+	Method GetRGB:UInt( pos:uInt )
+		pos = Clamp( int(pos), 0, 255 )
+
+		return VOXEL_PALETTE[ pos ]
+	End Method
+
+	Method GetRGBA:Color( pos:uInt )
+		pos = Clamp( int(pos), 0, 255 )
+
+		Local argb:UInt = VOXEL_PALETTE[ pos ]
+		Local a:int = (argb Shr 24) & $ff
+		Local b:int = (argb Shr 16) & $ff
+		Local g:int = (argb Shr 8) & $ff
+		Local r:int = argb & $ff
+		
+	'	Print pos+"  "+r+" "+g+" "+b+" "+a
+		Return ColorI( r, g, b, a )
+	End Method
+
+
+	Method GetRGBA:Color( pos:uInt, md:int )
+		pos = Clamp( int(pos), 0, 255 )
+
+		Local argb:UInt = VOXEL_PALETTE[ pos ]
+		Local a:int = (argb Shr 24) & $ff
+		Local b:int = (argb Shr 16) & $ff
+		Local g:int = (argb Shr 8) & $ff
+		Local r:int = argb & $ff
+		
+'		Print pos+"  "+r+" "+g+" "+b+" "+a
+		Return ColorI( Clamp(r+md, 0, 266), Clamp(g+md, 0, 255), Clamp(b+md, 0, 255), a )
+	End Method
+
+
+	Method GetBGRA:Color( pos:uInt )
+		pos = Clamp( int(pos), 0, 255 )
+
+		Local argb:UInt = VOXEL_PALETTE[ pos ]
+		Local a:int = (argb Shr 24) & $ff
+		Local r:int = (argb Shr 16) & $ff
+		Local g:int = (argb Shr 8) & $ff
+		Local b:int = argb & $ff
+		
+	'	Print pos+"  "+r+" "+g+" "+b+" "+a
+		Return ColorI( r, g, b, a )
+	End Method
+	
+	Method ResetRGBColors()
+		Local k:int
+		For k = 0 To 255
+			VOXEL_PALETTE[ k ] = VOXEL_PALETTE1[ k ]
+		Next
+		
+		SetRGB()
+	End Method
+	
+	Method ClearRGBColors()
+		Local k:int
+		For k = 0 To 255
+			VOXEL_PALETTE[ k ] = $ff222222
+		Next
+	End Method
+	
+	
+	Method LoadVPalette:bool( path:string )
+		Local file := FileStream.Open( path, "r" )
+		If Not file Then
+			'Print "Cant Load "+path
+			Return False
+		End If
+		
+		_filePath = file.FilePath
+		_fileTime = GetFileTime( file.FilePath )
+		'Print file.FilePath
+		
+		Local gridX:int
+		Local gridY:int
+		Local header:string = file.ReadCString()
+		
+		If header = "mx2palette" Then
+			_colorCount = file.ReadUInt()
+			'Print " Colors:"+_colorCount
+			If _colorCount < 256 Then
+				gridX = file.ReadUInt()
+				If gridX < 33 Then
+					gridY = file.ReadUInt()
+					'Print "grid:"+gridX+" "+gridY
+					If gridY < 33 Then
+						Local k:int
+						Local red:int
+						Local green:int
+						Local blue:int
+						Local alpha:int
+						For k = 0 Until _colorCount
+							red = file.ReadFloat() * 255
+							green = file.ReadFloat() * 255
+							blue = file.ReadFloat() * 255
+							alpha = file.ReadFloat() * 255
+							If k < 256 Then
+								VOXEL_PALETTE1[ k ] = ((alpha & $ff) Shl 24) | ((blue & $ff) Shl 16) | ((green & $ff) Shl 8) | (red & $ff)
+							End If
+						Next
+
+						g_paletteX = gridX
+						g_paletteY = gridY
+					End If
+				End If
+			End If
+		End If
+		
+		file.Close()
+		
+		SetRGB()
+		
+		Return true
+	End Method
+	
+	
+	Method StringToInt:Int( str:string )
+		Local pos:int = 0
+		Local result:int
+		Local inp:int
+		Local minus:bool = False
+		If str.Left(1)= "-" Then
+			minus = True
+			pos += 1
+		End If
+			
+		Local ok:bool = True
+		While ok
+			inp = str.Mid(pos, 1)[0]
+			If inp >47 And inp < 58 Then
+				inp -= 48
+				result = (result * 10) + inp
+			Else
+				ok = False
+			End If
+				
+			pos += 1
+			If ok then ok = pos < str.Length
+		Wend
+		If minus Then result = -result
+
+		Return	result
+	End Method
+	
+
+	Method Load:bool( filePath:string, data:int = 2 )
+		Local ext:string = ExtractExt( filePath ).ToLower()
+		Local ok:bool
+		Select ext
+			Case ".mx2palette", ".wxpalette"
+				ok = LoadVPalette( filePath )
+			Case ".mx2tagz", ".wxtagz"
+				ok = LoadTagz( filePath, data )
+			Case ".pal"
+				ok = LoadPal( filePath )
+			Case ".ase"
+				ok = LoadAse( filePath )
+		End Select
+
+		ResetRGBColors()
+		
+		Return ok
+	End Method
+
+
+	
+	Method LoadTagz:bool( path:string, data:int= 2 )
+		Local file := FileStream.Open( path, "r" )
+		If Not file Then Return False
+
+		Local header:string = file.ReadCString()
+		If header = "mx2tagz" Then
+'			Path = path
+			Local count:int = file.ReadUInt()
+			Local check1:int = file.ReadUInt()
+			Local check2:int = file.ReadUInt()
+			If check1 <> 9947 or check2 <> 8873 Then Return false
+
+			_colorCount = count
+			'Print "tagzload:"+count+" Colors"
+'			Count = count
+			If count < 256 Then
+				Local k:int
+				Local red:Ubyte
+				Local green:Ubyte
+				Local blue:Ubyte
+				Local alpha:UByte = 255
+
+				For k = 0 to count
+					red = file.ReadUByte()
+					green = file.ReadUByte()
+					blue = file.ReadUByte()
+					If data = 0 Then
+						VOXEL_PALETTE1[ k ] = ((alpha & $ff) Shl 24) | ((blue & $ff) Shl 16) | ((green & $ff) Shl 8) | (red & $ff)
+					End If
+'					AddTagColor( k, 0, red, green, blue )
+
+					red = file.ReadUByte()
+					green = file.ReadUByte()
+					blue = file.ReadUByte()
+					If data = 1 Then
+						VOXEL_PALETTE1[ k ] = ((alpha & $ff) Shl 24) | ((blue & $ff) Shl 16) | ((green & $ff) Shl 8) | (red & $ff)
+					End If
+'					AddTagColor( k, 1, red, green, blue )
+
+					red = file.ReadUByte()
+					green = file.ReadUByte()
+					blue = file.ReadUByte()
+'					AddTagColor( k, 2, red, green, blue )
+					If data = 2 Then
+						VOXEL_PALETTE1[ k ] = ((alpha & $ff) Shl 24) | ((blue & $ff) Shl 16) | ((green & $ff) Shl 8) | (red & $ff)
+					End If
+
+					red = file.ReadUByte()
+					green = file.ReadUByte()
+					blue = file.ReadUByte()
+'					AddTagColor( k, 3, red, green, blue )
+					If data = 3 Then
+						VOXEL_PALETTE1[ k ] = ((alpha & $ff) Shl 24) | ((blue & $ff) Shl 16) | ((green & $ff) Shl 8) | (red & $ff)
+					End If
+
+					red = file.ReadUByte()
+					green = file.ReadUByte()
+					blue = file.ReadUByte()
+'					AddTagColor( k, 4, red, green, blue )
+					If data = 4 Then
+						VOXEL_PALETTE1[ k ] = ((alpha & $ff) Shl 24) | ((blue & $ff) Shl 16) | ((green & $ff) Shl 8) | (red & $ff)
+					End If
+				next
+			End If
+		End If
+	
+		file.Close()
+
+		SetRGB()
+		
+		Return true
+	End Method
+	
+
+	Method ReadBigEndian32:int( file:Stream )
+		Local res:int
+		'swap endianness on little endian systems
+		Local a:ubyte = file.ReadUByte()
+		Local b:ubyte = file.ReadUByte()
+		Local c:ubyte = file.ReadUByte()
+		Local d:ubyte = file.ReadUByte()
+		Return (a Shl 24) | (b Shl 16) | (c Shl 8) | d
+		
+'		#Ifdef TARGET_LITTLE_ENDIAN
+'		return (((res & 0x000000FF) << 24) |
+'		((res & 0x0000FF00) <<  8) |
+'		((res & 0x00FF0000) >>  8) |
+'		((res & 0xFF000000) >> 24));
+'		#endIf
+'		return res;
+	End Method
+
+
+	Method HexStringToByte:UByte( hex:string )
+		If hex.Length > 2 Then Return 0
+		
+		Local h1:string = hex.Left(1)
+		Local h2:string = hex.Right(1)
+		
+		Local f1:ubyte = _hex.Find(h1)
+		Local f2:ubyte = _hex.Find(h2)
+'		Print f1+" "+f2+" "+((f1*16)+f2)
+		
+		Return ((f1*16)+f2)
+	End Method
+
+	
+	Method LoadAse:bool( path:string )
+		'Print "load ase"
+		Local file:FileStream = FileStream.Open( path, "r" )
+		If Not file Then Return false
+
+		_filePath = file.FilePath
+		_fileTime = GetFileTime( file.FilePath )
+
+		Local f:string = file.ReadCString()
+		If f <> "ASEF" Then Return False
+
+		Local didLoadWithoutError:bool = True
+		
+		file.Seek( 11 )
+		Local count:int = file.ReadUByte()
+		
+		Local head:int = 12
+		file.Seek( head )
+		
+		Local a:ubyte
+		Local b:ubyte
+		
+		a = file.ReadUByte()
+		b = file.ReadUByte()
+		
+		'Print "count:"+count
+'		Print ReadBigEndian32( file )
+		head = 21
+
+		Local col:int
+		For col = 0 To 255
+			SetRGBA( col, 0, 0, 0,	0 )
+		next
+		col = 1
+		SetRGBA( 0, 0, 0, 0,	255 )
+		
+		Local k:int
+		Local rb:ubyte
+		Local gb:ubyte
+		Local bb:ubyte
+		For k = 1 To count
+'			Print ""
+'			Print "Color:"+k
+			file.Seek( head )
+
+			a = file.ReadUByte()
+			file.ReadUByte()
+			b = file.ReadUByte()
+			file.ReadUByte()
+		
+'			Print "r:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
+			rb = HexStringToByte( Chr(a)+Chr(b) )
+		
+			a = file.ReadUByte()
+			file.ReadUByte()
+			b = file.ReadUByte()
+			file.ReadUByte()
+		
+'			Print "g:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
+			gb = HexStringToByte( Chr(a)+Chr(b) )
+
+			a = file.ReadUByte()
+			file.ReadUByte()
+			b = file.ReadUByte()
+			file.ReadUByte()
+		
+'			Print "b:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
+			bb = HexStringToByte( Chr(a)+Chr(b) )
+
+			SetRGBA( col, bb, gb, rb,	255 )
+'							Print "col = "+col+"  rgb= "+r+" "+g+" "+b
+			col += 1
+		
+			head += 40
+		next
+		
+		count += 1
+		g_paletteCount = count
+		Local num:float = Sqrt(g_paletteCount)
+		Local numi:int = num
+		If num > numi Then
+			g_paletteX = num
+			g_paletteY = num+1
+		Else
+			g_paletteX = num
+			g_paletteY = num
+		End If
+		
+		If g_paletteX * g_paletteY < g_paletteCount Then
+			g_paletteX += 1
+		End If
+		
+		'Print g_paletteCount+" "+g_paletteX+" "+g_paletteY+"    "+num+" "+numi
+		
+#rem
+    bool didLoadWithoutError = true;
+    int head = 12;
+    
+    while(buf[head] == '\xc0' && buf[head + 1] == '\x01'){ // All group entries begin with 0xC001
+        NamedColorGroup namedColorGroup;
+        
+        //read group name
+        uint32_t nameByteLength = readBigEndian32(&buf[head + 2]);
+        namedColorGroup.name = readBigEndian16String(&buf[head + 8], nameByteLength);
+
+        head += 6 + (nameByteLength);
+        
+        //read each color block
+        while (buf[head + 1] == '\x01') { // All color entries begin with 0x0001
+            NamedColor namedColor;
+            
+            uint32_t colorBlockByteLength = readBigEndian32(&buf[head + 2]);
+            uint16_t colorNameLength = readBigEndian16(&buf[head + 6]);
+            namedColor.name = readBigEndian16String(&buf[head + 8], colorNameLength);
+            
+            int colorHead = head + 8 + (colorNameLength * 2);
+            switch (buf[colorHead]){
+                case 'R': //RGB
+                    namedColor.color = readRGB(&buf[colorHead + 4]);
+                    break;
+                case 'C': //CMYK
+                    namedColor.color = readCMYK(&buf[colorHead + 4]);
+                    break;
+                case 'L': //LAB
+                    ofLogError() << "The LAB color space is not supported";
+                    didLoadWithoutError = false;
+                    break;
+                case 'G': //Greyscale
+                    namedColor.color = ofColor(readBigEndianFloat32(&buf[colorHead + 4]) * 256);
+                    break;
+            }
+            
+            namedColorGroup.namedColors.push_back(namedColor);
+            allColors.push_back(namedColor);
+            
+            head += 6 + (colorBlockByteLength);
+        }
+        namedColorGroups.push_back(namedColorGroup);
+        
+        head += 6;
+    }
+#end rem
+
+		SetRGB()
+
+		Return true
+	End Method
+	
+	
+	Method LoadPal:bool( path:string )
+'		Print "load pal"
+		Local file := FileStream.Open( path, "r" )
+		If Not file Then Return false
+
+		_filePath = file.FilePath
+		_fileTime = GetFileTime( file.FilePath )
+
+		Local f:string = file.ReadCString()
+'		Print header
+		If f.Left( 8 ) <> "JASC-PAL" Then Return false
+'		Print "Length = "+f.Length
+		
+		Local pos:int = 9
+		Local str:string
+		Local chr:string
+		Local line:int = 0
+		Local r:int
+		Local g:int
+		Local b:int
+		Local count:int
+		Local col:int
+		For col = 0 To 255
+			SetRGBA( col, 0, 0, 0,	0 )
+		next
+		col = 0
+		While pos < f.Length
+			chr = f.Mid( pos, 1 )
+'			Print pos+" "+Val( chr )+"  "+chr
+'			If Val( chr ) < 33 Then
+			If chr[0] < 33 Then
+				If str <> "" Then
+					Select line
+						Case 0 'ver
+'							Print "ver = "+str
+							line = 1
+						Case 1 'count
+'							Print "count = "+str
+							count = StringToInt( str )
+							_colorCount = count
+							g_paletteCount = count
+							line = 2
+						Case 2 'red
+							r = StringToInt( str )
+							line = 3
+						Case 3 'green
+							g = StringToInt( str )
+							line = 4
+						Case 4 'blue
+							b = StringToInt( str )
+							line = 2
+							SetRGBA( col, b, g, r,	255 )
+'							Print "col = "+col+"  rgb= "+r+" "+g+" "+b
+							col += 1
+					End select
+				End If
+				str = ""
+			Else
+				str += chr
+			End If
+			pos += 1
+		wend
+
+		g_paletteX = 16
+		g_paletteY = 16
+		
+'		Print Val( f.Mid( pos, 1 ) )
+		
+		
+'		If f.Mid( 9, 4 ) <> "0100" Then Return
+
+		file.Close()
+		
+'		Print "end file"
+		SetRGB()
+		
+		Return true
+	End Method
+	
+	
+	Method LoadPalette:bool( path:string )
+		Local file := FileStream.Open( path, "r" )
+		If Not file Then Return false
+
+		_filePath = file.FilePath
+		_fileTime = GetFileTime( file.FilePath )
+		
+		Local header:string = file.ReadCString()
+		If header = "mx2palette" Or header = "wxpalette" Then
+			Local count:int = file.ReadUInt()
+'			Print count+" Colors"
+			_colorCount = count
+			If count < 256 Then
+				Local gridX:int = file.ReadUInt()
+				If gridX < 33 Then
+					Local gridY:int = file.ReadUInt()
+					If gridY < 33 Then
+						Local k:int
+						Local red:float
+						Local green:float
+						Local blue:float
+						Local alpha:float
+						g_paletteCount = count
+						g_paletteX = gridX
+						g_paletteY = gridY
+'		Print "load "+g_paletteX+" "+g_paletteY
+						For k = 0 Until count
+							red = file.ReadFloat() * 255
+							green = file.ReadFloat() * 255
+							blue = file.ReadFloat() * 255
+							alpha = file.ReadFloat() * 255
+							
+'							Print k+" "+red+" "+green+" "+blue
+	'						Print k
+							SetRGBA( k, blue, green, red, alpha )
+						Next
+					End If
+				End If
+			End If
+		End If
+	
+		file.Close()
+
+		SetRGB()
+		
+		Return true
+	End Method
+	
+	
+	Method SavePalette( path:string )
+		Local file := FileStream.Open( path, "w" )
+		If Not file Then Return
+		
+		'Print "save "+g_paletteX+" "+g_paletteY
+		
+		Local header:string = "mx2palette"
+		file.WriteCString( header )
+		file.WriteUInt( g_paletteX * g_paletteY )'g_paletteCount )
+		file.WriteUInt( g_paletteX )
+		file.WriteUInt( g_paletteY )
+	
+		Local k:int
+		Local col:Color
+		For k = 0 until g_paletteX * g_paletteY
+			col = GetRGBA( k )
+			file.WriteFloat( col.R )
+			file.WriteFloat( col.G )
+			file.WriteFloat( col.B )
+			file.WriteFloat( col.A )
+		Next
+	
+		file.Close()
+	End Method
+	
+	
+	Method GetNewColor:int( rgb:Color )
+		Local k:int
+		Local col:Color
+		Local ret:int = -1
+	
+		For k = 0 To 255
+			col = GetRGBA( k )
+			If col = rgb Then ret = k
+		Next
+	
+	'	Print "GetNewColor "+ret
+		If ret > 0 Then Return ret
+	
+		ret = -1
+		For k = 1 To 255
+			If ret = -1 And not COLOR_USED[k] Then ret = k
+		Next
+		
+	'	Print "GetNewColor new="+ret
+	'	If ret = -1 Then Return FindNearestColor( rgb )
+		
+		COLOR_USED[ret] = true
+		SetRGBA( ret, rgb )
+		
+		Return ret
+	End Method
+	
+	
+	Method FindNearestColor:int( rgb:Color, percent:float = 0.3 )
+		Local rp:float = 0
+		Local gp:float = 0
+		Local bp:float = 0
+		Local ap:float = 0
+		Local k:int
+			
+		Local cl:float
+'		Local percent:float = .3
+		Local gotCol:int
+		Local col:Color
+			
+		For k = 0 To Count
+			col = GetRGBA( k )
+			If k = 0 Then col = Color.None
+				
+			rp = Abs(rgb.r - col.r)
+			gp = Abs(rgb.g - col.g)
+			bp = Abs(rgb.b - col.b)
+
+			ap = Abs(rgb.a - col.a)
+				
+			cl = rp + gp + bp
+	'		Print cl
+			If cl < percent and ap < 0.5 Then
+				percent = cl
+				gotCol = k
+			End If
+			
+		Next
+		
+'		col = GetRGBA( gotCol )
+		Return gotCol
+	End Method
+'
+
+	Method GetNearestColor:Color( rgb:Color, percent:float = 0.3 )
+		Local rp:float = 0
+		Local gp:float = 0
+		Local bp:float = 0
+		Local ap:float = 0
+		Local k:int
+			
+		Local cl:float
+		Local gotCol:int
+		Local col:Color
+		
+		For k = 0 To Count
+			col = GetRGBA( k )
+			If k = 0 Then col = Color.None
+				
+			rp = Abs(rgb.r - col.r)
+			gp = Abs(rgb.g - col.g)
+			bp = Abs(rgb.b - col.b)
+
+			ap = Abs(rgb.a - col.a)
+			
+			cl = rp + gp + bp
+
+			If rgb.r = rgb.g And rgb.r = rgb.b Then 'mono
+				cl *= 0.5
+'				Print "mono:"+cl
+			End If
+			
+			If cl < percent and ap < 0.5 Then
+				percent = cl
+				gotCol = k
+			End If
+			
+		Next
+
+		col = GetRGBA( gotCol )
+		
+'		If col <> rgb Then
+'			Print "color to swap:"+rgb+"   found:"+col
+'		End If
+		
+		Return col
+	End Method
+
+End
+
