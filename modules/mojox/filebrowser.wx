@@ -60,6 +60,40 @@ Class FileBrowser Extends TreeView
 	
 		UpdateNode( _rootNode,_rootPath,True )
 	End
+
+	#rem wonkeydoc Set the directory for loading file type icons.
+	Use this function before creating any FileBrowser View.
+	@param dir Directory containing icon images and filetypes.txt file
+	#end
+	Function SetFileTypeIconsDirectory( dir:String )
+		_fileTypeIconsDirectory = dir
+	End
+
+	#rem wonkeydoc Set the icon for a specific file extension.
+	The icon for directories is using fileExt "_dir", and
+	the icon for default files is using fileExt "_file".
+	@param fileExt The file extension, without dot ('.').
+	@param path Full image filename
+	@return True on success, False on failure
+	#end
+	Method SetFileTypeIcon:Bool( fileExt:String, path:String )
+		Local iconsMap := GetFileTypeIcons()
+		If Not iconsMap Return False
+
+		Local icon:=Image.Load( path )
+		If Not icon Return False
+
+		icon.Scale=App.Theme.Scale
+
+		iconsMap["."+fileExt] = icon
+
+		If fileExt="_dir"  Then _dirIcon =_fileTypeIcons["._dir"]
+		If fileExt="_file" Then _fileIcon=_fileTypeIcons["._file"]
+
+		Self.Update()
+
+		Return True
+	End
 	
 	Protected
 	
@@ -198,39 +232,7 @@ Class FileBrowser Extends TreeView
 		node.RemoveChildren( i )
 		
 	End
-	
-	#rem wonkeydoc Set the directory for loading file type icons.
-	Use this function before creating any FileBrowser View.
-	@param dir Directory containing icon images and filetypes.txt file
-	#end
-	Function SetFileTypeIconsDirectory( dir:String )
-		_fileTypeIconsDirectory = dir
-	End
 
-	#rem wonkeydoc Set the icon for a specific file extension
-	@param fileExt The file extension, without dot ('.').
-	@param path Full image filename
-	#end
-	Method SetFileTypeIcon:Bool( fileExt:String, path:String )
-		Local iconsMap := GetFileTypeIcons()
-		If Not iconsMap Return False
-
-		Local icon:=Image.Load( path )
-		If Not icon Return False
-
-		icon.Scale=App.Theme.Scale
-
-		iconsMap["."+fileExt] = icon
-
-		If fileExt="_dir"  Then _dirIcon =_fileTypeIcons["._dir"]
-		If fileExt="_file" Then _fileIcon=_fileTypeIcons["._file"]
-
-		Self.Update()
-
-		Return True
-	End
-
-	
 	Function GetFileTypeIcons:StringMap<Image>()
 	
 		If _fileTypeIcons Return _fileTypeIcons
