@@ -199,13 +199,45 @@ Class FileBrowser Extends TreeView
 		
 	End
 	
+	#rem wonkeydoc Set the directory for loading file type icons.
+	Use this function before creating any FileBrowser View.
+	@param dir Directory containing icon images and filetypes.txt file
+	#end
+	Function SetFileTypeIconsDirectory( dir:String )
+		_fileTypeIconsDirectory = dir
+	End
+
+	#rem wonkeydoc Set the icon for a specific file extension
+	@param fileExt The file extension, without dot ('.').
+	@param path Full image filename
+	#end
+	Method SetFileTypeIcon:Bool( fileExt:String, path:String )
+		Local iconsMap := GetFileTypeIcons()
+		If Not iconsMap Return False
+
+		Local icon:=Image.Load( path )
+		If Not icon Return False
+
+		icon.Scale=App.Theme.Scale
+
+		iconsMap["."+fileExt] = icon
+
+		If fileExt="_dir"  Then _dirIcon =_fileTypeIcons["._dir"]
+		If fileExt="_file" Then _fileIcon=_fileTypeIcons["._file"]
+
+		Self.Update()
+
+		Return True
+	End
+
+	
 	Function GetFileTypeIcons:StringMap<Image>()
 	
 		If _fileTypeIcons Return _fileTypeIcons
 		
 		_fileTypeIcons=New StringMap<Image>
 		
-		Local dir:="theme::filetype_icons/"
+		Local dir:= _fileTypeIconsDirectory ?Else "theme::filetype_icons/"
 		
 		Local types:=stringio.LoadString( dir+"filetypes.txt" ).Split( "~n" )
 	
@@ -244,6 +276,7 @@ Class FileBrowser Extends TreeView
 	
 	Private
 	
+	Global _fileTypeIconsDirectory:String
 	Global _fileTypeIcons:StringMap<Image>
 	
 End
