@@ -28,6 +28,13 @@ Once a font is loaded it can be used with a canvas via the [[Canvas.Font]] prope
 #end
 Class Font Extends Resource
 	
+	'jl added
+	#rem wonkeydoc The filepath of the font
+	#end
+	Property Path:String()
+		Return _path
+	End
+	
 	#rem wonkeydoc The font height in pixels.
 	#end
 	Property Height:Float()
@@ -96,6 +103,11 @@ Class Font Extends Resource
 			Endif
 		End
 		
+		'jladded
+		If font Then
+			font._path = path
+		End If
+		
 		Return font
 	End
 	
@@ -113,6 +125,8 @@ Class Font Extends Resource
 	Field _height:Float
 	Field _firstChar:Int
 	Field _numChars:Int
+	'jladded
+	Field _path:String = ""
 End
 
 Class ResourceManager Extension
