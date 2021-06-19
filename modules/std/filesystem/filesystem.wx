@@ -214,8 +214,10 @@ Currently recognized built-in config settings:
 | "MOJO\_DEPTH\_BUFFER\_BITS"		| [[mojo:mojo.app.AppInstance|mojo.AppInstance]]
 | "MOJO\_STENCIL\_BUFFER\_BITS"		| [[mojo:mojo.app.AppInstance|mojo.AppInstance]]
 | "MOJO\_TEXTURE\_MAX\_ANISOTROPY"	| [[mojo:mojo.graphics.Texture|mojo.Texture]]
+| "MOJO\_MSAA\_SAMPLES"             | Hardware AntiAliasing: "0", "1", "2", "4", "8", "16"
+| "MOJO\_INITIAL\_THEME"            | Default Theme name: "default"
+| "MOJO\_INITIAL\_THEME\_SCALE"     | Default Theme scaling: "1"
 | "MOJO3D\_RENDERER"				| [[mojo3d:mojo3d.Renderer|mojo3d.Renderer]]
-| "MOJO\_MSAA\_SAMPLES"             | Hardware AntiAliasing: "0", 1", "2", "4", "8", "16", ...
 
 See also: [[GetConfig]].
 
