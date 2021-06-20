@@ -983,6 +983,14 @@ Class AndroidBuildProduct Extends BuildProduct
 			If opt.StartsWith( "-I" ) Or opt.StartsWith( "-D" ) buf.Push( "LOCAL_CFLAGS += "+opt )
 		Next
 		
+		' Add Anroid SDK path
+		Local ndk := GetEnv( "WX_ANDROID_NDK" )
+		If ndk
+			If ndk.StartsWith("~q") And ndk.EndsWith("~q") Then ndk = ndk.Slice(1,-1)
+			If Not ndk.EndsWith("/") Then ndk += "/"
+			buf.Push( "LOCAL_CFLAGS += -I~q"+ndk+"~q" )
+		Endif
+		
 		buf.Push( "LOCAL_SRC_FILES := \" )
 		
 		For Local src:=Eachin srcs
