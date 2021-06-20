@@ -33,6 +33,7 @@ Namespace sdl2
 'cpuinfo
 #Import "SDL/src/cpuinfo/SDL_cpuinfo.c"
 
+#Import "android-sdk/*.h"
 #Import "android-sdk/cpu-features.h"
 #Import "android-sdk/cpu-features.c"
 
