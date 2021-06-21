@@ -312,7 +312,7 @@ Function MakeApp:Bool( args:String[] )
 	product.CopyAndFinalize() ' final product preparation after successful build
 	Select opts.target
 		Case "ios"        Print "Application built: "+opts.product+product.appName+".xcodeproj"
-		Case "android"    Print "Application built: "+opts.product+product.appName+"/"
+		Case "android"    Print "Application built: "+opts.product
 		Case "emscripten" Print "Application built: "+StripExt(opts.product)+".html"
 		Default           Print "Application built: "+opts.product
 	End Select

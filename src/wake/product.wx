@@ -94,7 +94,7 @@ Class Product
 	Method PrepareFolder()
 		' create products directory
 		'If opts.verbose>0 Then Print "Preparing Product Folder"
-		If Not CreateDir( productDir )
+		If Not CreateDir( productDir, True )
 			Print "Failed to create product directory '"+productDir+"'"
 		Endif
 	End
@@ -117,6 +117,7 @@ Class Product
 		Select target
 			Case "android"
 				productVar["PACKAGE_NAME"] = "com.wx."+appName.Replace(" ", "_")
+				'productVar["PACKAGE_NAME"] = "com.wx.wxgame"
 				productVar["ACTIVITY_NAME"] = "WonkeyGame" ' appName
 				productExt.Add(".xml")
 				productExt.Add(".java")
@@ -134,7 +135,7 @@ Class Product
 		'
 		Select target
 			Case "android", "emscripten", "ios"
-				Local templateSrcDir := wonkeyRoot+"products/"+target+"/"
+				Local templateSrcDir := wonkeyRoot+"products/"+target+"/"+ (target="android" ? "WonkeyGame/" Else "" )
 				If Not GetFileType(templateSrcDir) = FileType.Directory
 					Print "Product template for target '"+target+"' not found at '"+templateSrcDir+"'"
 				Endif
@@ -152,14 +153,14 @@ Class Product
 				Local mainDir      := dir+"app/src/main/"
 				Local packageDir   := mainDir+"java/"+packageName.Replace( ".","/" )+"/"
 		
-				CreateDir( packageDir )
+				CreateDir( packageDir, True )
 				CopyFile( mainDir+"WonkeyGame.java",packageDir+activityName+".java" )
 				DeleteFile( mainDir+"WonkeyGame.java" )
-				If appName <> "WonkeyGame"
-					DeleteDir(dir+appName)
-					CopyDir(dir+"WonkeyGame",dir+appName,True)
-					DeleteDir(dir+"WonkeyGame")
-				Endif
+				'If appName <> "WonkeyGame"
+				'	DeleteDir(dir+appName)
+				'	CopyDir(dir+"WonkeyGame",dir+appName,True)
+				'	DeleteDir(dir+"WonkeyGame")
+				'Endif
 			Case "emscripten"
 				Local dir := ExtractDir(opts.product)
 				If appName <> "WonkeyGame"
