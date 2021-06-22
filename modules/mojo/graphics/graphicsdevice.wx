@@ -5,13 +5,33 @@ Namespace mojo.graphics
 
 Blend modes are used with the [[Canvas.BlendMode]] property.
 
-| BlendMode	| Description
-|:----------|:-----------
-| Opaque	| Blending disabled.
-| Alpha		| Alpha blending.
-| Alpha3d	| Alpha blending in 3D mode.
-| Multiply	| Multiply blending.
-| Additive	| Additive blending.
+| BlendMode   | Description
+|:------------|:-----------
+| Opaque      | Blending disabled.
+| Alpha       | Alpha blending.
+| Alpha3d     | Alpha blending in 3D mode.
+| Multiply    | Multiply blending.
+| Additive    | Additive blending.
+| Subtractive | Subtractive blending. The paint color is subtracted from the canvas.
+
+The following BlendMode members are modifiers and can be used additional to one of the blend modes above:
+
+| BlendMode Modifier | Description
+|:------------|:-----------
+| NoRed       | Disables drawing into the Red color channel
+| NoGreen     | Disables drawing into the Green color channel
+| NoBlue      | Disables drawing into the Blue color channel
+| NoAlpha     | Disables drawing into the Alpha color channel
+| NoRGB       | Disables drawing into the Red, Green, and Blue color channel. Only the Alpha channel is used.
+
+You can combine any of the modifiers using the '|' operator (binary Or).
+
+@example
+'
+' Use subtractive blending and do not write into the alpha color channel.
+'
+canvas.BlendMode = BlendMode.Subtractive | BlendMode.NoAlpha
+@end
 
 #end
 Enum BlendMode
@@ -23,8 +43,27 @@ Enum BlendMode
 'jl added
 '------------------------------------------------------------	
 	Alpha3d = 5
-'------------------------------------------------------------	
+'------------------------------------------------------------
+
+' added by Danilo, 2021/06/22
+'------------------------------------------------------------
+	Subtractive = 6
+
+	'AlphaClip    = 1 Shl 10
+	'AlphaChannel = 1 Shl 11
+	NoRed   = 1 Shl 10
+	NoGreen = 1 Shl 11
+	NoBlue  = 1 Shl 12
+	NoAlpha = 1 Shl 13
+	NoRGB   = NoRed|NoGreen|NoBlue
+'------------------------------------------------------------
 End
+
+Const GL_FUNC_ADD:Int =                       $8006
+Const GL_FUNC_REVERSE_SUBTRACT:Int =          $800B
+Const GL_FUNC_SUBTRACT:Int =                  $800A
+Const GL_MIN:Int =                            $8007
+Const GL_MAX:Int =                            $8008
 
 #rem wonkeydoc @hidden Color mask values.
 
@@ -180,10 +219,14 @@ Class GraphicsDevice
 	
 	Setter( blendMode:BlendMode )
 		If blendMode=_blendMode Return
-	
+
+		' check blend modes
+		If Not ((Int(blendMode)&$FF) = (Int(_blendMode)&$FF)) Then _dirty2|=Dirty.BlendMode
+
+		' check blend modes modifiers (color channels)
+		ColorMask = Cast<ColorMask>( ((Int(blendMode) Shr 10)~$F)&$F )
+
 		_blendMode=blendMode
-		
-		_dirty2|=Dirty.BlendMode
 	End
 	
 	Property CullMode:CullMode()
@@ -593,23 +636,28 @@ Class GraphicsDevice
 		Endif
 		
 		If _dirty2 & Dirty.BlendMode
-			
-			If _blendMode=BlendMode.Opaque
+						
+			If Cast<BlendMode>(Int(_blendMode)&$FF)=BlendMode.Opaque
 				glDisable( GL_BLEND )
 			Else
 				glEnable( GL_BLEND )
-				Select _blendMode
-				Case BlendMode.Alpha
+				glBlendEquation(GL_FUNC_ADD)
+
+				Select Cast<BlendMode>(Int(_blendMode)&$FF)
+				Case BlendMode.Alpha                                                           ' Alpha
 					glBlendFunc( GL_ONE,GL_ONE_MINUS_SRC_ALPHA )
 'jl added
 '------------------------------------------------------------
-				Case BlendMode.Alpha3d
+				Case BlendMode.Alpha3d                                                         ' Alpha3d
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) 'alphablend
 '------------------------------------------------------------
-				Case BlendMode.Additive
+				Case BlendMode.Additive                                                        ' Additive
 					glBlendFunc( GL_ONE,GL_ONE )
-				Case BlendMode.Multiply
+				Case BlendMode.Multiply                                                        ' Multiply
 					glBlendFunc( GL_DST_COLOR,GL_ONE_MINUS_SRC_ALPHA )
+				Case BlendMode.Subtractive
+					glBlendEquation(GL_FUNC_REVERSE_SUBTRACT)                                  ' Subtractive
+					glBlendFunc( GL_ONE,GL_ONE )
 				Default
 					RuntimeError( "Invalid BlendMode" )
 				End
