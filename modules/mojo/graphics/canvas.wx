@@ -1824,7 +1824,10 @@ Class Canvas
 		Return _blendMode
 	
 	Setter( blendMode:BlendMode )
-	
+#If __DEBUG__
+		DebugAssert( blendMode <> BlendMode.None, "Invalid BlendMode: BlendMode.None" )
+		DebugAssert( Int(blendMode)&$FF <> 0    , "Invalid BlendMode: using the BlendMode modifiers without a valid BlendMode is considered invalid.")
+#Endif
 		_blendMode=blendMode
 	End
 	

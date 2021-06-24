@@ -7,6 +7,7 @@ Blend modes are used with the [[Canvas.BlendMode]] property.
 
 | BlendMode   | Description
 |:------------|:-----------
+| None        | 0 = Invalid blend mode.
 | Opaque      | Blending disabled.
 | Alpha       | Alpha blending.
 | Alpha3d     | Alpha blending in 3D mode.
@@ -14,7 +15,7 @@ Blend modes are used with the [[Canvas.BlendMode]] property.
 | Additive    | Additive blending.
 | Subtractive | Subtractive blending. The paint color is subtracted from the canvas.
 
-The following BlendMode members are modifiers and can be used additional to one of the blend modes above:
+Additional modifiers (not to be used stand-alone!):
 
 | BlendMode Modifier | Description
 |:------------|:-----------
@@ -25,6 +26,9 @@ The following BlendMode members are modifiers and can be used additional to one 
 | NoRGB       | Disables drawing into the Red, Green, and Blue color channel. Only the Alpha channel is used.
 
 You can combine any of the modifiers using the '|' operator (binary Or).
+
+Using the modifiers only, without specifying a valid blend mode from the 1st table,
+is considered invalid because it is the same as using BlendMode.None with the modifiers.
 
 @example
 '
@@ -49,8 +53,7 @@ Enum BlendMode
 '------------------------------------------------------------
 	Subtractive = 6
 
-	'AlphaClip    = 1 Shl 10
-	'AlphaChannel = 1 Shl 11
+' Additional modifiers (can't be used stand-alone):
 	NoRed   = 1 Shl 10
 	NoGreen = 1 Shl 11
 	NoBlue  = 1 Shl 12
