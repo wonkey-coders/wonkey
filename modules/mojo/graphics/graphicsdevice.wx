@@ -5,6 +5,8 @@ Namespace mojo.graphics
 
 Blend modes are used with the [[Canvas.BlendMode]] property.
 
+Only one BlendMode from the following table can be used at a time:
+
 | BlendMode   | Description
 |:------------|:-----------
 | None        | 0 = Invalid blend mode.
@@ -15,7 +17,7 @@ Blend modes are used with the [[Canvas.BlendMode]] property.
 | Additive    | Additive blending.
 | Subtractive | Subtractive blending. The paint color is subtracted from the canvas.
 
-Additional modifiers (not to be used stand-alone!):
+Additional color-channel modifiers.
 
 | BlendMode Modifier | Description
 |:------------|:-----------
@@ -23,18 +25,23 @@ Additional modifiers (not to be used stand-alone!):
 | NoGreen     | Disables drawing into the Green color channel
 | NoBlue      | Disables drawing into the Blue color channel
 | NoAlpha     | Disables drawing into the Alpha color channel
-| NoRGB       | Disables drawing into the Red, Green, and Blue color channel. Only the Alpha channel is used.
+| NoColor     | Disables drawing into the Red, Green, and Blue color channel. Only the Alpha channel is used.
 
-You can combine any of the modifiers using the '|' operator (binary Or).
+You can combine any of the color-channel modifiers using the '|' operator (binary Or).
+Multiple modifiers can be used.
 
-Using the modifiers only, without specifying a valid blend mode from the 1st table,
-is considered invalid because it is the same as using BlendMode.None with the modifiers.
+When using the color-channel modifiers only, the blend mode defaults to BlendMode.Opaque.
 
 @example
 '
 ' Use subtractive blending and do not write into the alpha color channel.
 '
 canvas.BlendMode = BlendMode.Subtractive | BlendMode.NoAlpha
+'
+' Use alpha blending and do not write into the red and green color channels.
+'
+canvas.BlendMode = BlendMode.Alpha | BlendMode.NoRed | BlendMode.NoGreen
+
 @end
 
 #end
@@ -53,12 +60,12 @@ Enum BlendMode
 '------------------------------------------------------------
 	Subtractive = 6
 
-' Additional modifiers (can't be used stand-alone):
-	NoRed   = 1 Shl 10
-	NoGreen = 1 Shl 11
-	NoBlue  = 1 Shl 12
-	NoAlpha = 1 Shl 13
-	NoRGB   = NoRed|NoGreen|NoBlue
+' Additional modifiers
+	NoRed   = 1 Shl 10 ' 1024 - do not change the values,
+	NoGreen = 1 Shl 11 ' 2048 - used inside property BlendMode!
+	NoBlue  = 1 Shl 12 ' 4096
+	NoAlpha = 1 Shl 13 ' 8192
+	NoColor = NoRed|NoGreen|NoBlue
 '------------------------------------------------------------
 End
 
@@ -222,6 +229,8 @@ Class GraphicsDevice
 	
 	Setter( blendMode:BlendMode )
 		If blendMode=_blendMode Return
+
+		If (Int(blendMode)&$FFFFFF00) And (Int(blendMode)&$FF)=0 Then blendMode |= BlendMode.Opaque
 
 		' check blend modes
 		If Not ((Int(blendMode)&$FF) = (Int(_blendMode)&$FF)) Then _dirty2|=Dirty.BlendMode
