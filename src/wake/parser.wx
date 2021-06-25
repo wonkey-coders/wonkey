@@ -2109,6 +2109,7 @@ Class Parser
 				
 				If _doccing
 					Local text:=_toker.Text.Slice( pos,_toker.TokePos )
+					If Not text Then text += _toker.LineComment
 					_docs.Push( text )
 				Endif
 
@@ -2283,9 +2284,11 @@ Class Parser
 					p.Bump()
 					If p.EvalBool() _cc.Push( 1 ) Else _cc.Push( 0 )
 				Else
+					If _doccing Then _docs.Push( "#"+p._toker.Text.Trim() )
+					
 					_cc.Push( -1 )
 				Endif
-				
+
 			Case "else","elseif"
 			
 				If _cc.Top=1
@@ -2308,7 +2311,9 @@ Class Parser
 						_cc.Pop()
 						_cc.Push( 1 )
 					Endif
-				
+
+				Elseif _doccing
+					_docs.Push( "#"+p._toker.Text.Trim() )
 				Endif
 				
 			Case "end","endif"
@@ -2316,14 +2321,18 @@ Class Parser
 				If _cc.Length=1 p.Error( "#end without matching #if or #rem" )
 			
 				If p.CParse( "end" )
-					p.CParse( "if" )
+					 p.CParse( "if" )
 				Else
 					p.Bump()
 				End
 				
 				_cc.Pop()
 				
-				If _cc.Top=1 _doccing=False
+				If _cc.Top=1
+					_doccing=False
+				Elseif _doccing
+					_docs.Push( "#"+p._toker.Text.Trim() )
+				Endif
 				
 			Case "rem"
 			
@@ -2334,6 +2343,8 @@ Class Parser
 					_docs.Push( qhelp )
 					_doccing=True
 
+				Elseif _doccing
+					_docs.Push( "#"+p._toker.Text.Trim() )
 				Endif
 				
 				_cc.Push( -1 )
@@ -2359,6 +2370,9 @@ Class Parser
 					Endif
 						
 					_imports.Push( path )
+
+				Elseif _doccing
+					_docs.Push( "#"+p._toker.Text.Trim() )
 				Endif
 				
 			Case "reflect"
@@ -2380,6 +2394,9 @@ Class Parser
 					p.ParseEol()
 					
 					_reflects.Push( path )
+
+				Elseif _doccing
+					_docs.Push( "#"+p._toker.Text.Trim() )
 				Endif
 				
 			Case "print"
@@ -2387,12 +2404,16 @@ Class Parser
 				If _cc.Top=1
 					p.Bump()				
 					Print p.Eval()
+				Elseif _doccing
+					_docs.Push( "#"+p._toker.Text.Trim() )
 				Endif
 				
 			Default
 				
 				If _cc.Top=1
 					p.Error( "Unrecognized preprocessor directive '"+p.Toke+"'" )
+				Elseif _doccing
+					_docs.Push( "#"+p._toker.Text.Trim() )
 				Endif
 			End
 			

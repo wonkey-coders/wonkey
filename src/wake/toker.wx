@@ -112,6 +112,11 @@ Class Toker
 
 		Return _linePos
 	End
+
+	Property LineComment:String()
+
+		Return _lineComment
+	End
 	
 	Property SrcPos:Int()
 	
@@ -152,6 +157,9 @@ Class Toker
 		While _pos<_len And _text[_pos]<=32 And _text[_pos]<>CHAR_EOL
 			_pos+=1
 		Wend
+
+		' reset line comment
+		_lineComment = ""
 
 		'update toke start pos
 		_toke=""		
@@ -277,7 +285,10 @@ Class Toker
 			
 		Else If ch=CHAR_APOSTROPHE
 		
+			_lineComment = "'"
+
 			While _pos<_len And _text[_pos]<>CHAR_EOL
+				_lineComment += Chr(_text[_pos])
 				_pos+=1
 			Wend
 			
@@ -338,6 +349,7 @@ Class Toker
 	Private
 
 	Field _text:String
+	Field _lineComment:String
 	Field _len:Int
 	Field _pos:Int
 	Field _toke:String
