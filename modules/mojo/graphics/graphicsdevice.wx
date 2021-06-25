@@ -10,10 +10,10 @@ Only one BlendMode from the following table can be used at a time:
 | BlendMode   | Description
 |:------------|:-----------
 | None        | 0 = Invalid blend mode.
-| Opaque      | Blending disabled.
-| Alpha       | Alpha blending.
+| Opaque      | Blending disabled. Alpha channel is supported.
+| Alpha       | Alpha blending. Blend into the target by using the source alpha channel only.
 | Alpha3d     | [deprecated] - use AlphaBlend
-| AlphaBlend  | Alpha blending in 3D mode.
+| AlphaBlend  | Alpha blending. Blend into the target by combining the source and target alpha channels.
 | AlphaClip   | Alpha blending with clipping the alpha channel values using the destination alpha channel values. Transparent areas in the target remain transparent. The destination is basically used as an alpha mask.
 | Additive    | Additive blending.
 | Subtractive | Subtractive blending. The paint color is subtracted from the canvas.
