@@ -152,26 +152,6 @@ Class DocsBuffer
 				
 				i=lines.Length
 				
-			Case "import"
-				
-				Local path:=_baseDir+arg
-				
-				Local src:=LoadString( path )
-				
-				If src
-'					Print "Importing "+path
-					
-					Local docs:=New DocsNode( "","",_docs,DocsType.Nav,True )
-					
-					Local buf:=New DocsBuffer( docs,ExtractDir( path ) )
-					
-					buf.Emit( src )
-					
-					docs.Markdown=buf.Flush()
-				Else
-					Print "DocsBuffer: Can't @import file '"+path+"'"
-				Endif
-				
 			Default
 			
 				Print "DocsBuffer error: tag='"+tag+"' line='"+lines[i-1]+"'"
