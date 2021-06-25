@@ -24,7 +24,7 @@ Class DataBuffer Extends std.resource.Resource
 	
 	@example
 	
-	\#Import "<std>"
+	#Import "<std>"
 	
 	Using std.memory
 	
