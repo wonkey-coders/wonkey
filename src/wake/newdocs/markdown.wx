@@ -48,6 +48,18 @@ Class MarkdownConvertor
 			
 				EmitList( line )
 				
+			Else If line.StartsWith( "```" ) Or line.ToLower().StartsWith( "<pre>" ) ' check before line.StartsWith( "<" )
+			
+				EndPara()
+			
+				EmitCode( line )
+				
+			Else If line.StartsWith( "<img" ) ' check before line.StartsWith( "<" )
+			
+				EndPara()
+
+				Emit( line )
+				
 			Else If line.StartsWith( "<" )
 			
 				EndPara()
@@ -59,12 +71,6 @@ Class MarkdownConvertor
 				EndPara()
 			
 				Emit( "<hr class="+_cls+">" )
-				
-			Else If line.StartsWith( "```" ) Or line.ToLower().StartsWith( "<pre>" )
-			
-				EndPara()
-			
-				EmitCode( line )
 				
 			Else
 			

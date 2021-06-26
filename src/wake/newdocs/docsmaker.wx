@@ -44,7 +44,7 @@ Class DocsMaker
 			
 			manDocs=New DocsNode( "manual","",root,DocsType.Dir )
 			
-			Local buf:=New DocsBuffer( manDocs,ExtractDir( manpath ) )
+			Local buf:=New DocsBuffer( manDocs, Null, _module, ExtractDir( manpath ) )
 
 			buf.Emit( src )
 			
@@ -80,8 +80,33 @@ Class DocsMaker
 		If manDocs CreateJSNavTree( manDocs,docsDir+"manual/" )
 			
 		If modDocs CreateJSNavTree( modDocs,docsDir+"module/" )
+			
+		CopyImages()
 		
 	End
+
+	Method CopyImages()
+		For Local entry := Eachin _images
+			Local imageDir := ExtractDir(_docsDir+entry.Key)
+
+			If GetFileType( imageDir ) <> FileType.Directory
+				If Not CreateDir( imageDir, True )
+					Print "DocsMaker: Can't create directory for copying Image."
+					Print "   Directory: "+imageDir
+				Endif
+			Endif
+			If Not CopyFile(entry.Value,_docsDir+entry.Key)
+				Print "DocsMaker: Can't copy Image."
+				Print "   Source:      "+entry.Value
+				Print "   Destination: "+_docsDir+entry.Key
+			Endif
+		Next
+	End
+
+	Function AddImage( srcPath:String, dstPath:String )
+		_images.Add(dstPath, srcPath)
+	End
+
 	
 	Private
 	
@@ -95,6 +120,8 @@ Class DocsMaker
 	
 	Field _converting:DocsNode
 	
+	Global _images:=New StringMap<String>
+
 	Method CreateJSNavTree( docs:DocsNode,dir:String )
 		
 		docs.Clean()
@@ -715,7 +742,7 @@ Class DocsMaker
 		Local docs:=New DocsNode( _module.name+"-module",_module.name,parent,DocsType.Nav )
 '		Local docs:=New DocsNode( "",_module.name,parent,DocsType.Nav )'Decl )
 		
-		Local buf:=New DocsBuffer( docs,_module.baseDir+"newdocs/" )
+		Local buf:=New DocsBuffer( docs, parent, _module, _module.baseDir+"newdocs/" )
 		
 		buf.Emit( "_"+_module.name+"_" )
 		
@@ -762,10 +789,10 @@ Class DocsMaker
 	
 		Print "Making namespace docs:"+scope.Name
 
-		Local buf:=New DocsBuffer
-
 		Local docs:=New DocsNode( scope.Name,"",parent,DocsType.Decl )
 		
+		Local buf:=New DocsBuffer( docs, parent, _module )
+
 		'EmitHeader
 		buf.Emit( "_[["+_module.name+":|"+_module.name+"]]:"+scope.Name+"_" )
 		
@@ -795,9 +822,9 @@ Class DocsMaker
 	
 		Local decl:=xtype.adecl
 		
-		Local buf:=New DocsBuffer
-		
 		Local docs:=New DocsNode( DeclDocsIdent( decl ),DeclLabel( decl ),parent,DocsType.Decl )
+
+		Local buf:=New DocsBuffer( docs, parent, _module )
 
 		EmitHeader( buf,decl,parent )
 		
@@ -818,9 +845,9 @@ Class DocsMaker
 		Local decl:=ctype.cdecl
 		Local scope:=ctype.scope
 		
-		Local buf:=New DocsBuffer
-		
 		Local docs:=New DocsNode( DeclDocsIdent( decl ),DeclLabel( decl ),parent,DocsType.Decl )
+
+		Local buf:=New DocsBuffer( docs, parent, _module )
 		
 		EmitHeader( buf,decl,parent )
 		
@@ -903,7 +930,7 @@ Class DocsMaker
 
 		Local docs:=New DocsNode( DeclDocsIdent( decl ),DeclLabel( decl ),parent,DocsType.Decl )
 		
-		Local buf:=New DocsBuffer
+		Local buf:=New DocsBuffer( docs, parent, _module )
 		
 		EmitHeader( buf,decl,parent )
 
@@ -932,7 +959,7 @@ Class DocsMaker
 
 		Local docs:=New DocsNode( DeclDocsIdent( decl ),DeclLabel( decl ),parent,DocsType.Decl )
 		
-		Local buf:=New DocsBuffer
+		Local buf:=New DocsBuffer( docs, parent, _module )
 		
 		EmitHeader( buf,decl,parent )
 		
@@ -951,7 +978,7 @@ Class DocsMaker
 	
 		Local docs:=New DocsNode( DeclDocsIdent( decl ),DeclLabel( decl ),parent,DocsType.Decl )
 	
-		Local buf:=New DocsBuffer
+		Local buf:=New DocsBuffer( docs, parent, _module )
 		
 		EmitHeader( buf,decl,parent )
 		
@@ -1005,7 +1032,7 @@ Class DocsMaker
 	
 		Local docs:=New DocsNode( DeclDocsIdent( decl ),DeclLabel( decl ),parent,DocsType.Decl )
 		
-		Local buf:=New DocsBuffer
+		Local buf:=New DocsBuffer( docs, parent, _module )
 		
 		EmitHeader( buf,decl,parent )
 		
