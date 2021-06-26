@@ -3,13 +3,13 @@ Namespace wx.newdocs
 
 Class DocsBuffer
 	
-	Method New()
-		
-	End
-	
-	Method New( docs:DocsNode,baseDir:String )
+	Method New( docs:DocsNode, parent:DocsNode, module:Module, baseDir:String="" )
 		
 		_docs=docs
+		
+		_parent=parent
+
+		_module=module
 		
 		_baseDir=baseDir
 		
@@ -74,7 +74,7 @@ Class DocsBuffer
 			Local tag:=line.Slice( 1,j )
 			Local arg:=line.Slice( j+1 ).Trim()
 			
-			Select tag
+			Select tag.ToLower()
 			Case "deprecated"
 				
 				Emit( "(Deprecated: "+arg+")" )
@@ -92,6 +92,8 @@ Class DocsBuffer
 				_return=arg
 				
 			Case "import"
+
+				If arg.StartsWith("~q") And arg.EndsWith("~q") Then arg = arg.Slice(1,-1)
 				
 				Local path:=_baseDir+arg
 				
@@ -102,14 +104,44 @@ Class DocsBuffer
 					
 					Local docs:=New DocsNode( "","",_docs,DocsType.Nav,True )
 					
-					Local buf:=New DocsBuffer( docs,ExtractDir( path ) )
+					Local buf:=New DocsBuffer( docs, _parent, _module, ExtractDir( path ) )
 					
 					buf.Emit( src )
 					
 					docs.Markdown=buf.Flush()
 				Else
 					Print "DocsBuffer: Can't @import file '"+path+"'"
+					Print "   FileName: "+arg
+					'Debug()
 				Endif
+
+			Case "image"
+				
+				If arg.StartsWith("~q") And arg.EndsWith("~q") Then arg = arg.Slice(1,-1)
+				
+				Local srcImage:String, dstImage:String
+				
+				If _module
+					srcImage = _module.baseDir+"images/"+arg
+					dstImage = "modules/"+_module.name+"/images/"+arg
+				Endif
+
+				If srcImage And dstImage And GetFileType( srcImage ) = FileType.File
+					'Print "Importing Image: "+arg
+					'Print "   FileName: "+arg
+					'Debug()
+
+					EmitLine( "<img src=~q../images/"+arg+"~q alt=~qImage~q>" )
+
+					DocsMaker.AddImage(srcImage, dstImage)
+
+				Else
+					Print "DocsBuffer: '@image' Can't find file '"+arg+"'"
+					If _docs    Then Print "   Entity: "+_docs.DeclPath
+					If srcImage Then Print "   Expected location: "+srcImage
+					'Debug()
+				Endif
+
 			
 			Case "example"
 
@@ -144,7 +176,7 @@ Class DocsBuffer
 				
 				Local docs:=New DocsNode( ident,label,_docs,DocsType.Decl )
 				
-				Local buf:=New DocsBuffer( docs,_baseDir )
+				Local buf:=New DocsBuffer( docs, _parent, _module, _baseDir )
 				
 				buf.EmitLines( lines.Slice( i ) )
 				
@@ -196,9 +228,51 @@ Class DocsBuffer
 		Return markdown
 	End
 	
+	Method Debug()
+		Print "   DocsBuffer.Debug()"
+		Print "      BaseDir           : "+_baseDir
+		If _docs
+			Print "      _docs.Ident      : "+_docs.Ident
+			Print "      _docs.Label      : "+_docs.Label
+			Print "      _docs.FilePath   : "+_docs.FilePath
+			Print "      _docs.FilePathUrl: "+_docs.FilePathUrl
+			Print "      _docs.DeclPath   : "+_docs.DeclPath
+			Print "      _docs.DeclLink   : "+_docs.DeclLink
+		Else
+			Print "      _docs:DocsNode = Null"
+		Endif
+		If _parent
+			Print "      _parent.Ident      : "+_parent.Ident
+			Print "      _parent.Label      : "+_parent.Label
+			Print "      _parent.FilePath   : "+_parent.FilePath
+			Print "      _parent.FilePathUrl: "+_parent.FilePathUrl
+			Print "      _parent.DeclPath   : "+_parent.DeclPath
+			Print "      _parent.DeclLink   : "+_parent.DeclLink
+		Else
+			Print "      _docs:DocsNode = Null"
+		Endif
+		If _module
+			Print "      _module.name: "+_module.name
+			Print "      _module.srcPath: "+_module.srcPath
+			Print "      _module.ident: "+_module.ident
+			Print "      _module.baseDir: "+_module.baseDir
+			Print "      _module.buildDir: "+_module.buildDir
+			Print "      _module.outputDir: "+_module.outputDir
+			Print "      _module.cacheDir: "+_module.cacheDir
+			Print "      _module.hfileDir: "+_module.hfileDir
+			Print "      _module.cfileDir: "+_module.cfileDir
+			Print "      _module.afile: "+_module.afile
+			Print "      _module.rfile: "+_module.rfile
+		Else
+			Print "      _module:Module = Null"
+		Endif
+	End
+		
 	Private
 	
 	Field _docs:DocsNode
+	Field _parent:DocsNode
+	Field _module:Module
 	field _baseDir:String
 	Field _lines:=New StringStack
 	Field _label:String
