@@ -3,35 +3,9 @@ Namespace wide
 
 #Import "../assets/docsPriority.txt"
 
+' for EnumModules
+#Import "../dialog/UpdateModulesDialog"
 
-Private
-
-Function EnumModules:String[]()
-
-	Local mods:=New StringStack
-	
-	For Local f:=Eachin LoadDir( "modules" )
-	
-		Local dir:="modules/"+f+"/"
-		If GetFileType( dir )<>FileType.Directory Continue
-		
-		Local str:=LoadString( dir+"module.json" )
-		If Not str Continue
-		
-		Local obj:=JsonObject.Parse( str )
-		If Not obj Continue
-		
-		Local jname:=obj["module"]
-		If Not jname Or Not Cast<JsonString>( jname ) Continue
-		
-		mods.Push( jname.ToString() )
-	
-	Next
-	
-	Return mods.ToArray()
-End
-
-Public
 
 Class HelpTreeView Extends TreeViewExt
 
@@ -139,7 +113,7 @@ Class HelpTreeView Extends TreeViewExt
 		
 		_tree.Clear()
 		
-		For Local modname:=Eachin EnumModules()
+		For Local modname:=Eachin UpdateModulesDialog.EnumModules()
 			
 			'old doc system
 			'Local index:="modules/"+modname+"/docs/__PAGES__/index.js"

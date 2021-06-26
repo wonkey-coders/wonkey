@@ -156,16 +156,6 @@ Class UpdateModulesDialog Extends DialogExt
 		Return _cleanView.Checked
 	End
 	
-	
-	Private
-	
-	Field _modulesViews:=New Stack<CheckButton>
-	Field _targetsViews:=New Stack<CheckButton>
-	Field _releaseView:CheckButton,_debugView:CheckButton
-	Field _cleanView:CheckButton
-	
-	Global _modsNames:=New StringStack
-	
 	#rem MARK WAS HERE!!!!!
 	
 	EnumModules code lifted from wake.wx
@@ -241,4 +231,13 @@ Class UpdateModulesDialog Extends DialogExt
 		out.AddAll( EnumModules() )
 	End
 
+	Private
+	
+	Field _modulesViews:=New Stack<CheckButton>
+	Field _targetsViews:=New Stack<CheckButton>
+	Field _releaseView:CheckButton,_debugView:CheckButton
+	Field _cleanView:CheckButton
+	
+	Global _modsNames:=New StringStack
+	
 End

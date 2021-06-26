@@ -193,6 +193,8 @@ Function Main()
 	
 	ChangeDir( root )
 	
+	LoadEnv()
+	
 	'load Wide state
 	'
 	Local jobj:=JsonObject.Load( AppStateFile )
