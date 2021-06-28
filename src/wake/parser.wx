@@ -199,7 +199,9 @@ Class Parser
 				Case "using"
 					If Not fileScope Or decls.Length Error( "Usings must appear before any declarations in a file" )
 					Bump()
-					_usings.Push( ParseUsingIdent() )
+					Repeat
+						_usings.Push( ParseUsingIdent() )
+					Until CParse( "," )=False
 					ParseEol()
 					Continue
 				Case "public","private","protected","internal","extern"
@@ -942,22 +944,27 @@ Class Parser
 	
 		Local srcpos:=SrcPos
 		Local cond:Expr
+		Local block:Bool
 		
 		Try
 			Parse( "while" )
 			cond=ParseExpr()
-			ParseEol()
+			CParse( "do" )
+			block=CParseEol()
 		Catch ex:ParseEx
 			SkipToNextLine()
+			If Not block Return New WhileStmtExpr( cond,Null,srcpos,EndPos )
 		End
 		
-		Local stmts:=ParseStmts( True )
+		Local stmts:=ParseStmts( block )
 		
 		Try
-			If CParse( "end" )
-			    CParse( "while" )
-			Else
-				If Not CParse( "endwhile" ) Then Parse( "wend" )
+			If block
+				If CParse( "end" )
+				    CParse( "while" )
+				Else
+					If Not CParse( "endwhile" ) Then Parse( "wend" )
+				Endif
 			Endif
 			ParseEol()
 		Catch ex:ParseEx
@@ -1005,6 +1012,7 @@ Class Parser
 		Local init:Expr
 		Local cond:Expr
 		Local incr:Expr
+		Local block:Bool
 		
 		Local srcpos:=SrcPos
 		
@@ -1054,24 +1062,29 @@ Class Parser
 				If CParse( "step" ) incr=ParseExpr()
 			
 			Endif
-			
-			ParseEol()
-			
+
+			CParse( "do" )
+			block=CParseEol()
+						
 		Catch ex:ParseEx
 		
 			SkipToNextLine()
+
+			If Not block Then New ForStmtExpr( varIdent,varType,varExpr,kind,init,cond,incr,Null,srcpos,EndPos,vsrcpos,SrcPos )
 			
 		End
 		
 		Local vendpos:=SrcPos
 		
-		Local stmts:=ParseStmts( True )
-		
+		Local stmts:=ParseStmts( block )
+
 		Try
-			If CParse( "end" )
-				CParse( "for" )
-			Else
-				If Not CParse( "endfor" ) Then Parse( "next" )
+			If block
+				If CParse( "end" )
+					CParse( "for" )
+				Else
+					If Not CParse( "endfor" ) Then Parse( "next" )
+				Endif
 			Endif
 			ParseEol()
 		Catch ex:ParseEx

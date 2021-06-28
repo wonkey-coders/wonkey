@@ -32,7 +32,7 @@ Function InitToker:Void()
 	keyWords+="Var;Varptr;Ptr;"
 	keyWords+="Not;Mod;And;Or;Shl;Shr;End;"
 	keyWords+="If;Then;Else;Elseif;Endif;"
-	keyWords+="While;Wend;EndWhile;"
+	keyWords+="While;Wend;EndWhile;Do;"
 	keyWords+="Repeat;Until;Forever;"
 	keyWords+="For;To;Step;Next;EndFor;"
 	keyWords+="Select;Case;Default;EndSelect;"
