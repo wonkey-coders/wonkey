@@ -57,9 +57,13 @@ Const GL_FUNC_SUBTRACT:Int =                  $800A
 Const GL_MIN:Int =                            $8007
 Const GL_MAX:Int =                            $8008
 
-#rem wonkeydoc @hidden Color mask values.
+#rem wonkeydoc Color masks.
 
 Color masks are used with the [[Canvas.ColorMask]] property.
+
+Color masks are used to exclude specific color channels when drawing.
+
+You can combine several ColorMask members using the '|' (binary Or) operator.
 
 | ColorMask	| Descripten
 |:----------|:----------
@@ -67,6 +71,25 @@ Color masks are used with the [[Canvas.ColorMask]] property.
 | Green		| Green color mask.
 | Blue		| Blue color mask.
 | Alpha		| Alpha color mask.
+| Color     | Color channel mask (Red + Green + Blue).
+| All       | All channels (Red + Green + Blue + Alpha).
+
+@example
+'
+' Draw to Alpha color channel only
+'
+canvas.ColorMask = ColorMask.Alpha
+'
+' Draw to Alpha, Red, and Green color channels.
+'
+' The Blue color channel is excluded from drawing operations.
+'
+canvas.ColorMask = ColorMask.Alpha | ColorMask.Red | ColorMask.Green
+'
+' Draw to R,G,B color channels, excluding the Alpha color channel.
+'
+canvas.ColorMask = ColorMask.Color
+@end
 #end
 Enum ColorMask
 	None=0
@@ -75,6 +98,7 @@ Enum ColorMask
 	Blue=4
 	Alpha=8
 	All=15
+	Color=Red|Green|Blue
 End
 
 Enum DepthFunc
@@ -636,7 +660,7 @@ Class GraphicsDevice
 					glBlendFunc( GL_ONE,GL_ONE_MINUS_SRC_ALPHA )
 'jl added
 '------------------------------------------------------------
-				Case BlendMode.AlphaBlend | BlendMode.Alpha3d                                  ' Alpha3d
+				Case BlendMode.AlphaBlend                                                      ' AlphaBlend
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) 'alphablend
 '------------------------------------------------------------
 				Case BlendMode.Additive                                                        ' Additive

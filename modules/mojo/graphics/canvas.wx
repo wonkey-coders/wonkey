@@ -97,6 +97,7 @@ Class Canvas
 		Scissor=New Recti( 0,0,bounds.Size )
 		AmbientLight=Color.Black
 		BlendMode=BlendMode.Alpha
+		ColorMask=ColorMask.All
 		PointSize=0
 		LineWidth=0
 		LineSmoothing=False
@@ -1827,6 +1828,17 @@ Class Canvas
 
 		_blendMode=blendMode
 	End
+
+	#rem wonkeydoc The current drawing color mask.
+	#end
+	Property ColorMask:ColorMask()
+	
+		Return _colorMask
+	
+	Setter( colorMask:ColorMask )
+
+		_colorMask=colorMask
+	End
 	
 	#rem wonkeydoc TODO! Texture filtering enabled state.
 	
@@ -3255,6 +3267,7 @@ Class Canvas
 		Field shader:Shader
 		Field material:UniformBlock
 		Field blendMode:BlendMode
+		Field colorMask:ColorMask
 		Field primOrder:Int
 		Field primCount:Int
 		Field primOffset:Int
@@ -3303,6 +3316,7 @@ Class Canvas
 	
 	Field _retroMode:Bool
 	Field _blendMode:BlendMode
+	Field _colorMask:ColorMask
 	Field _font:Font
 	Field _alpha:Float
 	Field _color:Color
@@ -3416,6 +3430,7 @@ Class Canvas
 		_viewport=New Recti( 0,0,640,480 )
 		_ambientLight=Color.Black
 		_blendMode=BlendMode.Alpha
+		_colorMask=ColorMask.All
 		
 		_font=_defaultFont
 		
@@ -3612,6 +3627,7 @@ Class Canvas
 			_drawOp.shader=shader
 			_drawOp.material=material
 			_drawOp.blendMode=blendMode
+			_drawOp.colorMask=_colorMask
 			_drawOp.primOrder=primOrder
 			_drawOp.primCount=primCount
 			_drawOp.primOffset=_drawNV
@@ -3691,6 +3707,7 @@ Class Canvas
 		
 			_device.Shader=shader
 			_device.BlendMode=op.blendMode
+			_device.ColorMask=op.colorMask
 			_device.BindUniformBlock( op.material )
 
 			Select op.primOrder
