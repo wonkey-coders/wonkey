@@ -51,12 +51,6 @@ Enum BlendMode
 '------------------------------------------------------------
 End
 
-Const GL_FUNC_ADD:Int =                       $8006
-Const GL_FUNC_REVERSE_SUBTRACT:Int =          $800B
-Const GL_FUNC_SUBTRACT:Int =                  $800A
-Const GL_MIN:Int =                            $8007
-Const GL_MAX:Int =                            $8008
-
 #rem wonkeydoc Color masks.
 
 Color masks are used with the [[Canvas.ColorMask]] property.
@@ -661,6 +655,7 @@ Class GraphicsDevice
 'jl added
 '------------------------------------------------------------
 				Case BlendMode.AlphaBlend                                                      ' AlphaBlend
+
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) 'alphablend
 '------------------------------------------------------------
 				Case BlendMode.Additive                                                        ' Additive

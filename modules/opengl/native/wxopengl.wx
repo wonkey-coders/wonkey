@@ -82,6 +82,12 @@ Namespace opengl
 	
 #Endif
 
+Const GL_FUNC_ADD:Int =                       $8006
+Const GL_FUNC_REVERSE_SUBTRACT:Int =          $800B
+Const GL_FUNC_SUBTRACT:Int =                  $800A
+Const GL_MIN:Int =                            $8007
+Const GL_MAX:Int =                            $8008
+
 Extern
 
 Alias GLvoid:Void
