@@ -758,6 +758,7 @@ Class DocsMaker
 		buf.Emit( "##### Module "+_module.name )
 		
 		Local done:=New Map<NamespaceScope,Bool>,first:=True
+		Local moduleNamespaces := New StringList
 		
 		For Local fscope:=Eachin _module.fileScopes
 			
@@ -776,8 +777,13 @@ Class DocsMaker
 				buf.Emit( "|:---" )
 			Endif
 
-			buf.Emit( "| [["+scope.ntype.Name+"|"+scope.ntype.Name+"]]" )
+			moduleNamespaces.Add( scope.ntype.Name )
 
+		Next
+		
+		moduleNamespaces.Sort()
+		For Local name := Eachin moduleNamespaces
+			buf.Emit( "| [["+name+"|"+name+"]]" )
 		Next
 		
 		docs.Markdown=buf.Flush()
