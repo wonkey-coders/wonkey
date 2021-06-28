@@ -19,30 +19,15 @@ Only one BlendMode from the following table can be used at a time:
 | Subtractive | Subtractive blending. The paint color is subtracted from the canvas.
 | Multiply    | Multiply blending.
 
-Additional color-channel modifiers.
-
-| BlendMode Modifier | Description
-|:------------|:-----------
-| NoRed       | Disables drawing into the Red color channel
-| NoGreen     | Disables drawing into the Green color channel
-| NoBlue      | Disables drawing into the Blue color channel
-| NoAlpha     | Disables drawing into the Alpha color channel
-| NoColor     | Disables drawing into the Red, Green, and Blue color channel. Only the Alpha channel is used.
-
-You can combine any of the color-channel modifiers using the '|' operator (binary Or).
-Multiple modifiers can be used.
-
-When using the color-channel modifiers only, the blend mode defaults to BlendMode.Opaque.
-
 @example
 '
-' Use subtractive blending and do not write into the alpha color channel.
+' Use subtractive blending
 '
-canvas.BlendMode = BlendMode.Subtractive | BlendMode.NoAlpha
+canvas.BlendMode = BlendMode.Subtractive
 '
-' Use alpha blending and do not write into the red and green color channels.
+' Use alpha blending
 '
-canvas.BlendMode = BlendMode.Alpha | BlendMode.NoRed | BlendMode.NoGreen
+canvas.BlendMode = BlendMode.Alpha
 
 @end
 
@@ -63,17 +48,6 @@ Enum BlendMode
 '------------------------------------------------------------
 	Subtractive = 6
 	AlphaClip   = 7
-'------------------------------------------------------------
-
-
-' added by Danilo, 2021/06/22
-'------------------------------------------------------------
-' Additional modifiers
-	NoRed   = 1 Shl 10 ' 1024 - do not change the values, they are
-	NoGreen = 1 Shl 11 ' 2048 - used inside property BlendMode!
-	NoBlue  = 1 Shl 12 ' 4096
-	NoAlpha = 1 Shl 13 ' 8192
-	NoColor = NoRed|NoGreen|NoBlue
 '------------------------------------------------------------
 End
 
@@ -238,15 +212,9 @@ Class GraphicsDevice
 	Setter( blendMode:BlendMode )
 		If blendMode=_blendMode Return
 
-		If (Int(blendMode)&$FFFFFF00) And (Int(blendMode)&$FF)=0 Then blendMode |= BlendMode.Opaque
-
-		' check blend modes
-		If Not ((Int(blendMode)&$FF) = (Int(_blendMode)&$FF)) Then _dirty2|=Dirty.BlendMode
-
-		' check blend modes modifiers (color channels)
-		ColorMask = Cast<ColorMask>( ((Int(blendMode) Shr 10)~$F)&$F )
-
 		_blendMode=blendMode
+
+		_dirty2|=Dirty.BlendMode
 	End
 	
 	Property CullMode:CullMode()
@@ -657,18 +625,18 @@ Class GraphicsDevice
 		
 		If _dirty2 & Dirty.BlendMode
 						
-			If Cast<BlendMode>(Int(_blendMode)&$FF)=BlendMode.Opaque
+			If _blendMode=BlendMode.Opaque
 				glDisable( GL_BLEND )
 			Else
 				glEnable( GL_BLEND )
 				glBlendEquation(GL_FUNC_ADD)
 
-				Select Cast<BlendMode>(Int(_blendMode)&$FF)
+				Select _blendMode
 				Case BlendMode.Alpha                                                           ' Alpha
 					glBlendFunc( GL_ONE,GL_ONE_MINUS_SRC_ALPHA )
 'jl added
 '------------------------------------------------------------
-				Case BlendMode.Alpha3d                                                         ' Alpha3d
+				Case BlendMode.AlphaBlend | BlendMode.Alpha3d                                  ' Alpha3d
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) 'alphablend
 '------------------------------------------------------------
 				Case BlendMode.Additive                                                        ' Additive
