@@ -376,6 +376,41 @@ Class Pixmap Extends Resource
 
 		Return 0
 	End
+
+'-----------------------
+'jl added
+	#rem wonkeydoc Sets a pixel to a RGBA color using bytes or floats.
+	Sets the pixel at `x`, `y` to the color r,g,b,a.
+	
+	This method is only valid for use with PixelFormat.RGBA8.
+	
+	A runtime error will occur if the pixel coordinates lie outside of the pixmap area.
+
+	There are 2 overloads of the function: Using UByte (0-255) or Float (0.0-1.0) for the r,g,b,a color values.
+
+	@param x The x coordinate of the pixel.
+	@param y The y coordinate of the pixel.
+	@param r the red component of the pixel.
+	@param g the green component of the pixel.
+	@param b the blue component of the pixel.
+	@param a the alpha component of the pixel.
+	#end
+	Method SetPixelRGBA8( x:Int, y:Int, r:UByte, g:UByte, b:UByte, a:UByte )
+		Local p:=PixelPtr( x,y )
+		p[0] = r
+		p[1] = g
+		p[2] = b
+		p[3] = a
+	End Method
+	Method SetPixelRGBA8( x:Int, y:Int, r:Float, g:Float, b:Float, a:Float )
+		Local p:=PixelPtr( x,y )
+		p[0] = r * 255
+		p[1] = g * 255
+		p[2] = b * 255
+		p[3] = a * 255
+	End Method
+'-----------------------
+
 	
 	'Optimize!
 	'
