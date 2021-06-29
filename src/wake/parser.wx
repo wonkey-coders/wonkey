@@ -978,16 +978,17 @@ Class Parser
 	
 		Local srcpos:=SrcPos
 		Local cond:Expr
-		Local block:=False
+		Local block:Bool
 		
 		Try
 			Parse( "repeat" )
-			ParseEol()
+			block = CParseEol()
 		Catch ex:ParseEx
 			SkipToNextLine()
+			If Not block Return New RepeatStmtExpr( Null,Null,srcpos,EndPos )
 		End
 		
-		Local stmts:=ParseStmts( True )
+		Local stmts:=ParseStmts( block )
 		
 		Try
 			If CParse( "until" ) 
