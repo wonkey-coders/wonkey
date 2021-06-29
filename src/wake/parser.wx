@@ -300,6 +300,7 @@ Class Parser
 	Method ParseVars( decls:Stack<Decl>,flags:Int )
 	
 		Local kind:=Parse()
+		Local missingTypeAndInit := New Stack<VarDecl>
 		
 		Try
 			Repeat
@@ -314,20 +315,65 @@ Class Parser
 				decl.ident=ParseIdent()
 				
 				If flags & DECL_EXTERN
-					Parse( ":" )
-					decl.type=ParseType()
-					If CParse( "=" ) decl.symbol=ParseString()
+					If CParse( ":" )
+						decl.type=ParseType()
+						For Local missingDecl := Eachin missingTypeAndInit
+							missingDecl.type = decl.type
+						Next
+						missingTypeAndInit.Clear()
+						If CParse( "=" ) decl.symbol=ParseString()
+					Else
+						missingTypeAndInit.Add( decl )
+					Endif
 				Else If CParse( ":" )
 					decl.type=ParseType()
-					If CParse( "=" ) decl.init=ParseExpr()
+					For Local missingDecl := Eachin missingTypeAndInit
+						If Not missingDecl.type
+							missingDecl.type = decl.type
+						Else
+							Error("Type already initialized: '"+missingDecl.ident+"'")
+						Endif
+					Next
+					If CParse( "=" )
+						decl.init=ParseExpr()
+						For Local missingDecl := Eachin missingTypeAndInit
+							If Not missingDecl.init
+								missingDecl.init = decl.init
+							Endif
+						Next
+					Endif
+					missingTypeAndInit.Clear()
 				Else If CParse( ":=" )
 					decl.init=ParseExpr()
+					For Local missingDecl := Eachin missingTypeAndInit
+						If Not missingDecl.init
+							missingDecl.init = decl.init
+						Else
+							Error("Already initialized: '"+missingDecl.ident+"'")
+						Endif
+					Next
+					missingTypeAndInit.Clear()
+				Else If CParse( "=" )
+					decl.init=ParseExpr()
+					Error("Missing Type information for: '"+decl.ident+"'.")
+					missingTypeAndInit.Add( decl )
+				Else
+					missingTypeAndInit.Add( decl )
 				Endif
 				
 				decl.endpos=EndPos
 				decls.Push( decl )
 				
 			Until Not CParse( "," )
+			
+			If Not missingTypeAndInit.Empty
+				Local vnames:String
+				For Local vname := Eachin missingTypeAndInit
+					If vnames Then vnames += ", "
+					vnames += vname.ident
+				Next
+				Error("Missing Type information for: '"+vnames+"'")
+			Endif
 			
 			ParseEol()
 			
