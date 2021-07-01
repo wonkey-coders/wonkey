@@ -308,7 +308,15 @@ Class BuildProduct
 				'Print "      Name: "+imp.name
 				'Print "         afile: "+imp.afile
 				'Print "         rfile: "+imp.rfile
-				If Not GetFileType( imp.afile ) = FileType.File Or Not GetFileType( imp.rfile ) = FileType.File
+				Local afile := imp.afile
+
+				If opts.toolchain="msvc"
+					afile=StripExt(afile)+".lib"
+				Elseif opts.target="emscripten" And Int(GetEnv("WX_USE_EMSC_VERSION"))<>2
+					afile=StripExt(afile)+".bc"
+				Endif
+
+				If Not GetFileType( afile ) = FileType.File Or Not GetFileType( imp.rfile ) = FileType.File
 
 					If missingModules Then missingModules += ", "
 					missingModules += imp.name
