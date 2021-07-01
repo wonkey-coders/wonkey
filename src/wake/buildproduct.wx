@@ -92,6 +92,8 @@ Class BuildProduct
 		Next
 		
 		srcs.AddAll( SRC_FILES )
+
+		CheckModules()
 		
 		Build( srcs )
 	End
@@ -288,7 +290,56 @@ Class BuildProduct
 		End
 		
 	End
-		
+
+	Method CheckModules()
+		'Print "Checking Modules..."
+
+		'
+		' Check that required modules are available when building app or module
+		'    - the binary library: imp.afile
+		'    - the source header:  imp.rfile
+		'
+		If opts.productType="app" Or opts.productType="module"
+			Local missingModules:String
+			Local missingModulesCount:Int = 0
+
+			'Print "   Imports:"
+			For Local imp := Eachin imports
+				'Print "      Name: "+imp.name
+				'Print "         afile: "+imp.afile
+				'Print "         rfile: "+imp.rfile
+				If Not GetFileType( imp.afile ) = FileType.File Or Not GetFileType( imp.rfile ) = FileType.File
+
+					If missingModules Then missingModules += ", "
+					missingModules += imp.name
+					missingModulesCount += 1
+
+			 	Endif
+			Next
+
+			If missingModules
+				Local m := "module"                       ' "module"
+				If missingModulesCount > 1 Then m += "s"  ' "modules"
+
+				Local mmode:String                        ' module mode: "release" or "debug"
+				If opts.config="release" Then mmode = "release" Else mmode = "debug"
+
+				Throw New BuildEx( "~n- Missing "+m+" for target="+opts.target+", config="+mmode+": '"+
+				                   missingModules+"'.~n- Please rebuild required "+m+
+				                   " using: wake mods -clean -target="+opts.target+" -config="+mmode+" "+missingModules.Replace(",","") )
+			Endif
+		Endif
+
+		'Print "   OBJ_FILES:"
+		'For Local obj := Eachin OBJ_FILES
+		'	Print "      "+obj
+		'Next
+
+		'Print "   LIB_FILES:"
+		'For Local lib := Eachin LIB_FILES
+		'	Print "      "+lib
+		'Next
+	End
 End
 
 Class GccBuildProduct Extends BuildProduct
