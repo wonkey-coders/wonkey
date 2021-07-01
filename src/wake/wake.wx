@@ -270,27 +270,6 @@ Function MakeApp:Bool( args:String[] )
 	Print ""
 
 	New BuilderInstance( opts )
-	
-	'// check that all modules are built for this target
-	Local builtModsErrors:=False
-	cd=CurrentDir()
-	cd=cd.Replace( "\","/" )
-	Local target:=opts.target+" "+opts.config+" "+opts.arch+" "+opts.toolchain+(opts.threads ? " mx" Else "")
-	For Local module:=Eachin EnumModules()
-		Local builddir:=module+"/"+module+".buildv"+WAKE_VERSION+"/"+Builder.profileName
-		Local found:Bool = False
-		For Local moduleDir := Eachin Module.Dirs
-			If GetFileType(moduleDir+builddir)=FileType.Directory
-				found = True
-				Exit
-			Endif
-		Next
-		If Not found
-			Print "wake: warning: '"+module+"' module was not built for this target. Use 'wake mods -clean -target="+opts.target+" -config="+opts.config+" "+module+"' command before."
-			builtModsErrors = True
-		Endif
-	Next
-	If builtModsErrors Then Fail("missing built modules for target '("+target+")'.")
 
 	'pass1 	
 	Builder.Parse()
@@ -337,7 +316,7 @@ Function MakeMods:Bool( args:String[] )
 
 	args=ParseOpts( opts,args )
 
-	If Not args args=EnumModules()
+	If Not args Then args=EnumModules() Else args=OrderModuleDependancies( args, True )
 	
 	Local errs:=0
 	
@@ -707,16 +686,28 @@ Function EnumModules( out:StringStack,cur:String,src:String,deps:StringMap<Strin
 	out.Push( cur )
 End
 
-Function EnumModules:String[]()
+Function EnumModules:String[]( modsArray:String[] = Null )
 
 	Local mods:=New StringMap<StringStack>
-	
+
 	For Local moddir:=Eachin Module.Dirs
 		
 		For Local f:=Eachin LoadDir( moddir )
 		
 			Local dir:=moddir+f+"/"
 			If GetFileType( dir )<>FileType.Directory Continue
+			
+			' If modsArray is given, we use only modules within modsArray.
+			' Used for enum + sorting specific modules when using:
+			' wake mods mod1 mod2 mod3'.
+			'
+			If modsArray
+				Local found:Bool = False
+				For Local modname := Eachin modsArray
+					If modname = f Then found = True; Exit
+				Next
+				If Not found Then Continue
+			Endif
 			
 			Local str:=LoadString( dir+"module.json" )
 			If Not str Continue
@@ -751,6 +742,68 @@ Function EnumModules:String[]()
 	Next
 	
 	Return out.ToArray()
+End
+
+Function OrderModuleDependancies:String[]( modules:String[], sorted:Bool=True )
+	Local modsArr := New StringStack( modules ) ' input modules
+	Local modsArrNew := New StringStack         ' input modules + dependancies
+	
+	For Local moddir:=Eachin Module.Dirs
+		For Local f:=Eachin LoadDir( moddir )
+		
+			Local dir:=moddir+f+"/"
+			If GetFileType( dir )<>FileType.Directory Continue
+			
+			' check only modules within modsArr
+			If Not modsArr.Contains(f) Then Continue
+			
+			Local str:=LoadString( dir+"module.json" )
+			If Not str Continue
+			
+			Local obj:=JsonObject.Parse( str )
+			If Not obj
+				Print "Error parsing json:"+dir+"module.json"
+				Continue
+			Endif
+			
+			Local name:=obj["module"].ToString()
+			If name<>f Continue
+
+			If Not modsArrNew.Contains( name ) Then modsArrNew.Add( name )
+
+			Local jdeps:=obj["depends"]
+			If jdeps
+				For Local dep:=Eachin jdeps.ToArray()
+					Local depName := dep.ToString()
+					If Not modsArrNew.Contains( depName )
+						Local additionalDeps := OrderModuleDependancies( New String[](depName), False )
+						For Local additionalDepName := Eachin additionalDeps
+							If Not modsArrNew.Contains( additionalDepName ) Then modsArrNew.Add( additionalDepName )
+						Next
+					Endif
+				Next
+			Endif
+			
+ 		Next
+	Next
+	
+	' Always add module "wonkey"
+	If Not modsArrNew.Contains( "wonkey" ) Then modsArrNew.Add( "wonkey" )
+
+	If sorted=False Then Return modsArrNew.ToArray()
+
+	' Sort everything by dependancy
+	modsArrNew = New StringStack( EnumModules( modsArrNew.ToArray() ) )
+
+	Local outArr := New StringStack
+
+	For Local module := Eachin modsArrNew
+		If modsArr.Contains( module )
+			outArr.Push( module )
+		Endif
+	Next
+
+	Return outArr.ToArray()
 End
 
 Function LoadEnv:Bool( path:String )
