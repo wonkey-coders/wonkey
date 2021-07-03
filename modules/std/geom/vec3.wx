@@ -158,7 +158,75 @@ Struct Vec3<T>
 	Operator-:Vec3( s:T )
 		Return New Vec3( x-s,y-s,z-s )
 	End
-	
+
+	#rem wonkeydoc Multiplies Self by another vec3 or by a scalar.
+
+	The operator `*=` modifies Self.
+
+	#end
+	Operator*=( v:Vec3 )
+		x*=v.x
+		y*=v.y
+		z*=v.z
+	End
+
+	Operator*=( s:T )
+		x*=s
+		y*=s
+		z*=s
+	End
+
+	#rem wonkeydoc Divides Self by another vec3 or by a scalar.
+
+	The operator `/=` modifies Self.
+
+	#end
+	Operator/=( v:Vec3 )
+		x/=v.x
+		y/=v.y
+		z/=v.z
+	End
+
+	Operator/=( s:T )
+		x/=s
+		y/=s
+		z/=s
+	End
+
+	#rem wonkeydoc Adds another vec3 or a scalar to Self.
+
+	The operator `+=` modifies Self.
+
+	#end
+	Operator+=( v:Vec3 )
+		x+=v.x
+		y+=v.y
+		z+=v.z
+	End
+
+	Operator+=( s:T )
+		x+=s
+		y+=s
+		z+=s
+	End
+
+	#rem wonkeydoc Subtracts another vec3 or a scalar from Self.
+
+	The operator `-=` modifies Self.
+
+	#end
+	Operator-=( v:Vec3 )
+		x-=v.x
+		y-=v.y
+		z-=v.z
+	End
+
+	Operator-=( s:T )
+		x-=s
+		y-=s
+		z-=s
+	End
+
 	#rem wonkeydoc Returns the pitch of the vec3.
 	
 	Pitch is the angle of rotation, in radians, of the vec3 around the x axis.
