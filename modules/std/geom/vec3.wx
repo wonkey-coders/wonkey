@@ -44,7 +44,7 @@ Struct Vec3<T>
 	End
 	
 	Method New( x:T,v:Vec2<T> )
-		Self.x=z;Self.y=v.x;Self.z=v.y
+		Self.x=x;Self.y=v.x;Self.z=v.y
 	End
 
 	#Rem wonkeydoc Converts the vec3 to a vec3 of a different type or a printable string.
