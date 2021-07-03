@@ -78,7 +78,7 @@ Alias uintptr_t:ULong
 
 #rem wonkeydoc C/C++ sizeof()
 
-Returns the size of objects (variables, classes, structures)
+Returns the size of objects and types (variables, classes, structures).
 
 @example
 #Import "<libc>"
