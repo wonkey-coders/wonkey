@@ -75,6 +75,48 @@ Alias intptr_t:ULong
 #end
 Alias uintptr_t:ULong
 
+
+#rem wonkeydoc C/C++ sizeof()
+
+Returns the size of objects and types (variables, classes, structures).
+
+@example
+#Import "<libc>"
+#Import "<std>"
+
+Using libc
+Using std..
+
+Struct S
+	Field x:Int
+	Field y:Int
+End
+
+Function Main()
+	'
+	' Get the size of a variable
+	'
+	Local x:Int
+	Local y:Long
+	Local v1:Vec3<Float>
+	Local v2:Vec3<Double>
+	
+	Print "x: "+sizeof( x )
+	Print "y: "+sizeof( y )
+	Print "v1: "+sizeof( v1 )
+	Print "v2: "+sizeof( v2 )
+
+	'
+	' Get the size of a Type
+	'
+	Print "Struct S: "+sizeof<S>()
+
+	Print "Vec4<Float>:  "+sizeof< Vec4<Float>  >()
+	Print "Vec4<Double>: "+sizeof< Vec4<Double> >()
+End
+@end
+
+#end
 Function sizeof<T>:size_t( t:T )="sizeof"
 	
 Public

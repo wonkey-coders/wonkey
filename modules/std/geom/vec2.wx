@@ -118,7 +118,67 @@ Struct Vec2<T>
 	Operator-:Vec2( s:T )
 		Return New Vec2( x-s,y-s )
 	End
-	
+
+	#rem wonkeydoc Multiplies Self by another vector or by a scalar.
+
+	The operator `*=` modifies Self.
+
+	#end
+	Operator*=( v:Vec2 )
+		x*=v.x
+		y*=v.y
+	End
+
+	Operator*=( s:T )
+		x*=s
+		y*=s
+	End
+
+	#rem wonkeydoc Divides Self by another vector or by a scalar.
+
+	The operator `/=` modifies Self.
+
+	#end
+	Operator/=( v:Vec2 )
+		x/=v.x
+		y/=v.y
+	End
+
+	Operator/=( s:T )
+		x/=s
+		y/=s
+	End
+
+	#rem wonkeydoc Adds another vector or a scalar to Self.
+
+	The operator `+=` modifies Self.
+
+	#end
+	Operator+=( v:Vec2 )
+		x+=v.x
+		y+=v.y
+	End
+
+	Operator+=( s:T )
+		x+=s
+		y+=s
+	End
+
+	#rem wonkeydoc Subtracts another vector or a scalar from Self.
+
+	The operator `-=` modifies Self.
+
+	#end
+	Operator-=( v:Vec2 )
+		x-=v.x
+		y-=v.y
+	End
+
+	Operator-=( s:T )
+		x-=s
+		y-=s
+	End
+
 	#rem wonkeydoc The length of the vector.
 	#end
 	Property Length:Double()
