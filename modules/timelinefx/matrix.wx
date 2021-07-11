@@ -1,0 +1,109 @@
+#Rem
+	Copyright (c) 2017 Peter J Rigby
+	
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+	
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+	
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+#End
+
+Namespace timelinefx
+
+Using timelinefx..
+
+#Rem wonkeydoc A simple 2D matrix class
+#End
+Struct tlMatrix2
+	
+	Private
+
+	Field aa:Float, ab:Float
+	Field ba:Float, bb:Float
+	
+	Public
+	
+	#Rem wonkeydoc Create a new matrix
+		@return New matrix type
+	#End
+	Method New(aa:Float = 1, ab:Float = 0, ba:Float = 0, bb:Float = 1)
+		Self.aa = aa
+		Self.ab = ab
+		Self.ba = ba
+		Self.bb = bb
+	End
+	
+	#Rem wonkeydoc Set the matrix to a new set of values
+		Use this to prepare the matrix for a new transform. For example if you wanted to to rotate a vector, then you could do 
+		`matrix.set(cos(angle),sin(angle),-sin(angle),cos(angle))`
+		and then transform the vector with 
+		`matrix.transformvector(vector)`
+	#End
+	Method Set(_aa:Float = 1, _ab:Float = 0, _ba:Float = 0, _bb:Float = 1)
+		aa = _aa
+		ab = _ab
+		ba = _ba
+		bb = _bb
+	End
+	
+	#Rem wonkeydoc Transpose the matrix
+	#End
+	Method Transpose()
+		Local abt:Float = ab
+		ab = ba
+		ba = abt
+	End
+	
+	#Rem wonkeydoc Scale the matrix by a given amount
+	#End
+	Method Scale(s:Float)
+		aa *= s
+		ab *= s
+		ba *= s
+		bb *= s
+	End
+	
+	#Rem wonkeydoc Transfrom the matrix
+		Multiplies 2 matrices together
+		@return New transformed matrix
+	#End
+	Method Transform:tlMatrix2(m:tlMatrix2)
+		Local r:tlMatrix2 = New tlMatrix2
+		r.aa = aa * m.aa + ab * m.ba;r.ab = aa * m.ab + ab * m.bb
+		r.ba = ba * m.aa + bb * m.ba;r.bb = ba * m.ab + bb * m.bb
+		Return r
+	End
+	
+	#Rem wonkeydoc Transfrom a vector with the matrix
+		You can use this to transfrom a vector, rotating it, scaling it etc.
+		@return New transformed vector
+	#End
+	Method TransformVector:tlVector2(v:tlVector2)
+		Local tv:tlVector2 = New tlVector2(0, 0)
+		tv.x = v.x * aa + v.y * ba
+		tv.y = v.x * ab + v.y * bb
+		Return tv
+	End
+	
+	#Rem wonkeydoc Transfrom a point
+		This will transform a point (x,y) and appply the new coordinates into p[0] and p[1].
+		@return New coordinates for the tranformed point in p[0] and p[1]
+	#End
+	Method TransformPoint(x:Float, y:Float, p:Float[])
+		p[0] = x * aa + y * ba
+		p[1] = x * ab + y * bb
+	End
+
+End

@@ -1,0 +1,108 @@
+#rem
+	Copyright (c) 2012 Peter J Rigby
+	
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+	
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+	
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+#end
+
+Namespace timelinefx
+
+#rem wonkeydoc get the direction from 1 point to another.
+	@return Angle of difference
+#end
+Function GetDirection:Float(fromx:Float, fromy:Float, tox:Float, toy:Float)
+
+	Return ATan2(toy - fromy, tox - fromx) + 1.5708
+	
+End Function
+
+#rem wonkeydoc Get the difference between 2 angles.
+	Out of date! still uses degrees not radians
+#end
+Function AngleDifference:Float(Angle1:Float, Angle2:Float)
+	Local diff:Float = Abs((Angle1 + 180 - Angle2) Mod 360 - 180)
+	If diff > 180 Return Abs(diff - 360) Else Return diff
+	
+	Return 0
+End Function
+
+#rem wonkeydoc The distance between 1 point and another.
+	@return The distance between the 2 points
+#end
+Function GetDistance:Float(fromx:Float, fromy:Float, tox:Float, toy:Float)
+
+	Local w:Float = tox - fromx
+	Local h:Float = toy - fromy
+	
+	Return Sqrt(w * w + h * h)
+	
+End Function
+#rem wonkeydoc This gets the distance but doesn't perform a square root.
+	@return Can be useful if you just want to compare 2 distances without needed the accuracy
+#end
+Function GetDistanceFast:Float(fromx:Float, fromy:Float, tox:Float, toy:Float)
+
+	Local w:Float = tox - fromx
+	Local h:Float = toy - fromy
+	
+	Return w * w + h * h
+	
+End Function
+
+#rem wonkeydoc Count the number of bits that are set in a number.
+	For example if you want to know how many bits are set in %1001010101101 this function will return 7.
+#end
+Function CountBits:Int(bits:Int)
+	Local c:Int
+	While bits
+		bits&=bits - 1
+		c+=1
+	Wend
+	Return c
+End Function
+
+#rem wonkeydoc rounds a number to the nearest int.
+	@return Rounded Int
+#end
+Function Round:Int(v:Float)
+	Return Int(v + (Sgn(v) * 0.5))
+End Function
+
+#rem wonkeydoc Interpolate between 2 values.
+	This is the function used to achieve render tweening by taking the old and new values and interpolating between the 2
+#end
+Function TweenValues:Float(oldValue:Float, value:Float, tween:Float)
+	Return oldValue + (value - oldValue) * tween
+End Function
+
+#rem wonkeydoc Round up to the nearest power of 2.
+#end
+Function GetNearestPowerOf2:Int(n:Int)
+	Local t:Int = 1
+	While t<n
+		t*=2
+	Wend
+	Return t
+End Function
+
+#rem wonkeydoc Convert degrees to radians
+#end
+Function DegRad:Float(angle:Float)
+	Return (angle * Pi / 180)
+End

@@ -1,4 +1,4 @@
-﻿
+
 *wake-mx2*
 *wide-mx2*
 
@@ -41,7 +41,6 @@ __NEWPAGES__/
 # /modules/tinyaes
 # /modules/portmidi
 # /modules/png2polygon
-# /modules/timelinefx
 # /modules/box2d
 # /modules/box2dxt
 # /modules/steamworks

@@ -1,0 +1,863 @@
+#Rem
+	TimelineFX Module by Peter Rigby
+	
+	Copyright (c) 2012 Peter J Rigby
+	
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+	
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+	
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+#end
+
+Namespace timelinefx
+
+Using timelinefx..
+
+#Rem wonkeydoc @hidden
+#end
+Class tlEffectCoreComponent Extends tlComponent
+
+	Private
+	
+	Field effect:tlEffect
+	
+	Public
+	
+	Method New(name:String)
+		Super.New(name)
+	End
+	
+	Property Effect:tlEffect()
+		Return effect
+	Setter (v:tlEffect)
+		effect = v
+	End
+	
+	Method Destroy() Override
+		Parent = Null
+		effect = Null
+	End Method
+	
+	Method Update() Override
+		effect.Age = effect.ParticleManager.CurrentTime - effect.DoB
+		
+		If effect.EffectLength
+			If effect.Age > effect.EffectLength
+				effect.DoB = effect.ParticleManager.CurrentTime
+				effect.Age = 0
+			End If
+		End If
+		
+		Select effect.EffectClass
+			Case tlPOINT_EFFECT
+				effect.currentareawidth = 0
+				effect.currentareaheight = 0
+			Case tlLINE_EFFECT
+				effect.currentareaheight = 0
+				effect.HandleVector = New tlVector2(effect.HandleVector.x, 0)
+		End Select
+		
+		If effect.HandleCenter And effect.EffectClass <> tlPOINT_EFFECT
+			effect.HandleVector = New tlVector2(effect.CurrentAreaWidth / 2, effect.CurrentAreaHeight / 2)
+		ElseIf effect.HandleCenter
+			effect.HandleVector = New tlVector2
+		End If
+
+		effect.CurrentFrame = effect.Age / tp_LOOKUP_FREQUENCY
+		
+		'If effect._callback
+		'	If effect.Age >= effect._callbackage
+		'		effect._callback(effect._data, effect)
+		'		effect._callback = Null
+		'	End If
+		'End If
+		
+		If effect.ParticleCount Or effect.DoNotTimeOut
+			effect.IdleTime = 0
+		Else
+			effect.IdleTime += 1
+		End If
+		
+		If effect.ParentEmitter effect.Dying = effect.ParentEmitter.Dying
+		
+		If effect.IdleTime > effect.ParticleManager.IdleTimeLimit effect.Dead = True
+		
+		If effect.Dead
+			If Not effect.ChildCount
+				If effect.Parent
+					effect.Parent.RemoveChild(effect)
+				End If
+				effect.Destroy()
+			Else
+				effect.KillChildren()
+			End If
+		End If
+	End Method
+
+End
+
+#Rem wonkeydoc @hidden
+#end
+Class tlEmitterCoreComponent Extends tlComponent
+
+	Private
+
+	Field emitter:tlEmitter
+	Field Parenteffect:tlEffect
+	Field startedspawning:Int = False
+	Field counter:Float
+	Field pm:tlParticleManager
+	
+	'Temp spawning grid coords
+	Field gx:Float
+	Field gy:Float
+	
+	Public
+	
+	Method New(name:String)
+		Super.New(name)
+	End
+	
+	Method Destroy() Override
+		Parent = Null
+		emitter = Null
+		Parenteffect = Null
+		pm = Null
+	End Method
+	
+	Method InitSpawner(Emitter:tlEmitter)
+		emitter = Emitter
+		Parenteffect = emitter.ParentEffect
+		pm = Parenteffect.ParticleManager
+	End Method
+
+	#Rem
+		bbdoc:Insert your update code here
+	#end
+	Method Update() Override
+		
+		emitter.Dying = emitter.ParentEffect.Dying
+		
+		If Not emitter.TweenSpawns
+			emitter.Capture()
+			emitter.TweenSpawns = True
+		End If
+
+		If Not emitter.Dead And Not emitter.Dying
+			If emitter.Visible
+				SpawnParticles()
+			End If
+		Else
+			If Not emitter.ChildCount
+				emitter.Parent.RemoveChild(emitter)
+				emitter.Destroy()
+			Else
+				emitter.KillChildren()
+			End If
+		End If
+		
+	End Method
+	
+	Method SpawnParticles()
+		pm.particlesspawned+=1
+		Local qty:Float
+		Local tween:Float
+		Local intcounter:Int
+		Local e:tlParticle
+		Local rotvec:tlVector2
+		Local randomage:Int
+		Local cellsizew:Float
+		Local cellsizeh:Float
+		Local tx:Float
+		Local ty:Float
+		Local th:Float
+		Local maxhandle:Float
+		
+		qty = ( (emitter.currentamount + Rnd(emitter.currentamountvariation)) * Parenteffect.currentamount * Parenteffect.ParticleManager.GlobalAmountScale) / tp_CURRENT_UPDATE_TIME
+				
+		If Not emitter.SingleParticle
+			counter += qty
+		End If
+		intcounter = counter
+		
+		If intcounter >= 1 Or ( Not startedspawning And emitter.SingleParticle)
+			If Not startedspawning And emitter.SingleParticle
+				Select Parenteffect.EffectClass
+					Case tlPOINT_EFFECT
+						intcounter = 1
+					Case tlAREA_EFFECT
+						intcounter = Parenteffect.MaxGX * Parenteffect.MaxGY
+					Case tlLINE_EFFECT, tlELLIPSE_EFFECT
+						intcounter = Parenteffect.MaxGX
+				End Select
+			ElseIf emitter.SingleParticle And startedspawning
+				intcounter = 0
+			End If
+			For Local c:Float = 1 To intcounter
+				startedspawning = True
+				e = pm.GrabParticle(Parenteffect, emitter.Layer)
+				If emitter.UseEffectEmission
+					emitter.currentemissionrange = Parenteffect.CurrentEmissionRange
+					emitter.currentemissionangle = Parenteffect.CurrentEmissionAngle
+				End If
+				If e
+					'Set the date of birth
+					e.DoB = pm.CurrentTime
+					'Is the particle to remain relative to the effect
+					e.Relative = emitter.ParticleRelative
+					'add the child to the emitter
+					emitter.AddChild(e)
+					e.emitter = emitter
+					'e._name = emitter._name
+					'Set up the spawning coordinates based on the effect class type
+					Select Parenteffect.EffectClass
+						Case tlPOINT_EFFECT
+							If e.Relative
+								e.SetPosition(-Parenteffect.HandleVector.x, -Parenteffect.HandleVector.y)
+							Else
+								tween = c / intcounter
+								If Parenteffect.HandleCenter Or Parenteffect.HandleVector.x + Parenteffect.HandleVector.y = 0
+									e.LocalVector = New tlVector2(TweenValues(emitter.OldWorldVector.x, emitter.WorldVector.x, tween), TweenValues(emitter.OldWorldVector.y, emitter.WorldVector.y, tween))
+
+									If emitter.Zoom <> 1
+										e.WorldVector = e.LocalVector - Parenteffect.HandleVector * emitter.Zoom
+									Else
+										e.WorldVector = e.LocalVector - Parenteffect.HandleVector
+									End If
+								Else
+									e.LocalVector = Parenteffect.HandleVector.Mirror()
+									rotvec = Parenteffect.Matrix.TransformVector(New tlVector2(e.LocalVector.x, e.LocalVector.y))
+									e.LocalVector = New tlVector2(TweenValues(emitter.OldWorldVector.x, emitter.WorldVector.x, tween) + rotvec.x, TweenValues(emitter.OldWorldVector.y, emitter.WorldVector.y, tween) + rotvec.y)
+
+									If emitter.Zoom <> 1
+										e.WorldVector = e.LocalVector * emitter.Zoom
+									Else
+										e.WorldVector = e.LocalVector.Clone()
+									End If
+								End If
+							End If
+						Case tlAREA_EFFECT
+							If Parenteffect.EmitatPoints
+								If Parenteffect.SpawnDirection = -1
+									gx += Parenteffect.SpawnDirection
+									If gx < 0
+										gx = Parenteffect.MaxGX - 1
+										gy+=Parenteffect.SpawnDirection
+										If gy < 0
+											gy = Parenteffect.MaxGY - 1
+										End If
+									End If
+								End If
+								local x:float, y:float
+								If Parenteffect.MaxGX > 1
+									x = (gx / (Parenteffect.MaxGX - 1) * Parenteffect.currentareawidth) - Parenteffect.HandleVector.x
+								Else
+									x = -Parenteffect.HandleVector.x
+								End If
+								If Parenteffect.MaxGY > 1
+									y = (gy / (Parenteffect.MaxGY - 1) * Parenteffect.currentareaheight) - Parenteffect.HandleVector.y
+								Else
+									y = -Parenteffect.HandleVector.y
+								End If
+								e.LocalVector = New tlVector2(x, y)
+								If Parenteffect.SpawnDirection = 1
+									gx+=Parenteffect.SpawnDirection
+									If gx >= Parenteffect.MaxGX
+										gx = 0
+										gy+=Parenteffect.SpawnDirection
+										If gy >= Parenteffect.MaxGY
+											gy = 0
+										End If
+									End If
+								End If
+							Else
+								e.LocalVector = New tlVector2(Rnd(Parenteffect.currentareawidth) - Parenteffect.HandleVector.x, Rnd(Parenteffect.currentareaheight) - Parenteffect.HandleVector.y)
+							End If
+							If Not e.Relative
+								rotvec = Parenteffect.Matrix.TransformVector(New tlVector2(e.LocalVector.x, e.LocalVector.y))
+								If emitter.Zoom <> 1
+									e.LocalVector = Parenteffect.WorldVector + rotvec * emitter.Zoom
+								Else
+									e.LocalVector = Parenteffect.WorldVector + rotvec
+								End If
+							End If
+						Case tlELLIPSE_EFFECT
+							If Parenteffect.EmitatPoints
+								cellsizew = Parenteffect.currentareawidth / 2
+								cellsizeh = Parenteffect.currentareaheight / 2
+								
+								If Not Parenteffect.MaxGX
+									Parenteffect.MaxGX = 1
+								End If
+							
+								tx = cellsizew
+								ty = cellsizeh
+
+								gx+=Parenteffect.SpawnDirection
+								
+								If gx >= Parenteffect.MaxGX
+									gx = 0
+								ElseIf gx < 0
+									gx = Parenteffect.MaxGX - 1
+								End If
+								
+								th = gx * (Parenteffect.EllipseArc / Parenteffect.MaxGX) + Parenteffect.EllipseOffset
+								
+								e.LocalVector = New tlVector2(Sin(th) * tx - Parenteffect.HandleVector.x + tx, Cos(th) * ty - Parenteffect.HandleVector.y + ty)
+							Else
+								tx = Parenteffect.currentareawidth / 2
+								ty = Parenteffect.currentareaheight / 2
+							
+								th = Rnd(Parenteffect.EllipseArc) + Parenteffect.EllipseOffset
+								e.LocalVector = New tlVector2(Sin(th) * tx - Parenteffect.HandleVector.x + tx, Cos(th) * ty - Parenteffect.HandleVector.y + ty)
+							End If
+							If Not e.Relative
+								rotvec = Parenteffect.Matrix.TransformVector(New tlVector2(e.LocalVector.x, e.LocalVector.y))
+								If emitter.Zoom <> 1
+									e.LocalVector = Parenteffect.WorldVector + rotvec * emitter.Zoom
+								Else
+									e.LocalVector = Parenteffect.WorldVector + rotvec
+								End If
+							End If
+						Case tlLINE_EFFECT
+							If Not Parenteffect.TraverseEdge
+								If Parenteffect.EmitatPoints
+									If Parenteffect.SpawnDirection = -1
+										gx+=Parenteffect.SpawnDirection
+										If gx < 0
+											gx = Parenteffect.MaxGX - 1
+										End If
+									End If
+									local x:float
+									If Parenteffect.MaxGX > 1
+										x = (gx / (Parenteffect.MaxGX - 1) * Parenteffect.currentareawidth) - Parenteffect.HandleVector.x
+									Else
+										x = -Parenteffect.HandleVector.x
+									End If
+									e.LocalVector = New tlVector2(x, -Parenteffect.HandleVector.y)
+									If Parenteffect.SpawnDirection = 1
+										gx+=Parenteffect.SpawnDirection
+										If gx >= Parenteffect.MaxGX
+											gx = 0
+										End If
+									End If
+								Else
+									e.LocalVector = New tlVector2(Rnd(Parenteffect.currentareawidth) - Parenteffect.HandleVector.x, -Parenteffect.HandleVector.y)
+								End If
+							Else
+								e.Relative = True
+								If Parenteffect.DistanceSetByLife
+									e.LocalVector = Parenteffect.HandleVector.Mirror()
+								Else
+									If Parenteffect.EmitatPoints
+										
+										If Parenteffect.SpawnDirection = -1
+											gx+=Parenteffect.SpawnDirection
+											If gx < 0
+												gx = Parenteffect.MaxGX - 1
+											End If
+										End If
+										local x:float
+										If Parenteffect.MaxGX > 1
+											x = (gx / (Parenteffect.MaxGX - 1) * Parenteffect.currentareawidth) - Parenteffect.HandleVector.x
+										Else
+											x = -Parenteffect.HandleVector.x
+										End If
+										e.LocalVector = New tlVector2(x, -Parenteffect.HandleVector.y)
+										If Parenteffect.SpawnDirection = 1
+											gx+=Parenteffect.SpawnDirection
+											If gx >= Parenteffect.MaxGX
+												gx = 0
+											End If
+										End If
+									Else
+										e.LocalVector = New tlVector2(Rnd(Parenteffect.currentareawidth) - Parenteffect.HandleVector.x, -Parenteffect.HandleVector.y)
+									End If
+								End If
+							End If
+							'rotate
+							If Not e.Relative
+								rotvec = Parenteffect.Matrix.TransformVector(New tlVector2(e.LocalVector.x, e.LocalVector.y))
+								If emitter.Zoom <> 1
+									e.LocalVector = Parenteffect.WorldVector + rotvec * emitter.Zoom
+								Else
+									e.LocalVector = Parenteffect.WorldVector + rotvec
+								End If
+							End If
+					End Select
+					'Set the level of zoom
+					e.Zoom = emitter.Zoom
+					'Set the image
+					e.Sprite = emitter.Sprite
+					e.Frames = e.Sprite.Frames
+					e.SetHandle(emitter.HandleVector.x, emitter.HandleVector.y)
+					e.AutoCenter = emitter.HandleCenter
+					If emitter.HandleCenter
+						e.ImageBox.ReDimension(e.LocalVector.x, e.LocalVector.y, e.Sprite.Width, e.Sprite.Height)
+					Else
+						maxhandle = Max(Abs(emitter.HandleVector.x), Abs(emitter.HandleVector.y))
+						e.ImageBox.ReDimension(e.LocalVector.x, e.LocalVector.y, e.Sprite.Width + maxhandle, e.Sprite.Height + maxhandle)
+					End If
+					'Animation and framerate
+					e.Animating = emitter.Animating
+					e.AnimateOnce = emitter.AnimateOnce
+					e.FrameRate = emitter.framerate_component.c_nodes.changes[0]
+					If emitter.RandomStartFrame And e.Sprite.Frames > 1
+						e.CurrentFrame = Rnd(e.Sprite.Frames)
+					Else
+						e.CurrentFrame = emitter.Frame
+					End If
+					'Global Size
+					e.gsizex = Parenteffect.currentsizex
+					e.gsizey = Parenteffect.currentsizey
+					'Run spawn components
+					e.speed = 0
+					For Local component:tlSpawnComponent = EachIn emitter.SpawnComponents
+						component.Setup(e)
+					Next
+					maxhandle = Max(e.ScaleVector.x, e.ScaleVector.y)
+					e.ImageBox.SetScale(maxhandle, maxhandle)
+					'Direction and Rotation
+					If Parenteffect.TraverseEdge And Parenteffect.EffectClass = tlLINE_EFFECT
+						e.directionlocked = True
+						e.direction = 1.5707963268
+					End If
+					'Colour
+					If emitter.RandomColor
+						randomage = Rnd(emitter.red_component.c_nodes.lastframe)
+						e.Red = emitter.red_component.c_nodes.changes[randomage]
+						e.Green = emitter.green_component.c_nodes.changes[randomage]
+						e.Blue = emitter.blue_component.c_nodes.changes[randomage]
+					Else
+						e.Red = emitter.red_component.c_nodes.changes[0]
+						e.Green = emitter.green_component.c_nodes.changes[0]
+						e.Blue = emitter.blue_component.c_nodes.changes[0]
+					End If
+					'Alpha
+					e.Alpha = emitter.alpha_component.c_nodes.changes[0] * Parenteffect.CurrentAlpha
+					'blendMode
+					e.BlendMode = emitter.BlendMode
+					'Add any sub effects
+					For Local effect:tlEffect = EachIn emitter.Effects
+						Local subeffect:tlEffect = CopyEffect(effect, e.ParticleManager)
+						subeffect.DoNotTimeOut = emitter.ParentEffect.DoNotTimeOut
+						subeffect.ParentEmitter = emitter
+						e.AddChild(subeffect)
+					Next
+					e.WorldRotation = Parent.WorldRotation + e.LocalRotation
+					'Update the Parent effect's particle count
+					Parenteffect.ParticleCount += 1
+					'Construct the particle, adding all the neccessary components to it
+					e.corecomponent.emitter = emitter
+					'Capture
+					e.Capture()
+				End If
+			Next
+			counter -= intcounter
+		End If
+	End Method
+
+End
+
+#Rem wonkeydoc @hidden
+#end
+Class tlParticleCoreComponent Extends tlComponent
+	Field emitter:tlEmitter
+	Field particle:tlParticle
+	
+	Method Destroy() Override
+		Parent = Null
+		emitter = Null
+		particle = Null
+	End Method
+	
+	#Rem
+		bbdoc:Insert your update code here
+	#end
+	Method Update() Override
+		If emitter.Dying = 1 Or emitter.OneShot Or particle.Dead particle.releasesingleparticle = True
+		
+		particle.Age = particle.ParticleManager.CurrentTime - particle.DoB
+		
+		If Not particle.Age Return
+		
+		If emitter.SingleParticle And Not particle.releasesingleparticle
+			If particle.Age > particle.lifetime
+				particle.Age = 0
+				particle.DoB = particle.ParticleManager.CurrentTime
+			End If
+		End If
+		
+		'update speed
+		If particle.speed
+			Local pixelspersecond:Float = particle.speed / tp_CURRENT_UPDATE_TIME
+			particle.speed_vec = New tlVector2(Sin(particle.direction) * pixelspersecond, -Cos(particle.direction) * pixelspersecond)
+			If particle.Relative
+				particle.LocalVector += particle.speed_vec
+			Else
+				If emitter.Zoom <> 1
+					particle.LocalVector = particle.LocalVector + particle.speed_vec * emitter.Zoom
+				Else
+					particle.LocalVector = particle.LocalVector + particle.speed_vec
+				End If
+			End If
+		End If
+		
+		'update the gravity
+		If particle.weight
+			If particle.Relative
+				particle.gravity += particle.weight / tp_CURRENT_UPDATE_TIME
+				particle.LocalVector = New tlVector2(particle.LocalVector.x, particle.LocalVector.y + particle.gravity / tp_CURRENT_UPDATE_TIME)
+			Else
+				If emitter.Zoom <> 1
+					particle.gravity += particle.weight / tp_CURRENT_UPDATE_TIME
+					particle.LocalVector = New tlVector2(particle.LocalVector.x, particle.LocalVector.y + ((particle.gravity / tp_CURRENT_UPDATE_TIME) * emitter.Zoom))
+				Else
+					particle.gravity += particle.weight / tp_CURRENT_UPDATE_TIME
+					particle.LocalVector = New tlVector2(particle.LocalVector.x, particle.LocalVector.y + particle.gravity / tp_CURRENT_UPDATE_TIME)
+				End If
+			End If
+		End If
+		
+		'update spin
+		If emitter.LockAngle And emitter.AngleType = tlANGLE_ALIGN
+			If particle.directionlocked
+				particle.LocalRotation = emitter.ParentEffect.WorldRotation + emitter.WorldRotation + emitter.AngleOffset
+			Else
+				If particle.weight Or particle.direction
+					If particle.OldWorldVector.x <> particle.WorldVector.x And particle.OldWorldVector.y <> particle.WorldVector.y
+						particle.LocalRotation = -GetDirection(particle.OldWorldVector.x, particle.OldWorldVector.y, particle.WorldVector.x, particle.WorldVector.y) + emitter.AngleOffset
+						If Abs(particle.OldLocalRotation - particle.LocalRotation) > 3.14159
+							If particle.OldLocalRotation > particle.LocalRotation particle.OldLocalRotation -= 6.28319 Else particle.OldLocalRotation += 6.28319
+						End If
+					End If
+				Else
+					particle.LocalRotation = particle.direction + emitter.WorldRotation + emitter.AngleOffset
+				End If
+			End If
+		Else
+			particle.LocalRotation -= particle.spin
+		End If
+		
+		'If dead=2 then that means its reached the end of the line (in kill mode) for line traversal effects
+		If particle.Age > particle.lifetime Or particle.Dead = 2
+			particle.Dead = True
+			If Not particle.ChildCount
+				particle.ParticleManager.ReleaseParticle(particle)
+				emitter.ParentEffect.ParticleCount -= 1
+'				If emitter.groupparticles
+'					emitter.ParentEffect.inuse[layer].Remove Self
+'				End If
+				particle.Parent.RemoveChild(particle)
+				particle.Reset()
+			Else
+				emitter.ControlParticle(particle)
+				particle.KillChildren()
+			End If
+			
+			Return
+		End If
+		
+		emitter.ControlParticle(particle)
+		
+	End Method
+
+End
+
+#Rem wonkeydoc @hidden
+#end
+Class tlGraphComponent Extends tlComponent
+
+	Field nodes:List<tlAttributeNode>
+	Field c_nodes:tlEmitterArray
+	Field minvalue:Float
+	Field maxvalue:Float
+	Field graphtype:Int
+	Field emitter:tlEmitter
+	Field effect:tlEffect
+	
+	Method Destroy() Override
+		Parent = Null
+		emitter = Null
+		effect = Null
+		nodes = Null
+	End Method
+
+	Method New()
+		nodes = New List<tlAttributeNode>
+	End Method
+	
+	Method New(name:String)
+		Name = name
+		nodes = New List<tlAttributeNode>
+	End Method
+	
+	Method ControlParticle(p:tlParticle) Virtual
+	End Method
+	
+	Method Update() Override
+	End
+	
+	Property GraphType:Int()
+		Return graphtype
+	End
+	
+	Method InitGraph(minvalue:Float, maxvalue:Float, nodelist:List<tlAttributeNode>, GraphType:Int = tlNORMAL_GRAPH, effect:tlEffect = Null, emitter:tlEmitter = Null)
+		Self.minvalue = minvalue
+		Self.maxvalue = maxvalue
+		nodes = nodelist
+		Self.effect = effect
+		Self.emitter = emitter
+		graphtype = GraphType
+	End Method
+	
+	Method Interpolate:Float(age:Int)
+		Local lastv:Float
+		Local lastf:Float
+		Local p:Float
+		Local lastec:tlAttributeNode
+		For Local a:tlAttributeNode = EachIn nodes
+			If age < a.frame
+				p = (age - lastf) / (a.frame - lastf)
+				Local BezierValue:Float = GetBezierValue(lastec, a, p, minvalue, maxvalue)
+				If BezierValue
+					Return BezierValue
+				Else
+					Return lastv - p * (lastv - a.value)
+				End If
+			End If
+			lastv = a.value
+			lastf = a.frame - 1
+			lastec = a
+		Next
+		Return lastv
+	End Method
+	Method Interpolate_Overtime:Float(age:Int, lifetime:Float, debug:Int = False)
+		Local lastv:Float
+		Local lastf:Float
+		Local frame:Float
+		Local p:Float
+		Local lastec:tlAttributeNode
+		For Local a:tlAttributeNode = EachIn nodes
+			frame = a.frame * lifetime
+			If age < frame
+				p = (age - lastf) / (frame - lastf)
+				Local BezierValue:Float = GetBezierValue(lastec, a, p, minvalue, maxvalue)
+				If BezierValue
+					Return BezierValue
+				Else
+					Return lastv - p * (lastv - a.value)
+				End If
+			End If
+			lastv = a.value
+			lastf = frame - 1
+			lastec = a
+		Next
+		Return lastv
+	End Method
+	Method Compile()
+		If nodes.Count()
+			Local lastec:tlAttributeNode = Cast<tlAttributeNode>(nodes.Last)
+			Local frame:Int
+			Local age:Int
+			While age < lastec.frame
+				frame+=1
+				age+=tlLOOKUP_FREQUENCY
+			Wend
+			c_nodes = New tlEmitterArray(frame + 1)
+			frame = 0
+			age = 0
+			While age < lastec.frame
+				c_nodes.changes[frame] = Interpolate(age)
+				frame+=1
+				age+=tlLOOKUP_FREQUENCY
+			Wend
+			c_nodes.changes[frame] = lastec.value
+		Else
+			c_nodes = New tlEmitterArray(1)
+		End If
+	End Method
+	Method GetLongestLife:Float()
+		Local longestlife:Float
+		Local Parenteffect:tlEffect = emitter.ParentEffect
+		Local c_life_lastframe:Float
+		Local c_lifevariation_lastframe:Float
+		Local Parenteffect_c_life_lastframe:Float
+		Local Parenteffectlife:tlEffectComponent_Life = Cast<tlEffectComponent_Life>(Parenteffect.GetComponent("Life"))
+		Local lifecomponent:tlEC_Life = Cast<tlEC_Life>(emitter.GetComponent("Life"))
+		Local lifevariationcomponent:tlEC_LifeVariation = Cast<tlEC_LifeVariation>(emitter.GetComponent("LifeVariation"))
+		If lifecomponent
+			c_life_lastframe = lifecomponent.c_nodes.lastframe
+		Else
+			c_life_lastframe = 0
+		End If
+		If lifevariationcomponent
+			c_lifevariation_lastframe = lifevariationcomponent.c_nodes.lastframe
+		Else
+			c_lifevariation_lastframe = 0
+		End If
+		If lifevariationcomponent
+			Parenteffect_c_life_lastframe = Parenteffectlife.c_nodes.lastframe
+		Else
+			Parenteffect_c_life_lastframe = 0
+		End If
+		If c_life_lastframe >= c_lifevariation_lastframe And c_life_lastframe >= Parenteffect_c_life_lastframe
+			For Local frame:Int = 0 To c_life_lastframe
+				Local templife:Float
+				If lifevariationcomponent Then templife = lifevariationcomponent.Get(frame) Else templife = emitter.currentlifevariation
+				If lifecomponent Then templife+=lifecomponent.Get(frame) Else templife+=emitter.currentlife
+				If Parenteffectlife Then templife *= Parenteffectlife.Get(frame) Else templife *= Parenteffect.currentlife
+				If templife > longestlife
+					longestlife = templife
+				End If
+			Next
+		End If
+		If c_lifevariation_lastframe >= c_life_lastframe And c_lifevariation_lastframe >= Parenteffect_c_life_lastframe
+			For Local frame:Int = 0 To c_lifevariation_lastframe
+				Local templife:Float
+				If lifevariationcomponent Then templife = lifevariationcomponent.Get(frame) Else templife = emitter.currentlifevariation
+				If lifecomponent Then templife+=lifecomponent.Get(frame) Else templife+=emitter.currentlife
+				If Parenteffectlife Then templife*=Parenteffectlife.Get(frame) Else templife*=Parenteffect.currentlife
+				If templife > longestlife
+					longestlife = templife
+				End If
+			Next
+		End If
+		If Parenteffect_c_life_lastframe >= c_life_lastframe And Parenteffect_c_life_lastframe >= c_lifevariation_lastframe
+			For Local frame:Int = 0 To Parenteffect_c_life_lastframe
+				Local templife:Float
+				If lifevariationcomponent Then templife = lifevariationcomponent.Get(frame) Else templife = emitter.currentlifevariation
+				If lifecomponent Then templife+=lifecomponent.Get(frame) Else templife+=emitter.currentlife
+				If Parenteffectlife Then templife*=Parenteffectlife.Get(frame) Else templife*=Parenteffect.currentlife
+				If templife > longestlife
+					longestlife = templife
+				End If
+			Next
+		End If
+		Return longestlife
+	End Method
+	Method Compile_Overtime(debug:Int = False)
+		If nodes.Count() > 1
+			Local lastec:tlAttributeNode = Cast<tlAttributeNode>(nodes.Last)
+			Local frame:Int
+			Local age:Int
+			Local longestlife:Int = GetLongestLife()
+			While age < longestlife
+				frame+=1
+				age+=tlLOOKUP_FREQUENCY_OVERTIME
+			Wend
+			c_nodes = New tlEmitterArray(frame + 1)
+			frame = 0
+			age = 0
+			While age < longestlife
+				c_nodes.changes[frame] = Interpolate_Overtime(age, longestlife, debug)
+				frame+=1
+				age+=tlLOOKUP_FREQUENCY_OVERTIME
+			Wend
+			c_nodes.changes[frame] = lastec.value
+			c_nodes.life = longestlife
+		Else
+			c_nodes = New tlEmitterArray(1)
+			If nodes.Count()
+				c_nodes.changes[0] = Cast<tlAttributeNode>(nodes.First).value
+			End If
+		End If
+	End Method
+	Method Get:Float(frame:Int)
+		If frame <= c_nodes.lastframe
+			Return c_nodes.changes[frame]
+		End If
+		Return c_nodes.changes[c_nodes.lastframe]
+	End Method
+	Method Get_Overtime:Float(age:Float, lifetime:Float)
+		Local frame:Int
+		If lifetime
+'			If tlLOOKUP_FREQUENCY_OVERTIME = 1
+				frame = age / lifetime * c_nodes.life
+'			Else
+'				frame = ((age / lifetime) * c_nodes.life) / tlLOOKUP_FREQUENCY_OVERTIME
+'			End If
+		End If
+		If frame <= c_nodes.lastframe
+			Return c_nodes.changes[frame]
+		End if
+		Return c_nodes.changes[c_nodes.lastframe]
+	End Method
+	Function GetBezierValue:Float(lastec:tlAttributeNode, a:tlAttributeNode, t:Float, ymin:Float, ymax:Float)
+		If lastec
+			If a.isCurve
+				If lastec.isCurve
+					Local p0:tlPoint = New tlPoint(lastec.frame, lastec.value)
+					Local p1:tlPoint = New tlPoint(lastec.c1x, lastec.c1y)
+					Local p2:tlPoint = New tlPoint(a.c0x, a.c0y)
+					Local p3:tlPoint = New tlPoint(a.frame, a.value)
+					Local value:tlPoint = GetCubicBezier(p0, p1, p2, p3, t, ymin, ymax)
+					Return value.y
+				Else
+					Local p0:tlPoint = New tlPoint(lastec.frame, lastec.value)
+					Local p1:tlPoint = New tlPoint(a.c0x, a.c0y)
+					Local p2:tlPoint = New tlPoint(a.frame, a.value)
+					Local value:tlPoint = GetQuadBezier(p0, p1, p2, t, ymin, ymax)
+					Return value.y
+				End If
+			ElseIf lastec.isCurve
+				Local p0:tlPoint = New tlPoint(lastec.frame, lastec.value)
+				Local p1:tlPoint = New tlPoint(lastec.c1x, lastec.c1y)
+				Local p2:tlPoint = New tlPoint(a.frame, a.value)
+				Local value:tlPoint = GetQuadBezier(p0, p1, p2, t, ymin, ymax)
+				Return value.y
+			Else
+				Return 0
+			End If
+		End if
+		Return 0
+	End Function
+	Method CopyToClone(copy:tlGraphComponent, Effect:tlEffect, Emitter:tlEmitter, CopyNodes:Int = False) Virtual
+		copy.minvalue = minvalue
+		copy.maxvalue = maxvalue
+		copy.c_nodes = c_nodes
+		copy.Name = Name
+		copy.effect = Effect
+		copy.emitter = Emitter
+		If CopyNodes
+			copy.nodes = CopyAttributeNodes(nodes)
+		End If
+	End Method
+	Method Clone:tlGraphComponent(Effect:tlEffect = Null, Emitter:tlEmitter = Null, CopyNodes:Int = False) Virtual
+		Local copy:tlGraphComponent = New tlGraphComponent
+		CopyToClone(copy, Effect, Emitter, CopyNodes)
+		Return copy
+	End Method
+End
+
+#Rem wonkeydoc @hidden
+#end
+Function CopyAttributeNodes:List<tlAttributeNode>(e:List<tlAttributeNode>)
+	Local ec:List<tlAttributeNode> = New List<tlAttributeNode>
+	For Local ecs:tlAttributeNode = EachIn e
+		Local ectemp:tlAttributeNode = New tlAttributeNode
+		ectemp.frame = ecs.frame
+		ectemp.value = ecs.value
+		ectemp.isCurve = ecs.isCurve
+		ectemp.c0x = ecs.c0x
+		ectemp.c0y = ecs.c0y
+		ectemp.c1x = ecs.c1x
+		ectemp.c1y = ecs.c1y
+		ec.AddLast(ectemp)
+	Next
+	Return ec
+End Function
