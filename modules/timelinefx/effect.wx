@@ -1,0 +1,926 @@
+#Rem
+	TimelineFX Module by Peter Rigby
+	
+	Copyright (c) 2017 Peter J Rigby
+	
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+	
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+	
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+#End
+
+Namespace timelinefx
+
+Using timelinefx..
+
+#Rem wonkeydoc The effect class which is the main parent class for emitters.
+	Effect types are the main containers for emitters and has a set of global attributes that can affect any emitters it stores.
+	The basic entity structure of an effect is: Effect -> Emitter(s) -> Particle(s)
+#End
+Class tlEffect Extends tlFXObject
+	
+	Private
+	
+	'Effect Settings:
+	Field _class:Int
+	Field emitatpoints:Int
+	Field maxgx:Int
+	Field maxgy:Int
+	Field emission_type:Int
+	Field ellipsearc:Float
+	Field ellipseoffset:Float
+	Field effectlength:Int
+	Field uniform:Int
+	Field traverseedge:Int
+	Field endbehaviour:Int
+	Field distancesetbylife:Int
+	Field emissiontype:Int
+	Field reversespawndirection:Int
+	
+	'Animation Properties
+	Field animwidth:Int
+	Field animheight:Int
+	Field animx:Int
+	Field animy:Int
+	Field seed:Int
+	Field looped:Int
+	Field frameoffset:Int
+	Field animzoom:Float
+	
+	'Overide flags
+	Field overrideareasize:Int
+	Field overrideemissionangle:Int
+	Field overrideemissionrange:Int
+	Field overrideangle:Int
+	Field overridelife:Int
+	Field overrideamount:Int
+	Field overridevelocity:Int
+	Field overridespin:Int
+	Field overridesizex:Int
+	Field overridesizey:Int
+	Field overrideweight:Int
+	Field overridealpha:Int
+	Field overridestretch:Int
+	Field overrideglobalzoom:Int
+	
+	'Other temp settings
+	Field spawndirection:Int
+	
+	'Hierarchy
+	Field parentemitter:tlEmitter
+	
+	'Map
+	Field directory:StringMap<tlGameObject>
+	
+	'Particle Management
+	Field pm:tlParticleManager
+	Field particlecount:Int
+	Field donottimeout:Int
+	
+	'Idle counter
+	Field idletime:Int
+	
+	Field data:Object
+	
+	Field effectlayer:Int
+	
+	Public
+	
+	#Rem wonkeydoc A function to call on every update of the effect
+		You can set this to any function so that you can apply extra scripting to the effect
+	#End
+	Field OnUpdate:Void()
+	
+	'Temp attribute values
+	'There's no current angle becuase that sets the game object's local_rotation field
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentsizex:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentsizey:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentvelocity:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentspin:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentweight:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentareawidth:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentareaheight:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentalpha:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentemissionangle:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentemissionrange:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentstretch:Float
+	#Rem wonkeydoc @hidden
+	#End
+	Field currentglobalzoom:Float
+	
+	#Rem wonkeydoc Constructor for the effect. Use this to create a new effect from scratch.
+	#End
+	Method New()
+		Super.New()
+		Local core:tlEffectCoreComponent = New tlEffectCoreComponent("Core")
+		core.Effect = Self
+		ImageBox = CreateBox(0, 0, 1, 1)
+		AddComponent(core)
+		DoNotRender = True
+	End
+	
+	#Rem wonkeydoc @hidden
+	#End
+	Property EffectLayer:Int()
+		Return effectlayer
+	Setter(v:Int)
+		effectlayer = v
+	End
+	#Rem wonkeydoc Get the Particle number of particles within this effect.
+	#End
+	Property ParticleCount:Int() 
+		Return particlecount
+	Setter(v:Int)
+		particlecount = v	
+	End
+	#Rem wonkeydoc Get/Set whehter or not the effect times out
+		By default, if an effect is no longer spawning particles, it will automatically be removed from the [[tlParticleManager]]. If you don't want this behaviour though, you 
+		can can this to true to prevent it.
+	#End
+	Property DoNotTimeOut:Int() 
+		Return donottimeout
+	Setter(v:Int)
+		donottimeout = v	
+	End
+	#Rem wonkeydoc Set the amount of time before idle effects are deleted from the particle manager
+		Any effects that have no active particles being drawn on the screen will be automatically removed from the particle manager after a given time set by this function.
+	#End
+	Property IdleTime:Int() 
+		Return idletime
+	Setter(v:Int)
+		idletime = v	
+	End
+
+	#Rem wonkeydoc Get the effect directory
+		The directory is a string map that contains a reference to all of the emitters and sub-effects in the effect, so you can access them and change them as you need.
+	#End
+	Property Directory:StringMap<tlGameObject>() 
+		Return directory
+	Setter(v:StringMap<tlGameObject>)
+		directory = v	
+	End
+	#Rem wonkeydoc Retrieve an effect from the directory of the effect
+		Use this to get an effect from the effect directory by passing the name of the effect you want. Example
+		@example 
+		local explosion:=MyEffectsLibrary.Geteffect("explosion")
+		@end
+		All effects and emitters are stored using a directory like path structure so to get at sub effects you can do:
+		@example
+		local explosion:=MyEffectsLibrary.Geteffect("Effect/Emitter/Sub Effect/Another Emitter/A deeper sub effect")
+		@end
+		Note that you should always use forward slashes.
+		@param name The name of the effect
+		@return tlEffect
+	#End
+	Method GetEffect:tlEffect(name:String)
+		Return Cast<tlEffect>(directory.Get(name.ToUpper()))
+	End Method
+	#Rem wonkeydoc Retrieve an emitter from the directory of the effect
+		Use this To get an emitter from the effect directory by passing the name of the emitter you want. All effects And emitters are
+		stored using a map with a directory like path structure. So retrieving an emitter called blast wave inside an effect called explosion
+		would be done like so:
+		@example
+		local blastwave:=MyEffectsLibrary.GetEmitter("explosion/blast wave")
+		@end
+		Note that you should always use forward slashes.
+		@param name the name of the emitter
+		@return tlEmitter
+	#End
+	Method GetEmitter:tlEmitter(name:String)
+		Return Cast<tlEmitter>(directory.Get(name.ToUpper()))
+	End Method
+
+	#Rem wonkeydoc @hidden
+	#End
+	Method AddEffectToDirectory(e:tlEffect)
+		directory.Add(e.Path.ToUpper(), e)
+		For Local em:tlGameObject = EachIn e.GetChildren()
+			AddEmitterToDirectory(Cast<tlEmitter>(em))
+		Next
+	End
+
+	#Rem wonkeydoc @hidden
+	#End
+	Method AddEmitterToDirectory(e:tlEmitter)
+		directory.Add(e.Path, e)
+		For Local ef:tlGameObject = EachIn e.Effects
+			AddEffectToDirectory(Cast<tlEffect>(ef))
+		Next
+	End
+
+	#Rem wonkeydoc @hidden
+	#End
+	Method AddEffect(e:tlEffect)
+		directory.Add(e.Path.ToUpper(), e)
+		For Local em:tlGameObject = EachIn e.GetChildren()
+			AddEmitter(Cast<tlEmitter>(em))
+		Next
+	End
+
+	#Rem wonkeydoc @hidden
+	#End
+	Method AddEmitter(e:tlEmitter)
+		directory.Add(e.Path.ToUpper(), e)
+		For Local ef:tlGameObject = EachIn e.Effects
+			AddEffect(Cast<tlEffect>(ef))
+		Next
+	End
+
+	#Rem wonkeydoc Get the parent emitter of the effect
+	#End
+	Property ParentEmitter:tlEmitter() 
+		Return parentemitter
+	Setter(v:tlEmitter)
+		parentemitter = v
+	End
+
+	#Rem wonkeydoc The effect class, being one of tlPOINT_EFFECT, tlLINE_EFFECT, tlAREA_EFFECT, tlELLIPSE_EFFECT
+	#End
+	Property EffectClass:Int() 
+		Return _class
+	Setter(v:Int)
+		_class = v
+	End
+	#Rem wonkeydoc Sets whether the effect should emit at points
+		If set to true then the particles within the effect will emit from evenly spaced points with the area, line or ellipse. The number of points is determined
+		by [[MaxGX]] and [[MaxGY]]. The value is not applicable to point effects.
+	#End
+	Property EmitatPoints:Int() 
+		Return emitatpoints
+	Setter(v:Int)
+		emitatpoints = v
+	End
+	#Rem wonkeydoc Get/Set maximum width grid points
+	In area and ellipse effects this value represents the number of grid points along the width, in the case of area and line effect, or around the 
+	circumference, in the case of ellipses.
+	#end
+	Property MaxGX:Int() 
+		Return maxgx
+	Setter(v:Int)
+		maxgx = v
+	End
+	#Rem wonkeydoc Get/Set maximum height grid points
+	In area and ellipse effects this value represents the number of grid points along the height, in the case of area and line effect, or around the 
+	circumference, in the case of ellipses.
+	#end
+	Property MaxGY:Int() 
+		Return maxgy
+	Setter(v:Int)
+		maxgy = v
+	End
+	#Rem wonkeydoc Set the emission type
+	In area, line and ellipse effects the emission type determines the direction that the particles travel once spawned. Use the following consts to determine
+	the direction:
+	* tlEMISSION_INWARDS: Particles will emit towards the handle of the effect.
+	* tlEMISSION_OUTWARDS: Particles will emit away from the handle of the effect.
+	* tlEMISSION_SPECIFIED: Particles will emit in the direction specified by the _emission_angle_ and _emission_range_ attributes.
+	* tlEMISSION_IN_AND_OUT: Particles will alternative between emitting towards and away from the handle of the effect.
+	#end
+	Property EmissionType:Int() 
+		Return emissiontype
+	Setter(v:Int)
+		emissiontype = v
+	End
+	#Rem wonkeydoc Set range in degrees of the arc
+		When an effect uses an ellipse as its effect type, you can adjust how far round the ellipse particles will spawn
+		by setting the ellipse arc. 360 degrees will spawn around the full amount.
+	#end
+	Property EllipseArc:Float() 
+		Return ellipsearc
+	Setter(v:Float)
+		ellipsearc = v
+	End
+	#Rem wonkeydoc Offset where the ellipse arc starts from.
+	#end
+	Property EllipseOffset:Int() 
+		Return ellipseoffset
+	Setter(v:Int)
+		ellipseoffset = v
+	End
+	#Rem wonkeydoc Set the length of the effect
+		Effects can be looped by setting the effect length. Just pass it the length in milliseconds that you want it to loop by or set to 0 if 
+		you don't want the effect to loop.
+	#end
+	Property EffectLength:Int() 
+		Return effectlength
+	Setter(v:Int)
+		effectlength = v
+	End
+	#Rem wonkeydoc Set Uniform
+		Dictates whether the particles size scales uniformally. Set to either TRUE or FALSE.
+	#end
+	Property Uniform:Int() 
+		Return uniform
+	Setter(v:Int)
+		uniform = v
+	End
+	#Rem wonkeydoc Set to true for particles to traverse line type effects
+		Only applying to line effects, setting this to true makes the particles travel along the length of the line always remaining relative to it. Great for laser beam effects.
+	#end
+	Property TraverseEdge:Int() 
+		Return traverseedge
+	Setter(v:Int)
+		traverseedge = v
+	End
+	#Rem wonkeydoc Set the end behaviour of particles traversing a line
+		If an effect if set so that particles traverse the edge of the line, then this makes the particles behave in one of 3 ways when they reach 
+		the end of the line.  By passing it either of the following const they can:
+		*tlEND_LOOPAROUND:* The particles will loop back round to the beginning of the line.
+		*tlEND_KILL:* The particles will be killed even if they haven't reached the end of their lifetimes yet.
+		*tlLET_FREE:* The particles will be free to continue on their merry way.
+	#end
+	Property EndBehaviour:Int() 
+		return endbehaviour
+	Setter(v:Int)
+		endbehaviour = v
+	End
+	#Rem wonkeydoc Set to true to make the distance travelled determined by the life of the particle.
+		When [[TraverseEdge]] is set to true and [[EndBehaviour]] is set to true then the distance travelled along the line will be determined by the 
+		age of the particle.
+	#end
+	Property DistanceSetByLife:Int() 
+		Return distancesetbylife
+	Setter(v:Int)
+		distancesetbylife = v
+	End
+	#Rem wonkeydoc Set the order particles spawn
+		A value of true means that in area, line and ellipse effects, particles will spawn from right to left or anti-clockwise.
+	#end
+	Property ReverseSpawnDirection:Int() 
+		Return reversespawndirection 
+	Setter(v:Int)
+		reversespawndirection = v
+	End
+	#Rem wonkeydoc This sets the direction particles are spawned.
+		Theres no need to call this, as its called internally by the emitter depending on the reverse spawn flag. see [[ReverseSpawnDirection]].
+	#end
+	Property SpawnDirection:Int() 
+		Return spawndirection
+	Setter(v:Int)
+		spawndirection = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property AnimWidth:Int() 
+		Return animwidth
+	Setter(v:Int)
+		animwidth = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property AnimHeight:Int() 
+		Return animheight
+	Setter(v:Int)
+		animheight = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property AnimX:Int() 
+		Return animx
+	Setter(v:Int)
+		animx = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property AnimY:Int() 
+		Return animy
+	Setter(v:Int)
+		animy = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property Seed:Int() 
+		Return seed
+	Setter(v:Int)
+		seed = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property Looped:Int() 
+		Return looped
+	Setter(v:Int)
+		looped = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property FrameOffset:Int() 
+		Return frameoffset
+	Setter(v:Int)
+		frameoffset = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property AnimZoom:Float()
+		Return animzoom
+	Setter(v:Float)
+		animzoom = v
+	End
+	#Rem wonkeydoc 
+	#end
+	Property CurrentSizeX:Float()
+		Return currentsizex
+	Setter(v:Float)
+		currentsizex = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property CurrentSizeY:Float()
+		Return currentsizey
+	Setter(v:Float)
+		currentsizey = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property CurrentVelocity:Float()
+		Return currentvelocity
+	Setter(v:Float)
+		currentvelocity = v
+	End
+	#Rem wonkeydoc @hidden
+	#end
+	Property CurrentSpin:Float()
+		Return currentspin
+	Setter(v:Float)
+		currentspin = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property CurrentWeight:Float()
+		Return currentweight
+	Setter(v:Float)
+		currentweight = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property CurrentAreaWidth:Float()
+		Return currentareawidth
+	Setter(v:Float)
+		currentareawidth = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property CurrentAreaHeight:Float()
+		Return currentareaheight
+	Setter(v:Float)
+		currentareaheight = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property CurrentAlpha:Float()
+		Return currentalpha
+	Setter(v:Float)
+		currentalpha = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property CurrentEmissionAngle:Float()
+		Return currentemissionangle
+	Setter(v:Float)
+		currentemissionangle = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property CurrentEmissionRange:Float()
+		Return currentemissionrange
+	Setter(v:Float)
+		currentemissionrange = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property CurrentStretch:Float()
+		Return currentstretch
+	Setter(v:Float)
+		currentstretch = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property CurrentGlobalZoom:Float()
+		Return currentglobalzoom
+	Setter(v:Float)
+		currentglobalzoom = v
+	End
+	#Rem wonkeydoc Use this to store and retrieve some data in the effect
+	#end	
+	Property Data:Object()
+		Return data
+	Setter(v:Object)
+		data = v
+	End
+	
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideAreaSize:Int() 
+		Return overrideareasize
+	Setter(v:Int)
+		overrideareasize = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideEmissionAngle:Int() 
+		Return overrideemissionangle
+	Setter(v:Int)
+		overrideemissionangle = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideEmissionRange:Int() 
+		Return overrideemissionrange
+	Setter(v:Int)
+		overrideemissionrange = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideAngle:Int() 
+		Return overrideangle
+	Setter(v:Int)
+		overrideangle = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideLife:Int() 
+		Return overridelife
+	Setter(v:Int)
+		overridelife = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideAmount:Int() 
+		Return overrideamount
+	Setter(v:Int)
+		overrideamount = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideVelocity:Int() 
+		Return overridevelocity
+	Setter(v:Int)
+		overridevelocity = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideSpin:Int() 
+		Return overridespin
+	Setter(v:Int)
+		overridespin = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideSizeX:Int() 
+		Return overridesizex
+	Setter(v:Int)
+		overridesizex = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideSizeY:Int() 
+		Return overridesizey
+	Setter(v:Int)
+		overridesizey = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideWeight:Int() 
+		Return overrideweight
+	Setter(v:Int)
+		overrideweight = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideAlpha:Int() 
+		Return overridealpha
+	Setter(v:Int)
+		overridealpha = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideStretch:Int() 
+		Return overridestretch
+	Setter(v:Int)
+		overridestretch = v
+	End
+	#Rem wonkeydoc @hidden
+	#end	
+	Property OverrideGlobalZoom:Int() 
+		Return overrideglobalzoom
+	Setter(v:Int)
+		overrideglobalzoom = v
+	End
+	#Rem wonkeydoc Set the effects particle manager
+		Every effect needs a particle manager. For more info see [[tlParticleManager]]
+	#end	
+	Property ParticleManager:tlParticleManager() 
+		Return pm
+	Setter(v:tlParticleManager)
+		pm = v
+	End
+	
+	'Main Effect Setters
+	
+	#Rem wonkeydoc Set the area size of the effect
+		If the effect is Area or Elipse then you can use this to change the dimensions of it.
+	#End
+	Method SetAreaSize(Width:Float, Height:Float)
+		overrideareasize = True
+		currentareawidth = Width
+		currentareaheight = Height
+	End
+	
+	#Rem wonkeydoc Set the line length of the effect
+		For line effects, use this function to override the graph and set the length of the line to whatever you want.
+	#End
+	Method SetLineLength(Length:Float)
+		overrideareasize = True
+		currentareawidth = Length
+	End
+	#Rem wonkeydoc Set the Emission Angle of the effect
+		This overides whatever angle is set on the graph and sets the emission angle of the effect. This won't effect emitters that have _UseEffectEmission_ set
+		to FALSE.
+	#End
+	Method SetEmissionAngle(angle:Float)
+		overrideemissionangle = True
+		currentemissionangle = angle
+	End
+	#Rem wonkeydoc Set the Angle of the effect
+		This overides the whatever angle is set on the graph and sets the angle of the effect.
+	#End
+	Method SetEffectAngle(Angle:Float)
+		If Angle < 0 Angle += 6.28319
+		overrideangle = True
+		LocalRotation = Angle
+	End
+	#Rem wonkeydoc Set the Global attribute Life of the effect
+		This overides the graph the effect uses to set the Global Attribute Life
+	#End
+	Method SetLife(life:Float)
+		overridelife = True
+		currentlife = life
+	End
+	#Rem wonkeydoc Set the Global attribute Amount of the effect
+		This overides the graph the effect uses to set the Global Attribute Amount
+	#End
+	Method SetAmount(amount:Float)
+		overrideamount = True
+		currentamount = amount
+	End
+	#Rem wonkeydoc Set the Global attribute velocity of the effect
+		This overides the graph the effect uses to set the Global Attribute velocity
+	#End
+	Method SetVelocity(velocity:Float)
+		overridevelocity = True
+		currentvelocity = velocity
+	End
+	#Rem wonkeydoc Set the Global attribute Spin of the effect
+		This overides the graph the effect uses to set the Global Attribute Spin
+	#End
+	Method SetSpin(spin:Float)
+		overridespin = True
+		currentspin = spin
+	End
+	#Rem wonkeydoc Set the Global attribute Weight of the effect
+	This overides the graph the effect uses to set the Global Attribute Weight
+	#End
+	Method SetWeight(Weight:Float)
+		overrideweight = True
+		currentweight = Weight
+	End
+	#Rem wonkeydoc Set the Global attribute Sizex of the effect
+		This overides the graph the effect uses to set the Global Attribute Sizex and sizey
+	#End
+	Method SetEffectParticleSize(Sizex:Float, Sizey:Float)
+		overridesizex = True
+		overridesizey = True
+		currentsizex = Sizex
+		currentsizey = Sizey
+	End
+	#Rem wonkeydoc Set the Global attribute Sizex and Sizey of the effect
+		This overides the graph the effect uses to set the Global Attribute Sizex and Sizey. You can use this method if your effect changes particle sizes uniformly. Although even if it doesn't you can still
+		use this effect it will just change both sizex and size to the same values.
+	#End
+	Method SetSize(Size:Float)
+		overridesizex = True
+		overridesizey = True
+		currentsizex = Size
+		currentsizey = Size
+	End
+	#Rem wonkeydoc Set the Global attribute Sizex of the effect
+		This overides the graph the effect uses to set the Global Attribute Sizex
+	#End
+	Method SetSizeX(Sizex:Float)
+		overridesizex = True
+		currentsizex = Sizex
+	End
+	#Rem wonkeydoc Set the Global attribute Sizey of the effect
+		This overides the graph the effect uses to set the Global Attribute Sizey. Note that if 
+	#End
+	Method SetSizeY(Sizey:Float)
+		overridesizey = True
+		currentsizey = Sizey
+	End
+	#Rem wonkeydoc Set the Global attribute Alpha of the effect
+		This overides the graph the effect uses to set the Global Attribute Alpha
+	#End
+	Method SetEffectAlpha(Alpha:Float)
+		overridealpha = True
+		currentalpha = Alpha
+	End
+	#Rem wonkeydoc Set the Global attribute EmissionRange of the effect
+		This overides the graph the effect uses to set the Global Attribute EmissionRange
+	#End
+	Method SetEffectEmissionRange(EmissionRange:Float)
+		overrideemissionrange = True
+		currentemissionrange = EmissionRange
+	End
+	#Rem wonkeydoc Set the current zoom level of the effect
+		This overides the graph the effect uses to set the Global Attribute Global Zoom and can be used to scale the size of the whole effect.
+	#End
+	Method SetZ(v:Float)
+		overrideglobalzoom = True
+		Zoom = v
+	End
+	#Rem wonkeydoc Set the current zoom level of the effect
+		This overides the graph the effect uses to set the Global Attribute Global Zoom
+	#End
+	Method SetGlobalZoom(v:Float)
+		overrideglobalzoom = True
+		Zoom = v
+	End
+	#Rem wonkeydoc Set the Global attribute Stretch of the effect
+		This overides the graph the effect uses to set the Global Attribute Stretch
+	#End
+	Method SetStretch(v:Float)
+		overridestretch = True
+		currentstretch = v
+	End
+
+	#Rem wonkeydoc @hidden
+	#End
+	Method SetSpawnDirection()
+		If reversespawndirection
+			spawndirection = -1
+		Else
+			spawndirection = 1
+		EndIf
+	End
+	
+	#Rem wonkeydoc Softly kill an effect
+		Call this to kill an effect by stopping it from spawning any more particles. This will make the effect slowly die about as any remaining 
+		particles cease to exist as there lifetime naturally expires. Any single particles are converted to one shot particles.
+	#End
+	Method SoftKill()
+		Dying = True
+	End
+	#Rem wonkeydoc Hard kill an effect
+		Immediatley kills an effect by destroying all particles created by it.
+	#End
+	Method HardKill()
+		Destroy()
+		pm.RemoveEffect(Self)
+	End
+	
+	Method Update()
+		Super.Update()
+		
+		OnUpdate()
+	End
+	
+	'Internal Methods
+	#Rem wonkeydoc @hidden
+	#End
+	Method CompileAll()
+		For Local graph:tlComponent = EachIn Components
+			If Cast<tlGraphComponent>(graph)
+				Select Cast<tlGraphComponent>(graph).GraphType
+					Case tlNORMAL_GRAPH
+						Cast<tlGraphComponent>(graph).Compile()
+					Case tlOVERTIME_GRAPH
+						Cast<tlGraphComponent>(graph).Compile_Overtime()
+				End Select
+			End If
+		Next
+		For Local e:tlGameObject = EachIn GetChildren()
+			Cast<tlEmitter>(e).CompileAll()
+		Next
+	End
+	#Rem wonkeydoc @hidden
+	#End
+	Method ParentHasGraph:Int(graph:String)
+		If parentemitter
+			If parentemitter.ParentEffect.GetComponent(graph)
+				Return True
+			EndIf
+			Return parentemitter.ParentEffect.ParentHasGraph(graph)
+		End If
+
+		Return False
+	End
+
+End
+
+#Rem wonkeydoc Copy an effect
+	You should use this command everytime you want to add an effect to the particle, otherwise you'll simply be referencing the effect directly from the library which simply won't work
+	if you add more then one of the same effect.
+	
+	Pass the effect you wish to copy, the particle manager you want it assigned to and if you wish you can copy the directory which allows you to access individual emitters within the effect, in most
+	cases though this will be unnecessary unless you need to get access to the emitters in the effects to make changes in realtime.
+#End
+Function CopyEffect:tlEffect(e:tlEffect, ParticleManager:tlParticleManager, CopyDirectory:Int = False)
+	Local clone:tlEffect = New tlEffect
+	clone.EffectClass = e.EffectClass
+	clone.EmitatPoints = e.EmitatPoints
+	clone.MaxGX = e.MaxGX
+	clone.MaxGY = e.MaxGY
+	clone.EmissionType = e.EmissionType
+	clone.EllipseArc = e.EllipseArc
+	clone.EffectLength = e.EffectLength
+	clone.Uniform = e.Uniform
+	clone.TraverseEdge = e.TraverseEdge
+	clone.EndBehaviour = e.EndBehaviour
+	clone.DistanceSetByLife = e.DistanceSetByLife
+	clone.ReverseSpawnDirection = e.ReverseSpawnDirection
+	clone.Name = e.Name
+	clone.Path = e.Path
+	clone.HandleCenter = e.HandleCenter
+	clone.HandleVector = e.HandleVector.Clone()
+	clone.DoB = ParticleManager.CurrentTime
+	clone.ParticleManager = ParticleManager
+	clone.SetSpawnDirection()
+	
+	'temps
+	clone.currentamount = e.currentamount
+	clone.currentlife = e.currentlife
+	clone.currentsizex = e.currentsizex
+	clone.currentsizey = e.currentsizey
+	clone.currentvelocity = e.currentvelocity
+	clone.LocalRotation = e.LocalRotation
+	clone.currentspin = e.currentspin
+	clone.currentweight = e.currentweight
+	clone.currentareawidth = e.currentareawidth
+	clone.currentareaheight = e.currentareaheight
+	clone.currentalpha = e.currentalpha
+	clone.currentemissionangle = e.currentemissionangle
+	clone.currentemissionrange = e.currentemissionrange
+	clone.currentstretch = e.currentstretch
+	clone.currentglobalzoom = e.currentglobalzoom
+	clone.SetGlobalZoom(clone.currentglobalzoom)
+	
+	For Local component:tlComponent = EachIn e.Components
+		If Cast<tlGraphComponent>(component)
+			If component.Name = "Angle"
+				clone.AddComponent(Cast<tlGraphComponent>(component).Clone(clone, Null, True))
+			Else
+				clone.AddComponent(Cast<tlGraphComponent>(component).Clone(clone))
+			End If
+		End If
+	Next
+	
+	For Local emitter:tlGameObject = EachIn e.GetChildren()
+		Local emitterclone:tlEmitter = CopyEmitter(Cast<tlEmitter>(emitter), clone, ParticleManager)
+		emitterclone.SetParentEffect(clone)
+		Cast<tlEmitterCoreComponent>(emitterclone.GetComponent("Core")).InitSpawner(emitterclone)
+		clone.AddChild(emitterclone)
+	Next
+	
+	If CopyDirectory
+		If Not clone.Directory clone.Directory = New StringMap<tlGameObject>
+		clone.AddEffect(clone)
+	EndIf
+	
+	Return clone
+End Function
+

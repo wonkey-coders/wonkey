@@ -464,18 +464,16 @@ End
 #rem wonkeydoc Removes the last directory from a path.
 @return The new directory.
 #end
-#rem
-function RemoveDir:string( path:String )
+Function StripLastDir:String( path:String )
 	If path.Right(1) = "/" Then
 		path = path.Left( path.Length - 1 )
 	End If
 	While path.Length > 0 and path.Right(1) <> "/"
 		path = path.Left( path.Length - 1 )
 	Wend
-		
+
 	Return path
-End function
-#end
+End
 '------------------------------------------------------------
 
 

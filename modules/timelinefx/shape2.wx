@@ -1,0 +1,206 @@
+#rem
+	Copyright (c) 2016 Peter J Rigby
+	
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+	
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+	
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+#END
+
+Namespace timelinefx
+
+#Rem wonkeydoc A shape class for storing and working with [[mojo:mojo.graphics.Image]] 
+	Use [[LoadShape]] to load a shape from the assets directory. [[tlShape]] can also be used to store and play animations stored on sprite sheets.
+#End
+Class tlShape
+	
+	Private
+
+	Field width:Int
+	Field height:Int
+	Field url:String
+	Field frames:Int
+	Field smallindex:Int
+	Field largeindex:Int
+	Field maxradius:Float
+	Field name:String
+	
+	Public
+	
+	Field image:Image[]
+	
+	#Rem wonkeydoc Get/Set the path of the loaded image, eg "asset::myimage.png"
+	#End
+	Property Url:String()
+		Return url
+	Setter (value:String)
+		url = value
+	End
+	
+	#Rem wonkeydoc Get/Set the name of the image
+	#End
+	Property Name:String() 
+		Return name
+	Setter (value:String)
+		name = value
+	End
+	
+	#Rem wonkeydoc Get the image
+		@return [[mojo.Image]]
+	#End
+	Method GetImage:Image(frame:int)
+		Return image[frame]
+	End
+	
+	#Rem wonkeydoc Get/Set width of the image
+	#End
+	Property Width:Int()
+		Return width
+	Setter (value:Int)
+		width = value
+	End
+
+	#Rem wonkeydoc Get/Set the height of the image
+	#End
+	Property Height:Int()
+		Return height
+	Setter (value:Int)
+		height = value
+	End
+	
+	#Rem wonkeydoc @hidden
+	#End
+	Property MaxRadius:Float()
+		Return maxradius
+	Setter (value:Float)
+		maxradius = value
+	End
+	
+	#Rem wonkeydoc @hidden
+	#End
+	Property LargeIndex:Int()
+		Return largeindex
+	Setter (value:Int)
+		largeindex = value
+	End
+	
+	#Rem wonkeydoc Get/Set the number of frames in the image
+	#End
+	Property Frames:Int()
+		Return frames
+	Setter (value:Int)
+		frames = value
+	End
+	
+	#Rem wonkeydoc @hidden
+	#End
+	Function LoadFrames:Image[] (path:String, numFrames:Int, cellWidth:Int, cellHeight:Int, padded:Bool = False)
+		Local material:=Image.Load( path, null )
+		If Not material Return New Image[0]
+		
+		If cellWidth * cellHeight * numFrames > material.Width * material.Height Return New Image[0]
+		
+		Local frames:= New Image[numFrames]
+		
+		If cellHeight = material.Height
+			Local x:=0
+			local width:=cellWidth
+			If padded 
+				x += 1
+				width -= 2
+			End if
+
+			For Local i:=0 Until numFrames
+				local rect:= New Recti(i * cellWidth + x, 0, i * cellWidth + x + width, cellHeight)
+				frames[i] = New Image(material, rect)
+			Next
+		Else
+			Local x:= 0, width:= cellWidth, y:= 0, height:= cellHeight
+			Local columns:= material.Width / width
+			If padded
+				x += 1
+				y += 1
+				width -= 2
+				height -= 2
+			End If
+			
+			For Local i:= 0 Until numFrames
+				Local fx:Int = i Mod columns * cellWidth
+				Local fy:Int = Int(i / columns) * cellHeight
+
+				local rect:= New Recti(fx + x, fy + y, fx + x + width, fy + y + height)
+				frames[i] = New Image(material, rect)
+			Next
+		End If
+		
+		Return frames
+		
+	End
+
+End
+
+#Rem wonkeydoc Load a [[tlShape]]
+	@param url String of the path where the image is stored
+	@param width Int width of the image
+	@param height Int height of the image
+	@param frames Int number of frames in the image
+	@param padding True or False whether to add padding around each frame.
+	@return [[tlShape]]
+#End
+Function LoadShape:tlShape(url:String, width:Int = 0, height:Int = 0, frames:Int = 1, padding:int = false)
+	Local shape:tlShape = New tlShape
+	If frames = 1
+		shape.image = New Image[1]
+		shape.image[0] = Image.Load(url)
+		shape.Width = shape.image[0].Width
+		shape.Height = shape.image[0].Height
+	Else
+		shape.image = tlShape.LoadFrames(url, frames, width, height, padding)
+		shape.Width = width
+		shape.Height = height
+	EndIf
+
+	shape.Frames = frames
+	shape.Url = url
+	
+	Return shape
+
+End
+
+#Rem wonkeydoc Load a [[tlShape]] sequence of images. 
+	@param directory String of the director where the images are stored
+	@param array String array of all the images in the sequence to load
+	@param width Int width of the images
+	@param height Int height of the images
+	@return [[tlShape]]
+#End
+Function LoadAnimation:tlShape(directory:string, url:String[], width:Int = 0, height:Int = 0)
+	Local shape:tlShape = New tlShape
+	shape.image = New Image[url.Length]
+	Local i:int = 0
+	For Local file:=eachin url
+		shape.image[i] = Image.Load(directory + file)
+		i+=1
+	Next
+
+	shape.Width = width
+	shape.Height = height
+	shape.Frames = url.Length
+	
+	Return shape
+
+End

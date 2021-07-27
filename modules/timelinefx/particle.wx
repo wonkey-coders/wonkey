@@ -1,0 +1,246 @@
+#rem
+	TimelineFX Module by Peter Rigby
+	
+	Copyright (c) 2012 Peter J Rigby
+	
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+	
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+	
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+#END
+
+Namespace timelinefx
+
+Using timelinefx..
+
+#Rem wonkeydoc @hidden
+#end
+Alias Node:List<tlParticle>.Node
+
+#Rem wonkeydoc @hidden
+#end
+Class tlParticle Extends tlGameObject
+
+	Public
+	
+	'---------------------------------
+	Field lifetime:Float								'Time that the particle lives for
+	'---------------------------------
+	Field weightvariation:Float							'Particle weight variation
+	Field weight:Float
+	Field baseweight:Float
+	Field gravity:Float
+	Field scalevariationx:Float							'particle size x variation
+	Field scalevariationy:Float							'particle size y variation
+	Field gsizex:Float									'Particle global size x
+	Field gsizey:Float									'Particle global size y
+	Field width:Float
+	Field height:Float
+	Field imagescalex:Float
+	Field imagescaley:Float
+	Field sprite:tlShape
+	Field animateonce:Int
+	'---------------------------------
+	Field velvariation:Float							'velocity variation
+	Field velseed:Float									'rnd seed
+	Field basespeed:Float
+	Field speed_vec:tlVector2
+	Field speed:Float
+	'---------------------------------
+	Field spinvariation:Float							'variation of spin speed
+	Field spin:Float									'The current amount of spin
+	'---------------------------------
+	Field directionvariaion:Float						'Direction variation at spawn time
+	Field direction:Float
+	Field directionlocked:Int
+	Field timetracker:Int								'This is used to keep track of game ticks so that some things can be updated between specific time intervals
+	Field randomdirection:Float							'current direction of the random motion that pulls the particle in different directions
+	Field randomspeed:Float								'random speed to apply to the particle movement
+	Field emissionangle:Float							'Direction variation at spawn time
+	Field releasesingleparticle:Int						'set to true to release single particles and let them decay and die
+	'---------------------------------
+	Field acycles:Int
+	Field ccycles:Int
+	Field rptageA:Float
+	Field rptageC:Float
+	'---------------------------------
+	Field pm:tlParticleManager							'link to the particle manager
+	Field layer:Int										'layer the particle belongs to
+	Field effectlayer:Int								'The effect layer the particle belongs too in the particle manager
+	Field emitter:tlEmitter								'tlemitter it belongs to
+	Field corecomponent:tlParticleCoreComponent			'quick access the core component
+	Field releaseme:Int 								'if true then the particle will be erased from the particle manager inuse list next parse
+	Field link:Node
+	
+	Method New()
+		speed_vec = New tlVector2(0, 0)
+		ImageBox = New tlBox(0, 0, 1, 1)
+		RotateVector = New tlVector2(0, 0)
+	End Method
+	
+	Property Sprite:tlShape()
+		Return sprite
+	Setter(v:tlShape)
+		sprite = v
+	End
+	
+	Property ParticleManager:tlParticleManager()
+		Return pm
+	Setter(v:tlParticleManager)
+		pm = v
+	End
+	
+	Property AnimateOnce:Int()
+		Return animateonce
+	Setter(v:Int)
+		animateonce = v
+	End
+	
+	Method Reset()
+		Age = 0
+		WorldVector = new tlVector2
+		LocalVector = New tlVector2
+		RotateVector = New tlVector2
+		ScaleVector = New tlVector2
+		WorldScaleVector = New tlVector2
+		Matrix = New tlMatrix2
+
+		LocalRotation = 0
+		WorldRotation = 0
+		Zoom = 1
+		Image = Null
+		'Sprite = Null
+		If ImageBox
+			ImageBox.Data = Null
+		End If
+		If ContainingBox
+			ContainingBox.Data = Null
+		End If
+		Dead = False
+		ClearChildren()
+		ChildCount = 0
+		speed = 0
+		basespeed = 0
+		directionvariaion = 0
+		direction = 0
+		directionlocked = False
+		randomspeed = 0
+		randomdirection = 0
+		Parent = Null
+		RootParent = Null
+		acycles = 0
+		ccycles = 0
+		rptageA = 0
+		rptageC = 0
+		releasesingleparticle = 0
+		gravity = 0
+		weight = 0
+		baseweight = 0
+		spin = 0
+		corecomponent.emitter = Null
+		emitter = Null
+		Destroyed = False
+		Capture()
+	End Method
+	
+	Method Update()
+	
+		UpdateTime = tp_UPDATE_FREQUENCY
+
+		Capture()
+						
+		'transform the object
+		TForm()
+		
+		'update components
+		'UpdateComponents()
+		corecomponent.Update()
+		
+		'update the children		
+		UpdateChildren()
+		
+		'update the collision box
+		'If _collisionbox updatecollisionbox()
+		UpdateImageBox()
+		If Parent
+			If ContainingBox
+				Parent.UpdateContainingBox(ContainingBox.tl_corner.x, ContainingBox.tl_corner.y, ContainingBox.br_corner.x, ContainingBox.br_corner.y)
+			Else
+				Parent.UpdateContainingBox(ImageBox.tl_corner.x, ImageBox.tl_corner.y, ImageBox.br_corner.x, ImageBox.br_corner.y)
+			End If
+		End If
+		If UpdateContainerBox ReSizeContainingBox()
+		
+		'animate the image
+		Animate()
+		
+	End Method
+	
+	Method TForm()
+		'set the Matrix if it is relative to the Parent
+		If Relative
+			Matrix.Set(Cos(LocalRotation), Sin(LocalRotation), -Sin(LocalRotation), Cos(LocalRotation))
+		End If
+		
+		'calculate where the particle is in the world
+		If Parent And Relative
+			Zoom = Parent.Zoom
+			Matrix = Matrix.Transform(Parent.Matrix)
+			RotateVector = Parent.Matrix.TransformVector(LocalVector)
+			If Zoom = 1
+				WorldVector = WorldVector.SetPositionByVector(Parent.WorldVector.AddVector(RotateVector))
+			Else
+				WorldVector = WorldVector.SetPositionByVector(Parent.WorldVector.AddVector(RotateVector.Scale(Zoom)))
+			End If
+			WorldRotation = Parent.WorldRotation + LocalRotation
+		Else
+			WorldRotation = LocalRotation
+			WorldVector = New tlVector2(LocalVector.x, LocalVector.y)
+		End If
+		
+		WorldScaleVector = New tlVector2(ScaleVector.x, ScaleVector.y)
+	End Method
+	
+	Method Destroy()
+		pm.ReleaseParticle(Self)
+		For Local o:tlGameObject = EachIn GetChildren()
+			o.Destroy()
+		Next
+		Reset()
+	End Method
+
+	Method Animate()
+		If Animating
+			CurrentFrame += FrameRate / UpdateTime
+			If animateonce
+				If CurrentFrame > Sprite.Frames - 1
+					CurrentFrame = Sprite.Frames - 1
+				Else If CurrentFrame <= 0
+					CurrentFrame = 0
+				End If
+			End If
+		End If
+	End Method
+	
+	Method UpdateImageBox()
+		ImageBox.Position(WorldVector.x, WorldVector.y)
+		If OldWorldScaleVector.x <> WorldScaleVector.x Or OldWorldScaleVector.y <> WorldScaleVector.y
+			Local maxdiminesion:Float = Max(WorldScaleVector.x, WorldScaleVector.y)
+			ImageBox.SetScale(maxdiminesion, maxdiminesion)
+		End If
+	End Method
+End

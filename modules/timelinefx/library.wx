@@ -1,0 +1,147 @@
+#Rem
+	TimelineFX Module by Peter Rigby
+	
+	Copyright (c) 2017 Peter J Rigby
+	
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+	
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+	
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+#End
+
+Namespace timelinefx
+
+Using timelinefx..
+
+#Rem wonkeydoc Effects library for storing a list of effects and particle images/animations.
+	When using LoadEffects, all the effects and images that go with them are stored in this type.
+#End
+Class tlEffectsLibrary
+	Private
+	
+	Field effects:StringMap<tlEffect> = New StringMap<tlEffect>
+	Field emitters:StringMap<tlEmitter> = New StringMap<tlEmitter>
+	Field name:String
+	Field shapelist:IntMap<tlShape> = New IntMap<tlShape> 
+	
+	Public
+	
+	#Rem wonkeydoc Add a shape to the library
+		@param [[tlShape]]
+	#End
+	Method AddShape:Bool(shape:tlShape)
+		Local key:int = shape.LargeIndex
+		return shapelist.Add(key, shape)
+	End
+	
+	#Rem wonkeydoc add an effect to the library
+		@param [[tlEffect]]
+	#End
+	Method AddEffect:Void(e:tlEffect)
+		effects.Add(e.Path.ToUpper(), e)
+		For Local em:tlGameObject = EachIn e.GetChildren()
+			AddEmitter(Cast<tlEmitter>(em))
+		Next
+	End
+	#Rem wonkeydoc Add a new emitter to the library. 
+		Emitters are stored using a map and can be retrieved using [[GetEmitter]]. Generally you don't want to call this at all unless you're building your effects manually, 
+		just use [[AddEffect]] and all its emitters will be added also.
+	#End
+	Method AddEmitter:Void(e:tlEmitter)
+		emitters.Add(e.Path.ToUpper(), e)
+		For Local ef:tlEffect = EachIn e.Effects
+			AddEffect(ef)
+		Next
+	End
+
+	#Rem wonkeydoc Clear all effects in the library
+		Use this to empty the library of all effects and shapes.
+	#End
+	Method ClearAll:Void()
+		Self.name = ""
+		For Local e:tlEffect = EachIn effects.Values
+			e.Destroy()
+		Next
+		Self.effects.Clear()
+		Self.effects = Null
+		Self.shapelist.Clear()
+		Self.shapelist = Null
+	End
+	#Rem wonkeydoc Retrieve an effect from the library
+	Use this to get an effect from the library by passing the name of the effect you want. Example:
+	
+	@example
+	local explosion:tlEffect=MyEffectsLibrary.GetEffect("explosion")
+	@end
+
+	You should always use [[timelinefx.CopyEffect]] if you plan on adding the effect to a [[tlParticleManager]]
+	
+	All effects and emitters are stored using a directory like path structure so to get at sub effects you can do:
+	
+	@example
+	local explosion:tlEffect=MyEffectsLibrary.GetEffect("Effect/Emitter/Sub Effect/Another Emitter/A deeper sub effect")}
+	@end
+	
+	Note that you should always use forward slashes.
+	@return [[tlEffect]]
+	#End
+	Method GetEffect:tlEffect(name:String)
+		If Cast<tlEffect>(effects.Get(name.ToUpper()))
+			Return Cast<tlEffect>(effects.Get(name.ToUpper()))
+		End If
+		return Null
+	End
+
+	#Rem wonkeydoc Retrieve an emitter from the library
+	Use this To get an emitter from the library by passing the name of the emitter you want. All effects And emitters are
+	stored using a map with a directory like path structure. So retrieving an emitter called blast wave inside an effect called explosion
+	would be done like so:
+	
+	@example
+	local blastwave:tlemitter=MyEffectsLibrary.GetEmitter("explosion/blast wave")
+	@end
+	
+	Note that you should always use forward slashes.
+
+	@return [[tlEmitter]]
+	#End
+	Method GetEmitter:tlEmitter(name:String)
+		Return Cast<tlEmitter>(emitters.Get(name.ToUpper()))
+	End
+	#Rem wonkeydoc Get a Shape from the library
+	@return [[tlShape]]
+	#End
+	Method GetShape:tlShape(index:Int)
+		Return Cast<tlShape>(shapelist.Get(index))
+	End
+	
+	#Rem wonkeydoc Get the name of the effects library
+	@return String
+	#End
+	Property Name:String() 
+		Return name
+	End
+	
+	#Rem wonkeydoc Return the list of effects stored in the library
+	@return StringMap
+	#End	
+	Property Effects:StringMap<tlEffect>() 
+		Return effects
+	End
+
+	
+End
