@@ -297,7 +297,7 @@ Class BuildProduct
 		'    - the binary library: imp.afile
 		'    - the source header:  imp.rfile
 		'
-		If opts.productType="app" Or opts.productType="module"
+		If opts.productType="app" Or opts.productType="module" And opts.target<>"android"
 			Local missingModules:String
 
 			For Local imp := Eachin imports
