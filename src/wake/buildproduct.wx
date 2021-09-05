@@ -293,11 +293,16 @@ Class BuildProduct
 
 	Method CheckModules()
 		'
+		' Disable check for Android because imp.afile is not correct
+		'
+		If opts.target="android" Then Return
+
+		'
 		' Check that required modules are available when building app or module
 		'    - the binary library: imp.afile
 		'    - the source header:  imp.rfile
 		'
-		If opts.productType="app" Or opts.productType="module" And opts.target<>"android"
+		If opts.productType="app" Or opts.productType="module"
 			Local missingModules:String
 
 			For Local imp := Eachin imports
