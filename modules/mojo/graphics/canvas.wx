@@ -61,7 +61,13 @@ Class Canvas
 	Method New( image:Image )
 		
 		Local rtarget:=New RenderTarget( New Texture[]( image.Texture ),Null )
-		
+
+		'--------------------
+		'jl added
+		_width = image.Width
+		_height = image.Height
+		'--------------------
+
 		Init( rtarget,New GraphicsDevice )
 		
 		BeginRender( New Recti( 0,0,image.Rect.Size ),AffineMat3f.Translation( image.Rect.Origin ) )
@@ -71,6 +77,11 @@ Class Canvas
 	#end
 	Method New( width:Int,height:Int )
 		
+		'--------------------
+		'jl added
+		_width = width
+		_height = height
+		'--------------------
 		Init( Null,New GraphicsDevice( width,height ) )
 	End
 
@@ -78,6 +89,11 @@ Class Canvas
 	#end
 	Method Resize( size:Vec2i )
 		
+		'--------------------
+		'jl added
+		_width = size.X
+		_height = size.Y
+		'--------------------
 		_device.Resize( size )
 	End
 
@@ -1744,7 +1760,20 @@ Class Canvas
 'end of jeanluc additions
 '------------------------------------------------------------
 
-	
+'--------------------
+'jl added
+	#rem wonkeydoc The current canvas width
+	#end
+	Property Width:Int()
+		Return _width
+	End
+	#rem wonkeydoc The current canvas height
+	#end
+	Property Height:Int()
+		Return _height
+	End
+'--------------------
+
 	#rem wonkeydoc The current render target.
 	#end
 	Property RenderTarget:RenderTarget()
@@ -3301,6 +3330,8 @@ Class Canvas
 	Field _pmcolor2:UInt=~0
 	Field _color2:Color
 	Field _xyzPosition:Vec3f = new Vec3f()
+	Field _width:Int
+	Field _height:Int
 '------------------------------------------------------------
 
 	Field _rtarget:RenderTarget
