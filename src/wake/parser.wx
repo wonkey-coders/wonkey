@@ -1698,6 +1698,7 @@ Class Parser
 			Select Toke
 			Case "?."
 				Bump()
+				CParseEol() ' optional line continuation after '?.'
 				Local ident:=ParseIdent()
 				If Toke="("
 					Local args:=ParseInvokeArgs()
@@ -1707,6 +1708,7 @@ Class Parser
 				Endif
 			Case "."
 				Bump()
+				CParseEol() ' optional line continuation after '.'
 				Local ident:String
 				If CParse( "new" )
 					ident="new"
@@ -1718,6 +1720,7 @@ Class Parser
 				expr=New MemberExpr( expr,ident,srcpos,EndPos )
 			Case "->"
 				Bump()
+				CParseEol() ' optional line continuation after '->'
 				Local ident:=ParseIdent()
 				Local zero:=New LiteralExpr( "0",TOKE_INTLIT,Null,srcpos,EndPos )
 				expr=New IndexExpr( expr,New Expr[]( zero ),srcpos,EndPos )
@@ -2131,6 +2134,9 @@ Class Parser
 				
 			Else
 			
+				'
+				' Line continuation chars
+				'
 				If _toker.TokeType=TOKE_EOL And (ptoke="(" Or ptoke="[" Or ptoke="," ) Continue
 				
 			Endif
