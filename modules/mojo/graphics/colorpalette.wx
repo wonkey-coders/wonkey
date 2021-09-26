@@ -118,6 +118,19 @@ class ColorPalette
 	End method
 
 	
+	method RemoveColor( col:int )
+		local k:int
+		local argb:UInt
+		
+		For k = col To 255
+			argb = VOXEL_PALETTE[ k+1 ]
+			Red[k] = argb & $ff
+			Green[k] = (argb Shr 8) & $ff
+			Blue[k] = (argb Shr 16) & $ff
+		Next
+	End method
+
+
 	method GetR:int( pos:uInt )
 		pos = Clamp( int(pos), 0, 255 )
 
@@ -310,6 +323,8 @@ class ColorPalette
 				ok = LoadPal( filePath )
 			Case ".ase"
 				ok = LoadAse( filePath )
+			Case ".hex"
+				ok = LoadHex( filePath )
 		End Select
 
 		Return ok
@@ -424,6 +439,61 @@ class ColorPalette
 	End method
 
 	
+	method LoadHex:bool( path:string )
+		Print "load hex"
+		Local file:FileStream = FileStream.Open( path, "r" )
+		If Not file Then Return false
+
+		_filePath = file.FilePath
+		_fileTime = GetFileTime( file.FilePath )
+		
+		local a:ubyte
+		local b:ubyte
+
+		local rb:ubyte
+		local gb:ubyte
+		local bb:ubyte
+		
+		local col:int = 0
+		For col = 0 To 255
+			SetRGBA( col, 0, 0, 0,	0 )
+		next
+		col = 1
+		SetRGBA( 0, 0, 0, 0,	255 )
+
+		While Not file.Eof
+			a = file.ReadUByte()
+			b = file.ReadUByte()
+		
+			Print "r:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
+			rb = HexStringToByte( Chr(a)+Chr(b) )
+		
+			a = file.ReadUByte()
+			b = file.ReadUByte()
+
+			Print "g:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
+			gb = HexStringToByte( Chr(a)+Chr(b) )
+
+			a = file.ReadUByte()
+			b = file.ReadUByte()
+		
+			Print "b:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
+			bb = HexStringToByte( Chr(a)+Chr(b) )
+
+'			file.ReadUByte()
+			file.ReadUByte()
+			
+
+'			Print rb+" "+gb+" "+bb
+			SetRGBA( col, bb, gb, rb,	255 )
+'							Print "col = "+col+"  rgb= "+r+" "+g+" "+b
+			col += 1
+		Wend
+		
+		Return true
+	End method
+
+
 	method LoadAse:bool( path:string )
 		Print "load ase"
 		Local file:FileStream = FileStream.Open( path, "r" )
@@ -440,18 +510,89 @@ class ColorPalette
 		file.Seek( 11 )
 		local count:int = file.ReadUByte()
 		
-		local head:int = 12
-		file.Seek( head )
+'		local head:int = 12
+'		file.Seek( head )
 		
 		local a:ubyte
 		local b:ubyte
 		
-		a = file.ReadUByte()
-		b = file.ReadUByte()
+'		a = file.ReadUByte()
+'		b = file.ReadUByte()
 		
 		Print "count:"+count
 '		Print ReadBigEndian32( file )
-		head = 21
+'		head = 18
+'		file.Seek(head)
+
+		'null currrent contents
+		Local col:int = 0
+		For col = 0 To 255
+			SetRGBA( col, 0, 0, 0,	0 )
+		next
+		
+		col = 1
+		SetRGBA( 0, 0, 0, 0,	255 )
+
+		'search and load new rgb values
+		local rb:ubyte
+		local gb:ubyte
+		local bb:ubyte
+		While Not file.Eof
+			a = file.ReadByte()
+'			Print file.Position+"   "+a+" "+Chr(a)
+			If a = 7 Or a = 35 Then 'found #
+				file.ReadUByte()
+				a = file.ReadUByte()
+				file.ReadUByte()
+				b = file.ReadUByte()
+'				Print a+" "+b
+				rb = HexStringToByte( Chr(a)+Chr(b) )
+
+				file.ReadUByte()
+				a = file.ReadUByte()
+				file.ReadUByte()
+				b = file.ReadUByte()
+'				Print a+" "+b
+				gb = HexStringToByte( Chr(a)+Chr(b) )
+
+				file.ReadUByte()
+				a = file.ReadUByte()
+				file.ReadUByte()
+				b = file.ReadUByte()
+'				Print a+" "+b
+				bb = HexStringToByte( Chr(a)+Chr(b) )
+
+				SetRGBA( col, bb, gb, rb,	255 )
+				col += 1
+				
+'				Print ""
+			End If
+		Wend
+
+#rem
+		head = 34
+
+		local str:string = ""
+		
+			file.Seek( head )
+			a = file.ReadUByte()
+			While a < 31
+				a = file.ReadUByte()
+			Wend
+			
+			str = Chr(a)
+'			Print file.Position+" : "+a
+			a = file.ReadUByte()
+			str += Chr(a)
+'			Print file.Position+" : "+a
+			a = file.ReadUByte()
+			str += Chr(a)
+'			Print file.Position+" : "+a
+
+			file.ReadUByte()
+			head = file.Position - 17
+'		Print "head:"+str+"  "+head+"  "+file.Position
+
 
 		Local col:int
 		For col = 0 To 255
@@ -467,30 +608,28 @@ class ColorPalette
 		For k = 1 To count
 '			Print ""
 '			Print "Color:"+k
+'			Print "head:"+head
 			file.Seek( head )
 
 			a = file.ReadUByte()
 			file.ReadUByte()
 			b = file.ReadUByte()
 			file.ReadUByte()
-		
-'			Print "r:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
+			Print "r:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
 			rb = HexStringToByte( Chr(a)+Chr(b) )
 		
 			a = file.ReadUByte()
 			file.ReadUByte()
 			b = file.ReadUByte()
 			file.ReadUByte()
-		
-'			Print "g:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
+			Print "g:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
 			gb = HexStringToByte( Chr(a)+Chr(b) )
 
 			a = file.ReadUByte()
 			file.ReadUByte()
 			b = file.ReadUByte()
 			file.ReadUByte()
-		
-'			Print "b:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
+			Print "b:"+Chr(a)+Chr(b)+" "+HexStringToByte( Chr(a)+Chr(b) )
 			bb = HexStringToByte( Chr(a)+Chr(b) )
 
 			SetRGBA( col, bb, gb, rb,	255 )
@@ -499,24 +638,32 @@ class ColorPalette
 		
 			head += 40
 		next
-		
+#end rem
+
 		count += 1
 		g_paletteCount = count
-		local num:float = Sqrt(g_paletteCount)
-		local numi:int = num
-		If num > numi Then
-			g_paletteX = num
-			g_paletteY = num+1
+		If count < 7 Then
+			g_paletteCount = count
+			g_paletteX = count
+			g_paletteY = 1
 		Else
-			g_paletteX = num
-			g_paletteY = num
+			local num:float = Sqrt(g_paletteCount)
+			local numi:int = num
+			If num > numi Then
+				g_paletteX = num
+				g_paletteY = num+1
+			Else
+				g_paletteX = num
+				g_paletteY = num
+			End If
+			
+			If g_paletteX * g_paletteY < g_paletteCount Then
+				g_paletteX += 1
+			End if
 		End If
 		
-		If g_paletteX * g_paletteY < g_paletteCount Then
-			g_paletteX += 1
-		End if
 		
-		Print g_paletteCount+" "+g_paletteX+" "+g_paletteY+"    "+num+" "+numi
+'		Print g_paletteCount+" "+g_paletteX+" "+g_paletteY+"    "+num+" "+numi
 		
 #rem
     bool didLoadWithoutError = true;
@@ -837,4 +984,3 @@ class ColorPalette
 	End method
 
 End
-

@@ -149,6 +149,13 @@ Class Canvas
 	'start of jl jeanluc additions
 	Field RenderAmbient:void( device:GraphicsDevice )
 	
+	const BGR:uint = 255 Shl 16 | 255 Shl 8 | 255
+	Method SetColAlpha( alpha:UByte )
+		alpha = Clamp(alpha, 0, 255)
+		
+		_pmcolor = alpha Shl 24 | _pmcolor & BGR
+	End
+
 	Method SetCol( color:UInt )
 		_pmcolor = color
 	End
