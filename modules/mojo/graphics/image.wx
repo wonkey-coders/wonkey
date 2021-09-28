@@ -287,6 +287,18 @@ Class Image Extends Resource
 	Setter( filePath:string )
 		_filePath = filePath
 	End
+
+
+	#rem wonkeydoc The image's pixmap - usually used for internal stuff.
+	a superb example is to use this as a way of saving an image
+	In code do the following:
+	<image>.GetPixmap().Save( path )
+	#end	
+	method GetPixmap:Pixmap()
+		If Not _managed Then Return Null
+		Return _managed
+	End method
+
 '------------------------------------------------------------
 
 	#rem wonkeydoc @hidden Sets an image texture.
