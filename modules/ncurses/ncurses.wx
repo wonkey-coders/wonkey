@@ -1,0 +1,601 @@
+#rem
+
+	ncurses library import for Wonkey
+
+	Author: Rob C
+
+#end
+Namespace ncurses
+
+#Import "<std>"
+#Import "<libc>"
+Using std..
+Using libc..
+
+#If __TARGET__="windows"
+	
+	#Import "makefile_windows"
+	#Import "<curses.h>"
+	
+#ElseIf __TARGET__="macos"
+	
+	'#Import "makefile_macos"
+	#Import "<libncurses.a>"
+	#Import "<ncurses.h>"
+
+#ElseIf __TARGET__="linux"
+	
+	#Import "<libncurses.a>"
+	#Import "<ncurses.h>"
+
+#Endif
+
+Extern
+	
+	Class Window Extends Void="WINDOW"
+	End
+	
+	Class Screen Extends Void="SCREEN"
+	End
+	
+	Struct mmask_t
+	End
+	
+	Struct MouseEvent="MEVENT"
+		field id:Short
+		field x:Int
+		field y:Int
+		field z:Int
+		field bstate:mmask_t
+	End
+	
+	Const ALL_MOUSE_EVENTS:mmask_t
+	
+	Const OK:Int
+	
+	Const KEY_CODE_YES:Int
+	Const KEY_BREAK:Int 
+	Const KEY_DOWN:Int
+	Const KEY_UP:Int
+	Const KEY_LEFT:Int
+	Const KEY_RIGHT:Int
+	Const KEY_HOME:Int
+	Const KEY_BACKSPACE:Int
+	Const KEY_F0:Int
+	Const KEY_DL:Int
+	Const KEY_IL:Int
+	Const KEY_DC:Int
+	Const KEY_IC:Int
+	Const KEY_EIC:Int
+	Const KEY_CLEAR:Int
+	Const KEY_EOS:Int
+	Const KEY_EOL:Int
+	Const KEY_SF:Int
+	Const KEY_SR:Int
+	Const KEY_NPAGE:Int
+	Const KEY_PPAGE:Int
+	Const KEY_STAB:Int
+	Const KEY_CTAB:Int
+	Const KEY_CATAB:Int
+	Const KEY_ENTER:Int
+	Const KEY_SRESET:Int
+	Const KEY_RESET:Int
+	Const KEY_PRINT:Int
+	Const KEY_LL:Int
+	Const KEY_ABORT:Int
+	Const KEY_SHELP:Int
+	Const KEY_LHELP:Int
+	Const KEY_BTAB:Int
+	Const KEY_BEG:Int
+	Const KEY_CANCEL:Int
+	Const KEY_CLOSE:Int
+	Const KEY_COMMAND:Int
+	Const KEY_COPY:Int
+	Const KEY_CREATE:Int
+	Const KEY_END:Int
+	Const KEY_EXIT:Int
+	Const KEY_FIND:Int
+	Const KEY_HELP:Int
+	Const KEY_MARK:Int
+	Const KEY_MESSAGE:Int
+	Const KEY_MOVE:Int
+	Const KEY_NEXT:Int
+	Const KEY_OPEN:Int
+	Const KEY_OPTIONS:Int
+	Const KEY_PREVIOUS:Int
+	Const KEY_REDO:Int
+	Const KEY_REFERENCE:Int
+	Const KEY_REFRESH:Int
+	Const KEY_REPLACE:Int
+	Const KEY_RESTART:Int
+	Const KEY_RESUME:Int
+	Const KEY_SAVE:Int
+	Const KEY_SBEG:Int
+	Const KEY_SCANCEL:Int
+	Const KEY_SCOMMAND:Int
+	Const KEY_SCOPY:Int
+	Const KEY_SCREATE:Int
+	Const KEY_SDC:Int
+	Const KEY_SDL:Int
+	Const KEY_SELECT:Int
+	Const KEY_SEND:Int
+	Const KEY_SEOL:Int
+	Const KEY_SEXIT:Int
+	Const KEY_SFIND:Int
+	Const KEY_SHOME:Int
+	Const KEY_SIC:Int
+	Const KEY_SLEFT:Int
+	Const KEY_SMESSAGE:Int
+	Const KEY_SMOVE:Int
+	Const KEY_SNEXT:Int
+	Const KEY_SOPTIONS:Int
+	Const KEY_SPREVIOUS:Int
+	Const KEY_SPRINT:Int
+	Const KEY_SREDO:Int
+	Const KEY_SREPLACE:Int
+	Const KEY_SRIGHT:Int
+	Const KEY_SRSUME:Int
+	Const KEY_SSAVE:Int
+	Const KEY_SSUSPEND:Int
+	Const KEY_SUNDO:Int
+	Const KEY_SUSPEND:Int
+	Const KEY_UNDO:Int
+	
+	Const stdscr:Window
+	Const A_STANDOUT:Int
+	Const A_UNDERLINE:Int
+	Const A_REVERSE:Int
+	Const A_PROTECT:Int
+	Const A_INVIS:Int
+	Const A_DIM:Int
+	Const A_BOLD:Int
+	Const A_BLINK:Int
+	Const A_ALTCHARSET:Int
+	
+	Const A_ATTRIBUTES:Int
+	Const A_CHARTEXT:Int
+	Const A_COLOR:Int
+	
+	Global COLS:Int
+	Global LINES:Int
+	
+	Const COLOR_BLACK:Int
+	Const COLOR_BLUE:Int
+	Const COLOR_GREEN:Int
+	Const COLOR_CYAN:Int
+	Const COLOR_RED:Int
+	Const COLOR_MAGENTA:Int
+	Const COLOR_YELLOW:Int
+	Const COLOR_WHITE:Int
+	
+	#If __TARGET__="windows"
+		Function getmouse:Int(event:MouseEvent Ptr)="nc_getmouse"
+	#Else
+		Function getmouse:Int(event:MouseEvent Ptr)
+	#Endif
+	
+	'/Standard /
+	
+	Function addch:Int( Int )
+	Function addchnstr:Int( Int, Int )
+	Function addchstr:Int( Int )
+	Function addnstr:Int( CString, Int )
+	Function addstr:Int( CString )
+	Function attroff:Int( Int )
+	Function attron:Int( Int )
+	Function attrset:Int( Int )
+	Function attr_get:Int( attribute:Int, Short )
+	Function attr_off:Int( attribute:Int )
+	Function attr_on:Int( attribute:Int )
+	Function attr_set:Int( attribute:Int, Short )
+	Function baudrate:Int()
+	Function beep:Int()
+	Function bkgd:Int( Int )
+	Function bkgdset:Void( Int )
+	Function border:Int( Int, Int, Int, Int, Int, Int, Int, Int )
+	Function box:Int( window:Window, Int, Int )
+	Function can_change_color:Bool()
+	Function cbreak:Int()
+	Function chgat:Int( Int, attribute:Int, Short )
+	Function clearok:Int( window:Window, Bool )
+	Function clear:Int()
+	Function clrtobot:Int()
+	Function clrtoeol:Int()
+	Function color_content:Int( Short, Short, Short, Short )
+	Function color_set:Int( Short )
+	Function copywin:Int( window:Window, Window, Int, Int, Int, Int, Int, Int, Int )
+	Function curs_set:Int( Int )
+	Function def_prog_mode:Int()
+	Function def_shell_mode:Int()
+	Function delay_output:Int( Int )
+	Function delch:Int()
+	Function deleteln:Int()
+	Function delscreen:Void( Screen )
+	Function delwin:Int( window:Window )
+	Function derwin:Window( window:Window, Int, Int, Int, Int )
+	Function doupdate:Int()
+	Function dupwin:Window( window:Window )
+	Function echochar:Int( Int )
+	Function echo:Int()
+	Function endwin:Int()
+	Function erasechar:CString()
+	Function erase:Int()
+	Function filter:Void()
+	Function flash:Int()
+	Function flushinp:Int()
+	Function getbkgd:Int( window:Window )
+	Function getnstr:Int( CString, Int )
+	Function getstr:Int( CString )
+	Function getwin:Window( FILE )
+	Function halfdelay:Int( Int )
+	Function has_colors:Bool()
+	Function has_ic:Bool()
+	Function has_il:Bool()
+	Function hline:Int( Int, Int )
+	Function idcok:Void( window:Window, Bool )
+	Function idlok:Int( window:Window, Bool )
+	Function immedok:Void( window:Window, Bool )
+	Function inchnstr:Int( Int, Int )
+	Function inchstr:Int( Int )
+	Function inch:Int()
+	Function init_color:Int( color:Short, r:Short, g:Short, b:Short )
+	Function init_pair:Int( pair:Short, fg:Short, bg:Short )
+	Function initscr:Window()
+	Function innstr:Int( CString, Int )
+	Function insch:Int( Int )
+	Function insdelln:Int( Int )
+	Function insertln:Int()
+	Function insnstr:Int( CString, Int )
+	Function insstr:Int( CString )
+	Function instr:Int( CString )
+	Function intrflush:Int( window:Window, Bool )
+	Function isendwin:Bool()
+	Function is_linetouched:Bool( window:Window, Int )
+	Function is_wintouched:Bool( window:Window )
+	Function keyname:CString( Int )
+	Function keypad:Int( window:Window, Bool )
+	Function killchar:CString()
+	Function leaveok:Int( window:Window, Bool )
+	Function longname:CString()
+	Function meta:Int( window:Window, Bool )
+	Function move:Int( Int, Int )
+	Function mvaddch:Int( Int, Int, Int )
+	Function mvaddchnstr:Int( Int, Int, Int, Int )
+	Function mvaddchstr:Int( Int, Int, Int )
+	Function mvaddnstr:Int( Int, Int, CString, Int )
+	Function mvaddstr:Int( Int, Int, CString )
+	Function mvchgat:Int( Int, Int, Int, attribute:Int, Short )
+	Function mvcur:Int( Int, Int, Int, Int )
+	Function mvdelch:Int( Int, Int )
+	Function mvderwin:Int( window:Window, Int, Int )
+	Function mvgetch:Int( Int, Int )
+	Function mvgetnstr:Int( Int, Int, CString, Int )
+	Function mvgetstr:Int( Int, Int, CString )
+	Function mvhline:Int( Int, Int, Int, Int )
+	Function mvinch:Int( Int, Int )
+	Function mvinchnstr:Int( Int, Int, Int, Int )
+	Function mvinchstr:Int( Int, Int, Int )
+	Function mvinnstr:Int( Int, Int, CString, Int )
+	Function mvinsch:Int( Int, Int, Int )
+	Function mvinsnstr:Int( Int, Int, CString, Int )
+	Function mvinsstr:Int( Int, Int, CString )
+	Function mvinstr:Int( Int, Int, CString )
+	Function mvprintw:Int( Int, Int, CString )
+	Function mvscanw:Int( Int, Int, CString )
+	Function mvvline:Int( Int, Int, Int, Int )
+	Function mvwaddchnstr:Int( window:Window, Int, Int, Int, Int )
+	Function mvwaddchstr:Int( window:Window, Int, Int, Int )
+	Function mvwaddch:Int( window:Window, Int, Int, Int )
+	Function mvwaddnstr:Int( window:Window, Int, Int, CString, Int )
+	Function mvwaddstr:Int( window:Window, Int, Int, CString )
+	Function mvwchgat:Int( window:Window, Int, Int, Int, attribute:Int, Short )
+	Function mvwdelch:Int( window:Window, Int, Int )
+	Function mvwgetch:Int( window:Window, Int, Int )
+	Function mvwgetnstr:Int( window:Window, Int, Int, CString, Int )
+	Function mvwgetstr:Int( window:Window, Int, Int, CString )
+	Function mvwhline:Int( window:Window, Int, Int, Int, Int )
+	Function mvwinchnstr:Int( window:Window, Int, Int, Int, Int )
+	Function mvwinchstr:Int( window:Window, Int, Int, Int )
+	Function mvwinch:Int( window:Window, Int, Int )
+	Function mvwinnstr:Int( window:Window, Int, Int, CString, Int )
+	Function mvwinsch:Int( window:Window, Int, Int, Int )
+	Function mvwinsnstr:Int( window:Window, Int, Int, CString, Int )
+	Function mvwinsstr:Int( window:Window, Int, Int, CString )
+	Function mvwinstr:Int( window:Window, Int, Int, CString )
+	Function mvwin:Int( window:Window, y:Int, x:Int )
+	Function mvwprintw:Int( window:Window, Int, Int, CString )
+	Function mvwscanw:Int( window:Window, Int, Int, CString )
+	Function mvwvline:Int( window:Window, Int, Int, Int, Int )
+	Function napms:Int( Int )
+	Function newpad:Window( Int, Int )
+	Function newterm:Screen( CString, FILE, FILE )
+	Function newwin:Window( w:Int, h:Int, x:Int, y:Int )
+	Function nl:Int()
+	Function nocbreak:Int()
+	Function nodelay:Int( window:Window, Bool )
+	Function noecho:Int()
+	Function nonl:Int()
+	Function noqiflush:Void()
+	Function noraw:Int()
+	Function notimeout:Int( window:Window, Bool )
+	Function overlay:Int( window:Window, Window )
+	Function overwrite:Int( window:Window, Window )
+	Function pair_content:Int( Short, Short, Short )
+	Function pechochar:Int( window:Window, Int )
+	Function pnoutrefresh:Int( window:Window, Int, Int, Int, Int, Int, Int )
+	Function prefresh:Int( window:Window, Int, Int, Int, Int, Int, Int )
+	Function printw:Int( CString )
+	Function putwin:Int( window:Window, FILE )
+	Function qiflush:Void()
+	Function raw:Int()
+	Function redrawwin:Int( window:Window )
+	Function refresh:Int()
+	Function reset_prog_mode:Int()
+	Function reset_shell_mode:Int()
+	Function resetty:Int()
+	Function ripoffline:Int( Int, func:Int(Window, int) )
+	Function savetty:Int()
+	Function scanw:Int( CString )
+	Function scr_dump:Int( CString )
+	Function scr_init:Int( CString )
+	Function scr_restore:Int( CString )
+	Function scr_set:Int( CString )
+	Function scrl:Int( Int )
+	Function scroll:Int( window:Window )
+	Function scrollok:Int( window:Window, Bool )
+	Function set_term:Screen( Screen )
+	Function setscrreg:Int( Int, Int )
+	Function slk_attroff:Int( Int )
+	Function slk_attr_off:Int( attribute:Int )
+	Function slk_attron:Int( Int )
+	Function slk_attr_on:Int( attribute:Int )
+	Function slk_attrset:Int( Int )
+	Function slk_attr_set:Int( attribute:Int, Short )
+	Function slk_clear:Int()
+	Function slk_color:Int( Short )
+	Function slk_init:Int( Int )
+	Function slk_label:CString( Int )
+	Function slk_noutrefresh:Int()
+	Function slk_refresh:Int()
+	Function slk_restore:Int()
+	Function slk_set:Int( Int, CString, Int )
+	Function slk_touch:Int()
+	Function standend:Int()
+	Function standout:Int()
+	Function start_color:Int()
+	Function subpad:Window( window:Window, Int, Int, Int, Int )
+	Function subwin:Window( window:Window, Int, Int, Int, Int )
+	Function syncok:Int( window:Window, Bool )
+	Function termattrs:Int()
+	Function term_attrs:Int()
+	Function termname:CString()
+	Function timeout:Void( Int )
+	Function touchline:Int( window:Window, Int, Int )
+	Function touchwin:Int( window:Window )
+	Function typeahead:Int( Int )
+	Function untouchwin:Int( window:Window )
+	Function use_env:Void( Bool )
+	Function vidattr:Int( Int )
+	Function vid_attr:Int( attribute:Int, Short )
+	Function vidputs:Int( Int, func:Int( Int ) )
+	Function vid_puts:Int( attribute:Int, Short, void, func:Int( Int ) )
+	Function vline:Int( Int, Int )
+'	Function vw_printw:Int( window:Window, CString, va_list )
+'	Function vwprintw:Int( window:Window, CString, va_list )
+'	Function vw_scanw:Int( window:Window, CString, va_list )
+'	Function vwscanw:Int( window:Window, CString, va_list )
+	Function waddchnstr:Int( window:Window, Int, Int )
+	Function waddchstr:Int( window:Window, Int )
+	Function waddch:Int( window:Window, Int )
+	Function waddnstr:Int( window:Window, CString, Int )
+	Function waddstr:Int( window:Window, CString )
+	Function wattroff:Int( window:Window, Int )
+	Function wattron:Int( window:Window, Int )
+	Function wattrset:Int( window:Window, Int )
+	Function wattr_get:Int( window:Window, attribute:Int, Short )
+	Function wattr_off:Int( window:Window, attribute:Int )
+	Function wattr_on:Int( window:Window, attribute:Int )
+	Function wattr_set:Int( window:Window, attribute:Int, Short )
+	Function wbkgdset:Void( window:Window, Int )
+	Function wbkgd:Int( window:Window, Int )
+	Function wborder:Int( window:Window, Int, Int, Int, Int, Int, Int, Int, Int )
+	Function wchgat:Int( window:Window, Int, attribute:Int, Short )
+	Function wclear:Int( window:Window )
+	Function wclrtobot:Int( window:Window )
+	Function wclrtoeol:Int( window:Window )
+	Function wcolor_set:Int( window:Window, Short )
+	Function wcursyncup:Void( window:Window )
+	Function wdelch:Int( window:Window )
+	Function wdeleteln:Int( window:Window )
+	Function wechochar:Int( window:Window, Int )
+	Function werase:Int( window:Window )
+	Function wgetch:Int( window:Window )
+	Function wgetnstr:Int( window:Window, CString, Int )
+	Function wgetstr:Int( window:Window, CString )
+	Function whline:Int( window:Window, Int, Int )
+	Function winchnstr:Int( window:Window, Int, Int )
+	Function winchstr:Int( window:Window, Int )
+	Function winch:Int( window:Window )
+	Function winnstr:Int( window:Window, CString, Int )
+	Function winsch:Int( window:Window, Int )
+	Function winsdelln:Int( window:Window, Int )
+	Function winsertln:Int( window:Window )
+	Function winsnstr:Int( window:Window, CString, Int )
+	Function winsstr:Int( window:Window, CString )
+	Function winstr:Int( window:Window, CString )
+	Function wmove:Int( window:Window, Int, Int )
+	Function wnoutrefresh:Int( window:Window )
+	Function wprintw:Int( window:Window, CString )
+	Function wredrawln:Int( window:Window, Int, Int )
+	Function wrefresh:Int( window:Window )
+	Function wscanw:Int( window:Window, CString )
+	Function wscrl:Int( window:Window, Int )
+	Function wsetscrreg:Int( window:Window, Int, Int )
+	Function wstandend:Int( window:Window )
+	Function wstandout:Int( window:Window )
+	Function wsyncdown:Void( window:Window )
+	Function wsyncup:Void( window:Window )
+	Function wtimeout:Void( window:Window, Int )
+	Function wtouchln:Int( window:Window, Int, Int, Int )
+	Function wvline:Int( window:Window, Int, Int )
+	
+	'/Wide-character functions /
+	
+	#rem PDC_WIDE
+	Function int addnwstr( wchar_t, Int )
+	Function int addwstr( wchar_t )
+	Function int add_wch( cchar_t )
+	Function int add_wchnstr( cchar_t, Int )
+	Function int add_wchstr( cchar_t )
+	Function int bkgrnd( cchar_t )
+	Function void bkgrndset( cchar_t )
+	Function int border_set( cchar_t, cchar_t, cchar_t ,
+	 cchar_t, cchar_t, cchar_t ,
+	 cchar_t, cchar_t )
+	Function int box_set(Window, cchar_t, cchar_t )
+	Function int echo_wchar( cchar_t )
+	Function int erasewchar(wchar_t )
+	Function int getbkgrnd(cchar_t )
+	Function int getcchar( cchar_t, wchar_t, attribute:Int, Short )
+	Function int getn_wstr(wint_t, Int )
+	Function int get_wch(wint_t )
+	Function int get_wstr(wint_t )
+	Function int hline_set( cchar_t, Int )
+	Function int innwstr(wchar_t, Int )
+	Function int ins_nwstr( wchar_t, Int )
+	Function int ins_wch( cchar_t )
+	Function int ins_wstr( wchar_t )
+	Function int inwstr(wchar_t )
+	Function int in_wch(cchar_t )
+	Function int in_wchnstr(cchar_t, Int )
+	Function int in_wchstr(cchar_t )
+	Function CString key_name(wchar_t )
+	Function int killwchar(wchar_t )
+	Function int mvaddnwstr(Int, Int, wchar_t, Int )
+	Function int mvaddwstr(Int, Int, wchar_t )
+	Function int mvadd_wch(Int, Int, cchar_t )
+	Function int mvadd_wchnstr(Int, Int, cchar_t, Int )
+	Function int mvadd_wchstr(Int, Int, cchar_t )
+	Function int mvgetn_wstr(Int, Int, wint_t, Int )
+	Function int mvget_wch(Int, Int, wint_t )
+	Function int mvget_wstr(Int, Int, wint_t )
+	Function int mvhline_set(Int, Int, cchar_t, Int )
+	Function int mvinnwstr(Int, Int, wchar_t, Int )
+	Function int mvins_nwstr(Int, Int, wchar_t, Int )
+	Function int mvins_wch(Int, Int, cchar_t )
+	Function int mvins_wstr(Int, Int, wchar_t )
+	Function int mvinwstr(Int, Int, wchar_t )
+	Function int mvin_wch(Int, Int, cchar_t )
+	Function int mvin_wchnstr(Int, Int, cchar_t, Int )
+	Function int mvin_wchstr(Int, Int, cchar_t )
+	Function int mvvline_set(Int, Int, cchar_t, Int )
+	Function int mvwaddnwstr(Window, Int, Int, wchar_t, Int )
+	Function int mvwaddwstr(Window, Int, Int, wchar_t )
+	Function int mvwadd_wch(Window, Int, Int, cchar_t )
+	Function int mvwadd_wchnstr(Window, Int, Int, cchar_t, Int )
+	Function int mvwadd_wchstr(Window, Int, Int, cchar_t )
+	Function int mvwgetn_wstr(Window, Int, Int, wint_t, Int )
+	Function int mvwget_wch(Window, Int, Int, wint_t )
+	Function int mvwget_wstr(Window, Int, Int, wint_t )
+	Function int mvwhline_set(Window, Int, Int, cchar_t, Int )
+	Function int mvwinnwstr(Window, Int, Int, wchar_t, Int )
+	Function int mvwins_nwstr(Window, Int, Int, wchar_t, Int )
+	Function int mvwins_wch(Window, Int, Int, cchar_t )
+	Function int mvwins_wstr(Window, Int, Int, wchar_t )
+	Function int mvwin_wch(Window, Int, Int, cchar_t )
+	Function int mvwin_wchnstr(Window, Int, Int, cchar_t, Int )
+	Function int mvwin_wchstr(Window, Int, Int, cchar_t )
+	Function int mvwinwstr(Window, Int, Int, wchar_t )
+	Function int mvwvline_set(Window, Int, Int, cchar_t, Int )
+	Function int pecho_wchar(Window, cchar_t)
+	Function int setcchar(cchar_t, wchar_t, attribute:Int,
+	 Short, void)
+	Function int slk_wset(Int, wchar_t, Int )
+	Function int unget_wch( wchar_t )
+	Function int vline_set( cchar_t, Int )
+	Function int waddnwstr(Window, wchar_t, Int )
+	Function int waddwstr(Window, wchar_t )
+	Function int wadd_wch(Window, cchar_t )
+	Function int wadd_wchnstr(Window, cchar_t, Int )
+	Function int wadd_wchstr(Window, cchar_t )
+	Function int wbkgrnd(Window, cchar_t )
+	Function void wbkgrndset(Window, cchar_t )
+	Function int wborder_set(Window, cchar_t, cchar_t ,
+	 cchar_t, cchar_t, cchar_t ,
+	 cchar_t, cchar_t, cchar_t )
+	Function int wecho_wchar(Window, cchar_t )
+	Function int wgetbkgrnd(Window, cchar_t )
+	Function int wgetn_wstr(Window, wint_t, Int )
+	Function int wget_wch(Window, wint_t )
+	Function int wget_wstr(Window, wint_t )
+	Function int whline_set(Window, cchar_t, Int )
+	Function int winnwstr(Window, wchar_t, Int )
+	Function int wins_nwstr(Window, wchar_t, Int )
+	Function int wins_wch(Window, cchar_t )
+	Function int wins_wstr(Window, wchar_t )
+	Function int winwstr(Window, wchar_t )
+	Function int win_wch(Window, cchar_t )
+	Function int win_wchnstr(Window, cchar_t, Int )
+	Function int win_wchstr(Window, cchar_t )
+	Function wchar_t wunctrl(cchar_t )
+	Function int wvline_set(Window, cchar_t, Int )
+	#end
+	
+	'/Quasi-standard /
+	
+	Function getattrs:Int( window:Window )
+	Function getbegx:Int( window:Window )
+	Function getbegy:Int( window:Window )
+	Function getmaxx:Int( window:Window )
+	Function getmaxy:Int( window:Window )
+	Function getparx:Int( window:Window )
+	Function getpary:Int( window:Window )
+	Function getcurx:Int( window:Window )
+	Function getcury:Int( window:Window )
+	Function traceoff:Void()
+	Function traceon:Void()
+	Function unctrl:CString( Int )
+	Function crmode:Int()
+	Function nocrmode:Int()
+	Function draino:Int( Int )
+	Function resetterm:Int()
+	Function fixterm:Int()
+	Function saveterm:Int()
+	Function setsyx:Int( Int, Int )
+	Function mouse_set:Int( ULong )
+	Function mouse_on:Int( ULong )
+	Function mouse_off:Int( ULong )
+	Function request_mouse_pos:Int()
+	Function map_button:Int( ULong )
+	Function wmouse_position:Void( window:Window, Int, Int )
+'	Function getmouse:ULong()
+	Function getbmap:ULong()
+	
+	'/ncurses /
+	
+	Function assume_default_colors:Int( fg:Int, bg:Int )
+	Function curses_version:CString()
+	Function has_key:Bool( Int )
+	Function use_default_colors:Int()
+	Function wresize:Int( window:Window, Int, Int )
+	Function mouseinterval:Int( Int )
+	Function mousemask:mmask_t( mmask_t, mmask_t Ptr )
+	Function mouse_trafo:Bool( Int, Int, Bool )
+'	Function nc_getmouse:Int( MouseEvent )
+	Function ungetmouse:Int( MouseEvent )
+	Function wenclose:Bool( window:Window, Int, Int )
+	Function wmouse_trafo:Bool( window:Window, Int, Int, Bool )
+	
+	'/*** Functions defined as macros **
+	
+	Function getch:Int()
+	
+	Function COLOR_PAIR:Int( pair:Int )
+	Function PAIR_NUMBER:Int( number:Int )
+	
+	Function getbegyx( w:Window, y:Int Ptr, x:Int Ptr )
+	Function getmaxyx( w:Window, y:Int, x:Int )
+	Function getparyx( w:Window, y:Int Ptr, x:Int Ptr )
+	Function getyx( w:Window, y:Int Ptr, x:Int Ptr )
+	
+	Function getsyx( y:Int Ptr, x:Int Ptr )

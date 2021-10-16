@@ -1,0 +1,69 @@
+#Import "<ncurses>"
+Using ncurses..
+
+Function Main()
+	
+	initscr()
+	nodelay( stdscr, True )
+	noecho()
+	
+	curs_set(0)
+	start_color()
+'	assume_default_colors(8,-1)
+'	use_default_colors()
+	
+	
+	
+	Local w:=newwin(10,32,4,(COLS-32)/2)
+	'Local p:=init_pair(1, COLOR_GREEN, COLOR_BLACK)
+	
+	init_pair(1, COLOR_RED, COLOR_BLACK)
+	init_pair(2, COLOR_GREEN, COLOR_BLACK)
+	init_pair(3, COLOR_CYAN, COLOR_BLACK)
+	
+	wattron(w,COLOR_PAIR(0))
+	
+	Local oldmask:mmask_t
+	Local newmask:=mousemask(ALL_MOUSE_EVENTS, Varptr oldmask)
+	
+	box(w,0,0)
+	wattron(w,COLOR_PAIR(1))
+	mvwprintw(w,1,2,"has_colors="+(has_colors()?"True"Else"false"))
+	wattroff(w,COLOR_PAIR(1))
+	mvwprintw(w,2,2,"can_change_colors="+(can_change_color()?"True"Else"false"))
+	wattron(w,A_BOLD)
+	mvwprintw(w,4,2,"("+LINES+","+COLS+")")
+	wattroff(w,A_BOLD)
+	mvwprintw(w,8,2,"Escape/Q To Quit")
+	
+	mvwprintw(w,6,2,"press a key")
+	mvwprintw(w,5,2,"click the mouse")
+	
+	wrefresh(w)
+	
+	keypad(w,True)
+	
+	Local e:MouseEvent
+	
+	While True
+		Local key:=wgetch(w)
+		wattron(w, COLOR_PAIR(2) )
+		mvwprintw(w,6,2,"key="+key+"      ")
+		wattroff(w, COLOR_PAIR(2) )
+		If key=27 exit
+		If key=113 exit
+		#rem
+		If key=KEY_MOUSE
+			Local r:=getmouse(Varptr e)
+			If r=OK
+				Local bits:Int'=e.bstate
+				wattron(w, COLOR_PAIR(3) )
+				mvwprintw(w,5,2,"mouse="+e.id+","+e.x+","+e.y+","+e.z+","+bits)
+				wattroff(w, COLOR_PAIR(3) )
+			Endif
+		Endif
+		#end
+	Wend
+	
+	endwin()
+End
