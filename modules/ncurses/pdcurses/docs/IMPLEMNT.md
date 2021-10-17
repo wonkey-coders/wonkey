@@ -1,6 +1,8 @@
 PDCurses Implementor's Guide
 ============================
 
+- Version 1.5 - 2019/05/?? - PDC_has_mouse()
+- Version 1.4 - 2018/12/31 - PDCurses.md -> USERS.md, MANUAL.md; new dir
 - Version 1.3 - 2018/01/12 - notes about official ports, new indentation
                              style; markdown
 - Version 1.2 - 2007/07/11 - added PDC_init_pair(), PDC_pair_content(),
@@ -10,10 +12,9 @@ PDCurses Implementor's Guide
 
 This document is for those wishing to port PDCurses to a new platform,
 or just wanting to better understand how it works. Nothing here should
-be needed for application programming; for that, refer to PDCurses.md,
-as built in doc/, or distributed as a file separate from this source
-package. This document assumes that you've read the user-level
-documentation and are very familiar with application-level curses
+be needed for application programming; for that, refer to [USERS.md] and
+[MANUAL.md], in man/ . This document assumes that you've read the user-
+level documentation and are very familiar with application-level curses
 programming.
 
 If you want to submit your port for possible inclusion into the main
@@ -145,6 +146,13 @@ if no other keys were pressed in the meantime; i.e., the return should
 happen on key up. But if this is not possible, it may return the
 modifier keys on key down (if and only if SP->return_key_modifiers is
 TRUE).
+
+### bool PDC_has_mouse(void);
+
+Called from has_mouse(). Reports whether mouse support is available. Can
+be a static TRUE or FALSE, or dependent on conditions. Note: Activating
+mouse support should depend only on PDC_mouse_set(); don't expect the
+user to call has_mouse() first.
 
 ### int PDC_modifiers_set(void);
 
@@ -327,3 +335,6 @@ pdcsetsc.c:
 ### int PDC_set_blink(bool blinkon);
 ### int PDC_set_bold(bool boldon);
 ### void PDC_set_title(const char *title);
+
+[USERS.md]: USERS.md
+[MANUAL.md]: MANUAL.md

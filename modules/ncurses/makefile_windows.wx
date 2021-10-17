@@ -16,7 +16,7 @@ Namespace ncurses
 #Import "pdcurses/pdcurses/debug.c"
 #Import "pdcurses/pdcurses/delch.c"
 #Import "pdcurses/pdcurses/deleteln.c"
-#Import "pdcurses/pdcurses/deprec.c"
+'#Import "pdcurses/pdcurses/deprec.c"   ' removed for pdcurses 3.9 update, by Danilo 2021/10/17
 #Import "pdcurses/pdcurses/getch.c"
 #Import "pdcurses/pdcurses/getstr.c"
 #Import "pdcurses/pdcurses/getyx.c"
@@ -42,7 +42,7 @@ Namespace ncurses
 #Import "pdcurses/pdcurses/scr_dump.c"
 #Import "pdcurses/pdcurses/slk.c"
 #Import "pdcurses/pdcurses/termattr.c"
-#Import "pdcurses/pdcurses/terminfo.c"
+'#Import "pdcurses/pdcurses/terminfo.c" ' removed for pdcurses 3.9 update, by Danilo 2021/10/17
 #Import "pdcurses/pdcurses/touch.c"
 #Import "pdcurses/pdcurses/util.c"
 #Import "pdcurses/pdcurses/window.c"
