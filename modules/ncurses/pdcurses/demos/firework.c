@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <signal.h>
 #include <curses.h>
-#include <ctype.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <time.h>
 
 #define DELAYSIZE 200
@@ -29,6 +25,7 @@ int main(int argc, char **argv)
 #else
     initscr();
 #endif
+    keypad(stdscr, TRUE);
     nodelay(stdscr, TRUE);
     noecho();
 

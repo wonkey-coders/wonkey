@@ -1,4 +1,4 @@
-/* Public Domain Curses */
+/* PDCurses */
 
 #if defined(PDC_WIDE) && !defined(UNICODE)
 # define UNICODE
@@ -13,16 +13,15 @@
 # define _CRT_SECURE_NO_DEPRECATE 1   /* kill nonsense warnings */
 #endif
 
-#ifdef CHTYPE_LONG
-# define PDC_ATTR_SHIFT 17
-#else
-# define PDC_ATTR_SHIFT 8
-#endif
+typedef struct {short r, g, b; bool mapped;} PDCCOLOR;
 
-extern WORD *pdc_atrtab;
+extern PDCCOLOR pdc_color[PDC_MAXCOL];
+
 extern HANDLE pdc_con_out, pdc_con_in;
 extern DWORD pdc_quick_edit;
 extern DWORD pdc_last_blink;
+extern short pdc_curstoreal[16], pdc_curstoansi[16];
+extern short pdc_oldf, pdc_oldb, pdc_oldu;
+extern bool pdc_conemu, pdc_ansi;
 
-extern int PDC_get_buffer_rows(void);
 extern void PDC_blink_text(void);

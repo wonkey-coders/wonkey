@@ -1,4 +1,4 @@
-/* Public Domain Curses */
+/* PDCurses */
 
 #include <curspriv.h>
 
@@ -9,13 +9,13 @@ color
 
 ### Synopsis
 
+    bool has_colors(void);
     int start_color(void);
     int init_pair(short pair, short fg, short bg);
-    int init_color(short color, short red, short green, short blue);
-    bool has_colors(void);
-    bool can_change_color(void);
-    int color_content(short color, short *red, short *green, short *blue);
     int pair_content(short pair, short *fg, short *bg);
+    bool can_change_color(void);
+    int init_color(short color, short red, short green, short blue);
+    int color_content(short color, short *red, short *green, short *blue);
 
     int assume_default_colors(int f, int b);
     int use_default_colors(void);
@@ -24,52 +24,54 @@ color
 
 ### Description
 
-   To use these routines, start_color() must be called, usually
-   immediately after initscr(). Colors are always used in pairs,
-   referred to as color-pairs. A color-pair consists of a
-   foreground color and a background color. A color-pair is
-   initialized via init_pair(). After initialization, COLOR_PAIR(n)
-   can be used like any other video attribute.
+   To use these routines, first, call start_color(). Colors are always
+   used in pairs, referred to as color-pairs. A color-pair is created by
+   init_pair(), and consists of a foreground color and a background
+   color. After initialization, COLOR_PAIR(n) can be used like any other
+   video attribute.
+
+   has_colors() reports whether the terminal supports color.
 
    start_color() initializes eight basic colors (black, red, green,
-   yellow, blue, magenta, cyan, and white), and two global
-   variables; COLORS and COLOR_PAIRS (respectively defining the
-   maximum number of colors and color-pairs the terminal is capable
-   of displaying).
+   yellow, blue, magenta, cyan, and white), and two global variables:
+   COLORS and COLOR_PAIRS (respectively defining the maximum number of
+   colors and color-pairs the terminal is capable of displaying).
 
-   init_pair() changes the definition of a color-pair. It takes
-   three arguments: the number of the color-pair to be redefined,
-   and the new values of the foreground and background colors. The
-   pair number must be between 0 and COLOR_PAIRS - 1, inclusive.
-   The foreground and background must be between 0 and COLORS - 1,
-   inclusive. If the color pair was previously initialized, the
-   screen is refreshed, and all occurrences of that color-pair are
-   changed to the new definition.
+   init_pair() changes the definition of a color-pair. It takes three
+   arguments: the number of the color-pair to be redefined, and the new
+   values of the foreground and background colors. The pair number must
+   be between 0 and COLOR_PAIRS - 1, inclusive. The foreground and
+   background must be between 0 and COLORS - 1, inclusive. If the color
+   pair was previously initialized, the screen is refreshed, and all
+   occurrences of that color-pair are changed to the new definition.
 
-   has_colors() indicates if the terminal supports, and can
-   maniplulate color. It returns TRUE or FALSE.
+   pair_content() is used to determine what the colors of a given color-
+   pair consist of.
 
-   can_change_color() indicates if the terminal has the capability
-   to change the definition of its colors.
+   can_change_color() indicates if the terminal has the capability to
+   change the definition of its colors.
 
-   pair_content() is used to determine what the colors of a given
-   color-pair consist of.
+   init_color() is used to redefine a color, if possible. Each of the
+   components -- red, green, and blue -- is specified in a range from 0
+   to 1000, inclusive.
 
-   assume_default_colors() and use_default_colors() emulate the
-   ncurses extensions of the same names. assume_default_colors(f,
-   b) is essentially the same as init_pair(0, f, b) (which isn't
-   allowed); it redefines the default colors. use_default_colors()
-   allows the use of -1 as a foreground or background color with
-   init_pair(), and calls assume_default_colors(-1, -1); -1
-   represents the foreground or background color that the terminal
-   had at startup. If the environment variable PDC_ORIGINAL_COLORS
-   is set at the time start_color() is called, that's equivalent to
-   calling use_default_colors().
+   color_content() reports the current definition of a color in the same
+   format as used by init_color().
+
+   assume_default_colors() and use_default_colors() emulate the ncurses
+   extensions of the same names. assume_default_colors(f, b) is
+   essentially the same as init_pair(0, f, b) (which isn't allowed); it
+   redefines the default colors. use_default_colors() allows the use of
+   -1 as a foreground or background color with init_pair(), and calls
+   assume_default_colors(-1, -1); -1 represents the foreground or
+   background color that the terminal had at startup. If the environment
+   variable PDC_ORIGINAL_COLORS is set at the time start_color() is
+   called, that's equivalent to calling use_default_colors().
 
    PDC_set_line_color() is used to set the color, globally, for the
-   color of the lines drawn for the attributes: A_UNDERLINE, A_LEFT
-   and A_RIGHT. A value of -1 (the default) indicates that the
-   current foreground color should be used.
+   color of the lines drawn for the attributes: A_UNDERLINE, A_LEFT and
+   A_RIGHT. A value of -1 (the default) indicates that the current
+   foreground color should be used.
 
    NOTE: COLOR_PAIR() and PAIR_NUMBER() are implemented as macros.
 
@@ -79,16 +81,16 @@ color
    has_colors() and can_change_colors(), which return TRUE or FALSE.
 
 ### Portability
-                             X/Open    BSD    SYS V
-    start_color                 Y       -      3.2
-    init_pair                   Y       -      3.2
-    init_color                  Y       -      3.2
-    has_colors                  Y       -      3.2
-    can_change_color            Y       -      3.2
-    color_content               Y       -      3.2
-    pair_content                Y       -      3.2
-    assume_default_colors       -       -       -
-    use_default_colors          -       -       -
+                             X/Open  ncurses  NetBSD
+    has_colors                  Y       Y       Y
+    start_color                 Y       Y       Y
+    init_pair                   Y       Y       Y
+    pair_content                Y       Y       Y
+    can_change_color            Y       Y       Y
+    init_color                  Y       Y       Y
+    color_content               Y       Y       Y
+    assume_default_colors       -       Y       Y
+    use_default_colors          -       Y       Y
     PDC_set_line_color          -       -       -
 
 **man-end****************************************************************/
@@ -98,8 +100,6 @@ color
 
 int COLORS = 0;
 int COLOR_PAIRS = PDC_COLOR_PAIRS;
-
-bool pdc_color_started = FALSE;
 
 /* pair_set[] tracks whether a pair has been set via init_pair() */
 
@@ -111,10 +111,10 @@ int start_color(void)
 {
     PDC_LOG(("start_color() - called\n"));
 
-    if (SP->mono)
+    if (!SP || SP->mono)
         return ERR;
 
-    pdc_color_started = TRUE;
+    SP->color_started = TRUE;
 
     PDC_set_blink(FALSE);   /* Also sets COLORS */
 
@@ -141,7 +141,7 @@ int init_pair(short pair, short fg, short bg)
 {
     PDC_LOG(("init_pair() - called: pair %d fg %d bg %d\n", pair, fg, bg));
 
-    if (!pdc_color_started || pair < 1 || pair >= COLOR_PAIRS ||
+    if (!SP || !SP->color_started || pair < 1 || pair >= COLOR_PAIRS ||
         fg < first_col || fg >= COLORS || bg < first_col || bg >= COLORS)
         return ERR;
 
@@ -172,17 +172,19 @@ bool has_colors(void)
 {
     PDC_LOG(("has_colors() - called\n"));
 
-    return !(SP->mono);
+    return SP ? !(SP->mono) : FALSE;
 }
 
 int init_color(short color, short red, short green, short blue)
 {
     PDC_LOG(("init_color() - called\n"));
 
-    if (color < 0 || color >= COLORS || !PDC_can_change_color() ||
-        red < 0 || red > 1000 || green < 0 || green > 1000 ||
-        blue < 0 || blue > 1000)
+    if (!SP || color < 0 || color >= COLORS || !PDC_can_change_color() ||
+        red < -1 || red > 1000 || green < -1 || green > 1000 ||
+        blue < -1 || blue > 1000)
         return ERR;
+
+    SP->dirty = TRUE;
 
     return PDC_init_color(color, red, green, blue);
 }
@@ -235,7 +237,7 @@ int assume_default_colors(int f, int b)
     if (f < -1 || f >= COLORS || b < -1 || b >= COLORS)
         return ERR;
 
-    if (pdc_color_started)
+    if (SP->color_started)
     {
         short fg, bg, oldfg, oldbg;
 
@@ -269,7 +271,7 @@ int PDC_set_line_color(short color)
 {
     PDC_LOG(("PDC_set_line_color() - called: %d\n", color));
 
-    if (color < -1 || color >= COLORS)
+    if (!SP || color < -1 || color >= COLORS)
         return ERR;
 
     SP->line_color = color;
@@ -281,7 +283,7 @@ void PDC_init_atrtab(void)
 {
     short i, fg, bg;
 
-    if (pdc_color_started && !default_colors)
+    if (SP->color_started && !default_colors)
     {
         fg = COLOR_WHITE;
         bg = COLOR_BLACK;
