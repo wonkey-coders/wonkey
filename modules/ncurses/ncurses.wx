@@ -39,6 +39,17 @@ Using libc..
 	#Import "<panel.h>"
 	#Import "<libpanel.a>"
 
+#ElseIf __TARGET__="raspbian"
+	
+	' Enabled raspbian target, by Danilo, 2021/10/17
+	#Import "<libncurses.a>"
+	#Import "<libncursesw.a>"
+	#Import "<ncurses.h>"
+
+	' Include panel.h, by Danilo, 2021/10/17
+	#Import "<panel.h>"
+	#Import "<libpanel.a>"
+
 #Endif
 
 Extern
