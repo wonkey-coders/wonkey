@@ -1,0 +1,91 @@
+'
+' Panels test by Danilo, 2021/10/17
+'
+#Import "<ncurses>"
+Using ncurses..
+
+Function Main()
+	
+	If Not initscr() Then Print("Error initialising ncurses"); Return
+
+	wclear(stdscr)				'	 clear standard screen
+	curs_set(0)						' hide cursor
+
+	noecho()						' stop echoing pressed keys
+	keypad(stdscr, True)
+	wbkgd(stdscr,Chars.Space)		' set screen background character
+
+	start_color()					' initialize some color pairs
+	init_pair(1,COLOR_BLACK,COLOR_WHITE)
+	init_pair(2,COLOR_RED,COLOR_WHITE)
+	init_pair(3,COLOR_WHITE,COLOR_BLUE)
+	init_pair(4,COLOR_YELLOW,COLOR_BLUE)
+	init_pair(5,COLOR_MAGENTA,COLOR_CYAN)
+	
+	Local rows:Int, cols:Int
+	getmaxyx(stdscr, rows, cols)	' get the screen size
+	
+	Local panels:Panel[] = New Panel[5]
+
+	' panels[0] is a window we use as top menu
+	Local menu := newwin(1,cols,0,0) ' create menu window
+	wbkgd(menu,COLOR_PAIR(1))        ' set window background color
+	wattrset(menu,COLOR_PAIR(1))     ' activate color pair 1
+	mvwaddstr(menu,0, 1, "File  Edit  Search  Build") ' write text
+	panels[0] = new_panel(menu)      ' create the panel
+
+	' set screen background color
+	wbkgd(stdscr,COLOR_PAIR(5))
+	' write to screen background
+	mvwaddstr(stdscr,2, 0, "ESC or 'q' to quit.~n'1','2','3','4' to choose window.~nCursor keys to move active window.")
+
+	' create the windows
+	' set colors and border (box)
+	' write to windows
+	' create panels from windows
+	For Local i := 1 To 4
+		Local window := newwin(10,20+3*i,4+2*i,3+3*i)
+		wattron(window,COLOR_PAIR(3))
+			wbkgd(window,COLOR_PAIR(3))
+			box(window, 0, 0)
+		wattroff(window,COLOR_PAIR(3))
+		wattron(window,COLOR_PAIR(4)|A_BOLD)
+			mvwaddstr(window, 1, 1, "Window "+i)
+		wattroff(window,COLOR_PAIR(4)|A_BOLD)
+		panels[i] = new_panel(window)
+	Next
+	
+	Local win_x:Int, win_y:Int, win_topmost:Int = 4
+	
+	While True
+		update_panels() ' update all panels (off-screen refresh)
+		doupdate()      ' present updates to screen
+		'refresh()
+
+		' get win_x and win_y for topmost panel window
+		getbegyx( panel_window(panels[win_topmost]), win_y, win_x )
+
+		Local key:=wgetch(stdscr)
+		Select key
+			Case Chars.Escape, Chars.q, Chars.Q
+				Exit
+			Case Chars._1, Chars._2, Chars._3, Chars._4 ' change topmost panel
+				win_topmost = 1+(key-Int(Chars._1))
+				top_panel(panels[win_topmost])
+				getbegyx( panel_window(panels[win_topmost]), win_y, win_x )
+			Case KEY_LEFT
+				win_x -= 1
+			Case KEY_RIGHT
+				win_x += 1
+			Case KEY_UP
+				win_y -= 1
+				If win_y < 1 Then win_y = 1 ' respect top menu
+			Case KEY_DOWN
+				win_y += 1
+		End Select
+		' set topmost panel position using win_x and win_y
+		move_panel(panels[win_topmost],win_y,win_x)
+	Wend
+	
+	endwin()
+End
