@@ -100,24 +100,77 @@ Follow the next steps to build :
 3. If all went well, you should end up with a 'Wonkey (windows)' exe in the wonkey directory. Run this to launch the WIDE (Wonkey IDE).
 4. You should now be able to build and run wonkey apps. There are some sample apps in the 'wonkey/examples' directory.
 
-### MacOS/Linux
+### MacOS/Linux/Raspberry Pi
 
 * On **MacOS**, install the XCode command line tools. You can do this by entering in a shell :
 
-```shell
-xcode-select --install
-```
+	* ```shell
+		xcode-select --install
+		```
+		
+		Additionally you need to install the ncurses package:
+
+		1.) Using [Homebrew](https://brew.sh/):
+
+		```shell
+		brew install ncurses
+		```
+
+		See [https://formulae.brew.sh/formula/ncurses](https://formulae.brew.sh/formula/ncurses#default)
+
+		2.) If you like a visual package manager for Homebrew, use [Cakebrew](https://www.cakebrew.com/)
+
 
 * On **Linux**, install the GCC toolchain and libraries. You can do this by entering in a shell :
 
-```shell
-sudo apt-get install g++-multilib libopenal-dev libpulse-dev libsdl2-dev
-```
+	* ```shell
+		sudo apt-get install g++-multilib libopenal-dev libpulse-dev libsdl2-dev ncurses-dev
+		```
+
+	* You may want to use the following install script as an example:
+		
+		```shell
+		#
+		# Install Wonkey on Linux Mint (https://linuxmint.com) into %USER%/wonkey
+		#
+		cd ~/
+		sudo apt-get update
+		sudo apt-get install git g++-multilib libopenal-dev libpulse-dev libsdl2-dev
+		git clone -b develop --single-branch --depth 1 https://github.com/wonkey-coders/wonkey
+		cd wonkey/scripts
+		./rebuildall.sh
+		cd ..
+		./bin/linux/wide/wide
+		```
+
+* On **Raspberry Pi OS**, install the GCC toolchain and libraries. You can do this by entering in a shell :
+
+	* ```shell
+		sudo apt-get install git libopenal-dev libpulse-dev libsdl2-dev libncurses5-dev libncursesw5-dev libasound2-dev libudev-dev libxi-dev libxxf86vm-dev mesa-common-dev
+		```
+	
+	* You may want to use the following install script as an example:
+		
+		```shell
+		#
+		# Install Wonkey on Raspberry Pi 4 into %USER%/wonkey
+		#
+		cd ~/
+		sudo apt-get update
+		sudo apt-get install git libopenal-dev libpulse-dev libsdl2-dev libncurses5-dev libncursesw5-dev libasound2-dev libudev-dev libxi-dev libxxf86vm-dev mesa-common-dev
+		git clone -b develop --single-branch --depth 1 https://github.com/wonkey-coders/wonkey
+		cd wonkey/scripts
+		./rebuildall.sh
+		```
 
 Follow the next steps to build :
+
 1. Open a shell and change to the 'wonkey/scripts' directory.
+
 2. Enter `./rebuildall.sh` and hit return. Wait...
+
 3. If all went well, you should end up with a 'Wonkey (...)' app in the wonkey directory. Run this to launch the WIDE (Wonkey IDE).
+
 4. You should now be able to build and run wonkey apps. There are some sample apps in the 'wonkey/examples' directory.
 
 ----
