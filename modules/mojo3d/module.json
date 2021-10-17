@@ -4,5 +4,5 @@
 	"author":"Mark Sibly, Wonkey Coders",
 	"version":"1.0.0",
 	"support":"http://github.com/wonkey-coders",
-	"depends":["std","mojo"]
+	"depends":["std","mojo","reflection"]
 }
