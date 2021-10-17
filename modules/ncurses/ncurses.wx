@@ -16,17 +16,28 @@ Using libc..
 	
 	#Import "makefile_windows"
 	#Import "<curses.h>"
-	
+
+	' Include panel.h, by Danilo, 2021/10/17
+	#Import "<panel.h>"
+
 #ElseIf __TARGET__="macos"
 	
 	'#Import "makefile_macos"
 	#Import "<libncurses.a>"
 	#Import "<ncurses.h>"
 
+	' Include panel.h, by Danilo, 2021/10/17
+	#Import "<panel.h>"
+	#Import "<libpanel.a>"
+
 #ElseIf __TARGET__="linux"
 	
 	#Import "<libncurses.a>"
 	#Import "<ncurses.h>"
+
+	' Include panel.h, by Danilo, 2021/10/17
+	#Import "<panel.h>"
+	#Import "<libpanel.a>"
 
 #Endif
 
@@ -593,9 +604,100 @@ Extern
 	Function COLOR_PAIR:Int( pair:Int )
 	Function PAIR_NUMBER:Int( number:Int )
 	
-	Function getbegyx( w:Window, y:Int Ptr, x:Int Ptr )
-	Function getmaxyx( w:Window, y:Int, x:Int )
-	Function getparyx( w:Window, y:Int Ptr, x:Int Ptr )
-	Function getyx( w:Window, y:Int Ptr, x:Int Ptr )
+	Function getbegyx( w:Window, y:Int, x:Int ) ' removed 'Ptr' because it is macros
+	Function getmaxyx( w:Window, y:Int, x:Int ) ' Danilo, 2021/10/17
+	Function getparyx( w:Window, y:Int, x:Int ) '
+	Function getyx( w:Window, y:Int, x:Int )    '
+	                                            '
+	Function getsyx( y:Int, x:Int )             '
+
+
+	'------------------------------------------------------------
+	'
+	' Include panel.h, by Danilo, 2021/10/17
+	'
+	#rem wonkeydoc Panels for ncurses
+
+	Panels are managed Windows. When we have overlapping Windows,
+	the order of redrawing is very important. The Panel library
+	is used the to manage the order of the Windows:
 	
-	Function getsyx( y:Int Ptr, x:Int Ptr )
+	- topmost & bottom Window
+
+	- hide and show Windows
+
+	- move overlapping Windows around
+
+	- redraw overlapping Windows in correct order
+
+	#end
+	Class Panel Extends Void="PANEL"
+	End
+
+	#rem wonkeydoc Put a Panel to the bottom of the hierarchy.
+	#end
+	Function bottom_panel:Int(pan:Panel)
+
+	#rem wonkeydoc Delete a Panel.
+	#end
+	Function del_panel:Int(pan:Panel)
+
+	#rem wonkeydoc Hide a Panel.
+	#end
+	Function hide_panel:Int(pan:Panel)
+
+	#rem wonkeydoc Set the Panel x,y coordinates.
+	#end
+	Function move_panel:Int(pan:Panel, starty:Int, startx:Int)
+
+	#rem wonkeydoc Creates a new Panel from a Window.
+	The new Panel/Window is added as the topmost in the hierarchy.
+	#end
+	Function new_panel:Panel(win:Window)
+
+	#rem wonkeydoc Returns the Panel above a Panel in the hierarchy.
+	If pan is Null, the topmost Panel is returned.
+	#end
+	Function panel_above:Panel(pan:Panel)
+
+	#rem wonkeydoc Returns the Panel below a Panel in the hierarchy.
+	If pan is Null, the Panel at the bottom of the hierarchy is returned.
+	#end
+	Function panel_below:Panel(pan:Panel)
+
+	#rem wonkeydoc Returns the hidden state of a Panel.
+	#end
+	Function panel_hidden:Int(pan:Panel)
+
+	#rem wonkeydoc Get user data Pointer associated with a Panel.
+	#end
+	Function panel_userptr:Void Ptr(pan:Panel)
+
+	#rem wonkeydoc Returns the Window associated with the Panel.
+	#end
+	Function panel_window:Window(pan:Panel)
+
+	#rem wonkeydoc Replace the Window associated with a Panel
+	#end
+	Function replace_panel:Int(pan:Panel, win:Window)
+
+	#rem wonkeydoc Set user data Pointer associated with a Panel.
+	#end
+	Function set_panel_userptr:Int(pan:Panel, uptr:Void Ptr)
+
+	#rem wonkeydoc Show a hidden Panel
+	#end
+	Function show_panel:Int(pan:Panel)
+
+	#rem wonkeydoc Make a Panel the topmost.
+	#end
+	Function top_panel:Int(pan:Panel)
+
+	#rem wonkeydoc Update panel redrawing in correct order
+
+	After calling update_panels() you need to call doupdate()
+	to actually present the updated Panels/Windows on the screen.
+
+	#end
+	Function update_panels()
+	'------------------------------------------------------------
