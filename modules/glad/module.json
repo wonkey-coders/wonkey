@@ -5,5 +5,5 @@
 	"version":"1.0.0",
 	"targets":["desktop"],
 	"support": "https://github.com/Dav1dde/glad, https://github.com/wonkey-coders",
-	"depends":["libc"]
+	"depends":["libc","glfw"]
 }
