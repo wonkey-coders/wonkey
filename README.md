@@ -70,7 +70,7 @@ Targets:
 - [Windows](#windows)
 	- [Using GCC](#using-gcc)
 	- [Using MSVC](#using-msvc)
-- [MacOS/Linux](#macoslinux)
+- [MacOS/Linux/Raspberry Pi](#macoslinux)
 - [Emscripten](#emscripten)
 - [Android](#android)
 
