@@ -17,7 +17,7 @@ WX_MSVC_VERSIONS=2019,2017,2015
 
 'Build architecture: x86 or x64, x64 only working with msvc.
 '
-WX_ARCH_WINDOWS=x64
+WX_ARCH_WINDOWS=x86
 
 '--------------------------------------------------------------------------------------
 '----- External modules folders
@@ -58,21 +58,36 @@ PATH=${WX_HOME}\devtools\x86_64-8.1.0-release-posix-seh-rt_v6-rev0\mingw64\bin;$
 '
 GCC_EXEC_PREFIX=
 
+'
+'Note: comment/uncomment target architecture of your choice, see: 
+' - WX_LD_OPTS_WINDOWS
+' - WX_CC_OPTS_WINDOWS
+' - WX_CPP_OPTS_WINDOWS
+' - WX_AS_OPTS_WINDOWS
+' Need to rename 'wake' executable of your choice.
+
+
 'Linker options
-WX_LD_OPTS_WINDOWS=-s -static -m64
+'WX_LD_OPTS_WINDOWS=-s -static -m64
+WX_LD_OPTS_WINDOWS=-s -static -m32
 WX_LD_OPTS_WINDOWS_DEBUG=
 WX_LD_OPTS_WINDOWS_RELEASE=
 
 'C Compiler options. Note: -D_WIN32_WINNT=0x0601 means headers for Windows 7, ie: Windows 7 is min SDK!
-WX_CC_OPTS_WINDOWS=-std=gnu99 -D_WIN32_WINNT=0x0603 -m64 -Wa,-mbig-obj
+'WX_CC_OPTS_WINDOWS=-std=gnu99 -D_WIN32_WINNT=0x0603 -m64 -Wa,-mbig-obj
+WX_CC_OPTS_WINDOWS=-std=gnu99 -D_WIN32_WINNT=0x0603 -m32
 WX_CC_OPTS_WINDOWS_DEBUG=-O2
 WX_CC_OPTS_WINDOWS_RELEASE=-O3 -DNDEBUG
 
 'C++ Compiler options
-WX_CPP_OPTS_WINDOWS=-std=c++11 -D_WIN32_WINNT=0x0603 -m64 -Wa,-mbig-obj
+'WX_CPP_OPTS_WINDOWS=-std=c++11 -D_WIN32_WINNT=0x0603 -m64 -Wa,-mbig-obj
+WX_CPP_OPTS_WINDOWS=-std=c++11 -D_WIN32_WINNT=0x0603 -m32
 WX_CPP_OPTS_WINDOWS_DEBUG=-O2
 WX_CPP_OPTS_WINDOWS_RELEASE=-O3 -DNDEBUG
 
+
+'ASM Compiler options (force use 32bit, comment this for 64bit) - tested with MinGW 8.1.0
+WX_AS_OPTS_WINDOWS= --32
 
 '--------------------------------------------------------------------------------------
 '----- WINDOWS DESKTOP TARGET - MSVC
