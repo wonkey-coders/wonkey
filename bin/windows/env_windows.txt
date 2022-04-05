@@ -13,7 +13,7 @@ WX_THREADS=1
 WX_USE_MSVC=
 
 ' Autodetected version list of MSVC separated by colon, the first one found will be taken.
-WX_MSVC_VERSIONS=2019,2017,2015
+WX_MSVC_VERSIONS=2022,2019,2017,2015
 
 'Build architecture: x86 or x64, x64 only working with msvc.
 '

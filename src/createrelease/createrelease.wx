@@ -5,9 +5,9 @@
 Using libc..
 Using std..
 
-Const WONKEY_VERSION:="2021.04"
+Const WONKEY_VERSION:="2022.04"
 
-Const WAKE_VERSION:="1.0.0"
+Const WAKE_VERSION:="1.1.0"
 
 Const RELEASE_SUFFIX:=""
 
@@ -185,6 +185,14 @@ Function CopyFiles( dir:String )
 			End
 			If file.EndsWith("-mx2") Continue
 			If file.EndsWith("-bak") Or file.EndsWith("-bak.exe") Continue
+
+#if __TARGET__="windows"
+			If msvc 
+				If file.EndsWith("-gcc.exe") Continue
+			Else
+				If file.EndsWith("-msvc.exe") Continue
+			End
+#end
 		
 			Local dst:=output+"/"+dir+"/"+file
 			
@@ -282,7 +290,7 @@ Function Main()
 		If IsRootDir( CurrentDir() )
 			libc.exit_( -1 )
 		Endif
-		ChangeDir( ExtractDir( CurrentDir() ) )
+		ChangeDir( ExtractDir( StripSlashes( CurrentDir() ) ) )
 	Wend
 	
 	'if windows msvc
