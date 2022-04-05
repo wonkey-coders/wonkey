@@ -164,7 +164,7 @@ Const _HostOS:=""
 
 Const WONKEY_DOMAIN:="http://github.com/wonkey-coders"
 
-Global AppTitle:="Wide v1.0.0"
+Global AppTitle:="Wide v1.0.1"
 
 #If __TARGET__<>"macos"
 	Global AppStateFile:="bin/"+_HostOS+"/wide/wide.state.json"
