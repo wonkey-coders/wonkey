@@ -1003,28 +1003,28 @@ Struct Color
 	#rem wonkeydoc Adds another color or value to the color and returns the result.
 	#end
 	Operator+:Color( color:Color )
-		Return New Color( r+color.r,g+color.g,b+color.b,a+color.a )
+		Return New Color( Clamp(r+color.r,0,1), Clamp(g+color.g,0,1), Clamp(b+color.b,0,1), Clamp(a+color.a,0,1) )
 	End
 
 	Operator+:Color( offset:Float )
-		Return New Color( r+offset,g+offset,b+offset,a+offset )
+		Return New Color( Clamp(r+offset,0,1), Clamp(g+offset,0,1), Clamp(b+offset,0,1), Clamp(a+offset,0,1) )
 	End
 
 	#rem wonkeydoc Subtracts another color or value from the color and returns the result.
 	#end
 	Operator-:Color( color:Color )
-		Return New Color( r-color.r,g-color.g,b-color.b,a-color.a )
+		Return New Color( Clamp(r-color.r,0,1), Clamp(g-color.g,0,1), Clamp(b-color.b,0,1), Clamp(a-color.a,0,1) )
 	End
 
 	Operator-:Color( offset:Float )
-		Return New Color( r-offset,g-offset,b-offset,a-offset )
+		Return New Color( Clamp(r-offset,0,1), Clamp(g-offset,0,1), Clamp(b-offset,0,1), Clamp(a-offset,0,1) )
 	End
 	
 	#rem wonkeydoc Blends the color with another color and returns the result.
 	#end	
 	Method Blend:Color( color:Color,delta:Float )
 		Local idelta:=1-delta
-		Return New Color( r*idelta+color.r*delta,g*idelta+color.g*delta,b*idelta+color.b*delta,a*idelta+color.a*delta )
+		Return New Color( Clamp(r*idelta+color.r*delta,0,1), Clamp(g*idelta+color.g*delta,0,1), Clamp(b*idelta+color.b*delta,0,1), Clamp(a*idelta+color.a*delta,0,1) )
 	End
 
 	#rem wonkeydoc Converts the color to 32 bit big endian ARGB format.
