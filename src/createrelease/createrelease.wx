@@ -23,9 +23,23 @@ Const RELEASE_SUFFIX:=""
 	Const TARGET:= "???"
 #endif
 
+#if __ARCH__="x86"
+	Const ARCH:= "x86"
+#elseif __ARCH__="x64"
+	Const ARCH:= "x64"
+#else 'armXXX
+	#if __TARGET__="macos"
+		Const ARCH:= "arm64" 'Apple M1
+	#else
+		Const ARCH:= "arm32" 'Raspbian
+	#endif
+#endif
+
 Global TARGET_SUFFIX:=""
 
-Global OUTPUT:="" '--> "wonkey_"+TARGET+TARGET_SUFFIX+"_"+WONKEY_VERSION+RELEASE_SUFFIX
+Global OUTPUT:="" '--> "wonkey_"+WONKEY_VERSION+RELEASE_SUFFIX+"_"+TARGET+TARGET_SUFFIX+"_"+ARCH
+
+' Windows installer settings
 Global OUTPUT_DIR:=""
 Global OUTPUT_NAME:=""
 
@@ -60,6 +74,7 @@ Function CopyFiles( dir:String )
 	'Print "in directory: " + dir
 
 	'CreateDir( output+"/"+dir )
+	local arch:=""
 	
 	For Local file:=Eachin LoadDir( dir )
 		
@@ -73,10 +88,12 @@ Function CopyFiles( dir:String )
 		If dir.Contains( "bin/macos" ) Continue
 		If dir.Contains( "bin/linux" ) Continue
 		If dir.Contains( "bin/raspbian" ) Continue
+		if ARCH="x64" then arch="_x64"
 #elseif __TARGET__="macos"
 		If dir.Contains( "bin/windows" ) Continue
 		If dir.Contains( "bin/linux" ) Continue
 		If dir.Contains( "bin/raspbian" ) Continue
+		if ARCH="arm64" then arch="_arm64"
 #elseif __TARGET__="linux"
 		If dir.Contains( "bin/macos" ) Continue
 		If dir.Contains( "bin/windows" ) Continue
@@ -122,7 +139,7 @@ Function CopyFiles( dir:String )
 
 			Else If dir.Contains( ".buildv" )
 				
-				If Not src.Contains( "_mx" ) And Not src.EndsWith( "_mx" ) Continue
+				If Not src.Contains( arch+"_mx" ) And Not src.EndsWith( arch+"_mx" ) Continue
 				
 				If file.StartsWith( "emscripten_" ) Continue
 				If file.StartsWith( "android_" ) Continue
@@ -253,6 +270,12 @@ Function MakeInno()
 	iss.Push( "DefaultGroupName="+OUTPUT_NAME )
 	iss.Push( "DefaultDirName={sd}\"+OUTPUT_DIR )
 	iss.Push( "UninstallFilesDir={app}\bin\windows" )
+	iss.Push( "SolidCompression=yes")
+	iss.Push( "Compression=lzma2/ultra64")
+	iss.Push( "LZMAUseSeparateProcess=yes")
+	iss.Push( "LZMADictionarySize=1048576")
+	iss.Push( "LZMANumFastBytes=273")
+	iss.Push( "LZMANumBlockThreads=8")
 	iss.Push( "[Icons]" )
 	iss.Push( "Name: ~q{group}\Wonkey~q; Filename: ~q{app}\Wonkey (windows).exe~q; WorkingDir: ~q{app}~q" )
 	iss.Push( "Name: ~q{group}\Uninstall Wonkey~q; Filename: ~q{uninstallexe}~q" )
@@ -308,7 +331,9 @@ Function Main()
 	End
 			
 	' set output name
-	OUTPUT = "wonkey_"+TARGET+TARGET_SUFFIX+"_"+WONKEY_VERSION+RELEASE_SUFFIX
+	OUTPUT = "wonkey_"+WONKEY_VERSION+RELEASE_SUFFIX+"_"+TARGET+TARGET_SUFFIX+"_"+ARCH
+	
+	' Windows installer settings
 	OUTPUT_DIR = "wonkey_"+WONKEY_VERSION+RELEASE_SUFFIX
 	OUTPUT_NAME = "Wonkey "+WONKEY_VERSION+RELEASE_SUFFIX
 
