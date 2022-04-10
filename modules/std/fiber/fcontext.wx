@@ -22,9 +22,15 @@ Namespace std.fiber
 
 #Else If __TARGET__="macos"
 
-	#import "native/asm/make_x86_64_sysv_macho_gas.S"
-	#import "native/asm/jump_x86_64_sysv_macho_gas.S"
-	#import "native/asm/ontop_x86_64_sysv_macho_gas.S"
+	#if __ARCH__="x64"
+		#import "native/asm/make_x86_64_sysv_macho_gas.S"
+		#import "native/asm/jump_x86_64_sysv_macho_gas.S"
+		#import "native/asm/ontop_x86_64_sysv_macho_gas.S"
+	#elseif __ARCH__="arm64"
+		#import "native/asm/make_arm64_aapcs_macho_gas.S"
+		#import "native/asm/jump_arm64_aapcs_macho_gas.S"
+		#import "native/asm/ontop_arm64_aapcs_macho_gas.S"
+	#end
 
 #Else If __TARGET__="linux"
 

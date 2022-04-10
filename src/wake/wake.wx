@@ -594,11 +594,25 @@ Function ParseOpts:String[]( opts:BuildOpts,args:String[] )
 			'Fail( "x64 builds for windows currently only supported for msvc" )
 		Endif
 		
-	Case "macos","linux"
+	Case "linux"
 		
 		If Not opts.appType opts.appType="gui"
-		
+
 		opts.arch="x64"
+
+	Case "macos"
+		
+		If Not opts.appType opts.appType="gui"
+
+		local macos_arch:=GetEnv("WX_MACOS_ARCHS")
+
+		If macos_arch.Contains("-arch x86_64")
+			opts.arch="x64"
+		Elseif macos_arch.Contains("-arch arm64")
+			opts.arch="arm64"
+		Else
+			opts.arch="x64"
+		End
 		
 	Case "raspbian"
 

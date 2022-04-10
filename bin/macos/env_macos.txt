@@ -17,7 +17,12 @@
 '
 'WX_MODULE_DIRS="modules_ext;~/Wonkey Modules/"
 
-
+'Build architecture: select your choose for WX_MACOS_ARCHS variable depending on your architecture
+' for Mac Intel x64     : -arch x86_64 -target x86_64-apple-darwin
+' for Mac Silicon arm64 : -arch arm64 -target arm64-apple-darwin
+'
+WX_MACOS_ARCHS=-arch x86_64 -target x86_64-apple-darwin
+'WX_MACOS_ARCHS=-arch arm64 -target arm64-apple-darwin
 
 '--------------------------------------------------------------------------------------
 '----- MACOS DESKTOP TARGET
@@ -34,22 +39,22 @@ WX_APP_DIR_DYLIB=
 WX_APP_DIR_FRAMEWORK=../Frameworks
 
 'LD options
-WX_LD_OPTS_MACOS=-mmacosx-version-min=10.9 -Wl,-rpath,@executable_path -Wl,-rpath,@executable_path/../Frameworks
+WX_LD_OPTS_MACOS=-mmacosx-version-min=10.9 ${WX_MACOS_ARCHS} -Wl,-rpath,@executable_path -Wl,-rpath,@executable_path/../Frameworks
 WX_LD_OPTS_MACOS_DEBUG=
 WX_LD_OPTS_MACOS_RELEASE=-O3 -Wl,-dead_strip -Wl,-S -Wl,-x
 
 'C compiler options
-WX_CC_OPTS_MACOS=-std=gnu99 -mmacosx-version-min=10.9 -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality
+WX_CC_OPTS_MACOS=-std=gnu99 ${WX_MACOS_ARCHS} -mmacosx-version-min=10.9 -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality
 WX_CC_OPTS_MACOS_DEBUG=
 WX_CC_OPTS_MACOS_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 
 'C++ compiler options
-WX_CPP_OPTS_MACOS=-std=c++14 -mmacosx-version-min=10.9 -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality
+WX_CPP_OPTS_MACOS=-std=c++14 ${WX_MACOS_ARCHS} -mmacosx-version-min=10.9 -Wno-deprecated-declarations -Wno-tautological-pointer-compare -Wno-undefined-bool-conversion -Wno-int-to-void-pointer-cast -Wno-inconsistent-missing-override -Wno-logical-op-parentheses -Wno-parentheses-equality
 WX_CPP_OPTS_MACOS_DEBUG=
 WX_CPP_OPTS_MACOS_RELEASE=-O3 -DNDEBUG -ffunction-sections -fdata-sections
 
 'AS options
-WX_AS_OPTS=
+WX_AS_OPTS_MACOS=${WX_MACOS_ARCHS}
 
 '--------------------------------------------------------------------------------------
 '----- EMSCRIPTEN TARGET
