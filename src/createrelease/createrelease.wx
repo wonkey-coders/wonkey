@@ -151,6 +151,15 @@ Function CopyFiles( dir:String )
 					If file.StartsWith( "windows_" ) And file.Contains( "_msvc" ) Continue
 				End
 #end
+
+#if __TARGET__="macos"
+				If arch="x64"
+					If file.StartsWith( "macos_" ) And Not file.Contains( "_arm64" ) Continue
+				Else
+					If file.StartsWith( "macos_" ) And file.Contains( "_arm64" ) Continue
+				End
+#end
+
 				'If file.Contains( "_x64" ) Continue
 				If file="build" Continue
 				If file="src" Continue
