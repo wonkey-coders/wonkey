@@ -102,6 +102,10 @@ Class BuilderInstance
 		Elseif opts.target="ios"
 			
 			If opts.arch="x64" profileName+="_x64"
+		
+		Elseif opts.target="macos"
+			
+			If opts.arch="arm64" profileName+="_arm64"
 				
 		Endif
 		
