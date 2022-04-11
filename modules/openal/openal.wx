@@ -21,9 +21,11 @@
 	
 #else if __TARGET__="macos"
 	
-'	#Import "<OpenAL.framework>"	'built-in openal on macos is borked.
-		
-	#Import "native/libopenal.dylib"
+	#if __ARCH__="arm64"
+		#Import "<OpenAL.framework>"
+	#else
+		#Import "native/libopenal.dylib"
+	#end
 	
 	#Import "<OpenAL/al.h>"
 	#Import "<OpenAL/alc.h>"
