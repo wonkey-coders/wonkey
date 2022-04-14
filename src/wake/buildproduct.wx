@@ -310,7 +310,7 @@ Class BuildProduct
 
 				If opts.toolchain="msvc"
 					afile=StripExt(afile)+".lib"
-				Elseif opts.target="emscripten" And Int(GetEnv("WX_USE_EMSC_VERSION"))<>2
+				Elseif opts.target="emscripten" And Int(GetEnv("WX_USE_EMSC_VERSION"))=1
 					afile=StripExt(afile)+".bc"
 				Endif
 
@@ -361,7 +361,7 @@ Class GccBuildProduct Extends BuildProduct
 				CXX_CMD="em++ -c"
 				LD_CMD="em++"
 				
-				If Int(GetEnv("WX_USE_EMSC_VERSION"))=2
+				If Int(GetEnv("WX_USE_EMSC_VERSION"))>=2
 					AR_CMD="emar rcs"
 				Else
 					AR_CMD="em++ -o"
@@ -595,7 +595,7 @@ Class GccBuildProduct Extends BuildProduct
 		
 		If opts.toolchain="msvc" 
 			output=StripExt( output )+".lib"
-		Else If opts.target="emscripten" And Int(GetEnv("WX_USE_EMSC_VERSION"))<>2
+		Else If opts.target="emscripten" And Int(GetEnv("WX_USE_EMSC_VERSION"))=1
 			output=StripExt( output )+".bc"
 		Endif
 		
@@ -736,7 +736,7 @@ Class GccBuildProduct Extends BuildProduct
 		
 		For Local imp:=Eachin imports
 			Local afile:=imp.afile
-			If opts.target="emscripten" And Int(GetEnv("WX_USE_EMSC_VERSION"))<>2
+			If opts.target="emscripten" And Int(GetEnv("WX_USE_EMSC_VERSION"))=1
 				afile=StripExt(afile)+".bc"
 			Else If opts.toolchain="msvc" 
 				afile=StripExt(afile)+".lib"
