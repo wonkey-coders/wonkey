@@ -40,8 +40,8 @@ Class PNode Extends UNode
 	End
 
 	Method ToDebugString:String() Virtual
-		If srcfile Return srcfile.path+" ["+(srcpos Shr 12)+"]"
-		Return "? ["+(srcpos Shr 12)+"]"
+		If srcfile Return srcfile.path+":"+(srcpos Shr 12)
+		Return "?:"+(srcpos Shr 12)
 	End
 	
 End
