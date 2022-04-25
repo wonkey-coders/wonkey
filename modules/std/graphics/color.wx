@@ -983,21 +983,21 @@ Struct Color
 	#rem wonkeydoc Multiplies the color by another color or value and returns the result.
 	#end
 	Operator*:Color( color:Color )
-		Return New Color( r*color.r,g*color.g,b*color.b,a*color.a )
+		Return New Color( Clamp(r*color.r,0,1), Clamp(g*color.g,0,1), Clamp(b*color.b,0,1), Clamp(a*color.a,0,1) )
 	End
 
 	Operator*:Color( scale:Float )
-		Return New Color( r*scale,g*scale,b*scale,a*scale )
+		Return New Color( Clamp(r*scale,0,1), Clamp(g*scale,0,1), Clamp(b*scale,0,1), Clamp(a*scale,0,1) )
 	End
 	
 	#rem wonkeydoc Divides the color by another color or value and returns the result.
 	#end
 	Operator/:Color( color:Color )
-		Return New Color( r/color.r,g/color.g,b/color.b,a/color.a )
+		Return New Color( Clamp(r/color.r,0,1), Clamp(g/color.g,0,1), Clamp(b/color.b,0,1), Clamp(a/color.a,0,1) )
 	End
 
 	Operator/:Color( scale:Float )
-		Return New Color( r/scale,g/scale,b/scale,a/scale )
+		Return New Color( Clamp(r/scale,0,1), Clamp(g/scale,0,1), Clamp(b/scale,0,1), Clamp(a/scale,0,1) )
 	End
 
 	#rem wonkeydoc Adds another color or value to the color and returns the result.
