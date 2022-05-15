@@ -156,7 +156,7 @@ Function fwrite:Int( buf:Void Ptr,size:Int,count:Int,stream:FILE Ptr )
 Function fflush:Int( stream:FILE Ptr )
 Function fclose:Int( stream:FILE Ptr )
 Function fputs:Int( str:CString,stream:FILE Ptr )="fputs_utf8"
-Function fgets:char_t ptr(str:CString, size:int, stream:FILE ptr)="fgets_utf8"
+Function fgets:char_t ptr(str:char_t ptr, size:int, stream:FILE ptr)="fgets_utf8"
 Function fgetc:int(FILE ptr)
 
 Function popen:FILE Ptr( command:CString, mode:CString)="popen_utf8"
