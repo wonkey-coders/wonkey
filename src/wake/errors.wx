@@ -77,7 +77,7 @@ Class BuildEx Extends ErrorEx
 		
 		If srcpath Return srcpath+":"+(srcpos Shr 12)+":"+(srcpos & $fff)+": error: building: "+msg
 			
-		Return "~nerror: in building: "+msg
+		Return "~nerror: building: "+msg
 	End
 
 End
@@ -91,7 +91,7 @@ Class TransEx Extends BuildEx
 	End
 	
 	Method ToString:String() Override
-		Return "error: in translating: "+msg
+		Return "error: translating: "+msg
 	End
 	
 End
