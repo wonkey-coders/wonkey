@@ -477,7 +477,7 @@ Class FuncValue Extends Value
 		
 		If fdecl.kind="function" Or IsExtension
 		
-			If fdecl.kind="function" And Not cscope And fdecl.ident="Main"
+			If fdecl.kind="function" And Not cscope And (fdecl.ident="Main" or fdecl.ident="main")
 			
 				If Not TCast<VoidType>( ftype.retType ) Or ftype.argTypes
 					Throw New SemantEx( "Function 'Main' must be of type Void()" )
