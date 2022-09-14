@@ -218,6 +218,34 @@ Function Mid:String(input:String, from:Int, count:Int)
     Return input.Mid(from, count)
 End
 
+#rem wonkeydoc Insert a value at an index in the string.
+
+@param `input` The input string that will have text inserted into it.
+
+@param `index` The index position within the input string.
+   
+@param `text` The string value that will be inserted into the input string.
+   
+@return A new string based on input that will have the new text inserted into it.
+
+@example
+Print Insert(input, 0, text)             '==> BBBAAA
+Print Insert(input, input.Length, text) '==> AAABBB
+Print Insert(input, 2, text)             '==> AABBBA
+@end
+   
+#end
+Function Insert:String( input:String, index:Int, text:String )
+	Assert(index >= 0 And index <= input.Length, "'index' out of range")
+    If input.Length > 0
+        Local left  := input.Slice(0, index)
+        Local right := input.Slice(index)
+        Return left + text + right
+    Else
+        Return text
+    End
+End
+
 #rem wonkeydoc Right-align the string and fill the left side with a character
 
 If the length of `input` is greater than `width`, only the leftmost `width` characters are returned.
