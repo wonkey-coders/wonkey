@@ -420,3 +420,17 @@ Function Sgn<T>:Double( x:T ) Where T Implements IReal
 	If x>0 Return 1
 	Return 0
 End
+
+#rem wonkeydoc Scale a value from an initial range to a target range.
+
+@param `start1` The initial start value.
+@param `stop1` The initial stop value.
+@param `start2` The target start value.
+@param `stop2` The target stop value.
+
+@return The input `value` scaled from (`start1`-`stop1`) to (`start2`-`stop2`).
+
+#end
+Function Scale:Double(value:Double, start1:Double, stop1:Double, start2:Double, stop2:Double) Where T Implements IReal
+    Return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
+End
