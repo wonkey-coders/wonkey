@@ -431,6 +431,6 @@ End
 @return The input `value` scaled from (`start1`-`stop1`) to (`start2`-`stop2`).
 
 #end
-Function Scale:Double(value:Double, start1:Double, stop1:Double, start2:Double, stop2:Double) Where T Implements IReal
+Function Scale:Double(value:Double, start1:Double, stop1:Double, start2:Double, stop2:Double)
     Return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
 End
