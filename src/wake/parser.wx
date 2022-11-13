@@ -2374,8 +2374,34 @@ Class Parser
 				If _cc.Top=1
 
 					p.Bump()
-					
-					Local path:=p.ParseString()
+
+					Local path:String
+
+					' #Import <modulename>
+					If p.TokeType=TOKE_SYMBOL And p.Toke="<"
+						While p.TokeType<>TOKE_EOF And p.TokeType<>TOKE_EOL And p.Toke<>">"
+							path += p.Toke
+							p.Bump()
+						Wend
+						If p.TokeType=TOKE_SYMBOL And p.Toke=">"
+							path += p.Toke
+							p.Bump()
+						Else
+							Error( "Expecting '>'" )
+						Endif
+					' #Import modulename
+					Elseif p.TokeType=TOKE_IDENT
+						path = "<"
+						While p.TokeType=TOKE_IDENT Or p.TokeType=TOKE_SYMBOL
+							path += p.Toke
+							p.Bump()
+						Wend
+						path += ">"
+					' #Import "filename"
+					' #Import "<modulename>"
+					Else
+						path=p.ParseString()
+					Endif
 					
 					p.ParseEol()
 					
