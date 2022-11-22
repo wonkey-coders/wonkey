@@ -50,7 +50,7 @@
 		"Hint":{
 			"textColor":"text-highlight",
 			"skin":"smooth_assets/smooth_button_skin.png",
-			"skinColor":"#9EBEFF"
+			"skinColor":"#3d4e70"
 		},
 
 		"TextView":{

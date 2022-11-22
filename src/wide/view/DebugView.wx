@@ -37,6 +37,7 @@ Class DebugView Extends DockingView
 
 		'step over
 		_step=_toolBar.AddAction( "",icons[3] )
+		_step.HotKey=Key.F9
 		_step.Triggered=Lambda()
 			If Not _debugging Return
 			
@@ -49,6 +50,7 @@ Class DebugView Extends DockingView
 		
 		'step into
 		_enter=_toolBar.AddAction( "",icons[4] )
+		_enter.HotKey=Key.F10
 		_enter.Triggered=Lambda()
 			If Not _debugging Return
 		
@@ -58,9 +60,11 @@ Class DebugView Extends DockingView
 			Endif
 			
 		End
-
+		
 		'step out
 		_leave=_toolBar.AddAction( "",icons[5] )
+		_leave.HotKey=Key.F10
+		_leave.HotKeyModifiers=Modifier.Alt
 		_leave.Triggered=Lambda()
 			If Not _debugging Return
 		
@@ -73,6 +77,8 @@ Class DebugView Extends DockingView
 		
 		'kill
 		_kill=_toolBar.AddAction( "",icons[1] )
+		_kill.HotKey=Key.F12
+		_kill.HotKeyModifiers=Modifier.Control|Modifier.Alt
 		_kill.Triggered=Lambda()
 			If Not _debugging Return
 		
@@ -86,8 +92,22 @@ Class DebugView Extends DockingView
 		
 		End
 		
-		AddView( _toolBar,"top" )
+		' help dialog
+		Local help := _toolBar.AddAction( "?" )
+		help.Triggered=Lambda()
+		    ' temporary solution to act as a fake tooltip
+			' all actions will have to be replaced with buttons that support tooltips
+			Local text := ""
+			text += "Step: " + _step.HotKeyText + "~n~n"
+			text += "Enter: " + _enter.HotKeyText + "~n~n"
+			text += "Leave: " + _leave.HotKeyText + "~n~n"
+			text += "Quit: " + _kill.HotKeyText
+			TextDialog.Run( "Debugger Shortcuts", text, New String[]( "OK" ),0,0 )
+		End
+        
+        AddView( _toolBar,"top" )
 		
+		' tree view
 		_tree=New TreeViewExt
 		_tree.RootNodeVisible=False
 		_tree.RootNode.Expanded=True

@@ -225,10 +225,12 @@ namespace wxDB{
 	}
 	
 	void stop(){
-	
 		//currentContext->stopped=1;	//stop on *next* stmt.
-		
-		stopped();						//stop on DebugStop() stmt.
+		#ifndef NDEBUG
+			// stop on DebugStop() statement only when running in Debug mode
+			// (ignore when running in Release mode)
+			stopped();
+		#endif
 	}
 	
 }
