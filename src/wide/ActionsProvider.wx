@@ -100,6 +100,7 @@ Class ActionsProvider
 		CreateAction( ActionId.Run,"Ctrl+R" )
 		CreateAction( ActionId.Semant,"Ctrl+C" )
 		CreateAction( ActionId.Debug,"Ctrl+D" )
+		CreateAction( ActionId.DebugDesktop,"" )
 		CreateAction( ActionId.ForceStop,"Ctrl+Shift+R" )
 		CreateAction( ActionId.ProductSettings,"" )
 		CreateAction( ActionId.NextError,"F4" )
@@ -173,6 +174,7 @@ Class ActionsProvider
 		CreateAction( ActionId.Run,"F5" )
 		CreateAction( ActionId.Semant,"F7" )
 		CreateAction( ActionId.Debug,"F8" )
+		CreateAction( ActionId.DebugDesktop,"" )
 		CreateAction( ActionId.ForceStop,"Shift+F5" )
 		CreateAction( ActionId.ProductSettings,"" )
 		CreateAction( ActionId.NextError,"F4" )
@@ -251,6 +253,7 @@ Class ActionId Final
 	Const Run:="run"
 	Const Semant:="check"
 	Const Debug:="debug"
+	Const DebugDesktop:="debug_desktop"
 	Const ForceStop:="force_stop"
 	Const ProductSettings:="product_settings"
 	Const NextError:="next_error"

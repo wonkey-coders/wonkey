@@ -242,20 +242,44 @@ Function Main()
 	Endif
 	
 	New MainWindowInstance( AppTitle,rect,flags,jobj )
-	
+
+	'add callback when app is ready
 	App.Idle+=Lambda()
-		
-		' open docs from args
+	    'read app args and process various modes
 		Local args:=AppArgs()
-		For Local i:=1 Until args.Length
-			Local arg:=args[i]
-			arg=arg.Replace( "\","/" )
-			MainWindow.OnFileDropped( arg )
-		Next
+
+        If args <> Null And args.Length >= 2
+            Select args[1]
+                Case "-debugger"
+                    If args.Length < 3
+                        'App.Terminate()
+                    EndIf
+
+                    'check for no path specified
+                    Local path := args[2].Replace( "\","/" )
+                    If path = Null Or path.Length = 0 Or Not FileExists(path)
+                        'App.Terminate()
+                    EndIf
+
+                    'open & switch to the specified document
+                    'also lock the build file
+                    MainWindow.OpenDocument(path, True)
+
+                    'trigger debug
+                    ActionById(ActionId.DebugDesktop).Trigger()
+
+                Default
+                    'otherwise just open all of the docs specified in args
+                    For Local i:=1 Until args.Length
+                        Local arg:=args[i]
+                        arg=arg.Replace( "\","/" )
+                        MainWindow.OnFileDropped( arg )
+                    Next
+            End
+        EndIf
 		
 		#If __TARGET__="macos"
 		App.Idle+=Lambda() ' quick fix for black screen on mojave at startup
-			
 			Local dx:=MainWindow.Frame.Left Mod 2 = 0 ? -1 Else 1
 			MainWindow.Frame=MainWindow.Frame+New Recti( dx,0,0,0 )
 			MainWindow.RequestRender()
@@ -266,7 +290,6 @@ Function Main()
 	SDL_EnableScreenSaver()
 	
 	App.Run()
-	
 End
 
 Function SetupWonkeyRootPath:String( rootPath:String,searchMode:Bool )
