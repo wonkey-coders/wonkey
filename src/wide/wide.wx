@@ -252,13 +252,13 @@ Function Main()
             Select args[1]
                 Case "-debugger"
                     If args.Length < 3
-                        'App.Terminate()
+                        App.Terminate()
                     EndIf
 
                     'check for no path specified
                     Local path:=args[2].Replace( "\","/" )
-                    If path = Null Or path.Length = 0 Or Not FileExists(path)
-                        'App.Terminate()
+                    If path = Null And path.Length And FileExists(path)
+                        App.Terminate()
                     EndIf
 
                     'open & switch to the specified document
