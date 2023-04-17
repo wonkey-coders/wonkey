@@ -39,7 +39,6 @@ Class BuildActions Implements IModuleBuilder
 
 	Field buildAndRun:Action
 	Field debugApp:Action
-	Field debugDesktopApp:Action
 	Field build:Action
 	Field semant:Action
 	Field buildSettings:Action
@@ -69,9 +68,6 @@ Class BuildActions Implements IModuleBuilder
 		
 		debugApp=ActionById( ActionId.Debug )
 		debugApp.Triggered=OnDebugApp
-
-		debugDesktopApp=ActionById( ActionId.DebugDesktop )
-		debugDesktopApp.Triggered=OnDebugDesktopApp
 
 		build=ActionById( ActionId.Build )
 		build.Triggered=OnBuild
@@ -588,14 +584,6 @@ Class BuildActions Implements IModuleBuilder
 		BuildApp( "debug",_buildTarget,"run" )
 	End
 
-	Method OnDebugDesktopApp()
-		PreBuild()
-
-		If _console.Running Return
-
-		BuildApp( "debug", "desktop", "run" )
-	End
-	
 	Method OnBuild()
 		
 		PreBuild()

@@ -256,7 +256,7 @@ Function Main()
                     EndIf
 
                     'check for no path specified
-                    Local path := args[2].Replace( "\","/" )
+                    Local path:=args[2].Replace( "\","/" )
                     If path = Null Or path.Length = 0 Or Not FileExists(path)
                         'App.Terminate()
                     EndIf
@@ -266,7 +266,7 @@ Function Main()
                     MainWindow.OpenDocument(path, True)
 
                     'trigger debug
-                    ActionById(ActionId.DebugDesktop).Trigger()
+                    ActionById( ActionId.Debug ).Trigger()
 
                 Default
                     'otherwise just open all of the docs specified in args
