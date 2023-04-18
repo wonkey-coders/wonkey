@@ -583,7 +583,7 @@ Class BuildActions Implements IModuleBuilder
 	
 		BuildApp( "debug",_buildTarget,"run" )
 	End
-	
+
 	Method OnBuild()
 		
 		PreBuild()
