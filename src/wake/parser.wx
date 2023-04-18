@@ -2061,7 +2061,26 @@ Class Parser
 		Bump()
 		Return str
 	End
-	
+
+	'THROWS!
+	Method ParseModuleName:String()
+		Local open := CParse("<")
+		If TokeType<>TOKE_IDENT And TokeType<>TOKE_INTLIT And TokeType<>TOKE_FLOATLIT And TokeType<>TOKE_KEYWORD
+			Error( "Expecting module name" )
+		Endif
+		Local name:=Toke
+		Bump()
+		While TokeType=TOKE_IDENT Or TokeType=TOKE_INTLIT Or TokeType=TOKE_FLOATLIT Or TokeType=TOKE_KEYWORD Or (TokeType=TOKE_SYMBOL And Toke<>">" And Toke<>",")
+			name += Toke
+			Bump()
+		Wend
+		If open
+			Parse(">")
+			name = "<"+name+">"
+		Endif
+		Return name
+	End
+
 	'THROWS!	
 	Method Parse( toke:String )
 		If Toke<>toke Error( "Expecting '"+toke+"' but encountered '"+Toke+"'" )
@@ -2374,22 +2393,43 @@ Class Parser
 				If _cc.Top=1
 
 					p.Bump()
-					
-					Local path:=p.ParseString()
+
+					Local pathsStack := New std.collections.StringStack()
+					Local _path:String
+
+					Repeat
+						_path=""
+						' #Import "filename"
+						' #Import "<modulename>"
+						If p.TokeType=TOKE_STRINGLIT
+							_path=p.ParseString()
+						' #Import <modulename>
+						Elseif p.TokeType=TOKE_SYMBOL And p.Toke="<"
+							_path=p.ParseModuleName()
+						' #Import modulename
+						Else
+							_path = "<"
+							_path += p.ParseModuleName()
+							_path += ">"
+						Endif
+						pathsStack.Add(_path)
+					Until p.CParse(",")=False
 					
 					p.ParseEol()
-					
-					If path.StartsWith( "<" ) And path.EndsWith( ">" )
-						If Not ExtractExt( path ) path=path.Slice( 0,-1 )+WX_FILE_EXT+">"
-						path+="["+SrcPos+"]"
 
-					Else If Not path.Contains( "@/" ) And Not path.EndsWith( "/" ) and not(path.StartsWith( "WX_LD_OPTS_") Or path.StartsWith( "WX_CC_OPTS_") Or path.StartsWith( "WX_CPP_OPTS_"))
-						If Not ExtractExt( path ) path+=WX_FILE_EXT
-						path+="["+SrcPos+"]"
-
-					Endif
-						
-					_imports.Push( path )
+					For Local path := Eachin pathsStack
+						If path.StartsWith( "<" ) And path.EndsWith( ">" )
+							If Not ExtractExt( path ) path=path.Slice( 0,-1 )+WX_FILE_EXT+">"
+							path+="["+SrcPos+"]"
+	
+						Else If Not path.Contains( "@/" ) And Not path.EndsWith( "/" ) and not(path.StartsWith( "WX_LD_OPTS_") Or path.StartsWith( "WX_CC_OPTS_") Or path.StartsWith( "WX_CPP_OPTS_"))
+							If Not ExtractExt( path ) path+=WX_FILE_EXT
+							path+="["+SrcPos+"]"
+	
+						Endif
+							
+						_imports.Push( path )
+					Next
 
 				Elseif _doccing
 					_docs.Push( "#"+p._toker.Text.Trim() )
