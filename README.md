@@ -8,11 +8,9 @@
 <!--![raspbian](https://github.com/wonkey-coders/wonkey/workflows/raspbian/badge.svg?branch=develop)-->
 <!--- [![Travis CI](https://travis-ci.org/wonkey-coders/wonkey.svg?branch=develop)](https://travis-ci.org/wonkey-coders/wonkey) --->
 
-# Wonkey Programming Language
-
-**Wonkey** is an open source programming language for the creation of cross-platform video games, highly inspired by the “Blitz” range of languages.
-
 <div align="center">
+	<h1>Wonkey</h1>
+	<p><strong>Wonkey</strong> is a easy to learn, oriented object, modern and cross-platform programming language for creating cross-platform video games, highly inspired by the “BlitzBasic” range of languages.</p>
 	<img src="./docs/img/logo-wonkey-anim.svg"/>
 </div>
 
@@ -237,9 +235,9 @@ wake mods -target=android
 ### "Hello, Wonkey!'
 
 ```monkey
-Function Main()
-	Print "Hello, Wonkey!"
-End
+function main()
+  print "Hello, Wonkey!"
+end
 ```
 
 While staying true to the 'basic' style of the original Blitz languages, Wonkey offers some very powerful new features including:
@@ -249,15 +247,15 @@ While staying true to the 'basic' style of the original Blitz languages, Wonkey 
 Classes, interfaces, structs, methods and functions can have 'type' parameters.
 
 ```monkey
-Struct Rect<T>
-	Field x0:T, y0:T
-	Field x1:T, y1:T
-End
+struct Rect<T>
+  field x0:T, y0:T
+  field x1:T, y1:T
+end
 
 'Main entry
-Function Main()
-	Local r:=New Rect<Float>
-End
+function main()
+  local r:=new Rect<Float>
+end
 ```
 
 ### 'First class' functions
@@ -265,23 +263,23 @@ End
 Functions (and methods) can be stored in variables and passed to/from other functions.
 
 ```monkey
-Function Test1()
-	Print "Test1"
-End
+function Test1()
+  print "Test1"
+end
 
-Function Test2()
-	Print "Test2"
-End
+function Test2()
+  print "Test2"
+end
 
-Function Tester( test:Void() )
-	test()
-End
+function Tester( test:void() )
+  test()
+end
 
 'Main entry
-Function Main()
-	Tester( Test1 )
-	Tester( Test2 )
-End
+function main()
+  Tester( Test1 )
+  Tester( Test2 )
+end
 ```
 
 ### Lambda functions
@@ -289,18 +287,18 @@ End
 Lambda functions allow you to create closures.
 
 ```monkey
-Function Test( func:Void() )
-	func()
-End
+function Test( func:Void() )
+  func()
+end
 
 'Main entry
-Function Main()
-	For Local i:=0 Until 10
-		Test( Lambda()
-			Print i
-		End)
-	Next
-End
+function main()
+  for local i:=0 until 10
+    Test( lambda()
+      print i
+    end)
+  next
+end
 ```
 
 ### New 'Struct' type that provides value semantics
@@ -310,20 +308,20 @@ Structs are similar to classes in that they encapsulate member data, but differ 
 This allows structs to be efficiently create on the stack without any garbage collection overhead.
 
 ```monkey
-Struct S
-	Field data:Int=10
-End
+struct S
+  field data:Int=10
+end
 
-Function Test( s:S )
-	s.data = 100
-End
+function Test( s:S )
+  s.data = 100
+end
 
 'Main entry
-Function Main()
-	Local s:=New S 'Create a new S on the stack (very fast!)
-	Test( s )      'Test gets a copy of 's'
-	Print s.data   'Print '10'
-End
+function main()
+  local s:=new S 'Create a new S on the stack (very fast!)
+  Test( s )      'Test gets a copy of 's'
+  print s.data   'Print '10'
+end
 ```
 
 ### Fibers for easy asynchronous programming
@@ -331,16 +329,16 @@ End
 Fibers provide support for 'cooperative' multi-threading.
 
 ```monkey
-Function Server( host:String, service:String )
-	Local server:=Socket.Listen( host, service )
+function Server( host:String, service:String )
+  local server:=Socket.Listen( host, service )
 	
-	Repeat
-		Local client:=server.Accept()
-		New Fiber( Lambda()
-			Local data:=client.Receive(...)
-		End )
-	Forever
-End
+  repeat
+    local client:=server.Accept()
+    new Fiber( lambda()
+      local data:=client.Receive(...)
+    end )
+  forever
+end
 ```
 
 ### Operator overloading
@@ -348,31 +346,31 @@ End
 Operator overloading allows you to override the meaning of the built-in language operators, making for more expressive code.
 
 ```monkey
-Struct Vec2
-	Field x:Float
-	Field y:Float
+struct Vec2
+  field x:Float
+  field y:Float
 
-	Method New( x:float,y:Float )
-		Self.x=x
-		Self.y=y
-	End
+  method new( x:Float,y:Float )
+    self.x=x
+    self.y=y
+  end
 
-	Operator+:Vec2( v:Vec2 )
-		Return New Vec2( x+v.x,y+v.y )
-	End
+  operator+:Vec2( v:Vec2 )
+    return new Vec2( x+v.x,y+v.y )
+  end
 
-	Operator To:String()
-		Return "Vec2("+x+","+y+")"
-	End
-End
+  operator to:String()
+    return "Vec2("+x+","+y+")"
+  end
+end
 
 'Main entry
-Function Main()
-	Local v0:=New Vec2( 10,20 )
-	Local v1:=New Vec2( 30,40 )
+function main()
+  local v0:=new Vec2( 10,20 )
+  local v1:=new Vec2( 30,40 )
    
-	Print v0+v1
-End
+  print v0+v1
+end
 ```
 
 ### Class extensions
@@ -380,17 +378,18 @@ End
 Class extensions allow you to add extra methods, functions and properties to existing classes.
 
 ```monkey
-Struct Foo
-	Field i:Int=0
-End 
+struct Foo
+  field i:Int=0
+end 
 ```
 
 ```monkey
-Struct Foo Extension
-	Method Increment()
-		i+=1
-	End
-End
+
+struct Foo extension
+  method Increment()
+    i+=1
+  end
+end
 ```
 
 ### Fully garbage collected
@@ -402,24 +401,24 @@ Wonkey provides a 'mostly' incremental garbage collector that efficiently collec
 Wonkey includes an optional reflection system that allows you to inspect and modify variables and values at runtime:
 
 ```monkey
-#Import "<reflection>"
+#import <reflection>
 
-Class C
-	Method Update( msg:String )
-		Print "C.Update : msg=" + msg
-	End
-End
+class C
+  method Update( msg:String )
+    print "C.Update : msg=" + msg
+  end
+end
 
 'Main entry
-Function Main()
-	Local c:=New C
+function main()
+  local c:=new C
 	
-	Local type:=Typeof( c )
-	Print type
+  local type:=typeof( c )
+  print type
 	
-	Local decl:=type.GetDecl( "Update" )
-	decl.Invoke( c, "Hello World!" )
-End
+  local decl:=type.GetDecl( "Update" )
+  decl.Invoke( c, "Hello World!" )
+end
 
 ```
 
