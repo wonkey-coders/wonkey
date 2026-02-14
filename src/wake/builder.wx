@@ -424,7 +424,7 @@ Class BuilderInstance
 					transFile=etype.transFile
 				Endif
 				
-				If Not transFile Or transFile.module=module Continue
+				If Not transFile Continue
 				
 				Local transFile2:=transFile
 
