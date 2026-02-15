@@ -425,7 +425,18 @@ Class BuilderInstance
 				Endif
 				
 				If Not transFile Continue
-				
+
+				'For intra-module generic instances, ensure they are
+				'in their original transFile. No new FileDecl needed
+				'since they belong to the same module and are already
+				'emitted by the translator from the original file.
+				If transFile.module=module
+					If ctype And Not transFile.classes.Contains( ctype )
+						transFile.classes.Push( ctype )
+					Endif
+					Continue
+				Endif
+
 				Local transFile2:=transFile
 
 				transFile=transFiles[transFile2.ident]
