@@ -493,9 +493,9 @@ Class Parser
 				Select Toke
 				Case "to"
 					ident=Parse()
-				Case "*","/","+","-","&","|","~~"
+				Case "*","/","mod","+","-","shl","shr","&","|","~~"
 					ident=Parse()
-				Case "*=","/=","+=","-=","&=","|=","~~="
+				Case "*=","/=","mod=","+=","-=","shl=","shr=","&=","|=","~~="
 					ident=Parse()
 				Case "<",">","<=",">=","=","<>","<=>"
 					ident=Parse()
@@ -506,7 +506,7 @@ Class Parser
 					Parse( "]" )
 					If CParse( "=" ) ident="[]=" Else ident="[]"
 				Default
-					Error( "Operator must be one of: * / + - & | ~~ [] < > <= >= = <> <=>" )
+					Error( "Operator must be one of: * / Mod + - & Shl Shr | ~~ [] < > <= >= = <> <=>" )
 				End
 				
 			Case "method"
