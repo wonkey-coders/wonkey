@@ -1,0 +1,175 @@
+
+Namespace bigz
+
+'#Import "native/*.h"  'ERROR in final exe ( problem in order of importation??? )
+#Import "native/bign.h"
+#Import "native/bigq.h"
+#Import "native/bigz.h"
+#Import "native/bzf.h"
+
+#Import "makefile"
+
+#Import "structs"
+
+Extern
+
+'bign.h
+
+Enum BigNumBool
+End
+Const BN_FALSE:BigNumBool
+Const BN_TRUE:BigNumBool
+
+Enum BigNumCmp
+End
+Const BN_LT:BigNumCmp
+Const BN_EQ:BigNumCmp
+Const BN_GT:BigNumCmp
+
+Enum BigNumCarry
+End
+Const BN_NOCARRY:BigNumCarry
+Const BN_CARRY:BigNumCarry
+
+Alias BigNumDigit:ULong
+Alias BigNum:BigNumDigit Ptr
+Alias BigNumLength:UInt
+
+Function BnnAdd:BigNumCarry( mm:BigNum,ml:BigNumLength,nn:BigNum,nl:BigNumLength,carryin:BigNumCarry )
+Function BnnAddCarry:BigNumCarry( nn:BigNum,nl:BigNumLength,carryin:BigNumCarry )
+Function BnnAndDigits( n:BigNum,d:BigNumDigit )
+Function BnnAssign( mm:BigNum,nn:BigNum,nl:BigNumLength )
+Function BnnCompare:BigNumCmp( mm:BigNum,ml:BigNumLength,nn:BigNum,nl:BigNumLength )
+Function BnnCompareDigits:BigNumCmp( d1:BigNumDigit,d2:BigNumDigit )
+Function BnnComplement( nn:BigNum,nl:BigNumLength )
+Function BnnComplement2( nn:BigNum,nl:BigNumLength )
+Function BnnDivide( nn:BigNum,nl:BigNumLength,dd:BigNum,dl:BigNumLength )
+Function BnnDivideDigit:BigNumDigit( qq:BigNum,nn:BigNum,nl:BigNumLength,d:BigNumDigit )
+Function BnnGetDigit:BigNumDigit( nn:BigNum )
+Function BnnIsPower2:BigNumBool( nn:BigNum,nl:BigNumLength )
+Function BnnIsDigitEven:BigNumBool( d:BigNumDigit )
+Function BnnIsDigitOdd:BigNumBool( d:BigNumDigit )
+Function BnnIsDigitNormalized:BigNumBool( d:BigNumDigit )
+Function BnnIsDigitZero:BigNumBool( d:BigNumDigit )
+Function BnnIsZero:BigNumBool( nn:BigNum,nl:BigNumLength )
+Function BnnMultiply:BigNumCarry( pp:BigNum,pl:BigNumLength,mm:BigNum,ml:BigNumLength,nn:BigNum,nl:BigNumLength )
+Function BnnMultiplyDigit:BigNumCarry( pp:BigNum,pl:BigNumLength,mm:BigNum,ml:BigNumLength,d:BigNumDigit )
+Function BnnNumDigits:BigNumLength( nn:BigNum,nl:BigNumLength )
+Function BnnNumLength:BigNumLength( nn:BigNum,nl:BigNumLength )
+Function BnnNumCount:BigNumLength( nn:BigNum,nl:BigNumLength )
+Function BnnNumLeadingZeroBitsInDigit:BigNumLength( d:BigNumDigit )
+Function BnnOrDigits( n:BigNum,d:BigNumDigit )
+Function BnnSetDigit( nn:BigNum,d:BigNumDigit )
+Function BnnSetToZero( nn:BigNum,nl:BigNumLength )
+Function BnnShiftLeft:BigNumDigit( mm:BigNum,ml:BigNumLength,nbits:BigNumLength )
+Function BnnShiftRight:BigNumDigit( mm:BigNum,ml:BigNumLength,nbits:BigNumLength )
+Function BnnSubtract:BigNumCarry( mm:BigNum,ml:BigNumLength,nn:BigNum,nl:BigNumLength,carryin:BigNumCarry )
+Function BnnSubtractBorrow:BigNumCarry( nn:BigNum,nl:BigNumLength,carryin:BigNumCarry )
+Function BnnXorDigits( n:BigNum,d:BigNumDigit )
+
+'bigq.h
+'TODO
+
+'bigz.h
+
+Enum BzSign
+End
+Const BZ_MINUS:BzSign
+Const BZ_ZERO:BzSign
+Const BZ_PLUS:BzSign 
+
+Enum BzCmp
+End
+Const BZ_LT:BzCmp
+Const BZ_EQ:BzCmp
+Const BZ_GT:BzCmp 
+
+Enum BzStrFlag
+End
+Const BZ_UNTIL_END:BzStrFlag
+Const BZ_UNTIL_INVALID:BzStrFlag
+Const BZ_UNTIL_SLASH:BzStrFlag
+Const BZ_UNTIL_SPACE:BzStrFlag
+
+Struct BigZHeader
+	Field Size:BigNumLength
+	Field Sign:BzSign
+End
+
+Struct BigZStruct
+	Field Header:BigZHeader
+	Field Digits:BigNumDigit[]
+End
+
+Alias BigZ:BigZStruct Ptr
+Alias BzChar:Byte
+Alias BzUInt:UInt
+Alias BzInt:Int
+Alias BzLDouble:Double
+Alias BzSeed:UInt
+
+Function BzVersion:CString()
+Function BzCreate:BigZ( Size:BigNumLength )
+Function BzNumDigits:BigNumLength( z:BigZ )
+Function BzLength:BigNumLength( z:BigZ )
+Function BzCopy:BigZ( z:BigZ )
+Function BzNegate:BigZ( z:BigZ )
+Function BzAbs:BigZ( z:BigZ )
+Function BzCompare:BzCmp( y:BigZ,z:BigZ )
+Function BzAdd:BigZ( y:BigZ,z:BigZ )
+Function BzSubtract:BigZ( y:BigZ,z:BigZ )
+Function BzMultiply:BigZ( y:BigZ,z:BigZ )
+Function BzDivide:BigZ( y:BigZ,z:BigZ,r:BigZ Ptr )
+Function BzDiv:BigZ( y:BigZ,z:BigZ )
+Function BzTruncate:BigZ( y:BigZ,z:BigZ )
+Function BzFloor:BigZ( y:BigZ,z:BigZ )
+Function BzCeiling:BigZ( y:BigZ,z:BigZ )
+Function BzRound:BigZ( y:BigZ,z:BigZ )
+Function BzMod:BigZ( y:BigZ,z:BigZ )
+Function BzRem:BigZ( y:BigZ,z:BigZ )
+Function BzPow:BigZ( base:BigZ,exponent:BzUInt )
+Function BzIsEven:BigNumBool( y:BigZ )
+Function BzIsOdd:BigNumBool( y:BigZ )
+Function BzToString:CString( z:BigZ,base:BigNumDigit,sign:Int )
+Function BzStrLen:Int( s:CString ) 'size_t
+Function BzToStringBuffer:CString( z:BigZ,base:BigNumDigit,sign:Int,buf:CString,len:Int Ptr )
+Function BzToStringBufferExt:CString( z:BigZ,base:BigNumDigit,sign:Int,buf:CString,len:Int Ptr,slen:Int Ptr )
+Function BzFromStringLen:BigZ( s:CString,len:Int,base:BigNumDigit,flag:BzStrFlag )
+Function BzFromString:BigZ( s:CString,base:BigNumDigit,flag:BzStrFlag )
+Function BzFromInteger:BigZ( i:BzInt )
+Function BzFromUnsignedInteger:BigZ( i:BzUInt )
+Function BzToInteger:BzInt( z:BigZ )
+Function BzToDouble:Double( z:BigZ )
+Function BzToLongDouble:BzLDouble( z:BigZ )
+Function BzToIntegerPointer:Int( z:BigZ,p:BzInt Ptr )
+Function BzToUnsignedInteger:BzUInt( z:BigZ )
+Function BzToUnsignedIntegerPointer:Int( z:BigZ,p:BzUInt Ptr )
+Function BzFromBigNum:BigZ( n:BigNum,nl:BigNumLength )
+Function BzToBigNum:BigNum( z:BigZ,nl:BigNumLength Ptr )
+Function BzTestBit:BigNumBool( bit:BigNumLength,z:BigZ )
+Function BzBitCount:BigNumLength( z:BigZ )
+Function BzNot:BigZ( z:BigZ )
+Function BzAnd:BigZ( y:BigZ,z:BigZ )
+Function BzOr:BigZ( y:BigZ,z:BigZ )
+Function BzXor:BigZ( y:BigZ,z:BigZ )
+Function BzNand:BigZ( x:BigZ,y:BigZ )
+Function BzNor:BigZ( x:BigZ,y:BigZ )
+Function BzEqv:BigZ( x:BigZ,y:BigZ )
+Function BzAndC1:BigZ( x:BigZ,y:BigZ )
+Function BzAndC2:BigZ( x:BigZ,y:BigZ )
+Function BzOrC1:BigZ( x:BigZ,y:BigZ )
+Function BzOrC2:BigZ( x:BigZ,y:BigZ )
+Function BzAsh:BigZ( y:BigZ,n:Int )
+Function BzSqrt:BigZ( z:BigZ )
+Function BzLcm:BigZ( y:BigZ,z:BigZ )
+Function BzGcd:BigZ( y:BigZ,z:BigZ )
+Function BzRandom:BigZ( n:BigZ,seed:BzSeed Ptr )
+Function BzModExp:BigZ( base:BigZ,exponent:BigZ,modulus:BigZ )
+Function BzHash:BzUInt( z:BigZ )
+
+'Function BnDebug( m:CString,bzstr:CString,n:BigNum,nl:BigNumLength,sign:BzSign )
+'Function BzDebug( m:CString,y:BigZ )
+
+'bzf.h
+
+Function BzFactorial:BigZ( z:BigZ )

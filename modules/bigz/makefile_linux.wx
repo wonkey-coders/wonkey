@@ -1,0 +1,7 @@
+
+Namespace bigz
+
+#Import "native/bign.c"
+#Import "native/bigq.c"
+#Import "native/bigz.c"
+#Import "native/bzf.c"

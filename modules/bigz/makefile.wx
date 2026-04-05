@@ -1,0 +1,8 @@
+
+Namespace bigz
+
+#If __TARGET__="linux"
+	
+	#Import "makefile_linux"
+	
+#Endif
