@@ -53,11 +53,13 @@ jobs:
           rebuildwake.bat
 
       - name: rebuild modules with new wake (2x)
+        shell: cmd
         run: |
           cd %CD%\scripts
           rebuildmods.bat
 
       - name: rebuild wake with new modules (2x)
+        shell: cmd
         run: |
           cd %CD%\scripts
           rebuildwake.bat
