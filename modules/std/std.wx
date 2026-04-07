@@ -22,6 +22,8 @@ Namespace std
 #Import "collections/map"
 #Import "collections/deque"
 '#Import "collections/ring"
+#Import "collections/set"
+'Import "collections/hashset"
 
 #Import "resource/resource"
 
