@@ -1,0 +1,88 @@
+
+Namespace bigz
+
+Const BzZero := New Bz( 0 )
+Const BzOne  := New Bz( 1 )
+Const BzTwo  := New Bz( 2 )
+Const BzFive := New Bz( 5 )
+Const BzTen  := New Bz( 10 )
+
+Struct Bz
+	Field bz:BigZ
+
+	Method New( x:Int )
+		Self.bz = BzFromInteger( x )
+	End
+
+	Method New( x:BigZ )
+		Self.bz = BzCopy( x )
+	End
+
+	Method New( x:String )
+		Self.bz = BzFromString( x,Cast<BigNumDigit>( 10 ),Cast<BzStrFlag>( 0 ) )
+	End
+
+	Operator+:Bz( y:Bz )
+		Local t := New Bz( Self.bz )
+		t.bz = BzAdd( t.bz,y.bz )
+		Return t
+	End
+
+	Operator-:Bz( y:Bz )
+		Local t := New Bz( Self.bz )
+		t.bz = BzSubtract( t.bz,y.bz )
+		Return t
+	End
+
+	Operator*:Bz( y:Bz )
+		Local t := New Bz( Self.bz )
+		t.bz = BzMultiply( t.bz,y.bz )
+		Return t
+	End
+
+	Operator/:Bz( y:Bz )
+		Local t := New Bz( Self.bz )
+		t.bz = BzDiv( t.bz,y.bz )
+		Return t
+	End
+
+	Operator Mod:Bz( y:Bz )
+		Local r := BzZero
+		r.bz = BzMod( Self.bz,y.bz )
+		Return r
+	End
+
+	Operator+:Bz( y:Int )
+		Local t := New Bz( Self.bz )
+		t.bz = BzAdd( t.bz,BzFromInteger( y ) )
+		Return t
+	End
+
+	Operator-:Bz( y:Int )
+		Local t := New Bz( Self.bz )
+		t.bz = BzSubtract( t.bz,BzFromInteger( y ) )
+		Return t
+	End
+
+	Operator*:Bz( y:Int )
+		Local t := New Bz( Self.bz )
+		t.bz = BzMultiply( t.bz,BzFromInteger( y ) )
+		Return t
+	End
+
+	Operator/:Bz( y:Int )
+		Local t := New Bz( Self.bz )
+		t.bz = BzDiv( t.bz,BzFromInteger( y ) )
+		Return t
+	End
+
+	Operator Mod:Bz( y:Int )
+		Local r := BzZero
+		r.bz = BzMod( Self.bz,BzFromInteger( y ) )
+		Return r
+	End
+
+	Operator To:String()
+		Return BzToString( Self.bz,10,0 )
+	End
+End

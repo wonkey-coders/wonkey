@@ -1,0 +1,40 @@
+
+Namespace myapp
+
+#Import "<std>"
+#Import "<bigz>"
+
+Using std..
+Using bigz..
+
+Function Fac:String(num:Int)
+	Local tmp:=BzFromInteger(1)
+	For Local i := 1 To num
+		tmp = BzMultiply(tmp, BzFromInteger(i))
+	Next
+	Return BzToString(tmp,10,0)
+End
+
+Function Main()
+
+	Print BzVersion()
+	Local b1:=BzFromInteger(987654321)
+	Local b2:=BzFromInteger(123456789)
+	Local fac:=BzFromInteger(500)
+	Local a:=BzAdd(b1,b2)
+	Local s:=BzSubtract(b1,b2)
+	Local m:=BzMultiply(b1,b2)
+	Local d:=BzDiv(b1,b2)
+	Local r:=BzRem(b1,b2)
+	Local f:=BzFactorial(fac)
+	
+	Print "Suma:"+BzToString(a,10,0)
+	Print "Resta:"+BzToString(s,10,0)
+	Print "Multiplicacion:"+BzToString(m,10,0)
+	Print "Division:"+BzToString(d,10,0)
+	Print "Resto:"+BzToString(r,10,0)
+	Print "Factorial(500)="+BzToString(f,10,0)
+	Local buf:=Fac(1000)
+	Print buf
+	Print buf.Length
+End

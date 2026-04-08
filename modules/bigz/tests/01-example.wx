@@ -1,0 +1,33 @@
+
+Namespace myapp
+
+#Import "<std>"
+#Import "<bigz>"
+
+Using std..
+Using bigz..
+
+Function Main()
+
+	Print BzVersion()
+	
+	Local z1:=New Bz("9876543210987654321")
+	Local z2:=New Bz("1234567890123456789")
+	Local z3:=z1+z2
+	Print z1
+	Print z2
+	Print z1+z2
+	Print z1-z2
+	Print z1*z2
+	Print z1/z2
+	Print z1 Mod z2
+	z1.bz = BzFromInteger(1)
+	For Local i:=2 To 20
+		z1*=i
+	Next
+	Print z1
+	Local f:=New Bz(0)
+	f.bz = BzFactorial(BzFromInteger(20))
+	Print f Mod 100000000
+
+End

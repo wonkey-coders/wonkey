@@ -1,0 +1,8 @@
+{
+	"module":"bigz",
+	"about":"BIGZ library wrapper",
+	"author":"Denise Amiga",
+	"version":"1.0.0",
+	"support":"http://github.com/denise-amiga/bigz-module",
+	"depends":[]
+}
