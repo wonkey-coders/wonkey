@@ -350,6 +350,18 @@ Class Deque<T> Implements IContainer<T>
 		_data[ (index+_head) Mod Capacity ]=value
 	End
 	
+	Operator To:String()
+	
+		Local tt := Typeof( _data[0] )
+		Local _arr := Data
+		Local result := "Deque<" + tt + ">[ "
+		For Local i := 0 Until Length
+			If i>0 result += ", "
+			result += _arr[( i + _head ) Mod Capacity]
+		Next
+		Return result + " ]"
+	End
+	
 	#rem wonkeydoc Gets the value of a deque element.
 	In debug builds, a runtime error will occur if `index` is less than 0, 
 	or greater than or equal to the length of the deque.	

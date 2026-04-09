@@ -528,6 +528,19 @@ Class List<T> Implements IContainer<T>
 		Return data
 	End
 	
+	Operator To:String() Where T Implements INumeric Or T=String
+
+		Local tt := Typeof( _head._value )
+		Local idx := 0
+		Local result := "List<" + tt + ">[ "
+		For Local i := Eachin Self
+			If idx > 0 result += ", "
+			result += i
+			idx += 1
+		Next
+		Return result + " ]"
+	End
+	
 	#rem wonkeydoc Removes all values from the list.
 	#end
 	Method Clear()

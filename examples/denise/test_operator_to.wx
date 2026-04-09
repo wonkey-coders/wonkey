@@ -1,0 +1,80 @@
+
+#Import "<std>"
+
+Using std..
+
+Function Main()
+	
+	Local ln := New List<Int>()
+	Local ls := New List<String>()
+	Local sn := New Stack<Int>()
+	Local ss := New Stack<String>()
+	Local dn := New Deque<Int>()
+	Local ds := New Deque<String>()
+	Local mnn := New Map<Int,Int>()
+	Local mns := New Map<Int,String>()
+	Local msn := New Map<String,Int>()
+	Local mss := New Map<String,String>()
+	Local sui := New Set<UInt>()
+
+	ln.Add( 1 )
+	ln.Add( 2 )
+	ln.Add( 3 )
+	Assert( ln = "List<Int>[ 1, 2, 3 ]","Error: " + ln )
+	
+	ls.Add( "1" )
+	ls.Add( "2" )
+	ls.Add( "3" )
+	Assert( ls = "List<String>[ 1, 2, 3 ]","Error: " + ls )
+
+	sn.Add( 1 )
+	sn.Add( 2 )
+	sn.Add( 3 )
+	Assert( sn = "Stack<Int>[ 1, 2, 3 ]","Error: " + sn )
+	
+	ss.Add( "1" )
+	ss.Add( "2" )
+	ss.Add( "3" )
+	Assert( ss = "Stack<String>[ 1, 2, 3 ]","Error: " + ss )
+
+	dn.AddFirst( 1 )
+	dn.AddFirst( 2 )
+	dn.AddLast( 3 )
+	dn.AddLast( 4 )
+	Assert( dn = "Deque<Int>[ 2, 1, 3, 4 ]","Error: " + dn )
+	
+	ds.AddFirst( "1" )
+	ds.AddFirst( "2" )
+	ds.AddLast( "3" )
+	ds.AddLast( "4" )
+	Assert( ds = "Deque<String>[ 2, 1, 3, 4 ]","Error: " + ds )
+	
+	mnn.Add( 1,2 )
+	mnn.Add( 3,4 )
+	mnn.Add( 1,5 )
+	Assert( mnn = "Map<Int,Int>{ 1: 2, 3: 4 }","Error: " + mnn )
+	
+	mns.Add( 1,"2" )
+	mns.Add( 3,"4" )
+	mns.Add( 1,"5" )
+	Assert( mns = "Map<Int,String>{ 1: 2, 3: 4 }","Error: " + mns )
+	
+	msn.Add( "1",2 )
+	msn.Add( "3",4 )
+	msn.Add( "1",5 )
+	Assert( msn = "Map<String,Int>{ 1: 2, 3: 4 }","Error: " + msn )
+	
+	mss.Add( "1","2" )
+	mss.Add( "3","4" )
+	mss.Add( "1","5" )
+	Assert( mss = "Map<String,String>{ 1: 2, 3: 4 }","Error: " + mss )
+	
+	sui.Add( 1 )
+	sui.Add( 2 )
+	sui.Add( 3 )
+	sui.Add( 2 )
+	Assert( sui = "Set<UInt>{ 1, 2, 3 }","Error: " + sui )
+	
+	Print "All Ok"
+
+End
