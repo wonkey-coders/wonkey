@@ -1,0 +1,97 @@
+
+#Import "<std>"
+
+Using std..
+
+Const ITEMS := 1000000
+Const MAXVALUE := 5000000
+
+Enum Bench
+	Base, Create, Union, Intersection, Difference
+End
+
+Function Main()
+	
+	Print "miniBench List vs Set"
+	Print "Items: "+ITEMS
+	
+	Local timesList:=New Int[4]
+	Local timesSet:=New Int[4]
+	Local lst1 := New List<UInt>()
+	Local set1 := New Set<UInt>( MAXVALUE, ITEMS )
+	Local lst2 := New List<UInt>()
+	Local set2 := New Set<UInt>( MAXVALUE, ITEMS )
+	
+	SeedRnd(1234)
+	timesList[Bench.Base] = Millisecs()
+	For Local i := 0 Until ITEMS
+		lst1.Add( UInt( Rnd( MAXVALUE ) ) )
+		lst2.Add( UInt( Rnd( MAXVALUE ) ) )
+	Next
+	timesList[Bench.Create] = Millisecs()
+	Local lst3 := lst1.Union( lst2, False )
+	timesList[Bench.Union] = Millisecs()
+	Local lst4 := lst1.Intersect( lst2, False )	
+	timesList[Bench.Intersection] = Millisecs()
+	Local lst5 := lst1.Diff( lst2, False )	
+	timesList[Bench.Difference] = Millisecs()
+
+	SeedRnd(1234)
+	timesSet[Bench.Base] = Millisecs()
+	For Local i := 0 Until ITEMS
+		set1.Add( UInt( Rnd( MAXVALUE ) ) )
+		set2.Add( UInt( Rnd( MAXVALUE ) ) )
+	Next
+	timesSet[Bench.Create] = Millisecs()
+	Local set3 := set1.Union(set2)
+	timesSet[Bench.Union] = Millisecs()
+	Local set4 := set1.Intersection(set2)
+	timesSet[Bench.Intersection] = Millisecs()
+	Local set5 := set1.Difference(set2)
+	timesSet[Bench.Difference] = Millisecs()
+	
+	Local tlc := timesList[Bench.Create] - timesList[Bench.Base]
+	Local tlu := timesList[Bench.Union] - timesList[Bench.Create]
+	Local tli := timesList[Bench.Intersection] - timesList[Bench.Union]
+	Local tld := timesList[Bench.Difference] - timesList[Bench.Intersection]
+	Local tsc := timesSet[Bench.Create] - timesSet[Bench.Base]
+	Local tsu := timesSet[Bench.Union] - timesSet[Bench.Create]
+	Local tsi := timesSet[Bench.Intersection] - timesSet[Bench.Union]
+	Local tsd := timesSet[Bench.Difference] - timesSet[Bench.Intersection]
+
+	Local z1 := lst3.ToArray()
+	Local z2 := set3.ToArray()
+	Print "--------------------------"
+	Print "Lenghts: " + z1.Length + " : " + z2.Length
+	Print "Checking union..."
+	For Local z := 0 Until z1.Length
+		If z1[z] <> z2[z] Print "[" + z + "] " + z1[z] + " : " + z2[z] + " - " + z1[z] = z2[z]
+	Next
+
+	Local z3 := lst4.ToArray()
+	Local z4 := New Stack<UInt>( set4.ToArray() )
+	z4.Sort()
+	Print "--------------------------"
+	Print "Lenghts: " + z3.Length + " : " + z4.Length
+	Print "Checking intersection..."
+	For Local z := 0 Until z3.Length
+		If z3[z] <> z4[z] Print "[" + z + "] " + z3[z] + " : " + z4[z] + " - " + z3[z] = z4[z]
+	Next
+	
+	Local z5 := lst5.ToArray()
+	Local z6 := New Stack<UInt>( set5.ToArray() )
+	z6.Sort()
+	Print "--------------------------"
+	Print "Lenghts: " + z5.Length + " : " + z6.Length
+	Print "Checking difference..."
+	For Local z := 0 Until z5.Length
+		If z5[z] <> z6[z] Print "[" + z + "] " + z5[z] + " : " + z6[z] + " - " + z5[z] = z6[z]
+	Next
+
+	Print "--------------------------"
+	Print RSet("Create",20)+" "+RSet("Union",10)+" "+RSet("Intersection",15)+" "+RSet("Difference",15)
+	Print LSet("Lists",10)+RSet(tlc,9)+" ms"+RSet(tlu,8)+" ms"+RSet(tli,13)+" ms"+RSet(tld,13)+" ms"
+	Print LSet("Sets",10)+RSet(tsc,9)+" ms"+RSet(tsu,8)+" ms"+RSet(tsi,13)+" ms"+RSet(tsd,13)+" ms"
+	Print LSet("%",10)+RSet(tlc*100/tsc,9)+"% "+RSet(tlu*100/tsu,9)+"% "+RSet(tli*100/tsi,14)+"% "+RSet(tld*100/tsd,14)+"%"
+	
+End

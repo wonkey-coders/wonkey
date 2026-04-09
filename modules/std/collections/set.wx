@@ -316,8 +316,14 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	
 	Operator To:String()
 	
+<<<<<<< HEAD
+		Local tt := Typeof( _maxValue )
+		Local res := "Set<" + tt + ">{ "
+		For Local i := 0 Until _n
+=======
 		Local res:="{ "
 		For Local i:=0 Until _n
+>>>>>>> 0d49aa0aa3c4de3384489ea75c5bee2f4f6ea822
 			If i > 0 res += ", "
 			res += _dense[i]
 		Next
@@ -374,6 +380,16 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		
 		If _n < s._n
 			For Local i := 0 Until _n
+<<<<<<< HEAD
+				If s.Contains( _dense[i] ) r.Add( _dense[i] )
+			Next
+		Else
+			For Local i := 0 Until s._n
+				If Contains( s._dense[i] ) r.Add( s._dense[i] )
+			Next
+		End
+		
+=======
 				If s.Contains( _dense[i] )
 					r.Add( _dense[i] )
 				End				
@@ -386,13 +402,18 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 			Next
 		End
 
+>>>>>>> 0d49aa0aa3c4de3384489ea75c5bee2f4f6ea822
 		Return r
 	End
 	
 	#rem wonkeydoc returns the union of both sets.
 	#end
 	Method Union:Set<T>( s:Set<T> )
+<<<<<<< HEAD
+		
+=======
 	
+>>>>>>> 0d49aa0aa3c4de3384489ea75c5bee2f4f6ea822
 		Local uCap := _n + s._n
 		Local uMaxValue := Max( _maxValue, s._maxValue )
 		Local r := New Set<T>( uMaxValue, uCap )
@@ -407,8 +428,38 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		Return r
 	End
 	
+<<<<<<< HEAD
+	#rem wonkeydoc returns the difference of both sets.
+	#end
+	Method Difference:Set<T>( s:Set<T> )
+		
+		Local uMaxValue := Max( _maxValue, s._maxValue )
+		Local r := New Set<T>( uMaxValue, _n )
+		
+		For Local i := 0 Until _n
+			If Not s.Contains( _dense[i] ) r.Add( _dense[i] )
+		Next
+		Return r
+	End
+
+	#rem wonkeydoc returns true if the sets	 have no items in common.
+	#end
+	Method Disjoint:Bool( s:Set<T> )
+		
+		For Local i := 0 Until _n
+			If s.Contains( _dense[i] ) Return False
+		Next
+		Return True
+	End
+	
+	Method ToArray:T[]()
+		Return _dense.Slice( 0, _n )
+	End
+	
+=======
 	Method ToArray:T[]()
 		Return _dense.Slice( 0, _n )
 	End
 
+>>>>>>> 0d49aa0aa3c4de3384489ea75c5bee2f4f6ea822
 End

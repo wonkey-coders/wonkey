@@ -26,23 +26,24 @@ It is very cheap to add values to the end of a stack, but insertion or removal o
 Stacks implement the [[IContainer]] interface so can be used with Eachin loops.
 #end
 Class Stack<T> Implements IContainer<T>
-
+	
 	#rem wonkeydoc The Stack.Iterator struct.
 	#end
 	Struct Iterator 'Implements IIterator<T>
-	
+		
 		Private
-
+		
 		Field _stack:Stack
 		Field _index:Int 'iDkP: 32 bits!
 		
 		Method AssertCurrent()
-			DebugAssert( _index<_stack._length,"Invalid stack iterator" )
+			DebugAssert( _index < _stack._length, "Invalid stack iterator" )
 		End
-
-		Method New( stack:Stack,index:Int ) 'iDkP: 32 bits!
-			_stack=stack
-			_index=index
+		
+		Method New( stack:Stack, index:Int ) 'iDkP: 32 bits!
+			
+			_stack = stack
+			_index = index
 		End
 		
 		Public
@@ -50,24 +51,27 @@ Class Stack<T> Implements IContainer<T>
 		#rem wonkeydoc Checks if the iterator has reached the end of the stack.
 		#end
 		Property AtEnd:Bool()
-			Return _index>=_stack._length
+			Return _index >= _stack._length
 		End
 		
 		#rem wonkeydoc The value currently pointed to by the iterator.
 		#end
 		Property Current:T()
+			
 			AssertCurrent()
 			Return _stack._data[_index]
 		Setter( current:T )
+			
 			AssertCurrent()
-			_stack._data[_index]=current
+			_stack._data[_index] = current
 		End
 		
 		#rem wonkeydoc Bumps the iterator so it points to the next value in the stack.
 		#end
 		Method Bump()
+			
 			AssertCurrent()
-			_index+=1
+			_index += 1
 		End
 		
 		#rem wonkeydoc Safely erases the value pointed to by the iterator.
@@ -75,6 +79,7 @@ Class Stack<T> Implements IContainer<T>
 		Therefore, if you are manually iterating through a stack you should not call [[Bump]] after calling this method or you will end up skipping a value.
 		#end
 		Method Erase()
+			
 			AssertCurrent()
 			_stack.Erase( _index )
 		End
@@ -83,28 +88,31 @@ Class Stack<T> Implements IContainer<T>
 		After calling this method, the iterator will point to the newly added value.
 		#end
 		Method Insert( value:T )
-			DebugAssert( _index<=_stack._length,"Invalid stack iterator" )
-			_stack.Insert( _index,value )
+			
+			DebugAssert( _index <= _stack._length, "Invalid stack iterator" )
+			_stack.Insert( _index, value )
 		End
+		
 	End
 	
 	#rem wonkeydoc The Stack.BackwardsIterator struct.
 	#end
 	Struct BackwardsIterator 'Implements IIterator<T>
-	
+		
 		Private
-
+		
 		Field _stack:Stack
 		'Field _index:UInt 'iDkP: UNSIGNED 32 bits!
 		Field _index:Int 'iDkP: 32 bits!
 		
 		Method AssertCurrent()
-			DebugAssert( _index>=0,"Invalid stack iterator" )
+			DebugAssert( _index >= 0, "Invalid stack iterator" )
 		End
 		
-		Method New( stack:Stack,index:Int ) 'iDkP: 32 bits!
-			_stack=stack
-			_index=index
+		Method New( stack:Stack, index:Int ) 'iDkP: 32 bits!
+			
+			_stack = stack
+			_index = index
 		End
 		
 		Public
@@ -112,24 +120,27 @@ Class Stack<T> Implements IContainer<T>
 		#rem wonkeydoc Checks if the iterator has reached the end of the stack.
 		#end
 		Property AtEnd:Bool()
-			Return _index=-1
+			Return _index < 0
 		End
 		
 		#rem wonkeydoc The value currently pointed to by the iterator.
 		#end
 		Property Current:T()
+			
 			AssertCurrent()
 			Return _stack._data[_index]
 		Setter( current:T )
+			
 			AssertCurrent()
-			_stack._data[_index]=current
+			_stack._data[_index] = current
 		End
 		
 		#rem wonkeydoc Bumps the iterator so it points to the next value in the stack.
 		#end
 		Method Bump()
+			
 			AssertCurrent()
-			_index-=1
+			_index -= 1
 		End
 		
 		#rem wonkeydoc Safely erases the value pointed to by the iterator.
@@ -138,23 +149,25 @@ Class Stack<T> Implements IContainer<T>
 		will end up skipping a value.
 		#end
 		Method Erase()
+			
 			AssertCurrent()
 			_stack.Erase( _index )
-			_index-=1
+			_index -= 1
 		End
 		
 		#rem wonkeydoc Safely inserts a value before the value pointed to by the iterator.
 		After calling this method, the iterator will point to the newly added value.
 		#end
 		Method Insert( value:T )
-			DebugAssert( _index<_stack._length,"Invalid stack iterator" )
-			_index+=1
-			_stack.Insert( _index,value )
+			
+			DebugAssert( _index < _stack._length, "Invalid stack iterator" )
+			_index += 1
+			_stack.Insert( _index, value )
 		End
 	End
 	
 	Private
-
+	
 	Field _data:T[]
 	Field _length:Int 'iDkP: 32 bits!
 	
@@ -171,55 +184,57 @@ Class Stack<T> Implements IContainer<T>
 	@param values An array, list or stack.
 	#end
 	Method New()
-		_data=New T[10]
+		_data = New T[16]
 	End
-
+	
 	Method New( length:Int ) 'iDkP: 32 bits!
-		_length=length
-		_data=New T[_length]
+		
+		_length = length
+		_data = New T[_length]
 	End
-
+	
 	Method New( values:T[] )
 		AddAll( values )
 	End
 	
-	Method New( values:List<T> )
-		AddAll( values )
-	End
-	
-	Method New( values:Deque<T> )
-		_length=values.Length
-		_data=New T[_length]
-		values.Data.CopyTo( _data,0,0,_length )
-	End
+'	Method New( values:List<T> )
+'		AddAll( values )
+'	End
+'	
+'	Method New( values:Deque<T> )
+'		_length=values.Length
+'		_data=New T[_length]
+'		values.Data.CopyTo( _data,0,0,_length )
+'	End
 	
 	Method New( values:Stack<T> )
-		_length=values.Length
-		_data=New T[_length]
-		values.Data.CopyTo( _data,0,0,_length )
+		
+		_length = values.Length
+		_data = New T[_length]
+		values.Data.CopyTo( _data, 0, 0, _length )
 	End
 	
 	#rem wonkeydoc Checks if the stack is empty.
 	@return True if the stack is empty.
 	#end
 	Property Empty:Bool()
-		Return _length=0
+		Return _length = 0
 	End
-
+	
 	Property First:T()
-		Return Self.Empty ? Null Else Self[0]
+		Return Self.Empty ? Null Else _data[0]
 	End
 	
 	Property Last:T()
-		Return Self.Empty ? Null Else Self[Self.Length-1]
+		Return Self.Empty ? Null Else _data[_length - 1]
 	End
-
+	
 	#rem wonkeydoc Gets an iterator for visiting stack values.
 	Returns an iterator suitable for use with Eachin, or for manual iteration.
 	@return A stack iterator.
 	#end
 	Method All:Iterator()
-		Return New Iterator( Self,0 )
+		Return New Iterator( Self, 0 )
 	End
 	
 	#rem wonkeydoc Gets an iterator for visiting stack values in reverse order.
@@ -227,14 +242,14 @@ Class Stack<T> Implements IContainer<T>
 	@return A backwards stack iterator.
 	#end	
 	Method Backwards:BackwardsIterator()
-		Return New BackwardsIterator( Self,_length-1 )
+		Return New BackwardsIterator( Self, _length - 1 )
 	End
 
 	#rem wonkeydoc Converts the stack to an array.
 	@return An array containing each element of the stack.
 	#end
 	Method ToArray:T[]()
-		Return _data.Slice( 0,_length )
+		Return _data.Slice( 0, _length )
 	End
 	
 	#rem wonkeydoc Gets the underlying array used by the stack.
@@ -251,14 +266,14 @@ Class Stack<T> Implements IContainer<T>
 	Property Length:Int() 'iDkP: 32 bits!
 		Return _length
 	End
-
+	
 	#rem wonkeydoc hidden Set the number of values in the stack.
 	Note: This setter is internally used, but public. Do not use it until you know what you do!
 	#end
 	Method SetLength( lenght:Int ) 'iDkP: 32 bits!
-		_length=lenght
+		_length = lenght
 	End
-
+	
 	#rem wonkeydoc Gets the storage capacity of the stack.
 	The capacity of a stack is the number of values it can contain before memory needs to be reallocated to store more values.
 	If a stack's length equals its capacity, then the next Add or Insert operation will need to allocate more memory to 'grow' the stack.
@@ -266,22 +281,21 @@ Class Stack<T> Implements IContainer<T>
 	how many values a stack is likely to contain, in order to prevent the overhead of excessive memory allocation.
 	@return The current stack capacity.
 	#end
-
 	Property Capacity:Int() 'iDkP: 32 bits!
 		Return _data.Length
 	End
-
+	
 	#rem monkeydoc Returns a copy of the stack 
 	@return A copy of the current stack
 	#end
 	Method Copy:Stack<T>()
-		Return New Stack<T>(Self)
+		Return New Stack<T>( Self )
 	End 
-
+	
 	#rem wonkeydoc Compacts the stack
 	#end
 	Method Compact()
-		If _length<>_data.Length _data=_data.Slice( 0,_length )
+		If _length <> _data.Length _data = _data.Slice( 0, _length )
 	End
 	
 	#rem wonkeydoc Resizes the stack.
@@ -291,14 +305,14 @@ Class Stack<T> Implements IContainer<T>
 	#end
 	Method Resize( length:Int ) 'iDkP: 32 bits!
 		
-		DebugAssert( length>=0 )
+		DebugAssert( length >= 0 )
 		
-		For Local i:=length Until _length
-			_data[i]=Null
+		For Local i := length Until _length
+			_data[i] = Null
 		Next
 		
 		Reserve( length )
-		_length=length
+		_length = length
 	End
 	
 	#rem wonkeydoc Reserves stack storage capacity.
@@ -310,16 +324,16 @@ Class Stack<T> Implements IContainer<T>
 	#end
 	Method Reserve( capacity:Int ) 'iDkP: 32 bits!
 		
-		DebugAssert( capacity>=0 )
+		DebugAssert( capacity >= 0 )
 		
-		If _data.Length>=capacity Return
+		If _data.Length >= capacity Return
 		
-		'capacity=Max( _length*2,capacity )
-		capacity=_length*2 > capacity ? _length*2 Else capacity 'Modified by iDkP
+		'capacity=Max( _length * 2, capacity )
+		capacity = _length * 2 > capacity ? _length * 2 Else capacity 'Modified by iDkP
 		
 		Local data:=New T[capacity]
-		_data.CopyTo( data,0,0,_length )
-		_data=data
+		_data.CopyTo( data, 0, 0, _length )
+		_data = data
 	End
 	
 	#rem wonkeydoc Clears the stack.
@@ -335,12 +349,12 @@ Class Stack<T> Implements IContainer<T>
 	#end
 	Method Erase( index:Int ) 'iDkP: 32 bits!
 		
-		DebugAssert( index>=0 And index<=_length )
+		DebugAssert( index >= 0 And index <= _length )
 		
-		If index=_length Return
+		If index = _length Return
 		
-		_data.CopyTo( _data,index+1,index,_length-index-1 )
-		Resize( _length-1 )
+		_data.CopyTo( _data, index + 1, index, _length - index - 1 )
+		Resize( _length - 1 )
 	End
 	
 	#rem wonkeydoc Erases a range of elements in the stack.
@@ -349,13 +363,13 @@ Class Stack<T> Implements IContainer<T>
 	@param index1 The index of the first element to erase.
 	@param index2 The index of the last+1 element to erase.
 	#end
-	Method Erase( index1:Int,index2:Int ) 'iDkP: 32 bits!
+	Method Erase( index1:Int, index2:Int ) 'iDkP: 32 bits!
 		
-		DebugAssert( index1>=0 And index1<=_length And index2>=0 And index2<=_length And index1<=index2 )
+		DebugAssert( index1 >= 0 And index1 <= _length And index2 >= 0 And index2 <= _length And index1 <= index2 )
 		
-		If index1=_length Return
-		_data.CopyTo( _data,index2,index1,_length-index2 )
-		Resize( _length-index2+index1 )
+		If index1 = _length Return
+		_data.CopyTo( _data, index2, index1, _length - index2 )
+		Resize( _length - index2 + index1 )
 	End
 	
 	#rem wonkeydoc Inserts a value at an index in the stack.
@@ -366,12 +380,12 @@ Class Stack<T> Implements IContainer<T>
 	#end
 	Method Insert( index:Int,value:T ) 'iDkP: 32 bits!
 		
-		DebugAssert( index>=0 And index<=_length )
+		DebugAssert( index >= 0 And index <= _length )
 		
-		Reserve( _length+1 )
-		_data.CopyTo( _data,index,index+1,_length-index )
-		_data[index]=value
-		_length+=1
+		Reserve( _length + 1 )
+		_data.CopyTo( _data, index, index + 1, _length - index )
+		_data[index] = value
+		_length += 1
 	End
 	
 	#rem wonkeydoc Gets the value of a stack element.
@@ -380,7 +394,7 @@ Class Stack<T> Implements IContainer<T>
 	#end
 	Method Get:T( index:Int ) 'iDkP: 32 bits!
 		
-		DebugAssert( index>=0 And index<_length,"Stack index out of range" )
+		DebugAssert( index >= 0 And index < _length, "Stack index out of range" )
 		
 		Return _data[index]
 	End
@@ -390,11 +404,22 @@ Class Stack<T> Implements IContainer<T>
 	@param index The index of the element to set.
 	@param value The value to set.
 	#end
-	Method Set( index:Int,value:T ) 'iDkP: 32 bits!
+	Method Set( index:Int, value:T ) 'iDkP: 32 bits!
 		
-		DebugAssert( index>=0 And index<_length,"Stack index out of range" )
+		DebugAssert( index >= 0 And index < _length, "Stack index out of range" )
 		
-		_data[index]=value
+		_data[index] = value
+	End
+	
+	Operator To:String() Where T Implements INumeric Or T=String
+
+		Local tt := Typeof( _data[0] )
+		Local result := "Stack<" + tt + ">[ "
+		For Local i := 0 Until _length
+			If i > 0 result += ", "
+			result += _data[i]
+		Next
+		Return result + " ]"
 	End
 	
 	#rem wonkeydoc Gets the value of a stack element.
@@ -402,8 +427,8 @@ Class Stack<T> Implements IContainer<T>
 	@param index The index of the element to get.
 	#end
 	Operator []:T( index:Int ) 'iDkP: 32 bits!
-	
-		DebugAssert( index>=0 And index<_length,"Stack index out of range" )
+		
+		DebugAssert( index >= 0 And index < _length, "Stack index out of range" )
 		
 		Return _data[index]
 	End
@@ -413,25 +438,22 @@ Class Stack<T> Implements IContainer<T>
 	@param index The index of the element to set.
 	@param value The value to set.
 	#end
-	Operator []=( index:Int,value:T ) 'iDkP: 32 bits!
-	
-		DebugAssert( index>=0 And index<_length,"Stack index out of range" )
+	Operator []=( index:Int, value:T ) 'iDkP: 32 bits!
 		
-		_data[index]=value
+		DebugAssert( index >= 0 And index < _length, "Stack index out of range" )
+		
+		_data[index] = value
 	End
 	
 	Operator+=( item:T )
-		
 		Self.Add( item )
 	End
 	
 	Operator-=( item:T )
-	
 		Self.Remove( item )
 	End
 	
 	Operator+=( items:T[] )
-	
 		Self.AddAll( items )
 	End
 	
@@ -440,29 +462,32 @@ Class Stack<T> Implements IContainer<T>
 	@param value The value to add.
 	#end
 	Method Add( value:T )
-		Reserve( _length+1 )
-		_data[_length]=value
-		_length+=1
+		
+		Reserve( _length + 1 )
+		_data[_length] = value
+		_length += 1
 	End
-
+	
 	#rem wonkeydoc Adds a value to stack that has no other clone.
 	@param value The value to add.
 	#end
 	Method AddUnique( value:T )
-		If Not Self.Contains( value ) Then Self.Add( value )
+		If Not Contains( value ) Then Add( value )
 	End
 	
 	#rem wonkeydoc Adds the values in an array or container to the end of the stack.
 	@param values The values to add.
 	#end
 	Method AddAll( values:T[] )
-		Reserve( _length+values.Length )
-		values.CopyTo( _data,0,_length,values.Length )
-		Resize( _length+values.Length )
+		
+		Reserve( _length + values.Length )
+		values.CopyTo( _data, 0, _length, values.Length )
+		Resize( _length + values.Length )
 	End
-
+	
 	Method AddAll<C>( values:C ) Where C Implements IContainer<T>
-		For Local value:=Eachin values
+		
+		For Local value := Eachin values
 			Add( value )
 		Next
 	End
@@ -470,7 +495,8 @@ Class Stack<T> Implements IContainer<T>
 	#rem wonkeydoc @deprecated Use [[AddAll]].
 	#End
 	Method Append<C>( values:C ) Where C Implements IContainer<T>
-		For Local value:=Eachin values
+		
+		For Local value := Eachin values
 			Add( value )
 		Next
 	End
@@ -481,14 +507,14 @@ Class Stack<T> Implements IContainer<T>
 	@param start The starting index for the search.
 	@return The index of the value in the stack, or -1 if the value was not found.
 	#end
-	Method FindIndex:Int( value:T,start:Int=0 ) 'iDkP: 32 bits!
+	Method FindIndex:Int( value:T, start:Int = 0 ) 'iDkP: 32 bits!
 		
-		DebugAssert( start>=0 And start<=_length )
+		DebugAssert( start >= 0 And start <= _length )
 		
-		Local i:=start
-		While i<_length
-			If _data[i]=value Return i
-			i+=1
+		Local i := start
+		While i < _length
+			If _data[i] = value Return i
+			i += 1
 		Wend
 		Return -1
 	End
@@ -499,14 +525,14 @@ Class Stack<T> Implements IContainer<T>
 	@param start The starting index for the search.
 	@return The index of the value in the stack, or -1 if the value was not found.
 	#end
-	Method FindLastIndex:Int( value:T,start:Int=0 ) 'iDkP: 32 bits!
+	Method FindLastIndex:Int( value:T, start:Int = 0 ) 'iDkP: 32 bits!
 		
-		DebugAssert( start>=0 And start<=_length )
+		DebugAssert( start >= 0 And start <= _length )
 		
-		Local i:=_length
-		While i>start
-			i-=1
-			If _data[i]=value Return i
+		Local i := _length
+		While i > start
+			i -= 1
+			If _data[i] = value Return i
 		Wend
 		Return -1
 	End
@@ -516,7 +542,7 @@ Class Stack<T> Implements IContainer<T>
 	@return True if the stack contains the value, else false.
 	#end
 	Method Contains:Bool( value:T )
-		Return FindIndex( value )<>-1
+		Return FindIndex( value ) <> -1
 	End
 	
 	#rem wonkeydoc Finds and removes the first matching value from the stack.
@@ -524,9 +550,10 @@ Class Stack<T> Implements IContainer<T>
 	@param value The value to remove.
 	@return True if the value was removed.
 	#end
-	Method Remove:Bool( value:T,start:Int=0 ) 'iDkP: 32 bits!
-		Local i:=FindIndex( value,start )
-		If i=-1 Return False
+	Method Remove:Bool( value:T, start:Int = 0 ) 'iDkP: 32 bits!
+		
+		Local i := FindIndex( value, start )
+		If i = -1 Return False
 		Erase( i )
 		Return True
 	End
@@ -536,9 +563,10 @@ Class Stack<T> Implements IContainer<T>
 	@param value The value to remove.
 	@return True if the value was removed.
 	#end
-	Method RemoveLast:Bool( value:T,start:Int=0 ) 'iDkP: 32 bits!
-		Local i:=FindLastIndex( value,start )
-		If i=-1 Return False
+	Method RemoveLast:Bool( value:T, start:Int = 0 ) 'iDkP: 32 bits!
+		
+		Local i := FindLastIndex( value, start )
+		If i = -1 Return False
 		Erase( i )
 		Return True
 	End
@@ -548,14 +576,15 @@ Class Stack<T> Implements IContainer<T>
 	@return The number of values removed.
 	#end
 	Method RemoveEach:Int( value:T ) 'iDkP: 32 bits!
-		Local put:=0,n:=0
-		For Local get:=0 Until _length
-			If _data[get]=value 
-				n+=1
+		
+		Local put := 0, n := 0
+		For Local get := 0 Until _length
+			If _data[get] = value
+				n += 1
 				Continue
 			End
-			_data[put]=_data[get]
-			put+=1
+			_data[put] = _data[get]
+			put += 1
 		Next
 		Resize( put )
 		Return n
@@ -566,14 +595,15 @@ Class Stack<T> Implements IContainer<T>
 	@return The number of values removed.
 	#end
 	Method RemoveIf:Int( condition:Bool( value:T ) ) 'iDkP: 32 bits!
-		Local put:=0,n:=0
-		For Local get:=0 Until _length
+		
+		Local put := 0, n := 0
+		For Local get := 0 Until _length
 			If condition( _data[get] )
-				n+=1
+				n += 1
 				Continue
 			End
-			_data[put]=_data[get]
-			put+=1
+			_data[put] = _data[get]
+			put += 1
 		Next
 		Resize( put )
 		Return n
@@ -588,27 +618,26 @@ Class Stack<T> Implements IContainer<T>
 	@return A new stack.
 	#end
 	Method Slice:Stack( index:Int ) 'iDkP: 32 bits!
-
-		Return Slice( index,_length )
+		Return Slice( index, _length )
 	End
 
-	Method Slice:Stack( index1:Int,index2:Int ) 'iDkP: 32 bits!
+	Method Slice:Stack( index1:Int, index2:Int ) 'iDkP: 32 bits!
 
-		If index1<0
-			index1=index1+_length > 0 ? index1+_length Else 0 'Modified by iDkP
-		ElseIf index1>_length
-			index1=_length
+		If index1 < 0
+			index1 = index1 + _length > 0 ? index1 + _length Else 0 'Modified by iDkP
+		ElseIf index1 > _length
+			index1 = _length
 		End
 		
-		If index2<0
-			index2=index2+_length > index1 ? index2 Else index1 'Modified by iDkP
-		ElseIf index2>_length
-			index2=_length
-		ElseIf index2<index1
-			index2=index1
+		If index2 < 0
+			index2 = index2 + _length > index1 ? index2 Else index1 'Modified by iDkP
+		ElseIf index2 > _length
+			index2 = _length
+		ElseIf index2 < index1
+			index2 = index1
 		End
 		
-		Return New Stack( _data.Slice( index1,index2 ) )
+		Return New Stack( _data.Slice( index1, index2 ) )
 	End
 	
 	#rem wonkeydoc Swaps 2 elements in the stack, or 2 stacks.
@@ -619,20 +648,22 @@ Class Stack<T> Implements IContainer<T>
 	@param index2 The index of the second element.
 	@param stack The stack to swap with.
 	#end
-	Method Swap( index1:Int,index2:Int ) 'iDkP: 32 bits!
-		DebugAssert( index1>=0 And index1<_length And index2>=0 And index2<_length,"Stack index out of range" )
+	Method Swap( index1:Int, index2:Int ) 'iDkP: 32 bits!
 		
-		Local t:=_data[index1]
-		_data[index1]=_data[index2]
-		_data[index2]=t
+		DebugAssert( index1 >= 0 And index1 < _length And index2 >= 0 And index2 < _length, "Stack index out of range" )
+		
+		Local t := _data[index1]
+		_data[index1] = _data[index2]
+		_data[index2] = t
 	End
 	
 	Method Swap( stack:Stack )
-		Local data:=_data,length:=_length
-		_data=stack._data
-		_length=stack._length
-		stack._data=data
-		stack._length=length
+		
+		Local data := _data, length := _length
+		_data = stack._data
+		_length = stack._length
+		stack._data = data
+		stack._length = length
 	End
 	
 	#rem wonkeydoc Sorts the stack.
@@ -641,18 +672,22 @@ Class Stack<T> Implements IContainer<T>
 	@param lo Index of first value to sort.
 	@param hi Index of last value to sort.@lo Int start index
 	#end
-	Method Sort( ascending:Int=True )
+	Method Sort( ascending:Int = True )
+		
 		If ascending
-			Sort( Lambda:Int( x:T,y:T )
-				Return x<=>y
+			Sort( Lambda:Int( x:T, y:T )
+				Return x <=> y
 			End )
+			
 		Else
-			Sort( Lambda:Int( x:T,y:T )
-				Return y<=>x
+			Sort( Lambda:Int( x:T, y:T )
+				Return y <=> x
 			End )
+			
 		End
+		
 	End
-
+	
 '	Method Sort( compareFunc:Int( x:T,y:T ) )
 '		Sort( compareFunc,0,_length-1 )
 '	End
@@ -704,10 +739,11 @@ Class Stack<T> Implements IContainer<T>
 	@param onPlace If True, reverses the stack in place; if False, returns a new reversed copy.
 	@return The reversed stack (self if in-place, new Stack if not).
 	#end
-	Method Reverse<T>:Stack<T>( onPlace:Bool=True )
+	Method Reverse<T>:Stack<T>( onPlace:Bool = True )
+		
 		Local stk:Stack<T> = onPlace ? Self Else New Stack<T>( Self )
 		Local left:Int = 0
-		Local right:Int = stk.Count()-1
+		Local right:Int = stk.Count() - 1
 		While left < right
 			Local temp:T = stk[left]
 			stk[left] = stk[right]
@@ -723,9 +759,10 @@ Class Stack<T> Implements IContainer<T>
 	@return The top element of the stack.
 	#end
 	Property Top:T()
-		DebugAssert( _length,"Stack is empty" )
 		
-		Return _data[_length-1]
+		DebugAssert( _length, "Stack is empty" )
+		
+		Return _data[_length - 1]
 	End
 	
 	#rem wonkeydoc Pops the top element off the stack and returns it.
@@ -733,11 +770,12 @@ Class Stack<T> Implements IContainer<T>
 	@return The top element of the stack before it was popped.
 	#end
 	Method Pop:T()
-		DebugAssert( _length,"Stack is empty" )
 		
-		_length-=1
-		Local value:=_data[_length]
-		_data[_length]=Null
+		DebugAssert( _length, "Stack is empty" )
+		
+		_length -= 1
+		Local value := _data[_length]
+		_data[_length] = Null
 		Return value
 	End
 	
@@ -754,11 +792,14 @@ Class Stack<T> Implements IContainer<T>
 	@since 2025-07-05
 	#end 
 	Property Average:T() Where T Implements INumeric
-		Local result:T=0
-		For Local n:Int=0 Until Length
-			result+=_data[n]
+		
+		DebugAssert( _length, "Stack is empty" )
+
+		Local result:T = 0
+		For Local n:Int = 0 Until _length
+			result += _data[n]
 		End 
-		result/=Length
+		result /= _length
 		Return result
 	End
 #rem TODO: Tuple and limits integration
@@ -817,48 +858,49 @@ Class Stack<T> Implements IContainer<T>
 	@param lo Index of first value to sort.
 	@param hi Index of last value to sort.@lo Int start index
 	#end
-	Method Sort( compare:Int( x:T,y:T ),filter:StackSortFilter=Null )
-		Sort( compare,0,Length-1,filter )
+	Method Sort( compare:Int( x:T, y:T ), filter:StackSortFilter = Null )
+		Sort( compare, 0, _length - 1, filter )
 	End
 
-	Method Sort( compare:Int( x:T,y:T ),lo:Int,hi:Int,filter:StackSortFilter=Null ) 'iDkP: lo, hi = 32 bits
+	Method Sort( compare:Int( x:T, y:T ), lo:Int, hi:Int, filter:StackSortFilter = Null ) 'iDkP: lo, hi = 32 bits
 	
-		If hi<=lo Return
+		If hi <= lo Return
 		
-		If lo+1=hi
-			If compare( Self[hi],Self[lo] )<0 Swap( hi,lo )
+		If lo + 1 = hi
+			If compare( Self[hi], Self[lo] ) < 0 Swap( hi, lo )
 			Return
 		End
 		
-		Local i:=(lo+hi)/2
+		Local i := (lo + hi) / 2
 		
-		If compare( Self[i],Self[lo] )<0 Swap( i,lo )
+		If compare( Self[i], Self[lo] ) < 0 Swap( i, lo )
 
-		If compare( Self[hi],Self[i] )<0
-			Swap( hi,i )
-			If compare( Self[i],Self[lo] )<0 Swap( i,lo )
+		If compare( Self[hi], Self[i] ) < 0
+			Swap( hi, i )
+			If compare( Self[i], Self[lo] ) < 0 Swap( i, lo )
 		End
 		
-		Local x:=lo+1
-		Local y:=hi-1
+		Local x := lo + 1
+		Local y := hi - 1
 		Repeat
-			Local p:=Self[i]
-			While compare( Self[x],p )<0
-				x+=1
+			Local p := Self[i]
+			While compare( Self[x], p ) < 0
+				x += 1
 			Wend
-			While compare( p,Self[y] )<0
-				y-=1
+			While compare( p, Self[y] ) < 0
+				y -= 1
 			Wend
-			If x>y Exit
-			If x<y
-				Swap( x,y )
-				If i=x i=y ElseIf i=y i=x
+			If x > y Exit
+			If x < y
+				Swap( x, y )
+				If i = x i = y ElseIf i = y i = x
 			Endif
-			x+=1
-			y-=1
-		Until x>y
+			x += 1
+			y -= 1
+		Until x > y
 
-		Sort( compare,lo,y,filter )
-		Sort( compare,x,hi,filter )
+		Sort( compare, lo, y, filter )
+		Sort( compare, x, hi, filter )
 	End
+	
 End

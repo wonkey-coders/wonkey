@@ -595,20 +595,18 @@ Class Map<K,V>
 			{[three][3]}
 			{[two][2]}
 	#end	
-	Method To:String() 	Where
-						(K=String Or K=Int Or K=Float Or K=Short Or K=Long Or K=Double Or K=Bool Or K=Variant) And
-						(V=String Or V=Int Or V=Float Or V=Short Or V=Long Or V=Double Or V=Bool Or V=Variant)
-
-		'Patch to fix the casting issue without importing the entire stdlib. TODO: To undone after integrating the types minilib.
-		local __Variant__:Variant,__t_variant__	:=Typeof(__Variant__)
-		Local result:String
-		Local iv:String,ik:String
-		For Local item:=Eachin Self
-			iv = Typeof(item.Value)=__t_variant__ ?	"?????" Else Cast<String>(item.Value)
-			ik = Typeof(item.Key)=__t_variant__ ? 	"?????" Else Cast<String>(item.Key)
-			result+="{["+ik+"]["+iv+"]}~n"
-		End
-		Return result
+	Operator To:String() Where (K Implements INumeric Or K=String) And (V Implements INumeric Or V=String)
+	
+		Local tk := Typeof( _root._key )
+		Local tv := Typeof( _root._value )
+		Local res := "Map<" + tk + "," + tv + ">{ "
+		Local idx := 0
+		For Local i := Eachin Self
+			If idx > 0 res += ", "
+			res += i.Key + ": " + i.Value
+			idx += 1
+		Next
+		Return res + " }"
 	End 
 
 	#rem wonkeydoc Output an verbose string from the data (map as string or numerical types)
