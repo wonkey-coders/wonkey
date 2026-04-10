@@ -28,23 +28,24 @@ Please see [[IContainer]] for more information.
 
 #end
 Class Deque<T> Implements IContainer<T>
-
+	
 	#rem wonkeydoc The Deque.Iterator struct.
 	#end
 	Struct Iterator Implements IIterator<T>
-	
+		
 		Private
 		
 		Field _deque:Deque
 		Field _index:Int
 		
 		Method AssertCurrent()
-			DebugAssert( _index<>_deque._tail,"Invalid deque iterator" )
+			DebugAssert( _index <> _deque._tail, "Invalid deque iterator" )
 		End
 		
-		Method New( deque:Deque,index:Int )
-			_deque=deque
-			_index=index
+		Method New( deque:Deque, index:Int )
+			
+			_deque = deque
+			_index = index
 		End
 		
 		Public
@@ -52,15 +53,17 @@ Class Deque<T> Implements IContainer<T>
 		#rem wonkeydoc Checks if the iterator has reached the end of the deque.
 		#end
 		Property AtEnd:Bool()
-			Return _index=_deque._tail
+			Return _index = _deque._tail
 		End
 		
 		#rem wonkeydoc The value currently pointed to by the iterator.
 		#end
 		Property Current:T()
+			
 			AssertCurrent()
 			Return _deque._data[_index]
 		Setter( current:T )
+			
 			AssertCurrent()
 			_deque._data[_index]=current
 		End
@@ -68,9 +71,10 @@ Class Deque<T> Implements IContainer<T>
 		#rem wonkeydoc Bumps the iterator so it points to the next value in the deqeue.
 		#end
 		Method Bump()
+			
 			AssertCurrent()
-			_index+=1
-			If _index=_deque.Capacity _index=0
+			_index += 1
+			If _index = _deque.Capacity _index = 0
 		End
 		
 		Method Erase()
@@ -86,44 +90,45 @@ Class Deque<T> Implements IContainer<T>
 	End
 	
 	Method Normalize( capacity:Int )
-	
-		Local length:=Length
 		
-		Local data:=New T[capacity]
+		Local length := Length
 		
-		If _head<=_tail
-			_data.CopyTo( data,_head,0,length )
+		Local data := New T[capacity]
+		
+		If _head <= _tail
+			_data.CopyTo( data, _head, 0, length )
 		Else
-			Local n:=Capacity-_head
-			_data.CopyTo( data,_head,0,n )
-			_data.CopyTo( data,0,n,_tail )
+			Local n := Capacity - _head
+			_data.CopyTo( data, _head, 0, n )
+			_data.CopyTo( data, 0, n, _tail )
 		End
 		
-		_data=data
-		_tail=length
-		_head=0
+		_data = data
+		_tail = length
+		_head = 0
 	End
 	
 	Public
-
+	
 	#rem wonkeydoc Creates a new deque.	
 	@param length Initalize length of the deque.
 	#end	
 	Method New()
-		_data=New T[10]
+		_data = New T[16]
 	End
 	
 	Method New( length:Int )
-		_tail=length
-		_data=New T[_tail+1]
+		
+		_tail = length
+		_data = New T[_tail + 1]
 	End
-
+	
 	#rem wonkeydoc True if deque is empty.
 	#end
 	Property Empty:Bool()
-		Return _head=_tail
+		Return _head = _tail
 	End
-
+	
 	#rem wonkeydoc Gets the storage capacity of the deque.	
 	The capacity of a deque is the number of values it can contain before 
 	memory needs to be reallocated to store more values.	
@@ -143,19 +148,20 @@ Class Deque<T> Implements IContainer<T>
 	@return The number of values in the deque.	
 	#end
 	Property Length:Int()
-		If _head<=_tail Return _tail-_head
-		Return Capacity-_head+_tail
+		
+		If _head <= _tail Return _tail - _head
+		Return _data.Length - _head + _tail
 	End
-
+	
 	#rem wonkeydoc Gets the underlying array used by the deque.	
 	Note that the returned array may be longer than the deque length.	
 	@return The array used internally by the deque.	
 	#end
 	Property Data:T[]()
-
+		
 		If Not _head Return _data
 		
-		Normalize( Capacity )
+		Normalize( _data.Length )
 		
 		Return _data
 	End
@@ -165,23 +171,22 @@ Class Deque<T> Implements IContainer<T>
 	@return A deque iterator.	
 	#end
 	Method All:Iterator()
-	
-		Return New Iterator( Self,_head )
+		Return New Iterator( Self, _head )
 	End
 	
 	#rem wonkeydoc Converts the deque to an array.	
 	@return An array containing each element of the deque.	
 	#end
 	Method ToArray:T[]()
-	
-		Local data:=New T[Length]
 		
-		If _head<=_tail
-			_data.CopyTo( data,_head,0,Length )
+		Local data := New T[Length]
+		
+		If _head <= _tail
+			_data.CopyTo( data, _head, 0, Length )
 		Else
-			Local n:=Capacity-_head
-			_data.CopyTo( data,_head,0,n )
-			_data.CopyTo( data,0,n,_tail )
+			Local n := _data.Length - _head
+			_data.CopyTo( data, _head, 0, n )
+			_data.CopyTo( data, 0, n, _tail )
 		Endif
 		
 		Return data
@@ -199,11 +204,12 @@ Class Deque<T> Implements IContainer<T>
 	@param capacity The new capacity.	
 	#end
 	Method Reserve( capacity:Int )
-		DebugAssert( capacity>=0 )
 		
-		If Capacity>=capacity Return
+		DebugAssert( capacity >= 0 )
+		
+		If _data.Length >= capacity Return
 
-		capacity=Max( Length*2+Length,capacity )
+		capacity = Max( Length * 2 + Length, capacity )
 		
 		Normalize( capacity )
 	End
@@ -211,54 +217,55 @@ Class Deque<T> Implements IContainer<T>
 	#rem wonkeydoc Clears the deque.
 	#end
 	Method Clear()
-		If _head<=_tail
-			For Local i:=_head Until _tail
-				_data[i]=Null
+		
+		If _head <= _tail
+			For Local i := _head Until _tail
+				_data[i] = Null
 			Next
 		Else
-			For Local i:=0 Until _tail
-				_data[i]=Null
+			For Local i := 0 Until _tail
+				_data[i] = Null
 			Next
-			For Local i:=_head Until Capacity
-				_data[i]=Null
+			For Local i := _head Until _data.Length
+				_data[i] = Null
 			Next
 		Endif
-		_head=0
-		_tail=0
+		_head = 0
+		_tail = 0
 	End
 	
 	#rem wonkeydoc Adds a value at the start of the deque.
 	#end
 	Method AddFirst( value:T )
-		If Length+1=Capacity Reserve( Capacity+1 )
-
-		_head-=1
-		If _head=-1 _head=Capacity-1
-		_data[_head]=value
+		
+		If Length + 1 = _data.Length Reserve( _data.Length + 1 )
+		
+		_head -= 1
+		If _head = -1 _head = _data.Length - 1
+		_data[_head] = value
 	End
 	
 	#rem wonkeydoc Adds a value at the end of the deque.
 	#end
 	Method AddLast( value:T )
-		If Length+1=Capacity Reserve( Capacity+1 )
-
-		_data[_tail]=value
-		_tail+=1
-		If _tail=Capacity _tail=0
+		
+		If Length + 1 = _data.Length Reserve( _data.Length + 1 )
+		
+		_data[_tail] = value
+		_tail += 1
+		If _tail = _data.Length _tail = 0
 	End
 	
 	#rem wonkeydoc @sugar Use [[AddFirst]]
 	#end
 	Method PushFirst( value:T )
-	
-		AddFirst( value)
+		AddFirst( value )
 	End
-
+	
 	#rem wonkeydoc @sugar Use [[AddLast]]
 	#end
 	Method PushLast( value:T )
-	
-		AddLast( value)
+		AddLast( value )
 	End
 
 	#rem wonkeydoc Push a value into the deque, the deque do not growth.
@@ -266,7 +273,8 @@ Class Deque<T> Implements IContainer<T>
 	@since 2025-07-10
 	#end
 	Method Push( value:T )
-		If _data.Length=_data.Length
+		
+		If _data.Length = _data.Length '????
 			PopLast()
 		End
 		PushFirst( value )
@@ -276,12 +284,13 @@ Class Deque<T> Implements IContainer<T>
 	In debug builds, a runtime error will occur if the deque is empty.	
 	#end
 	Method RemoveFirst:T()
-		DebugAssert( Not Empty,"Illegal operation on empty deque" )
-
-		Local value:=_data[_head]
-		_data[_head]=Null
-		_head+=1
-		If _head=Capacity _head=0
+		
+		DebugAssert( Not Empty, "Illegal operation on empty deque" )
+		
+		Local value := _data[_head]
+		_data[_head] = Null
+		_head += 1
+		If _head = _data.Length _head = 0
 		Return value
 	End
 	
@@ -289,26 +298,25 @@ Class Deque<T> Implements IContainer<T>
 	In debug builds, a runtime error will occur if the deque is empty.
 	#end
 	Method RemoveLast:T()
-		DebugAssert( Not Empty,"Illegal operation on empty deque" )
 		
-		_tail-=1
-		If _tail=-1 _tail=Capacity-1
-		Local value:=_data[_tail]
-		_data[_tail]=Null
+		DebugAssert( Not Empty, "Illegal operation on empty deque" )
+		
+		_tail -= 1
+		If _tail = -1 _tail = _data.Length - 1
+		Local value := _data[_tail]
+		_data[_tail] = Null
 		Return value
 	End
 	
 	#rem wonkeydoc @sugar use [[RemoveFirst]].
 	#end
 	Method PopFirst:T()
-	
 		Return RemoveFirst()
 	End
-
+	
 	#rem wonkeydoc @sugar use [[RemoveLast]].
 	#end
 	Method PopLast:T()
-	
 		Return RemoveLast()
 	End
 	
@@ -316,7 +324,8 @@ Class Deque<T> Implements IContainer<T>
 	In debug builds, a runtime error will occur if the deque is empty.
 	#end
 	Method First:T()
-		DebugAssert( Not Empty,"Illegal operation on empty deque" )
+		
+		DebugAssert( Not Empty, "Illegal operation on empty deque" )
 		
 		Return _data[_head]
 	End
@@ -325,9 +334,10 @@ Class Deque<T> Implements IContainer<T>
 	In debug builds, a runtime error will occur if the deque is empty.
 	#end
 	Method Last:T()
-		DebugAssert( Not Empty,"Illegal operation on empty deque" )
 		
-		Return _data[ _tail>0 ? _tail-1 Else Capacity-1 ]
+		DebugAssert( Not Empty, "Illegal operation on empty deque" )
+		
+		Return _data[_tail > 0 ? _tail - 1 Else _data.Length - 1]
 	End
 	
 	#rem wonkeydoc Gets the value of a deque element.	
@@ -335,19 +345,33 @@ Class Deque<T> Implements IContainer<T>
 	or greater than or equal to the length of the deque.	
 	#end
 	Method Get:T( index:Int )
-		DebugAssert( index>=0 And  index<Length,"Deque index out of range" )
 		
-		Return _data[ (index+_head) Mod Capacity ]
+		DebugAssert( index >= 0 And  index < Length, "Deque index out of range" )
+		
+		Return _data[( index + _head ) Mod _data.Length]
 	End
 	
 	#rem wonkeydoc Sets the value of a deque element.
 	In debug builds, a runtime error will occur if `index` is less than 0, 
 	or greater than or equal to the length of the deque.	
 	#end
-	Method Set( index:Int,value:T )
-		DebugAssert( index>=0 And index<Length,"Deque index out of range" )
+	Method Set( index:Int, value:T )
 		
-		_data[ (index+_head) Mod Capacity ]=value
+		DebugAssert( index >= 0 And index < Length, "Deque index out of range" )
+		
+		_data[( index + _head ) Mod _data.Length] = value
+	End
+	
+	Operator To:String()
+		
+		Local tt := Typeof( _data[0] )
+		Local _arr := Data
+		Local result := "Deque<" + tt + ">[ "
+		For Local i := 0 Until Length
+			If i > 0 result += ", "
+			result += _arr[( i + _head ) Mod _data.Length]
+		Next
+		Return result + " ]"
 	End
 	
 	#rem wonkeydoc Gets the value of a deque element.
@@ -355,19 +379,21 @@ Class Deque<T> Implements IContainer<T>
 	or greater than or equal to the length of the deque.	
 	#end
 	Operator[]:T( index:Int )
-		DebugAssert( index>=0 And index<Length,"Deque index out of range" )
+	
+		DebugAssert( index >= 0 And index < Length, "Deque index out of range" )
 		
-		Return _data[ (index+_head) Mod Capacity ]
+		Return _data[( index + _head ) Mod _data.Length]
 	End
 	
 	#rem wonkeydoc Sets the value of a deque element.
 	In debug builds, a runtime error will occur if `index` is less than 0, 
 	or greater than or equal to the length of the deque.
 	#end
-	Operator[]=( index:Int,value:T )
-		DebugAssert( index>=0 And index<Length,"Deque index out of range" )
+	Operator[]=( index:Int, value:T )
 		
-		_data[ (index+_head) Mod Capacity ]=value
+		DebugAssert( index >= 0 And index < Length, "Deque index out of range" )
+		
+		_data[( index + _head ) Mod _data.Length] = value
 	End
 	
 	'iDkP's Note:

@@ -49,7 +49,7 @@ Version (2025-07-04) note (iDkP):
 
 #end
 Class Map<K,V>
-
+	
 	'iDkP from GaragePixel's note:
 	'
 	' New implementation of Map using hint strategy, pointer usage and ubytes
@@ -103,7 +103,7 @@ Class Map<K,V>
 	#rem wonkeydoc The map Node class.
 	#end
 	Class Node
-	
+		
 		#rem wonkeydoc Gets the key contained in the node.
 		@return The node's key.
 		#end
@@ -117,78 +117,82 @@ Class Map<K,V>
 		Property Value:V()
 			Return _value
 		Setter( value:V )
-			_value=value
+			_value = value
 		End
-	
+		
 		Private	
-	
+		
 		Field _key:K
 		Field _value:V
 		Field _color:UByte 'Modified by iDkP
 		Field _left:Node
 		Field _right:Node
 		Field _parent:Node
-	
-		Method New( key:K,value:V,color:UByte,parent:Node )
-			_key=key
-			_value=value
-			_color=color
-			_parent=parent
+		
+		Method New( key:K, value:V, color:UByte, parent:Node )
+			
+			_key = key
+			_value = value
+			_color = color
+			_parent = parent
 		End
 		
 		Method Count:Int( n:Int ) 'iDkP: 32 bits!
-			If _left n=_left.Count( n )
-			If _right n=_right.Count( n )
-			Return n+1
+			
+			If _left n = _left.Count( n )
+			If _right n = _right.Count( n )
+			Return n + 1
 		End
-	
+			
 		Method NextNode:Node()
+			
 			If _right
-				Local node:=_right
+				Local node := _right
 				While node._left
-					node=node._left
+					node = node._left
 				Wend
 				Return node
 			Endif
-			Local node:=Self,parent:=_parent
-			While parent And node=parent._right
-				node=parent
-				parent=parent._parent
+			Local node := Self, parent := _parent
+			While parent And node = parent._right
+				node = parent
+				parent = parent._parent
 			Wend
 			Return parent
 		End
 		
 		Method PrevNode:Node()
+			
 			If _left
-				Local node:=_left
+				Local node := _left
 				While node._right
-					node=node._right
+					node = node._right
 				Wend
 				Return node
 			Endif
-			Local node:=Self,parent:=_parent
-			While parent And node=parent._left
-				node=parent
-				parent=parent._parent
+			Local node := Self, parent := _parent
+			While parent And node = parent._left
+				node = parent
+				parent = parent._parent
 			Wend
 			Return parent
 		End
 		
 		Method Copy:Node( parent:Node )
-			Local node:=New Node( _key,_value,_color,parent )
-			If _left node._left=_left.Copy( node )
-			If _right node._right=_right.Copy( node )
+			Local node := New Node( _key, _value, _color, parent )
+			If _left node._left = _left.Copy( node )
+			If _right node._right = _right.Copy( node )
 			Return node
 		End
-	
+		
 	End
 	
 	Struct Iterator
 		
 		Property AtEnd:Bool()
-			Return _node=Null
+			Return _node = Null
 		End
-	
+		
 		Property Valid:Bool()
 			Return _node
 		End
@@ -198,7 +202,7 @@ Class Map<K,V>
 		End
 		
 		Method Bump()
-			_node=_node.NextNode()
+			_node = _node.NextNode()
 		End
 		
 		Private
@@ -206,17 +210,17 @@ Class Map<K,V>
 		Field _node:Node
 		
 		Method New( node:Node )
-			_node=node
+			_node = node
 		End
 		
 	End
 	
 	Struct KeyIterator
-	
+		
 		Property AtEnd:Bool()
-			Return _node=Null
+			Return _node = Null
 		End
-	
+		
 		Property Valid:Bool()
 			Return _node
 		End
@@ -226,7 +230,7 @@ Class Map<K,V>
 		End
 		
 		Method Bump()
-			_node=_node.NextNode()
+			_node = _node.NextNode()
 		End
 		
 		Private
@@ -240,11 +244,11 @@ Class Map<K,V>
 	End
 	
 	Struct ValueIterator
-	
+		
 		Property AtEnd:Bool()
-			Return _node=Null
+			Return _node = Null
 		End
-	
+			
 		Property Valid:Bool()
 			Return _node
 		End
@@ -254,7 +258,7 @@ Class Map<K,V>
 		End
 		
 		Method Bump()
-			_node=_node.NextNode()
+			_node = _node.NextNode()
 		End
 		
 		Private
@@ -262,13 +266,13 @@ Class Map<K,V>
 		Field _node:Node
 		
 		Method New( node:Node )
-			_node=node
+			_node = node
 		End
 		
 	End
 	
 	Struct MapKeys
-	
+		
 		Method All:KeyIterator()
 			Return New KeyIterator( _map.FirstNode ) 'Modified by iDkP
 		End
@@ -278,13 +282,13 @@ Class Map<K,V>
 		Field _map:Map
 		
 		Method New( map:Map )
-			_map=map
+			_map = map
 		End
 		
 	End
 	
 	Struct MapValues
-	
+		
 		Method All:ValueIterator()
 			Return New ValueIterator( _map.FirstNode ) 'Modified by iDkP
 		End
@@ -294,7 +298,7 @@ Class Map<K,V>
 		Field _map:Map
 		
 		Method New( map:Map )
-			_map=map
+			_map = map
 		End
 		
 	End
@@ -328,12 +332,12 @@ Class Map<K,V>
 										K=Int Or K=Float Or 
 										K=Short Or K=Long Or K=Double Or K=Bool Or 
 										K=Variant
-		Local len:=keys.Length
-		For Local k:=0 Until len
-			Add(keys[k],prefilled)
+		Local len := keys.Length
+		For Local k := 0 Until len
+			Add( keys[k], prefilled )
 		End
 	End
-
+	
 	#rem wonkeydoc Creates a new prefilled map with keys and values from pointed arrays.
 	@author iDkP from GaragePixel
 	@since 2025-06-20
@@ -372,21 +376,21 @@ Class Map<K,V>
 	Method New( keys:K[], values:V[] ) 	Where 
 										(K=Object Or K=String Or K=Int Or K=Float Or K=Short Or K=Long Or K=Double Or K=Bool Or K=Variant) And
 										(V=Object Or V=String Or V=Int Or V=Float Or V=Short Or V=Long Or V=Double Or V=Bool Or V=Variant)
-		Local klen:=keys.Length
-		Local vlen:=values.Length
-		If klen>vlen
+		Local klen := keys.Length
+		Local vlen := values.Length
+		If klen > vlen
 			Local k:Int
-			For k=0 Until vlen
-				Add(keys[k],values[k])
-			End
-			For k=vlen Until klen
-				Add(keys[k],values[vlen-1])
-			End
+			For k = 0 Until vlen
+				Add( keys[k], values[k] )
+			Next
+			For k = vlen Until klen
+				Add( keys[k], values[vlen - 1] )
+			Next
 		Else 
 			For Local k:=0 Until klen
-				Add(keys[k],values[k])
-			End
-		End
+				Add( keys[k], values[k] )
+			Next
+		Endif
 	End
 
 	#rem wonkeydoc Creates a new indexed map with values from an array.
@@ -414,12 +418,12 @@ Class Map<K,V>
 								(V=Object Or V=String Or V=Int Or V=Float Or V=Short Or V=Long Or V=Double Or V=Bool Or V=Variant) And
 								K=Int '32 bits!
 
-		Local vlen:=values.Length
-		For Local k:=0 Until vlen
-			Add(k,values[k])
-		End
+		Local vlen := values.Length
+		For Local k := 0 Until vlen
+			Add( k, values[k] )
+		Next
 	End
-
+	
 	#rem wonkeydoc Creates a new map from interleaved key-value pairs (variant array).
 	@author iDkP from GaragePixel
 	@since 2025-06-27
@@ -435,14 +439,14 @@ Class Map<K,V>
 									(K=Object Or K=String Or K=Int Or K=Float Or K=Short Or K=Long Or K=Double Or K=Bool Or K=Variant) And
 									(V=Object Or V=String Or V=Int Or V=Float Or V=Short Or V=Long Or V=Double Or V=Bool Or V=Variant)
 		
-		Assert((k.Length Mod 2) = 0,"Pair missing: array length must be even.")
-		Local len:=k.Length/2
+		Assert( ( k.Length Mod 2 ) = 0, "Pair missing: array length must be even." )
+		Local len := k.Length / 2
 
-		For Local i:=0 Until len+2 Step 2
-			Add(Cast<K>(k[i]),Cast<V>(k[i+1]))
+		For Local i := 0 Until len + 2 Step 2
+			Add( Cast<K>( k[i] ), Cast<V>(k[i + 1]))
 		Next
 	End
-
+	
 	#rem wonkeydoc Creates a new map from interleaved key-value pairs (variant array).
 	@author iDkP from GaragePixel
 	@since 2025-06-27
@@ -526,10 +530,10 @@ Class Map<K,V>
 										K=Short Or K=Long Or K=Double Or K=Bool Or
 										K=Variant
 		Clear()
-		Local this:=New Map<K,V>(keys,values)
-		Self._root=this._root
+		Local this := New Map<K,V>( keys, values )
+		Self._root = this._root
 	End
-
+	
 	#rem wonkeydoc Resets a new prefilled map with keys and values created from pointed arrays.
 	@author iDkP from GaragePixel
 	@since 2025-07-02
@@ -548,8 +552,8 @@ Class Map<K,V>
 											(K=Object Or K=String Or K=Int Or K=Float Or K=Short Or K=Long Or K=Double Or K=Bool Or K=Variant) And
 											(V=Object Or V=String Or V=Int Or V=Float Or V=Short Or V=Long Or V=Double Or V=Bool Or V=Variant)
 		Clear()
-		Local this:=New Map<K,V>(keys,values)
-		Self._root=this._root
+		Local this := New Map<K,V>( keys, values )
+		Self._root = this._root
 	End
 
 #rem
@@ -582,35 +586,21 @@ Class Map<K,V>
 		Self._root=this._root
 	End
 #end
-	#rem wonkeydoc Output an string from the data (map as string or numerical types)
-	@author iDkP from GaragePixel
-	@since 2025-06-13
-	@version 2025-06-30
-	Note: If the key or the value are from the Variant type, the element emits "?????" in the string.
-	stdlib.collections.Map<monkey.types.String,monkey.types.Int>' to type 'monkey.types.String
-	Note:
-		The output is automatically sorted according the keys.
-		For example: 
-			{[one][1]}
-			{[three][3]}
-			{[two][2]}
-	#end	
-	Method To:String() 	Where
-						(K=String Or K=Int Or K=Float Or K=Short Or K=Long Or K=Double Or K=Bool Or K=Variant) And
-						(V=String Or V=Int Or V=Float Or V=Short Or V=Long Or V=Double Or V=Bool Or V=Variant)
 
-		'Patch to fix the casting issue without importing the entire stdlib. TODO: To undone after integrating the types minilib.
-		local __Variant__:Variant,__t_variant__	:=Typeof(__Variant__)
-		Local result:String
-		Local iv:String,ik:String
-		For Local item:=Eachin Self
-			iv = Typeof(item.Value)=__t_variant__ ?	"?????" Else Cast<String>(item.Value)
-			ik = Typeof(item.Key)=__t_variant__ ? 	"?????" Else Cast<String>(item.Key)
-			result+="{["+ik+"]["+iv+"]}~n"
-		End
-		Return result
+	Operator To:String() Where (K Implements INumeric Or K=String) And (V Implements INumeric Or V=String)
+		
+		Local tk := Typeof( _root._key )
+		Local tv := Typeof( _root._value )
+		Local res := "Map<" + tk + "," + tv + ">{ "
+		Local idx := 0
+		For Local i := Eachin Self
+			If idx > 0 res += ", "
+			res += i.Key + ": " + i.Value
+			idx += 1
+		Next
+		Return res + " }"
 	End 
-
+	
 	#rem wonkeydoc Output an verbose string from the data (map as string or numerical types)
 	@author iDkP from GaragePixel
 	@since 2025-06-13
@@ -622,19 +612,19 @@ Class Map<K,V>
 								(V=String Or V=Int Or V=Float Or V=Short Or V=Long Or V=Double Or V=Bool Or V=Variant)
 
 		'Patch to fix the casting issue without importing the entire stdlib. TODO: To undone after integrating the types minilib.
-		local __Variant__:Variant,__t_variant__	:=Typeof(__Variant__)
+		local __Variant__:Variant, __t_variant__	:=Typeof( __Variant__ )
 
-		Local result:String="map[~n"
-		Local iv:String,ik:String
-		For Local item:=Eachin Self
-			iv = Typeof(item.Value)=__t_variant__ ?	"?????" Else Cast<String>(item.Value)
-			ik = Typeof(item.Key)=__t_variant__ ? 	"?????" Else Cast<String>(item.Key)			
+		Local result:String = "map[~n"
+		Local iv:String, ik:String
+		For Local item := Eachin Self
+			iv = Typeof( item.Value ) = __t_variant__ ?	"?????" Else Cast<String>( item.Value )
+			ik = Typeof( item.Key ) = __t_variant__ ? 	"?????" Else Cast<String>( item.Key )			
 			result+="{["+ik+"]["+iv+"]}~n"
 		End
-		result=result.Left(result.Length-2)+"]"
+		result = result.Left( result.Length - 2 ) + "]"
 		Return result
 	End 
-
+	
 	#rem wonkeydoc Gets a node iterator.	
 	#end	
 	Method All:Iterator()
@@ -648,7 +638,7 @@ Class Map<K,V>
 	Property Keys:MapKeys()
 		Return New MapKeys( Self )
 	End
-
+	
 	#rem wonkeydoc Gets a view of the map's values.
 	The returned value can be used with an Eachin loop to iterate over the map's values.
 	@return A MapValues object.
@@ -661,21 +651,23 @@ Class Map<K,V>
 	@return A new map.
 	#end
 	Method Copy:Map()
+		
 		Local root:Node
-		If _root root=_root.Copy( Null )
+		If _root root = _root.Copy( Null )
 		Return New Map( root )
 	End
 	
 	#rem wonkeydoc Removes all keys from the map.
 	#end
 	Method Clear()
-		_root=Null
+		_root = Null
 	End
 	
 	#rem wonkeydoc Gets the number of keys in the map.	
 	@return The number of keys in the map.	
 	#end
 	Method Count:Int() 'iDkP: UNSIGNED 32 bits!
+		
 		If Not _root Return 0
 		Return _root.Count( 0 )
 	End
@@ -684,15 +676,15 @@ Class Map<K,V>
 	@return True if the map is empty.
 	#end
 	Property Empty:Bool()
-		Return _root=Null
+		Return _root = Null
 	End
-
+	
 	#rem wonkeydoc Checks if the map contains a given key.
 	@param key The key to check for.
 	@return True if the map contains the key.
 	#end
 	Method Contains:Bool( key:K )
-		Return FindNode( key )<>Null
+		Return FindNode( key ) <> Null
 	End
 	
 	#rem wonkeydoc Sets the value associated with a key in the map.
@@ -703,8 +695,8 @@ Class Map<K,V>
 	@param value The value.
 	@return True if a new node was added to the map.
 	#end
-	Operator[]=( key:K,value:V )
-		Set( key,value )
+	Operator[]=( key:K, value:V )
+		Set( key, value )
 	End
 
 	#rem wonkeydoc Gets the value associated with a key in the map.
@@ -712,11 +704,12 @@ Class Map<K,V>
 	@return The value associated with `key`, or null if `key` is not in the map.
 	#end
 	Operator[]:V( key:K )
-		Local node:=FindNode( key )
+	
+		Local node := FindNode( key )
 		If Not node Return Null
 		Return node._value
 	End
-
+	
 	#rem wonkeydoc Casts the map to a list of values.
 	@author iDkP from GaragePixel
 	@since 2025-05-09
@@ -726,11 +719,33 @@ Class Map<K,V>
 	#end
 	Operator To:List<V>()
 		'Set a list of values (negligates the keys)
-		Local list:=New List<V>()
-		For Local item:=Eachin Self 
-			list.Add(item.Value)
-		End
+		Local list := New List<V>()
+		For Local item := Eachin Self 
+			list.Add( item.Value )
+		Next
 		Return list
+	End
+	
+	Method KeysToArray:K[]()
+		
+		Local result := New K[Count()]
+		Local idx := 0
+		For Local k := Eachin Keys
+			result[idx] = k
+			idx += 1
+		Next
+		Return result
+	End
+
+	Method ValuesToArray:V[]()
+		
+		Local result := New V[Count()]
+		Local idx := 0
+		For Local v := Eachin Values
+			result[idx] = v
+			idx += 1
+		Next
+		Return result
 	End
 	
 	#rem wonkeydoc Sets the value associated with a key in the map.
@@ -740,47 +755,47 @@ Class Map<K,V>
 	@param value The value.
 	@return True if a new node was added to the map, false if an existing node was updated.
 	#end
-	Method Set:Bool( key:K,value:V ) 'Modified by iDkP
+	Method Set:Bool( key:K, value:V ) 'Modified by iDkP
 		
 		Local cmp:Int		
-
+		
 		'If NotRoot( key,value) 
 		'If NotRoot( Varptr(key),Varptr(value)) 'Modified by iDkP
 		'If NotRoot( key,Varptr(value)) 'Modified by iDkP
 		If NotRoot( key,value) 'Modified by iDkP
-			_root=New Node( key,value,ColorRed,Null )
+			_root = New Node( key, value, ColorRed, Null )
 			Return True 'Added by iDkP
-		End
-
+		Endif
+		
 		' Try hint path first if available
 		If _lastAddedNode
-			cmp=key <=> _lastAddedNode._key
+			cmp = key <=> _lastAddedNode._key
 			If Not cmp
-				Local oldValue:=_lastAddedNode._value
-				_lastAddedNode._value=value
+				Local oldValue := _lastAddedNode._value
+				_lastAddedNode._value = value
 				Return True
-			End
-		End
+			Endif
+		Endif
 		
 		' Standard insertion logic...
 	
-		Local node:=_root
+		Local node := _root
 		Local parent:Node
 
 		While node
-			parent=node
-			cmp=key<=>node._key
-			If cmp>0
-				node=node._right
-			Elseif cmp<0
-				node=node._left
+			parent = node
+			cmp = key <=> node._key
+			If cmp > 0
+				node = node._right
+			Elseif cmp < 0
+				node = node._left
 			Else
-				node._value=value
+				node._value = value
 				Return False
-			End
+			Endif
 		Wend
-
-		AddPair( node, key,value, parent, cmp ) 'Added by iDkP
+		
+		AddPair( node, key, value, parent, cmp ) 'Added by iDkP
 		
 		Return True
 	End
@@ -792,30 +807,30 @@ Class Map<K,V>
 	@param value The value.
 	@return True if a new node was added to the map, false if the map was not modified.
 	#end
-	Method Add:Bool( key:K,value:V ) 'Modified by iDkP
+	Method Add:Bool( key:K, value:V ) 'Modified by iDkP
 
 		If NotRoot( key,value) 'Modified by iDkP
-			_root=New Node( key,value,ColorRed,Null )
+			_root = New Node( key, value, ColorRed, Null )
 			Return True 'Modified by iDkP
-		End
-	
-		Local node:=_root
+		Endif
+		
+		Local node := _root
 		Local parent:Node
 		Local cmp:Int
-
+		
 		While node
-			parent=node
-			cmp=key<=>node._key
-			If cmp>0
-				node=node._right
-			ElseIf cmp<0
+			parent = node
+			cmp = key <=> node._key
+			If cmp > 0
+				node = node._right
+			ElseIf cmp < 0
 				node=node._left
 			Else
 				Return False
-			End
+			Endif
 		Wend
 
-		AddPair( node, key,value, parent, cmp ) 'Added by iDkP
+		AddPair( node, key, value, parent, cmp ) 'Added by iDkP
 		
 		Return True
 	End
@@ -828,9 +843,10 @@ Class Map<K,V>
 	@return True if the value associated with `key` was updated, false if the map was not modified.
 	#end
 	Method Update:Bool( key:K,value:V )
-		Local node:=FindNode( key )
+		
+		Local node := FindNode( key )
 		If Not node Return False
-		node._value=value
+		node._value = value
 		Return True
 	End
 	
@@ -839,11 +855,12 @@ Class Map<K,V>
 	@return The value associated with the key, or null if the key is not in the map.
 	#end
 	Method Get:V( key:K )
-		Local node:=FindNode( key )
+		
+		Local node := FindNode( key )
 		If node Return node._value
 		Return Null
 	End
-
+	
 	#rem wonkeydoc Search if a contained value exists as the value of a key.
 	@author iDkP from GaragePixel
 	@since 2025-07-18
@@ -851,115 +868,116 @@ Class Map<K,V>
 	@param key The values container. Accepts [[Array]], [[Stack]] and [[List]].
 	@return -1 if the key hasn't any contained values, or an index corresponding to the value's position in the container.
 	#end
-	Method Search:Int( key:K,values:Stack<V> )
+	Method Search:Int( key:K, values:Stack<V> )
 		'Added by iDkP from GaragePixel 2025-07-18
-		Return Search(key,values.Data)
+		Return Search( key, values.Data)
 	End
 	
-	Method Search:Int( key:K,values:V[] )
+	Method Search:Int( key:K, values:V[] )
 		'Added by iDkP from GaragePixel 2025-07-18
-		Local keynode:=FindNode(key)
+		Local keynode := FindNode(key)
 		If keynode
-			Local value:=FindNode(key).Value
-			Local valuesLength:=values.Length
-			For Local index:=0 Until valuesLength
-				If value=values[index] Return index
-			End 
-		End
+			Local value := FindNode(key).Value
+			Local valuesLength := values.Length
+			For Local index := 0 Until valuesLength
+				If value = values[index] Return index
+			Next
+		Endif
 		Return -1
 	End
-
-	Method Search:Int( key:K,values:List<V> )
+	
+	Method Search:Int( key:K, values:List<V> )
 		'Added by iDkP from GaragePixel 2025-07-18
-		Local keynode:=FindNode(key)
+		Local keynode := FindNode(key)
 		If keynode
-			Local value:=keynode.Value
-			Local index:Int=0
-			For Local item:=Eachin values
-				If value=item Return index
-				index+=1
-			End 
-		End 
+			Local value := keynode.Value
+			Local index:Int = 0
+			For Local item := Eachin values
+				If value = item Return index
+				index += 1
+			Next
+		Endif
 		Return -1
 	End
-
+	
 	#rem wonkeydoc Removes a key from the map.
 	@param key The key to remove.
 	@return True if the key was removed, or false if the key is not in the map.
 	#end
 	Method Remove:Bool( key:K )
-		Local node:=FindNode( key )
+		
+		Local node := FindNode( key )
 		If Not node Return False
 		RemoveNode( node )
 		Return True
 	End
-
+	
 	#rem wonkeydoc Union: Add each keys from this (param) that exist in self
 	@param This The map to compare.
 	@param onPlace if False, returns a copy of the map, else nothing
 	#end
-	Method Append:Map<K,V>(this:Map<K,V>,onPlace:Bool=True) 'Modified by iDkP
+	Method Append:Map<K,V>( this:Map<K,V>, onPlace:Bool = True ) 'Modified by iDkP
 		'Sugar
-		Return Union(this,onPlace)
+		Return Union( this, onPlace )
 	End
-
+	
 	#rem wonkeydoc Union: Add each keys from this (param) that exist in self
 	@param This The map to compare.
 	@param onPlace if False, returns a copy of the map, else nothing
 	#end	
-	Method Union:Map<K,V>(this:Map<K,V>,onPlace:Bool=True) 'Modified by iDkP
+	Method Union:Map<K,V>( this:Map<K,V>, onPlace:Bool = True ) 'Modified by iDkP
 		
 		'Add this to self
-		If onPlace 
-			For Local item:= Eachin this
-				Set(item.Key,item.Value)
+		If onPlace
+			For Local item := Eachin this
+				Set( item.Key, item.Value )
 			Next
 			Return Null 
-		End
-		Local result:=Copy()
-		For Local item:= Eachin this
-			result.Set(item.Key,item.Value)
-		End
+		Endif
+		Local result := Copy()
+		For Local item := Eachin this
+			result.Set( item.Key, item.Value )
+		Next
 		Return result
 	End 
-
+	
 	#rem wonkeydoc Intersect: Keep all keys from self that exist in this (param)
 	@param This The map to compare.
 	@param onPlace if False, returns a copy of the map, else nothing
 	#end	
-	Method Intersect:Map<K,V>(this:Map<K,V>, onPlace:Bool=True) 'Modified by iDkP
+	Method Intersect:Map<K,V>( this:Map<K,V>, onPlace:Bool = True ) 'Modified by iDkP
 		
 		'Keep in self the keys that exist in this
-		If onPlace 
-			For Local item:= Eachin Self
-				If Not this.Contains(item.Key) Self.Remove(item.Key)
-			End 
+		If onPlace
+			For Local item := Eachin Self
+				If Not this.Contains( item.Key ) Self.Remove( item.Key )
+			Next
 			Return Null
-		End 
-		Local result:=Copy()
-		For Local item:= Eachin result
-			If Not this.Contains(item.Key) result.Remove(item.Key)
-		End 	
-		Return result	
+		Endif
+		Local result := Copy()
+		For Local item := Eachin result
+			If Not this.Contains( item.Key ) result.Remove( item.Key )
+		Next
+		Return result
 	End
 
 	#rem wonkeydoc Difference: Remove all keys from self that exist in this (param)
 	@param This The map to compare.
 	@param onPlace if False, returns a copy of the map, else nothing
 	#end
-	Method Diff:Map<K,V>(this:Map<K,V>, onPlace:Bool=True) 'Modified by iDkP
+	Method Diff:Map<K,V>( this:Map<K,V>, onPlace:Bool = True ) 'Modified by iDkP
 		
 		'Remove all keys from self that exist in this
-		If onPlace 
-			For Local item:= Eachin Self
-				If this.Contains(item.Key) Remove(item.Key)
-			End 
+		If onPlace
+			For Local item := Eachin Self
+				If this.Contains( item.Key ) Remove( item.Key )
+			Next
 			Return Null
-		End 
-		Local result:=Copy()
-		For Local item:= Eachin result
-			If this.Contains(item.Key) result.Remove(item.Key)
-		End 	
+		Endif
+		Local result := Copy()
+		For Local item := Eachin result
+			If this.Contains( item.Key ) result.Remove( item.Key )
+		Next
 		Return result	
 	End
 	
@@ -969,255 +987,261 @@ Class Map<K,V>
 	Field _lastAddedNode:Node 'Modified by iDkP
 	
 	Method New( root:Node )
-		_root=root
+		_root = root
 	End
 	
 	Property FirstNode:Node() 'iDkP: passed as property for consistancy
-
+		
 		If Not _root Return Null
-
-		Local node:=_root
+		
+		Local node := _root
 		While node._left
-			node=node._left
+			node = node._left
 		Wend
 		Return node
 	End
 	
 	Property LastNode:Node() 'iDkP: passed as property for consistancy
-
+		
 		If Not _root Return Null
-
-		Local node:=_root
+		
+		Local node := _root
 		While node._right
-			node=node._right
+			node = node._right
 		Wend
 		Return node
 	End
-
+	
 	Method FindNode:Node( key:K ) 'Modified by iDkP
-
+		
 		' Try hint first if available
 		If _lastAddedNode
-			Local cmp:=key <=> _lastAddedNode._key
-			If cmp=0 Return _lastAddedNode
-		End
+			Local cmp := key <=> _lastAddedNode._key
+			If cmp = 0 Return _lastAddedNode
+		Endif
 		
 		' Standard traversal
-		Local node:=_root
+		Local node := _root
 		While node
-			Local cmp:=key<=>node._key
-			If cmp>0
-				node=node._right
-			Elseif cmp<0
-				node=node._left
+			Local cmp := key <=> node._key
+			If cmp > 0
+				node = node._right
+			Elseif cmp < 0
+				node = node._left
 			Else
 				Return node
-			End
+			Endif
 		Wend
 		Return Null
 	End
 	
 	Method RemoveNode( node:Node )
-		Local splice:Node,child:Node
+		
+		Local splice:Node, child:Node
 		
 		If Not node._left
-			splice=node
-			child=node._right
+			splice = node
+			child = node._right
 		Elseif Not node._right
-			splice=node
-			child=node._left
+			splice = node
+			child = node._left
 		Else
-			splice=node._left
+			splice = node._left
 			While splice._right
-				splice=splice._right
+				splice = splice._right
 			Wend
-			child=splice._left
-			node._key=splice._key
-			node._value=splice._value
-		End
+			child = splice._left
+			node._key = splice._key
+			node._value = splice._value
+		Endif
 		
-		Local parent:=splice._parent
+		Local parent := splice._parent
 		
 		If child
-			child._parent=parent
+			child._parent = parent
 		Endif
 		
 		If Not parent
-			_root=child
+			_root = child
 			Return
 		Endif
 		
-		If splice=parent._left
-			parent._left=child
+		If splice = parent._left
+			parent._left = child
 		Else
-			parent._right=child
-		End
+			parent._right = child
+		Endif
 		
-		If splice._color=ColorBlack
+		If splice._color = ColorBlack
 			DeleteFixup( child,parent )
-		End
+		Endif
 	End
 	
 	Method RotateLeft( node:Node )
-		Local child:=node._right
-		node._right=child._left
+		
+		Local child := node._right
+		node._right = child._left
 		If child._left
-			child._left._parent=node
+			child._left._parent = node
 		Endif
-		child._parent=node._parent
+		child._parent = node._parent
 		If node._parent
-			If node=node._parent._left
-				node._parent._left=child
+			If node = node._parent._left
+				node._parent._left = child
 			Else
-				node._parent._right=child
-			End
+				node._parent._right = child
+			Endif
 		Else
-			_root=child
-		End
-		child._left=node
-		node._parent=child
+			_root = child
+		Endif
+		child._left = node
+		node._parent = child
 	End
 	
 	Method RotateRight( node:Node )
-		Local child:=node._left
-		node._left=child._right
+		
+		Local child := node._left
+		node._left = child._right
 		If child._right
-			child._right._parent=node
-		End
-		child._parent=node._parent
+			child._right._parent = node
+		Endif
+		child._parent = node._parent
 		If node._parent
-			If node=node._parent._right
-				node._parent._right=child
+			If node = node._parent._right
+				node._parent._right = child
 			Else
-				node._parent._left=child
-			End
+				node._parent._left = child
+			Endif
 		Else
-			_root=child
-		End
-		child._right=node
-		node._parent=child
+			_root = child
+		Endif
+		child._right = node
+		node._parent = child
 	End
 	
 	Method InsertFixup( node:Node )
-		While node._parent And node._parent._color=ColorRed And node._parent._parent
-			If node._parent=node._parent._parent._left
-				Local uncle:=node._parent._parent._right
-				If uncle And uncle._color=ColorRed
-					node._parent._color=ColorBlack
-					uncle._color=ColorBlack
-					uncle._parent._color=ColorRed
-					node=uncle._parent
+		
+		While node._parent And node._parent._color = ColorRed And node._parent._parent
+			If node._parent = node._parent._parent._left
+				Local uncle := node._parent._parent._right
+				If uncle And uncle._color = ColorRed
+					node._parent._color = ColorBlack
+					uncle._color = ColorBlack
+					uncle._parent._color = ColorRed
+					node = uncle._parent
 				Else
-					If node=node._parent._right
-						node=node._parent
+					If node = node._parent._right
+						node = node._parent
 						RotateLeft( node )
 					Endif
-					node._parent._color=ColorBlack
-					node._parent._parent._color=ColorRed
+					node._parent._color = ColorBlack
+					node._parent._parent._color = ColorRed
 					RotateRight( node._parent._parent )
 				Endif
 			Else
-				Local uncle:=node._parent._parent._left
-				If uncle And uncle._color=ColorRed
-					node._parent._color=ColorBlack
-					uncle._color=ColorBlack
-					uncle._parent._color=ColorRed
+				Local uncle := node._parent._parent._left
+				If uncle And uncle._color = ColorRed
+					node._parent._color = ColorBlack
+					uncle._color = ColorBlack
+					uncle._parent._color = ColorRed
 					node=uncle._parent
 				Else
-					If node=node._parent._left
-						node=node._parent
+					If node = node._parent._left
+						node = node._parent
 						RotateRight( node )
 					End
-					node._parent._color=ColorBlack
-					node._parent._parent._color=ColorRed
+					node._parent._color = ColorBlack
+					node._parent._parent._color = ColorRed
 					RotateLeft( node._parent._parent )
 				Endif
 			Endif
 		Wend
-		_root._color=ColorBlack
+		_root._color = ColorBlack
 	End
 	
-	Method DeleteFixup( node:Node,parent:Node )
+	Method DeleteFixup( node:Node, parent:Node )
 		
-		While node<>_root And (Not node Or node._color=ColorBlack )
-
-			If node=parent._left
+		While node <> _root And ( Not node Or node._color = ColorBlack )
 			
-				Local sib:=parent._right
+			If node = parent._left
 				
-				If sib._color=ColorRed
-					sib._color=ColorBlack
-					parent._color=ColorRed
+				Local sib := parent._right
+				
+				If sib._color = ColorRed
+					sib._color = ColorBlack
+					parent._color = ColorRed
 					RotateLeft( parent )
-					sib=parent._right
+					sib = parent._right
 				Endif
 				
-				If (Not sib._left Or sib._left._color=ColorBlack) And (Not sib._right Or sib._right._color=ColorBlack)
-					sib._color=ColorRed
-					node=parent
-					parent=parent._parent
+				If ( Not sib._left Or sib._left._color = ColorBlack ) And ( Not sib._right Or sib._right._color = ColorBlack )
+					sib._color = ColorRed
+					node = parent
+					parent = parent._parent
 				Else
-					If Not sib._right Or sib._right._color=ColorBlack
-						sib._left._color=ColorBlack
-						sib._color=ColorRed
+					If Not sib._right Or sib._right._color = ColorBlack
+						sib._left._color = ColorBlack
+						sib._color = ColorRed
 						RotateRight( sib )
-						sib=parent._right
+						sib = parent._right
 					Endif
-					sib._color=parent._color
-					parent._color=ColorBlack
-					sib._right._color=ColorBlack
+					sib._color = parent._color
+					parent._color = ColorBlack
+					sib._right._color = ColorBlack
 					RotateLeft( parent )
 					node=_root
 				Endif
 			Else	
-				Local sib:=parent._left
+				Local sib := parent._left
 				
-				If sib._color=ColorRed
-					sib._color=ColorBlack
-					parent._color=ColorRed
+				If sib._color = ColorRed
+					sib._color = ColorBlack
+					parent._color = ColorRed
 					RotateRight( parent )
-					sib=parent._left
+					sib = parent._left
 				Endif
 				
 				If (Not sib._right Or sib._right._color=ColorBlack) And (Not sib._left Or sib._left._color=ColorBlack)
-					sib._color=ColorRed
-					node=parent
-					parent=parent._parent
+					sib._color = ColorRed
+					node = parent
+					parent = parent._parent
 				Else
 					If Not sib._left Or sib._left._color=ColorBlack
 						sib._right._color=ColorBlack
-						sib._color=ColorRed
+						sib._color = ColorRed
 						RotateLeft( sib )
-						sib=parent._left
+						sib = parent._left
 					Endif
-					sib._color=parent._color
-					parent._color=ColorBlack
-					sib._left._color=ColorBlack
+					sib._color = parent._color
+					parent._color = ColorBlack
+					sib._left._color = ColorBlack
 					RotateRight( parent )
-					node=_root
+					node = _root
 				Endif
 			Endif
 		Wend
-		If node node._color=ColorBlack
+		If node node._color = ColorBlack
 	End
 
-	Method NotRoot:Bool( key:K,value:V ) 'Added by iDkP
+	Method NotRoot:Bool( key:K, value:V ) 'Added by iDkP
+		
 		If Not _root
-			_root=New Node( key,value,ColorRed,Null )
+			_root = New Node( key, value, ColorRed, Null )
 			Return True
 		End
 		Return False
 	End
 
-	Method AddPair( node:Node, key:K,value:V, parent:Node, cmp:Int ) 'Added by iDkP
-		node=New Node( key,value,ColorRed,parent )
-		_lastAddedNode=node
-		If cmp>0 
-			parent._right=node 
-		Else 
-			parent._left=node
-		End
+	Method AddPair( node:Node, key:K, value:V, parent:Node, cmp:Int ) 'Added by iDkP
+		
+		node = New Node( key, value, ColorRed, parent )
+		_lastAddedNode = node
+		If cmp > 0 
+			parent._right = node 
+		Else
+			parent._left = node
+		Endif
 		InsertFixup( node )
-	End 
-
+	End
+	
 End

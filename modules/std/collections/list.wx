@@ -23,37 +23,39 @@ This connection between elements is achieved using separate Node objects (there 
 Lists implements the [[IContainer]] interface so can be used with Eachin loops.
 #end
 Class List<T> Implements IContainer<T>
-
+	
 	#rem wonkeydoc The List.Node class.
 	#end
 	Class Node
-	
+		
 		Private
-	
+		
 		Field _succ:Node
 		Field _pred:Node
 		Field _value:T
 		
 		Public
-
+		
 		#rem wonkeydoc Creates a new node not in any list.
 		#end		
 		Method New( value:T )
-			_value=value
-			_succ=Self
-			_pred=Self
+			
+			_value = value
+			_succ = Self
+			_pred = Self
 		End
 		
 		#rem wonkeydoc Creates a new node with the given successor node.
 		Warning! No error checking is performed!
 		This method should not be used while iterating over the list containing `succ`.
 		#end
-		Method New( value:T,succ:Node )
-			_value=value
-			_succ=succ
-			_pred=succ._pred
-			_pred._succ=Self
-			succ._pred=Self
+		Method New( value:T, succ:Node )
+			
+			_value = value
+			_succ = succ
+			_pred = succ._pred
+			_pred._succ = Self
+			succ._pred = Self
 		End
 		
 		#rem wonkeydoc Gets the node after this node.
@@ -67,7 +69,7 @@ Class List<T> Implements IContainer<T>
 		Property Pred:Node()
 			Return _pred
 		End
-
+		
 		#rem wonkeydoc Gets the value contained in this node.
 		#end		
 		Property Value:T()
@@ -81,82 +83,88 @@ Class List<T> Implements IContainer<T>
 		This method should not be used while iterating over the list containing this node.
 		#end
 		Method Remove()
-			If _succ._pred<>Self Or _pred._succ<>Self Return
-			_succ._pred=_pred
-			_pred._succ=_succ
+			
+			If _succ._pred <> Self Or _pred._succ <> Self Return
+			_succ._pred = _pred
+			_pred._succ = _succ
 		End
 		
 		#rem wonkeydoc Inserts the node before another node.
 		If the node is already in a list, it is removed before insertion.
 		This method should not be used while iterating over the list containing this node or `node`.
 		#end
-		Method InsertBefore( node:Node ) Virtual 
+		Method InsertBefore( node:Node ) Virtual
+			
 			Remove()
 			'insert
-			_succ=node
-			_pred=node._pred
-			_pred._succ=Self
-			node._pred=Self
+			_succ = node
+			_pred = node._pred
+			_pred._succ = Self
+			node._pred = Self
 		End
 		
 		#rem wonkeydoc Inserts the node after another node.
 		If the node is already in a list, it is removed before insertion.
 		This method should not be used while iterating over the list containing this node or `node`.
 		#end
-		Method InsertAfter( node:Node ) Virtual 
+		Method InsertAfter( node:Node ) Virtual
+			
 			Remove()
 			'insert
-			_pred=node
-			_succ=node._succ
-			_succ._pred=Self
-			node._succ=Self
+			_pred = node
+			_succ = node._succ
+			_succ._pred = Self
+			node._succ = Self
 		End
 	End
 	
 	#rem wonkeydoc The List.Iterator struct.
 	#end
 	Struct Iterator
-	
+		
 		Private
-	
+		
 		Field _list:List
 		Field _node:Node
 		
 		Method AssertCurrent()
-			DebugAssert( _node<>_list._head,"Invalid list iterator" )
+			DebugAssert( _node <> _list._head, "Invalid list iterator" )
 		End
 		
 		Public
 		
 		#rem wonkeydoc Creates a new iterator.
 		#end
-		Method New( list:List,node:Node )
-			_list=list
-			_node=node
+		Method New( list:List, node:Node )
+			
+			_list = list
+			_node = node
 		End
-
+		
 		#rem wonkeydoc Checks whether the iterator has reached the end of the list.
 		#end
 		Property AtEnd:Bool()
-			Return _node=_list._head
+			Return _node = _list._head
 		End
 		
 		#rem wonkeydoc The value contained in the node pointed to by the iterator.
 		#end
 		Property Current:T()
+			
 			AssertCurrent()
 			Return _node._value
-			
 		Setter( current:T )
+			
 			AssertCurrent()
-			_node._value=current
+			_node._value = current
 		End
 		
 		#rem wonkeydoc Bumps the iterator so it points to the next node in the list.
 		#end
 		Method Bump()
+			
 			AssertCurrent()
-			_node=_node._succ
+			_node = _node._succ
 		End
 		
 		#rem wonkeydoc Safely erases the node referenced by the iterator.
@@ -165,8 +173,9 @@ Class List<T> Implements IContainer<T>
 		will end up skipping a node.
 		#end
 		Method Erase()
+			
 			AssertCurrent()
-			_node=_node._succ
+			_node = _node._succ
 			_node._pred.Remove()
 		End
 		
@@ -174,54 +183,58 @@ Class List<T> Implements IContainer<T>
 		After calling this method, the iterator will point to the newly added node.
 		#end
 		Method Insert( value:T )
-			_node=New Node( value,_node )
+			_node = New Node( value, _node )
 		End
+		
 	End
 	
 	#rem wonkeydoc The List.BackwardsIterator struct.
 	#end
 	Struct BackwardsIterator
-	
+		
 		Private
-	
+		
 		Field _list:List
 		Field _node:Node
 		
 		Method AssertCurrent()
-			DebugAssert( _node<>_list._head,"Invalid list iterator" )
+			DebugAssert( _node <> _list._head, "Invalid list iterator" )
 		End
 		
 		Public
 		
 		#rem wonkeydoc Creates a new iterator.
 		#end
-		Method New( list:List,node:Node )
+		Method New( list:List, node:Node )
+			
 			_list=list
 			_node=node
 		End
-
+		
 		#rem wonkeydoc Checks whether the iterator has reached the end of the list.
 		#end
 		Property AtEnd:Bool()
-			Return _node=_list._head
+			Return _node = _list._head
 		End
 		
 		#rem wonkeydoc The value contained in the node pointed to by the iterator.
 		#end
 		Property Current:T()
+			
 			AssertCurrent()
 			Return _node._value
-			
 		Setter( current:T )
+			
 			AssertCurrent()
-			_node._value=current
+			_node._value = current
 		End
 		
 		#rem wonkeydoc Bumps the iterator so it points to the next node in the list.
 		#end
 		Method Bump()
+			
 			AssertCurrent()
-			_node=_node._pred
+			_node = _node._pred
 		End
 		
 		#rem wonkeydoc Safely erases the node referenced by the iterator.
@@ -230,8 +243,9 @@ Class List<T> Implements IContainer<T>
 		will end up skipping a node.
 		#end
 		Method Erase()
+			
 			AssertCurrent()
-			_node=_node._pred
+			_node = _node._pred
 			_node._succ.Remove()
 		End
 		
@@ -239,8 +253,9 @@ Class List<T> Implements IContainer<T>
 		After calling this method, the iterator will point to the newly added node.
 		#end
 		Method Insert( value:T )
-			_node=New Node( value,_node._succ )
+			_node = New Node( value, _node._succ )
 		End
+		
 	End
 	
 	Private
@@ -257,9 +272,9 @@ Class List<T> Implements IContainer<T>
 	@param values An existing array, list or stack.
 	#end
 	Method New()
-		_head=New Node( Null )
+		_head = New Node( Null )
 	End
-
+	
 	Method New( values:T[] )
 		Self.New()
 		AddAll( values )
@@ -280,29 +295,30 @@ Class List<T> Implements IContainer<T>
 	@return A list iterator.
 	#end
 	Method All:Iterator()
-		Return New Iterator( Self,_head._succ )
+		Return New Iterator( Self, _head._succ )
 	End
-
+	
 	#rem wonkeydoc Gets an iterator for visiting list values in reverse order.
 	Returns an iterator suitable for use with Eachin, or for manual iteration.
 	@return A backwards list iterator.
 	#end	
 	Method Backwards:BackwardsIterator()
-		Return New BackwardsIterator( Self,_head._pred )
+		Return New BackwardsIterator( Self, _head._pred )
 	End
 	
 	#rem wonkeydoc Checks whether the list is empty.
 	@return True if the list is empty.
 	#end
 	Property Empty:Bool()
-		Return _head._succ=_head
+		Return _head._succ = _head
 	End
-
+	
 	#rem wonkeydoc Gets the first value in the list.
 	In debug builds, a runtime error will occur if the list is empty.
 	@return The first value in the list.
 	#end
 	Property First:T()
+		
 		DebugAssert( Not Empty )
 		
 		Return _head._succ._value
@@ -313,6 +329,7 @@ Class List<T> Implements IContainer<T>
 	@return The last value in the list.
 	#end
 	Property Last:T()
+		
 		DebugAssert( Not Empty )
 		
 		Return _head._pred._value
@@ -330,9 +347,9 @@ Class List<T> Implements IContainer<T>
 		'
 		' Return true if the list has one item (no more)
 		'
-		Return _head._succ=_head ? ( _head._succ<>_head._pred ? True Else False ) Else False
+		Return _head._succ = _head ? ( _head._succ <> _head._pred ? True Else False ) Else False
 	End
-
+	
 	#rem wonkeydoc Test if the list has exactly two elements
 	@author iDkP from GaragePixel
 	@since 2025-05-11
@@ -343,9 +360,9 @@ Class List<T> Implements IContainer<T>
 		'
 		' Return true if the list has two items (no more)
 		'
-		Return _head._succ=_head ? ( _head._succ=_head._pred ? True Else False ) Else False
+		Return _head._succ = _head ? ( _head._succ = _head._pred ? True Else False ) Else False
 	End
-
+	
 	#rem wonkeydoc Test if the list has one or two elements
 	@author iDkP from GaragePixel
 	@since 2025-05-11
@@ -368,7 +385,7 @@ Class List<T> Implements IContainer<T>
 		'
 		Return HasOne ? 1 Else ( HasTwo ? 2 Else ( Empty ? -1 Else 0 ) )
 	End 	
-
+	
 	#rem wonkeydoc Returns if the list has less than n items.	
 	Note: This method can be slow when used with large lists, as it must visit each value.
 	@author iDkP from GaragePixel
@@ -378,12 +395,13 @@ Class List<T> Implements IContainer<T>
 	@return True if the list has less items than nbItems' value.
 	#end
 	Method HasLess:Bool( nbItems:UInt )
-		Local node:=_head._succ,n:=0
-		While node<>_head Or n<nbItems
-			node=node._succ
-			n+=1
+		
+		Local node := _head._succ, n := 0
+		While node <> _head Or n < nbItems
+			node = node._succ
+			n += 1
 		Wend
-		Return n<nbItems
+		Return n < nbItems
 	End 
 
 	#rem wonkeydoc Returns if the list has more than n items.
@@ -395,19 +413,21 @@ Class List<T> Implements IContainer<T>
 	@return True if the list has more items than nbItems' value.
 	#end
 	Method HasMore:Bool( nbItems:UInt )
-		Local result:Bool=True
-		Local node:=_head._succ,n:=0
-		While node<>_head
-			node=node._succ
-			If n>nbItems 
-				result=False 
-				Exit 
-			End 
-			n+=1
+		
+		Local result:Bool = True
+		Local node := _head._succ, n := 0
+		While node <> _head
+			node = node._succ
+			If n > nbItems
+				result = False
+				Exit
+			End
+			
+			n += 1
 		Wend
 		Return result
 	End 
-
+	
 	'---- iDkP added: To:Map, ToMapUByte, ToMapShort, ToMapInt ----
 
 	#rem wonkeydoc Cast the list intro a map where the map's key are the list's elements.
@@ -423,15 +443,15 @@ Class List<T> Implements IContainer<T>
 		'Let's say, alternated version, where the list item become the map key 
 		'(map as a set: only one occurance accepted)
 		'
-		Local map:=New Map<T,UInt>()
-		Local offset:UInt=0
-		For Local item:=Eachin Self
-			map.Set(item,offset)
-			offset+=1
-		End
+		Local map := New Map<T,UInt>()
+		Local offset:UInt = 0
+		For Local item := Eachin Self
+			map.Set( item, offset )
+			offset += 1
+		Next
 		Return map
 	End
-
+	
 	#rem wonkeydoc Cast the list intro a map where the map's key are the list's elements.
 	@author iDkP from GaragePixel
 	@since 2025-05-11
@@ -441,7 +461,7 @@ Class List<T> Implements IContainer<T>
 	@param populateWithIdx if True, the map's values will be populated with a index in the range 0,255.	
 	@return The new map as Map<T,UByte>
 	#end
-	Method ToMapUByte:Map<T,UByte>( defValue:Bool=Null, populateWithIdx:Bool=False )
+	Method ToMapUByte:Map<T,UByte>( defValue:Bool = Null, populateWithIdx:Bool = False )
 		'
 		' Let's say, alternated version, where the list item become the map key 
 		' Special version with lighter memory print, 
@@ -453,18 +473,19 @@ Class List<T> Implements IContainer<T>
 			https://discord.com/channels/796336780302876683/850292419781459988/1371074708933574756
 		#end 
 		'
-		Local map:=New Map<T,UByte>()
+		Local map := New Map<T,UByte>()
 		If populateWithIdx 
-			Local offset:UByte=0
-			For Local item:=Eachin Self
-				map.Set(item,offset)
-				offset+=1
-			End
+			Local offset:UByte = 0
+			For Local item := Eachin Self
+				map.Set( item, offset )
+				offset += 1
+			Next
 		Else 
 			For Local item:=Eachin Self
-				map.Set(item,defValue)
-			End
-		End 
+				map.Set( item, defValue )
+			Next
+		End
+		
 		Return map
 	End
 
@@ -505,10 +526,11 @@ Class List<T> Implements IContainer<T>
 	@return The number of values in the list.
 	#end
 	Method Count:Int() 'iDkP: SIGNED 32 bits!
-		Local node:=_head._succ,n:=0
-		While node<>_head
-			node=node._succ
-			n+=1
+		
+		Local node := _head._succ, n := 0
+		While node <> _head
+			node = node._succ
+			n += 1
 		Wend
 		Return n
 	End
@@ -519,20 +541,34 @@ Class List<T> Implements IContainer<T>
 	Method ToArray:T[]() ' Updated by iDkP
 		'iDkP: Pseudo operator, deprecated
 '		Return Self 
-		Local n:=Count()
-		Local data:=New T[n],node:=_head._succ
-		For Local i:=0 Until n
-			data[i]=node._value
-			node=node._succ
+		Local n := Count()
+		Local data := New T[n], node := _head._succ
+		For Local i := 0 Until n
+			data[i] = node._value
+			node = node._succ
 		Next
 		Return data
+	End
+	
+	Operator To:String() Where T Implements INumeric Or T=String
+		
+		Local tt := Typeof( _head._value )
+		Local idx := 0
+		Local result := "List<" + tt + ">[ "
+		For Local i := Eachin Self
+			If idx > 0 result += ", "
+			result += i
+			idx += 1
+		Next
+		Return result + " ]"
 	End
 	
 	#rem wonkeydoc Removes all values from the list.
 	#end
 	Method Clear()
-		_head._succ=_head
-		_head._pred=_head
+		
+		_head._succ = _head
+		_head._pred = _head
 	End
 	
 	#rem wonkeydoc Adds a value to the start of the list.
@@ -540,7 +576,8 @@ Class List<T> Implements IContainer<T>
 	@return A new node containing the value.
 	#end
 	Method AddFirst:Node( value:T )
-		Local node:=New Node( value,_head._succ )
+		
+		Local node := New Node( value, _head._succ )
 		Return node
 	End
 	
@@ -549,7 +586,8 @@ Class List<T> Implements IContainer<T>
 	@return A new node containing the value.
 	#end
 	Method AddLast:Node( value:T )
-		Local node:=New Node( value,_head )
+		
+		Local node := New Node( value, _head )
 		Return node
 	End
 	
@@ -558,7 +596,8 @@ Class List<T> Implements IContainer<T>
 	@return True if a value was removed.
 	#end
 	Method Remove:Bool( value:T )
-		Local node:=FindNode( value )
+			
+		Local node := FindNode( value )
 		If Not node Return False
 		node.Remove()
 		Return True
@@ -569,7 +608,8 @@ Class List<T> Implements IContainer<T>
 	@return True if a value was removed.
 	#end
 	Method RemoveLast:Bool( value:T )
-		Local node:=FindLastNode( value )
+		
+		Local node := FindLastNode( value )
 		If Not node Return False
 		node.Remove()
 		Return True
@@ -580,14 +620,15 @@ Class List<T> Implements IContainer<T>
 	@return The number of values removed.
 	#end
 	Method RemoveEach:Int( value:T )
-		Local node:=_head._succ,n:=0
-		While node<>_head
-			If node._value=value
-				node=node._succ
+		
+		Local node := _head._succ, n := 0
+		While node <> _head
+			If node._value = value
+				node = node._succ
 				node._pred.Remove()
-				n+=1
+				n += 1
 			Else
-				node=node._succ
+				node = node._succ
 			End
 		Wend
 		Return n
@@ -598,12 +639,13 @@ Class List<T> Implements IContainer<T>
 	@return The number of values removed.
 	#end
 	Method RemoveIf:Int( condition:Bool( value:T ) )
-		Local node:=_head._succ,n:=0
-		While node<>_head
+		
+		Local node := _head._succ, n := 0
+		While node <> _head
 			If condition( node._value )
-				node=node._succ
+				node = node._succ
 				node._pred.Remove()
-				n+=1
+				n += 1
 			Else
 				node=node._succ
 			End
@@ -619,7 +661,7 @@ Class List<T> Implements IContainer<T>
 		
 		DebugAssert( Not Empty )
 		
-		Local value:=_head._succ._value
+		Local value := _head._succ._value
 		_head._succ.Remove()
 		Return value
 	End
@@ -632,7 +674,7 @@ Class List<T> Implements IContainer<T>
 		
 		DebugAssert( Not Empty )
 		
-		Local value:=_head._pred._value
+		Local value := _head._pred._value
 		_head._pred.Remove()
 		Return value
 	End
@@ -650,13 +692,15 @@ Class List<T> Implements IContainer<T>
 	@param values The values to add.
 	#end
 	Method AddAll( values:T[] )
-		For Local value:=Eachin values
+		
+		For Local value := Eachin values
 			AddLast( value )
 		Next
 	End
-
+	
 	Method AddAll<C>( values:C ) Where C Implements IContainer<T>
-		For Local value:=Eachin values
+		
+		For Local value := Eachin values
 			AddLast( value )
 		Next
 	End
@@ -665,86 +709,85 @@ Class List<T> Implements IContainer<T>
 	@param ascending True to sort the stack in ascending order, false to sort in descending order.
 	@param compareFunc Function to be used to compare values when sorting.
 	#end
-	Method Sort( ascending:Int=True )
-	
+	Method Sort( ascending:Int = True )
+		
 		If ascending
-			Sort( Lambda:Int( x:T,y:T )
-				Return x<=>y
+			Sort( Lambda:Int( x:T, y:T )
+				Return x <=> y
 			End )
 		Else
-			Sort( Lambda:Int( x:T,y:T )
-				Return -(x<=>y)
+			Sort( Lambda:Int( x:T, y:T )
+				Return y <=> x
 			End )
 		End
+		
 	End
 
-	Method Sort( compareFunc:Int( x:T,y:T ),filter:SortFilter=Null )
-	
-		Local insize:=1
+	Method Sort( compareFunc:Int( x:T, y:T ), filter:SortFilter = Null )
+		
+		Local insize := 1
 		
 		Repeat
-		
-			Local merges:=0
-			Local tail:=_head
-			Local p:=_head._succ
-
-			While p<>_head
-				merges+=1
-				Local q:=p._succ,qsize:=insize,psize:=1
+			Local merges := 0
+			Local tail := _head
+			Local p := _head._succ
+			
+			While p <> _head
+				merges += 1
+				Local q := p._succ, qsize := insize, psize := 1
 				
-				While psize<insize And q<>_head
-					psize+=1
-					q=q._succ
+				While psize < insize And q <> _head
+					psize += 1
+					q = q._succ
 				Wend
-
+				
 				Repeat
 					Local t:Node
-					If psize And qsize And q<>_head
-						Local cc:=compareFunc( p._value,q._value )
-						If cc<=0
-							t=p
-							p=p._succ
-							psize-=1
+					If psize And qsize And q <> _head
+						Local cc := compareFunc( p._value, q._value )
+						If cc <= 0
+							t = p
+							p = p._succ
+							psize -= 1
 						Else
-							t=q
-							q=q._succ
-							qsize-=1
-						End
+							t = q
+							q = q._succ
+							qsize -= 1
+						Endif
 					Else If psize
-						t=p
-						p=p._succ
-						psize-=1
-					Else If qsize And q<>_head
-						t=q
-						q=q._succ
-						qsize-=1
+						t = p
+						p = p._succ
+						psize -= 1
+					Else If qsize And q <> _head
+						t = q
+						q = q._succ
+						qsize -= 1
 					Else
 						Exit
 					Endif
-					t._pred=tail
-					tail._succ=t
-					tail=t
+					t._pred = tail
+					tail._succ = t
+					tail = t
 				Forever
-				p=q
+				p = q
 			Wend
-			tail._succ=_head
-			_head._pred=tail
-
-			If merges<=1 Return
-
-			insize*=2
+			tail._succ = _head
+			_head._pred = tail
+			
+			If merges <= 1 Return
+			
+			insize *= 2
 		Forever
-
 	End
 	
 	#rem wonkeydoc Joins the values in the string list.
 	@param sepeator The separator to be used when joining values.
 	@return The joined values.
 	#end
-	Method Join:String( separator:String="" ) Where T=String
+	Method Join:String( separator:String = "" ) Where T=String
 		Return separator.Join( ToArray() )
 	End
-
+	
 	#rem wonkeydoc Reverses the order of values in the list.
 	@author iDkP from GaragePixel
 	@since 2025-06-18
@@ -752,6 +795,7 @@ Class List<T> Implements IContainer<T>
 	@return The reversed list (self if in-place, new List if not).
 	#end
 	Method Reverse:List<T>( onPlace:Bool=True )
+		
 		Local lst:List<T> = onPlace ? Self Else New List<T>( Self )
 		Local leftNode:Node = lst._head._succ
 		Local rightNode:Node = lst._head._pred
@@ -762,7 +806,7 @@ Class List<T> Implements IContainer<T>
 			rightNode._value = temp
 			leftNode = leftNode._succ
 			rightNode = rightNode._pred
-		End
+		Next
 		Return lst
 	End
 
@@ -791,7 +835,7 @@ Class List<T> Implements IContainer<T>
 		If Not Empty Return _head._pred
 		Return Null
 	End
-
+	
 	#rem wonkeydoc Gets the first node in the list.
 	@author iDkP from GragePixel
 	@return The first node in the list, or null if the list is empty.
@@ -817,10 +861,11 @@ Class List<T> Implements IContainer<T>
 	@return The first node containing the value, or null if the value was not found.
 	#end
 	Method FindNode:Node( value:T )
-		Local node:=_head._succ
-		While node<>_head
-			If node._value=value Return node
-			node=node._succ
+		
+		Local node := _head._succ
+		While node <> _head
+			If node._value = value Return node
+			node = node._succ
 		Wend
 		Return Null
 	End
@@ -830,14 +875,15 @@ Class List<T> Implements IContainer<T>
 	@return The last node containing the value, or null if the value was not found.
 	#end
 	Method FindLastNode:Node( value:T )
-		Local node:=_head._pred
-		While node<>_head
-			If node._value=value Return node
-			node=node._pred
+		
+		Local node := _head._pred
+		While node <> _head
+			If node._value = value Return node
+			node = node._pred
 		Wend
 		Return Null
 	End
-
+	
 	#rem wonkeydoc Return a copy of the list
 	@return Copy of the list
 	#end
@@ -864,17 +910,17 @@ Class List<T> Implements IContainer<T>
 	#rem wonkeydoc Same than AddFirst, but return nothing.
 	@param value The value to add to the list.
 	#end
-	Method Enqueue(n:T)
-		AddFirst(n)
+	Method Enqueue( n:T )
+		AddFirst( n )
 	End 
-
+	
 	#rem wonkeydoc Same than RemoveFirst, but return nothing.
 	@param value The value to add to the list.
 	#end	
 	Method Dequeue:T()
 		Return RemoveFirst()
 	End
-
+	
 	'----------------------------------------------
 	' Mini-library: Set (math) functions with List
 	' 2025-05-10 - Added by iDkP from GaragePixel
@@ -919,45 +965,45 @@ Class List<T> Implements IContainer<T>
 	@param onPlace If False, return a copy of the List
 	@return Copy of the list or Null
 	#end
-	Method Dedup:List<T>( onPlace:Bool=True )
+	Method Dedup:List<T>( onPlace:Bool = True )
 		'
 		' Note:
 		'	"Dedup" for "Deduplicate"
 		'
-		Local currList:= onPlace ? Self Else Copy()
+		Local currList := onPlace ? Self Else Copy()
 		
-		Local atLeastTwo:=currList.HasOneOrTwo
-		If atLeastTwo=1 Return currList
+		Local atLeastTwo := currList.HasOneOrTwo
+		If atLeastTwo = 1 Return currList
 		
-		Local firstNode:List<T>.Node=currList.FirstNode
-
-		If atLeastTwo=2
-			If firstNode.Value=firstNode.Succ.Value firstNode.Succ.Remove()
+		Local firstNode:List<T>.Node = currList.FirstNode
+		
+		If atLeastTwo = 2
+			If firstNode.Value = firstNode.Succ.Value firstNode.Succ.Remove()
 			Return currList
-		End 
+		Endif
 
-		Local seen:= New Map<T,UByte> 	'We don't care of anything but the red-black tree algorithm, 
+		Local seen := New Map<T,UByte> 	'We don't care of anything but the red-black tree algorithm, 
 										'so we use the most little datatype: Ubyte for the smallest memory print:
 										'Using UByte (1 or 0) is more memory-efficient as it consumes only 1 byte per entry 
 										'compared to Null which takes 4-8 bytes on most platforms, 
 										'plus UByte avoids reference-related overhead and GC pressure.
-		Local current:= _head._succ
+		Local current := _head._succ
 		
 		While current <> _head
-			Local foo:= current._succ
-			If seen.Contains(current._value)
+			Local foo := current._succ
+			If seen.Contains( current._value )
 				' Remove duplicate
 				current.Remove()
 			Else
 				' Mark as seen
-				seen.Set(current._value, 1)
-			End
+				seen.Set( current._value, 1 )
+			Endif
 			current = foo
 		Wend
 		'Return currList 'Let's say, for consistancy within the library, that we returns 'Null' if OnPlace
 		Return onPlace ? Null Else currList
 	End 
-
+	
 	#rem wonkeydoc Finds the first node in the list containing a value.
 	@author iDkP from GaragePixel
 	@since 2025-05-10
@@ -966,16 +1012,22 @@ Class List<T> Implements IContainer<T>
 	#end	
 	Method Contains:Node( value:T ) 'Added by iDkP from GaragePixel
 		'iDkP: Added as sugar for consistance with map
-		Return FindNode(value)
+		Return FindNode( value )
 	End
-
+	
+	#rem Contains should return a boolean
+	Method Contains:Bool( value:T )
+		Return FindNode( value ) <> Null
+	End
+	#end 
+	
 	#rem wonkeydoc Add each keys from this (param) to self
 	@author iDkP from GaragePixel
 	@since 2025-05-10
 	@param This is the list to compare.
 	@param onPlace if False, returns a copy of the list, else nothing
 	#end
-	Method Append:List<T>( this:List<T>, onPlace:Bool=True ) 'Added by iDkP from GaragePixel
+	Method Append:List<T>( this:List<T>, onPlace:Bool = True ) 'Added by iDkP from GaragePixel
 		'
 		' Semi-sugar
 		'
@@ -984,14 +1036,14 @@ Class List<T> Implements IContainer<T>
 		'	Achieves 33 million elements/second for 100K elements
 		'
 		If onPlace 
-			AddAll(this)
+			AddAll( this )
 			Return Null
-		End
-		Local result:=Copy()
-		result.AddAll(this)
+		Endif
+		Local result := Copy()
+		result.AddAll( this )
 		Return result
 	End
-
+	
 	#rem wonkeydoc Add each item from this (param) that exist in self. 
 	@author iDkP from GaragePixel
 	@since 2025-05-10
@@ -1002,7 +1054,7 @@ Class List<T> Implements IContainer<T>
 	@param This The list to compare.
 	@param onPlace if False, returns a copy of the list, else nothing
 	#end	
-	Method Union:List<T>( this:List<T>,onPlace:Bool=True ) 'Added by iDkP from GaragePixel
+	Method Union:List<T>( this:List<T>, onPlace:Bool = True ) 'Added by iDkP from GaragePixel
 		'
 		' Description:
 		' 	Add this to self, do not keep duplicates in the output list.
@@ -1022,11 +1074,11 @@ Class List<T> Implements IContainer<T>
 			AddAll( this )
 			Dedup()
 			Return Null
-		End
+		Endif
 			
 		'------------------------- "returns a copy of the list" Version
 			
-		Local result:=Copy()
+		Local result := Copy()
 		result.AddAll( this )
 		result.Dedup()
 		Return result
@@ -1038,40 +1090,39 @@ Class List<T> Implements IContainer<T>
 	@param This is the list to compare.
 	@param onPlace if False, returns a copy of the list, else nothing
 	#end	
-	Method Intersect:List<T>( this:List<T>, onPlace:Bool=True ) 'Added by iDkP from GaragePixel
+	Method Intersect:List<T>( this:List<T>, onPlace:Bool = True ) 'Added by iDkP from GaragePixel
 		'
 		' Keep in self the keys that exist in this
 		'
 		' Note:
 		'	Statut implementation: Approach theorical limits for hash-based set operations
 		
-		Local map:=ToMapUByte()
-		Local otherMap:=this.ToMapUByte()
-		Local result:=New List<T>()
+		Local map := ToMapUByte()
+		Local otherMap := this.ToMapUByte()
+		Local result := New List<T>()
 			
 		' Add only items that exist in both lists
 		Local itemKey:T 'memoirize -> small earned micro-seconds 
-		For Local item:= Eachin map
-			itemKey=item.Key
-			If otherMap.Contains(itemKey)
-				result.Add(itemKey)
-			End
-		End
-		If onPlace 
-			_head=result._head
+		For Local item := Eachin map
+			itemKey = item.Key
+			If otherMap.Contains( itemKey )
+				result.Add( itemKey )
+			Endif
+		Next
+		If onPlace
+			_head = result._head
 			Return Null
-		End 
-		
+		Endif
 		Return result
 	End
-
+	
 	#rem wonkeydoc Remove all keys from self that exist in this (param)
 	@author iDkP from GaragePixel
 	@since 2025-05-12
 	@param This is the list to compare.
 	@param onPlace if False, returns a copy of the list, else nothing
 	#end
-	Method Diff:List<T>( this:List<T>, onPlace:Bool=True ) 'Added by iDkP from GaragePixel
+	Method Diff:List<T>( this:List<T>, onPlace:Bool = True ) 'Added by iDkP from GaragePixel
 		'
 		' Remove all keys from self that exist in this
 		'
@@ -1081,23 +1132,23 @@ Class List<T> Implements IContainer<T>
 		' 	while maintaining throughput in the 495K-813K elements/second range 
 		' 	for large collections.
 		
-		Local map:=ToMapUByte()
-		Local otherMap:=this.ToMapUByte()
-		Local result:=New List<T>()
+		Local map := ToMapUByte()
+		Local otherMap := this.ToMapUByte()
+		Local result := New List<T>()
 			
 		' Add only items that do not exist in the same time in both lists
 		Local itemKey:T 'memoirize -> small earned micro-seconds 
-		For Local item:= Eachin map
-			itemKey=item.Key
+		For Local item := Eachin map
+			itemKey = item.Key
 			If Not otherMap.Contains(itemKey)
 				result.Add(itemKey)
-			End
-		End
-		If onPlace 
+			Endif
+		Next
+		If onPlace
 			_head=result._head
 			Return Null
-		End 
-		
+		Endif
 		Return result
-	End 
+	End
+	
 End

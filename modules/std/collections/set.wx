@@ -10,21 +10,22 @@ A Set is an efficient data structure for storing sets of small integers from a l
 Set implement the [[IContainer]] interface so can be used with Eachin loops.
 #end
 Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=UByte
-
+	
 	#rem wonkeydoc The Set.Iterator struct.
 	#end
 	Struct Iterator
-	
+		
 		Private
-
+		
 		Field _set:Set
 		Field _index:Int
 		
 		Method AssertCurrent()
 			DebugAssert( _index < _set._n, "Invalid Set iterator" )
 		End
-
+		
 		Method New( set:Set, index:Int )
+			
 			_set = set
 			_index = index
 		End
@@ -40,9 +41,11 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		#rem wonkeydoc The value currently pointed to by the iterator.
 		#end
 		Property Current:T()
+			
 			AssertCurrent()
 			Return _set._dense[_index]
 		Setter( current:T )
+			
 			AssertCurrent()
 			_set._dense[_index] = current
 		End
@@ -50,6 +53,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		#rem wonkeydoc Bumps the iterator so it points to the next value in the Set.
 		#end
 		Method Bump()
+			
 			AssertCurrent()
 			_index += 1
 		End
@@ -59,25 +63,24 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		Therefore, if you are manually iterating through a stack you should not call [[Bump]] after calling this method or you will end up skipping a value.
 		#end
 		Method Erase()
-		'	AssertCurrent()
-		'	_set.Erase( _index )
+			RuntimeError( "Erase not supported for Sets" )
 		End
 		
 		#rem wonkeydoc Safely inserts a value before the value pointed to by the iterator.
 		After calling this method, the iterator will point to the newly added value.
 		#end
 		Method Insert( value:T )
-		'	DebugAssert( _index <= _set.n,"Invalid set iterator" )
-		'	_set.Insert( _index, value )
+			RuntimeError( "Insert not supported for Sets" )
 		End
+		
 	End
 	
 	#rem wonkeydoc The Set.BackwardsIterator struct.
 	#end
 	Struct BackwardsIterator
-	
+		
 		Private
-
+		
 		Field _set:Set
 		Field _index:Int
 		
@@ -86,6 +89,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		End
 		
 		Method New( set:Set, index:Int )
+			
 			_set = set
 			_index = index
 		End
@@ -101,9 +105,11 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		#rem wonkeydoc The value currently pointed to by the iterator.
 		#end
 		Property Current:T()
+			
 			AssertCurrent()
 			Return _set._dense[_index]
 		Setter( current:T )
+			
 			AssertCurrent()
 			_set._dense[_index] = current
 		End
@@ -111,6 +117,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		#rem wonkeydoc Bumps the iterator so it points to the next value in the Set.
 		#end
 		Method Bump()
+			
 			AssertCurrent()
 			_index -= 1
 		End
@@ -121,23 +128,20 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		will end up skipping a value.
 		#end
 		Method Erase()
-		'	AssertCurrent()
-		'	_set.Erase( _index )
-		'	_index -= 1
+			RuntimeError( "Erase not supported for Sets" )
 		End
 		
 		#rem wonkeydoc Safely inserts a value before the value pointed to by the iterator.
 		After calling this method, the iterator will point to the newly added value.
 		#end
 		Method Insert( value:T )
-		'	DebugAssert( _index < _set.n, "Invalid set iterator" )
-		'	_index += 1
-		'	_set.Insert( _index, value )
+			RuntimeError( "Insert not supported for Sets" )
 		End
+		
 	End
-
+	
 	Private
-
+	
 	Field _sparse:T[]
 	Field _dense:T[]
 	Field _maxValue:T
@@ -154,7 +158,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	Property Empty:Bool()
 		Return _n = 0
 	End
-
+	
 	Property First:T()
 		Return Self.Empty ? Null Else _dense[0]
 	End
@@ -162,11 +166,11 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	Property Last:T()
 		Return Self.Empty ? Null Else _dense[_n - 1]
 	End
-
+	
 	Property Length:Int()
 		Return _n
 	End
-
+	
 	#rem wonkeydoc Gets an iterator for visiting Set values.
 	Returns an iterator suitable for use with Eachin, or for manual iteration.
 	@return A set iterator.
@@ -182,7 +186,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	Method Backwards:BackwardsIterator()
 		Return New BackwardsIterator( Self, _n - 1 )
 	End
-
+	
 	#rem wonkeydoc Creates a new Set.
 	New() creates an empty default Set.
 	New( MaxValue:T, Capacity:Int ) creates a Set.
@@ -195,7 +199,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	@param Capacity The Capacity of the Set.
 	#end
 	Method New( _maxV:T = 512, _cap:Int = 64 )
-	
+		
 		_sparse = New T[_maxV + 1]
 		_dense = New T[_cap]
 		_capacity = _cap
@@ -204,7 +208,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	End
 	
 	Method New( values:T[], _maxV:T = 512, _cap:Int = 64 )
-
+		
 		_sparse = New T[_maxV + 1]
 		_dense = New T[_cap]
 		_capacity = _cap
@@ -214,7 +218,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	End
 	
 	Method New( values:List<T>, _maxV:T = 512, _cap:Int = 64 )
-
+		
 		_sparse = New T[_maxV + 1]
 		_dense = New T[_cap]
 		_capacity = _cap
@@ -223,18 +227,18 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		AddAll( values )
 	End
 	
-'	Method New( values:Deque<T>, _maxV:T = 512, _cap:Int = 64 )
-'
-'		_sparse = New T[_maxV + 1]
-'		_dense = New T[_cap]
-'		_capacity = _cap
-'		_maxValue = _maxV
-'		_n = 0
-'		AddAll( values )
-'	End
+	Method New( values:Deque<T>, _maxV:T = 512, _cap:Int = 64 )
+		
+		_sparse = New T[_maxV + 1]
+		_dense = New T[_cap]
+		_capacity = _cap
+		_maxValue = _maxV
+		_n = 0
+		AddAll( values )
+	End
 	
 	Method New( values:Stack<T>, _maxV:T = 512, _cap:Int = 64 )
-
+		
 		_sparse = New T[_maxV + 1]
 		_dense = New T[_cap]
 		_capacity = _cap
@@ -244,7 +248,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	End
 	
 	Method New( values:Set<T>, _maxV:T = 512, _cap:Int = 64 )
-
+		
 		_sparse = New T[_maxV + 1]
 		_dense = New T[_cap]
 		_capacity = _cap
@@ -257,7 +261,7 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	@param value The value to add.
 	#end
 	Method Add( value:T )
-	
+		
 		If value > _maxValue Return
 		If _n >= _capacity Return
 		If Contains( value ) Return
@@ -266,28 +270,30 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		_sparse[value] = _n
 		_n += 1
 	End
-
+	
 	#rem wonkeydoc Adds the values in an array or container to the Set.
 	@param values The values to add.
 	#end
 	Method AddAll( values:T[] )
+		
 		For Local value := Eachin values
 			Add( value )
 		Next
 	End
-
+	
 	Method AddAll<C>( values:C ) Where C Implements IContainer<T>
+		
 		For Local value := Eachin values
 			Add( value )
 		Next
 	End
-
+	
 	#rem wonkeydoc Delete a value from the Set, if the value is in the Set.
 	@param value The value to remove.
 	@return True if the value was removed.
 	#end
 	Method Remove:Bool( value:T )
-	
+		
 		If Not Contains( value ) Return False
 		
 		Local tmp := _dense[_n - 1]
@@ -296,13 +302,13 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		_n -= 1
 		Return True
 	End
-
+	
 	#rem wonkeydoc Checks if the Set contains a value.
 	@param value The value to check for.
 	@return True if the Set contains the value, else false.
 	#end
 	Method Contains:Bool( value:T )
-	
+		
 		If value > _maxValue Return False
 		If _sparse[value] < _n And _dense[_sparse[value]] = value Return True
 		Return False
@@ -315,15 +321,16 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 	End
 	
 	Operator To:String()
-	
-		Local res:="{ "
-		For Local i:=0 Until _n
+		
+		Local tt := Typeof( _maxValue )
+		Local res := "Set<" + tt + ">{ "
+		For Local i := 0 Until _n
 			If i > 0 res += ", "
 			res += _dense[i]
 		Next
 		Return res + " }"
 	End
-
+	
 	Operator+=( item:T )
 		Add( item )
 	End
@@ -374,25 +381,21 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		
 		If _n < s._n
 			For Local i := 0 Until _n
-				If s.Contains( _dense[i] )
-					r.Add( _dense[i] )
-				End				
+				If s.Contains( _dense[i] ) r.Add( _dense[i] )
 			Next
 		Else
 			For Local i := 0 Until s._n
-				If Contains( s._dense[i] )
-					r.Add( s._dense[i] )
-				End				
+				If Contains( s._dense[i] ) r.Add( s._dense[i] )
 			Next
 		End
-
+		
 		Return r
 	End
 	
 	#rem wonkeydoc returns the union of both sets.
 	#end
 	Method Union:Set<T>( s:Set<T> )
-	
+		
 		Local uCap := _n + s._n
 		Local uMaxValue := Max( _maxValue, s._maxValue )
 		Local r := New Set<T>( uMaxValue, uCap )
@@ -407,8 +410,31 @@ Class Set<T> Implements IContainer<T> Where T=ULong Or T=UInt Or T=UShort Or T=U
 		Return r
 	End
 	
+	#rem wonkeydoc returns the difference of both sets.
+	#end
+	Method Difference:Set<T>( s:Set<T> )
+		
+		Local uMaxValue := Max( _maxValue, s._maxValue )
+		Local r := New Set<T>( uMaxValue, _n )
+		
+		For Local i := 0 Until _n
+			If Not s.Contains( _dense[i] ) r.Add( _dense[i] )
+		Next
+		Return r
+	End
+	
+	#rem wonkeydoc returns true if the sets	 have no items in common.
+	#end
+	Method Disjoint:Bool( s:Set<T> )
+		
+		For Local i := 0 Until _n
+			If s.Contains( _dense[i] ) Return False
+		Next
+		Return True
+	End
+	
 	Method ToArray:T[]()
 		Return _dense.Slice( 0, _n )
 	End
-
+	
 End
