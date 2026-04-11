@@ -83,6 +83,10 @@ Class Request
 		finished( iresult )
 	End
 
+	Operator To:String()
+		Return "ToDo: Fixme!!!"
+	End
+
 End
 
 Function StartNextRequest()

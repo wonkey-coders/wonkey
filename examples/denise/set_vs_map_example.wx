@@ -1,0 +1,98 @@
+
+#Import "<std>"
+
+Using std..
+
+Const ITEMS := 1000000
+Const MAXVALUE := 5000000
+
+Enum Bench
+	Base, Create, Union, Intersection, Difference
+End
+
+Function Main()
+	
+	Print "miniBench Map vs Set"
+	Print "Items: "+ITEMS
+	
+	Local timesMap := New Int[5]
+	Local timesSet:= New Int[5]
+	Local m1 := New Map<UInt,Bool>()
+	Local s1 := New Set<UInt>( MAXVALUE, ITEMS )
+	Local m2 := New Map<UInt,Bool>()
+	Local s2 := New Set<UInt>( MAXVALUE, ITEMS )
+	
+	SeedRnd(1234)
+	timesMap[Bench.Base] = Millisecs()
+	For Local i := 0 Until ITEMS
+		m1.Add( UInt( Rnd( MAXVALUE ) ), True )
+		m2.Add( UInt( Rnd( MAXVALUE ) ), True )
+	Next
+	timesMap[Bench.Create] = Millisecs()
+	Local m_union := m1.Union( m2, False )
+	timesMap[Bench.Union] = Millisecs()
+	Local m_inter := m1.Intersect( m2, False )	
+	timesMap[Bench.Intersection] = Millisecs()
+	Local m_diff := m1.Diff( m2, False )	
+	timesMap[Bench.Difference] = Millisecs()
+
+	SeedRnd(1234)
+	timesSet[Bench.Base] = Millisecs()
+	For Local i := 0 Until ITEMS
+		s1.Add( UInt( Rnd( MAXVALUE ) ) )
+		s2.Add( UInt( Rnd( MAXVALUE ) ) )
+	Next
+	timesSet[Bench.Create] = Millisecs()
+	Local s_union := s1.Union( s2 )
+	timesSet[Bench.Union] = Millisecs()
+	Local s_inter := s1.Intersection( s2 )
+	timesSet[Bench.Intersection] = Millisecs()
+	Local s_diff := s1.Difference( s2 )
+	timesSet[Bench.Difference] = Millisecs()
+	
+	Local tmc := timesMap[Bench.Create] - timesMap[Bench.Base]
+	Local tmu := timesMap[Bench.Union] - timesMap[Bench.Create]
+	Local tmi := timesMap[Bench.Intersection] - timesMap[Bench.Union]
+	Local tmd := timesMap[Bench.Difference] - timesMap[Bench.Intersection]
+	Local tsc := timesSet[Bench.Create] - timesSet[Bench.Base]
+	Local tsu := timesSet[Bench.Union] - timesSet[Bench.Create]
+	Local tsi := timesSet[Bench.Intersection] - timesSet[Bench.Union]
+	Local tsd := timesSet[Bench.Difference] - timesSet[Bench.Intersection]
+
+	Local amu := m_union.KeysToArray()
+	Local asu := New Stack<UInt>( s_union.ToArray() )
+	asu.Sort()
+	Print "--------------------------"
+	Print "Lenghts: " + amu.Length + " : " + asu.Length
+	Print "Checking union..."
+	For Local z := 0 Until amu.Length
+		If amu[z] <> asu[z] Print "[" + z + "]: " + amu[z] + " - " + asu[z]
+	Next
+
+	Local ami := m_inter.KeysToArray()
+	Local asi := New Stack<UInt>( s_inter.ToArray() )
+	asi.Sort()
+	Print "--------------------------"
+	Print "Lenghts: " + ami.Length + " : " + asi.Length
+	Print "Checking intersection..."
+	For Local z := 0 Until ami.Length
+		If ami[z] <> asi[z] Print "[" + z + "]: " + ami[z] + " - " + asi[z]
+	Next
+	
+	Local amd := m_diff.KeysToArray()
+	Local asd := New Stack<UInt>( s_diff.ToArray() )
+	asd.Sort()
+	Print "--------------------------"
+	Print "Lenghts: " + amd.Length + " : " + asd.Length
+	Print "Checking difference..."
+	For Local z := 0 Until amd.Length
+		If amd[z] <> asd[z] Print "[" + z + "]: " + amd[z] + " - " + asd[z]
+	Next
+
+	Print "--------------------------"
+	Print RSet("Create",20)+" "+RSet("Union",10)+" "+RSet("Intersection",15)+" "+RSet("Difference",15)
+	Print LSet("Maps",10)+RSet(tmc,9)+" ms"+RSet(tmu,8)+" ms"+RSet(tmi,13)+" ms"+RSet(tmd,13)+" ms"
+	Print LSet("Sets",10)+RSet(tsc,9)+" ms"+RSet(tsu,8)+" ms"+RSet(tsi,13)+" ms"+RSet(tsd,13)+" ms"
+	Print LSet("%",10)+RSet(tmc*100/tsc,9)+"% "+RSet(tmu*100/tsu,9)+"% "+RSet(tmi*100/tsi,14)+"% "+RSet(tmd*100/tsd,14)+"%"
+	
+End
