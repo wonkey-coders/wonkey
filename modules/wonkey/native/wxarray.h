@@ -225,6 +225,16 @@ template<class T,int D> struct wxArray{
 			for( int i=0;i<count;++i ) dst.data()[dstOffset+i]=data()[offset+i];
 		}
 	}
+	
+	wxString toString()const{
+		wxString result=wxDBType<T>()+"[ ";
+		int n = length();
+		for ( int i=0;i<n;++i) {
+			if (i>0) result+=", ";
+			result+=wxString(_rep->_data[i]);
+			}
+		return result+=" ]";
+	}
 };
 
 template<class T,int D> wxString wxDBType( wxArray<T,D> *p ){
