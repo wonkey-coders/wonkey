@@ -1,0 +1,111 @@
+
+#Import "<std>"
+
+Using std..
+
+Function func_square:Int( it:Int )
+	Return it*it
+End
+
+Function Main()
+	
+	Local lamb_square := Lambda:Int( it:Int )
+		Return it * it
+	End
+
+	Local lamb_odd := Lambda:Bool( it:Int )
+		Return it & 1
+	End
+
+	Local init_stack := New Stack<Int>( New Int[]( 1, 2, 3, 4, 5, 6, 7, 8, 9 ) )
+	
+	Print init_stack
+	Print "---------- MapIt -------------"
+	Local map1 := init_stack.MapIt( func_square )
+	Local map2 := init_stack.MapIt( lamb_square )
+	Local map3 := init_stack.MapIt( Lambda:String( it:Int )
+		Return it * it
+	End)
+	
+	Print map1.ToString()
+	Print map2.ToString()
+	Print map3.ToString()
+
+	Print "---------- FilterIt -------------"
+	Local fil1 := init_stack.FilterIt( lamb_odd )
+	Print fil1.ToString()
+	
+	Print "---------- AllIt -------------"
+	Print init_stack.AllIt(Lambda:Bool( it:Int )
+		Return it < 5	
+	End)+": all < 5 ?"
+	
+	Print init_stack.AllIt(Lambda:Bool( it:Int )
+		Return it < 15	
+	End)+": all < 15 ?"
+	
+	Print init_stack.AllIt(Lambda:Bool( it:Int )
+		Return it > 5	
+	End)+": all > 5 ?"
+	
+	Print init_stack.AllIt(Lambda:Bool( it:Int )
+		Return it > 15	
+	End)+": all > 15 ?"
+	
+	Print "---------- AnyIt -------------"
+	Print init_stack.AnyIt(Lambda:Bool( it:Int )
+		Return it > 5	
+	End)+": any > 5 ?"
+	
+	Print init_stack.AnyIt(Lambda:Bool( it:Int )
+		Return it < 5	
+	End)+": any < 5 ?"
+	
+	Print init_stack.AnyIt(Lambda:Bool( it:Int )
+		Return it > 15	
+	End)+": any > 15 ?"
+	
+	Print init_stack.AnyIt(Lambda:Bool( it:Int )
+		Return it = 9	
+	End)+": any = 9 ?"
+	
+	Print init_stack.AnyIt(Lambda:Bool( it:Int )
+		Return it = 10	
+	End)+": any = 10 ?"
+	
+	Print "---------- FoldItl (left)-------------"
+	Local fol := New Stack<Int>(New Int[]( 2, 3, 666 ) )
+	Print fol.FoldItl( Lambda:Int( a:Int, b:Int )
+		Return a + b
+	End) + " = sum " + fol
+	
+	Print fol.FoldItl( Lambda:Int( a:Int, b:Int )
+		Return a - b
+	End) + " = sub " + fol
+	
+	Print fol.FoldItl( Lambda:Int( a:Int, b:Int )
+		Return a * b
+	End) + " = mul " + fol
+	
+	Print fol.FoldItl( Lambda:Int( a:Int, b:Int )
+		Return a / b
+	End) + " = div " + fol
+	
+	Print "---------- FoldItr (right)-------------"
+	Print fol.FoldItr( Lambda:Int( a:Int, b:Int )
+		Return a + b
+	End) + " = sum " + fol
+	
+	Print fol.FoldItr( Lambda:Int( a:Int, b:Int )
+		Return a - b
+	End) + " = sub " + fol
+	
+	Print fol.FoldItr( Lambda:Int( a:Int, b:Int )
+		Return a * b
+	End) + " = mul " + fol
+	
+	Print fol.FoldItr( Lambda:Int( a:Int, b:Int )
+		Return a / b
+	End) + " = div " + fol
+	
+End
