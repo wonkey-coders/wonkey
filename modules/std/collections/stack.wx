@@ -903,4 +903,84 @@ Class Stack<T> Implements IContainer<T>
 		Sort( compare, x, hi, filter )
 	End
 	
+	#rem wonkeydoc Iterates through a container and checks if every item fulfills the predicate.
+	#end
+	Method AllIt:Bool( fun:Bool( it:T ) )
+
+		DebugAssert( _length, "Stack is empty" )
+
+		For Local i := 0 Until _length
+			If Not fun( _data[i] ) Return False
+		Next
+		Return True
+	End
+	
+	#rem wonkeydoc Iterates through a container and checks if at least one item fulfills the predicate.
+	#end
+	Method AnyIt:Bool( fun:Bool( it:T ) )
+
+		DebugAssert( _length, "Stack is empty" )
+
+		For Local i := 0 Until _length
+			If fun( _data[i] ) Return True
+		Next
+		Return False
+	End
+	
+	#rem wonkeydoc Returns a new Array with the results of the op func applied to every item in the stack.
+	#end
+	Method MapIt<M>:M[]( fun:M( it:T ) )
+
+		DebugAssert( _length, "Stack is empty" )
+
+		Local mm := New M[_length]
+		For Local i := 0 Until _length
+			mm[i] = fun( _data[i] )
+		Next
+		Return mm
+	End
+	
+	#rem wonkeydoc Returns a new Array with all the items of stack that fulfill the predicate func.
+	#end
+	Method FilterIt:T[]( fun:Bool( it:T ) )
+
+		DebugAssert( _length, "Stack is empty" )
+
+		Local mm := New T[_length]
+		Local idx := 0
+		For Local i := 0 Until _length
+			If fun( _data[i] )
+				mm[idx] = _data[i]
+				idx += 1
+			Endif
+		Next
+		Return mm.Slice( 0, idx )
+	End
+	
+	#rem wonkeydoc Fold a sequence from left to right, returning the accumulation.
+	#end
+	Method FoldItl:T( fun:T( a:T, b:T ) )
+
+		DebugAssert( _length, "Stack is empty" )
+
+		Local result:T = _data[0]
+		For Local i := 1 Until _length
+			result = fun( result, _data[i] )
+		Next
+		Return result
+	End
+	
+	#rem wonkeydoc Fold a sequence from right to left, returning the accumulation.
+	#end
+	Method FoldItr:T( fun:T( a:T, b:T ) )
+
+		DebugAssert( _length, "Stack is empty" )
+
+		Local result:T = _data[_length - 1]
+		For Local i := _length - 2 To 0 Step -1
+			result = fun( result, _data[i] )
+		Next
+		Return result
+	End
+	
 End

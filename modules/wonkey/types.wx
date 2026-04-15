@@ -638,7 +638,11 @@ Struct @Array<T>
 	
 	#end
 	Method CopyTo( dstArray:T[],srcOffset:Int,dstOffset:Int,count:Int )="copyTo"
-
+	
+	#rem wonkeydoc Return a printable representation of the array.
+	#end
+	Method ToString:String()="toString"
+	
 End
 
 #rem wonkeydoc Base class of all objects.
