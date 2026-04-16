@@ -643,6 +643,36 @@ Struct @Array<T>
 	#end
 	Method ToString:String()="toString"
 	
+	#rem wonkeydoc Finds the index of the first matching value in the array.
+	In debug builds, a runtime error will occur if `start` is less than 0 or greater than the length of the stack.
+	@param value The value to find.
+	@param start The starting index for the search.
+	@return The index of the value in the stack, or -1 if the value was not found.
+	#end
+	Method Find:Int( value:T, start:Int = 0 )="find"
+
+	#rem wonkeydoc Finds the index of the last matching value in the array.
+	In debug builds, a runtime error will occur if `start` is less than 0 or greater than the length of the stack.
+	@param value The value to find.
+	@param start The starting index for the search.
+	@return The index of the value in the stack, or -1 if the value was not found.
+	#end
+	Method FindLast:Int( value:T, start:Int = 0 )="findlast"
+
+	#rem wonkeydoc Checks if the array contains a value.
+	@param value The value to check for.
+	@return True if the array contains the value, else false.
+	#end
+	Method Contains:Bool( value:T )="contains"
+	
+	#rem wonkeydoc Creates a new Array, consisting of numbers between a starting point
+	and ending point, spaced apart by a given interval.
+	@param newLength Length of new Array.
+	@param start The starting point.
+	@param _step Interval.
+	#end
+	Method Iota:T[]( newLength:Int, start:Int = 0, _step:Int = 1 )="iota"
+	
 End
 
 #rem wonkeydoc Base class of all objects.
