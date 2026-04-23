@@ -232,9 +232,51 @@ template<class T,int D> struct wxArray{
 		for ( int i=0;i<n;++i) {
 			if (i>0) result+=", ";
 			result+=wxString(_rep->_data[i]);
-			}
+		}
 		return result+=" ]";
 	}
+	
+	int find( T value, int start )const{
+		wxDebugAssert( start>=0 && start<=length(), "start out of range" );
+		int i = start;
+		int n = length();
+		while (i<n) {
+			if (value==_rep->_data[i]) return i;
+			++i;
+		}
+		return -1;
+	}
+	
+	int findlast( T value, int start )const{
+		wxDebugAssert( start>=0 && start<=length(), "start out of range" );
+		int i = length();
+		int n = start;
+		while (i<n) {
+			--i;
+			if (value==_rep->_data[i]) return i;
+		}
+		return -1;
+	}
+	
+	bool contains( T value )const{
+		return find( value, 0 )!=-1;
+	}
+
+	wxArray<T,1> iota( int newLength, int start, int step )const{
+		wxDebugAssert( newLength>=0, "new length must not be negative" );
+		auto r=wxArray<T,1>( newLength );
+		int value = start;
+		for( int i=0;i<newLength;++i ) {
+			r.data()[i]=value;
+			if (step>0) {
+				value+=step;
+			}else{
+				value-=step;
+			}
+		}
+		return r;
+	}
+	
 };
 
 template<class T,int D> wxString wxDBType( wxArray<T,D> *p ){
