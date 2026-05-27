@@ -10,7 +10,7 @@ namespace wxGC{
 	void free( void *p );
 }
 
-template<class T> class wxFunction;
+template<class T> struct wxFunction;
 
 template<class R,class...A> struct wxFunction<R(A...)>{
 

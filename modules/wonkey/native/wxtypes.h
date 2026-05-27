@@ -20,9 +20,9 @@ typedef unsigned short wxChar;
 
 class wxString;
 
-template<class T> class wxFunction;
+template<class T> struct wxFunction;
 
-template<class T,int D=1> class wxArray;
+template<class T,int D=1> struct wxArray;
 
 template<class T> struct wxGCVar;
 
