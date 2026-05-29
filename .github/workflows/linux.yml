@@ -59,16 +59,6 @@ jobs:
           cd scripts
           ./rebuildwake.sh
 
-      - name: rebuild modules with new wake (2x)
-        run: |
-          cd scripts
-          ./rebuildmods.sh
-
-      - name: rebuild wake with new modules (2x)
-        run: |
-          cd scripts
-          ./rebuildwake.sh
-
       - name: rebuild wide
         run: |
           cd scripts
