@@ -1,0 +1,265 @@
+name: release
+
+# Triggered only by a "Bumped versions" commit on develop
+# (Mark Sibly's historical convention). The commit contains ONLY the
+# version constant changes in wx.wx (WAKE_VERSION),
+# wide.wx (WIDE_VERSION) and createrelease.wx (WONKEY_VERSION / WAKE_VERSION /
+# RELEASE_SUFFIX). The workflow reads these versions, rebuilds each platform,
+# recommits the bootstrap binaries, tags and publishes the release.
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force the release without a 'Bumped versions' commit"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Guard: only proceed on a bump commit, and extract the tag.
+  # ---------------------------------------------------------------------------
+  guard:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.head_commit.message, 'Bumped versions')
+    outputs:
+      tag: ${{ steps.versions.outputs.tag }}
+      wonkey: ${{ steps.versions.outputs.wonkey }}
+      wake: ${{ steps.versions.outputs.wake }}
+      wide: ${{ steps.versions.outputs.wide }}
+      suffix: ${{ steps.versions.outputs.suffix }}
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: parse versions from createrelease.wx
+        id: versions
+        run: |
+          # Tolerates spacing variations: `:="x"` (createrelease.wx) and `:= "x"` (wx.wx).
+          get() { grep -oE "Const $2 *:?= *\"[^\"]*\"" "$1" | head -n1 | sed -E 's/.*"([^"]*)".*/\1/'; }
+          cr=src/createrelease/createrelease.wx
+          wonkey=$(get "$cr" WONKEY_VERSION)
+          wake=$(get "$cr" WAKE_VERSION)
+          suffix=$(get "$cr" RELEASE_SUFFIX)
+
+          # WAKE_VERSION must be identical in wx.wx and createrelease.wx (otherwise desynced).
+          wake_wx=$(get src/wake/wx.wx WAKE_VERSION)
+          if [ "$wake" != "$wake_wx" ]; then
+            echo "::error::WAKE_VERSION desynced — createrelease.wx='$wake' vs wx.wx='$wake_wx'"
+            exit 1
+          fi
+
+          # WIDE_VERSION lives in wide.wx (used for Wide's title + release notes).
+          wide=$(get src/wide/wide.wx WIDE_VERSION)
+
+          echo "wonkey=$wonkey"   >> "$GITHUB_OUTPUT"
+          echo "wake=$wake"       >> "$GITHUB_OUTPUT"
+          echo "wide=$wide"       >> "$GITHUB_OUTPUT"
+          echo "suffix=$suffix"   >> "$GITHUB_OUTPUT"
+          echo "tag=v${wonkey}${suffix}" >> "$GITHUB_OUTPUT"
+          echo "Wonkey=$wonkey  Wake=$wake  Wide=$wide  Suffix='$suffix'  Tag=v${wonkey}${suffix}"
+
+  # ---------------------------------------------------------------------------
+  # 2. Matrix build: full bootstrap + package generation per platform.
+  # ---------------------------------------------------------------------------
+  build:
+    needs: guard
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # id = unique artifact key ; host = platform folder (bin/, releases/).
+          - id: linux
+            host: linux
+            runner: ubuntu-latest
+            shell: bash
+            commit_bins: true
+          - id: macos
+            host: macos
+            runner: macos-latest
+            shell: bash
+            commit_bins: true
+          - id: windows
+            host: windows
+            runner: windows-2022
+            shell: cmd
+            commit_bins: true
+          # MSVC variant: same host=windows, but msvc toolchain and NO
+          # commit-back of binaries (mingw stays canonical). Additionally produces
+          # a wonkey_..._windows-msvc_x64 package.
+          - id: windows-msvc
+            host: windows
+            runner: windows-2022
+            shell: cmd
+            msvc: true
+            commit_bins: false
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: install linux packages
+        if: matrix.host == 'linux'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y g++-multilib libopenal-dev libpulse-dev libsdl2-dev
+
+      # --- Windows: toolchain selection ---------------------------------------
+      # MSVC: WX_USE_MSVC left empty => wake calls FindMSVC() which locates
+      #       Visual Studio + Windows Kits on its own (WX_MSVC_VERSIONS = years to scan).
+      # gcc : WX_USE_MSVC=0 explicitly forces mingw (otherwise autodetection
+      #       would switch to msvc since VS is present on the runner).
+      - name: configure windows toolchain
+        if: matrix.host == 'windows'
+        shell: pwsh
+        env:
+          MATRIX_MSVC: ${{ matrix.msvc }}
+        run: |
+          if ($env:MATRIX_MSVC -eq 'true') {
+            "WX_MSVC_VERSIONS=2022" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          } else {
+            "WX_USE_MSVC=0" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          }
+
+      # --- Bootstrap (same sequence as the per-platform workflows) ------------
+      - name: bootstrap (unix)
+        if: matrix.host != 'windows'
+        run: |
+          cd scripts
+          ./rebuildmods.sh
+          ./rebuildwake.sh
+          ./rebuildwide.sh
+          ./rebuildlauncher.sh
+          ./makedocs.sh
+
+      - name: bootstrap (windows)
+        if: matrix.host == 'windows'
+        shell: cmd
+        run: |
+          cd %CD%\scripts
+          rebuildmods.bat && rebuildwake.bat && rebuildwide.bat && rebuildlauncher.bat && makedocs.bat
+
+      # --- createrelease: no dedicated script, build via `wake app` -----------
+      - name: build createrelease (unix)
+        if: matrix.host != 'windows'
+        run: |
+          bin/${{ matrix.host }}/wake app -clean -apptype=console -config=release \
+            -product=src/createrelease/createrelease.products/${{ matrix.host }}/createrelease \
+            src/createrelease/createrelease.wx
+
+      - name: build createrelease (windows)
+        if: matrix.host == 'windows'
+        shell: cmd
+        run: |
+          bin\windows\wake app -clean -apptype=console -config=release -product=src/createrelease/createrelease.products/windows/createrelease src/createrelease/createrelease.wx
+
+      # --- Package generation (createrelease writes into releases/<host>/) ----
+      - name: run createrelease (unix)
+        if: matrix.host != 'windows'
+        run: src/createrelease/createrelease.products/${{ matrix.host }}/createrelease
+
+      - name: run createrelease (windows)
+        if: matrix.host == 'windows'
+        shell: cmd
+        run: src\createrelease\createrelease.products\windows\createrelease.exe
+
+      # --- Windows: compile the Inno installer from the generated .iss --------
+      - name: build inno installer (windows)
+        if: matrix.host == 'windows'
+        shell: cmd
+        run: |
+          for %%f in (releases\windows\*.iss) do iscc "%%f"
+
+      # --- Artifacts: bootstrap binaries (canonical) + packages --------------
+      # Only canonical variants (commit_bins) upload their binaries:
+      # the msvc variant must not overwrite the committed mingw.
+      - name: upload bootstrap binaries
+        if: matrix.commit_bins
+        uses: actions/upload-artifact@v4
+        with:
+          name: bin-${{ matrix.host }}
+          path: bin/${{ matrix.host }}/
+          retention-days: 1
+
+      - name: upload release packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-${{ matrix.id }}
+          path: releases/${{ matrix.host }}/
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # 3. Recommit the bootstrap binaries (required: clones rebuild on top of them)
+  #    + tag. [skip ci] prevents the workflow from re-triggering.
+  # ---------------------------------------------------------------------------
+  commit-binaries:
+    needs: [guard, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: download all bootstrap binaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: bin-*
+          path: .artifacts
+
+      - name: place binaries
+        run: |
+          for host in linux macos windows; do
+            if [ -d ".artifacts/bin-$host" ]; then
+              mkdir -p "bin/$host"
+              cp -R ".artifacts/bin-$host/." "bin/$host/"
+            fi
+          done
+          rm -rf .artifacts
+
+      - name: commit, tag & push
+        run: |
+          git config user.name  "wonkey-ci"
+          git config user.email "ci@wonkey-coders.invalid"
+          git add bin/
+          if git diff --cached --quiet; then
+            echo "No binaries changed."
+          else
+            git commit -m "chore: bootstrap binaries ${{ needs.guard.outputs.tag }} [skip ci]"
+            git push origin develop
+          fi
+          git tag -f "${{ needs.guard.outputs.tag }}"
+          git push -f origin "${{ needs.guard.outputs.tag }}"
+
+  # ---------------------------------------------------------------------------
+  # 4. GitHub release with all installation packages.
+  # ---------------------------------------------------------------------------
+  release:
+    needs: [guard, commit-binaries]
+    runs-on: ubuntu-latest
+    steps:
+      - name: download all packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pkg-*
+          path: dist
+          merge-multiple: true
+
+      - name: create github release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.guard.outputs.tag }}
+          name: Wonkey ${{ needs.guard.outputs.wonkey }}${{ needs.guard.outputs.suffix }}
+          body: |
+            Wonkey ${{ needs.guard.outputs.wonkey }}${{ needs.guard.outputs.suffix }}
+            wake ${{ needs.guard.outputs.wake }}
+            wide ${{ needs.guard.outputs.wide }}
+          files: dist/**/*
+          fail_on_unmatched_files: false

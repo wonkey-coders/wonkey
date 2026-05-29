@@ -1,0 +1,65 @@
+name: windows-msvc
+
+# Full bootstrap of Wonkey on Windows with the MSVC toolchain (instead of the
+# mingw/gcc used by windows.yml). Acts as a test CI on push/PR; the MSVC
+# release is produced by release.yml (windows-msvc matrix entry).
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  build-windows-msvc:
+    runs-on: windows-2022 # VS 2022 Enterprise preinstalled
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      # WX_USE_MSVC left empty => wake calls FindMSVC(), which locates
+      # Visual Studio + Windows Kits on its own. WX_MSVC_VERSIONS = VS years to scan.
+      - name: configure wake for MSVC
+        shell: pwsh
+        run: |
+          "WX_MSVC_VERSIONS=2022" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: print host infos
+        shell: cmd
+        run: echo %CD%
+
+      - name: print wake help
+        shell: cmd
+        run: |
+          %CD%\bin\windows\wake
+
+      - name: rebuild modules
+        shell: cmd
+        run: |
+          cd %CD%\scripts
+          rebuildmods.bat
+
+      - name: rebuild wake
+        shell: cmd
+        run: |
+          cd %CD%\scripts
+          rebuildwake.bat
+
+      - name: rebuild wide
+        shell: cmd
+        run: |
+          cd %CD%\scripts
+          rebuildwide.bat
+
+      - name: rebuild launcher
+        shell: cmd
+        run: |
+          cd %CD%\scripts
+          rebuildlauncher.bat
+
+      - name: make docs
+        shell: cmd
+        run: |
+          cd %CD%\scripts
+          makedocs.bat
