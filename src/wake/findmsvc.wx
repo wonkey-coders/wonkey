@@ -11,13 +11,13 @@ Function FindMSVC:Bool()
 	Local msvcs:=""
 	Local msvcs_versions:=GetEnv("WX_MSVC_VERSIONS")
 	For Local ver:=Eachin msvcs_versions.Split(",")
-		msvcs=GetEnv( "ProgramFiles(x86)" )+"\Microsoft Visual Studio\" + ver.Trim()
-		If GetFileType( msvcs )=FileType.Directory Exit
+		msvcs=FindProgDir( "Microsoft Visual Studio\" + ver.Trim() )
+		If msvcs Exit
 	Next
-	If GetFileType( msvcs )<>FileType.Directory Return False
-	
-	Local wkits:=GetEnv( "ProgramFiles(x86)" )+"\Windows Kits\10"
-	If GetFileType( wkits )<>FileType.Directory Return False
+	If Not msvcs Return False
+
+	Local wkits:=FindProgDir( "Windows Kits\10" )
+	If Not wkits Return False
 	
 	Local toolsDir:="",maxver:=0
 	
@@ -75,8 +75,22 @@ Function FindMSVC:Bool()
 	Return True
 End
 
+' Looks for a subfolder in both Program Files roots:
+' VS 2022 installs under %ProgramFiles%, VS 2017/2019 under %ProgramFiles(x86)%.
+' Windows Kits 10 lives under %ProgramFiles(x86)%. Returns "" if not found.
+Function FindProgDir:String( sub:String )
+
+	Local dir:=GetEnv( "ProgramFiles" )+"\"+sub
+	If GetFileType( dir )=FileType.Directory Return dir
+
+	dir=GetEnv( "ProgramFiles(x86)" )+"\"+sub
+	If GetFileType( dir )=FileType.Directory Return dir
+
+	Return ""
+End
+
 Function FindMaxVerDir:String( dir:String )
-	
+
 	Local maxver:Long=0,maxverDir:=""
 	
 	For Local f:=Eachin LoadDir( dir )

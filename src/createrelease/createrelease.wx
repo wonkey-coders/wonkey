@@ -399,13 +399,13 @@ Function FindMSVC:bool()
 	Local msvcs:=""
 	Local msvcs_versions:=GetEnv("WX_MSVC_VERSIONS")
 	For Local ver:=Eachin msvcs_versions.Split(",")
-		msvcs=GetEnv( "ProgramFiles(x86)" )+"\Microsoft Visual Studio\" + ver.Trim()
-		If GetFileType( msvcs )=FileType.Directory Exit
+		msvcs=FindProgDir( "Microsoft Visual Studio\" + ver.Trim() )
+		If msvcs Exit
 	Next
-	If GetFileType( msvcs )<>FileType.Directory Return False
-	
-	Local wkits:=GetEnv( "ProgramFiles(x86)" )+"\Windows Kits\10"
-	If GetFileType( wkits )<>FileType.Directory Return False
+	If Not msvcs Return False
+
+	Local wkits:=FindProgDir( "Windows Kits\10" )
+	If Not wkits Return False
 	
 	Local toolsDir:="",maxver:=0
 	
@@ -434,23 +434,35 @@ Function FindMSVC:bool()
 	Return True
 End
 
+' VS 2022 installs under %ProgramFiles%, VS 2017/2019 under %ProgramFiles(x86)%.
+Function FindProgDir:String( sub:String )
+
+	Local dir:=GetEnv( "ProgramFiles" )+"\"+sub
+	If GetFileType( dir )=FileType.Directory Return dir
+
+	dir=GetEnv( "ProgramFiles(x86)" )+"\"+sub
+	If GetFileType( dir )=FileType.Directory Return dir
+
+	Return ""
+End
+
 Function FindMaxVerDir:String( dir:String )
-	
+
 	Local maxver:Long=0,maxverDir:=""
-	
+
 	For Local f:=Eachin LoadDir( dir )
-		
+
 		Local verDir:=dir+"\"+f
 		If GetFileType( verDir )<>FileType.Directory Continue
-		
+
 		Local ver:Long=Int( f.Replace( ".","" ) )
-		
+
 		If ver>maxver
 			maxver=ver
 			maxverDir=verDir
 		Endif
 	Next
-	
+
 	Return maxverDir
 End
 
