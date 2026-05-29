@@ -127,11 +127,17 @@ jobs:
             "WX_USE_MSVC=0" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           }
 
-      # --- Bootstrap (same sequence as the per-platform workflows) ------------
+      # --- Bootstrap -----------------------------------------------------------
+      # The 2nd mods/wake pass is required here (unlike the test CIs): pass 1
+      # builds with the committed wake, pass 2 rebuilds modules+wake with the
+      # freshly-built wake so any wake change (codegen, MSVC detection, ...)
+      # propagates into the binaries shipped by THIS release.
       - name: bootstrap (unix)
         if: matrix.host != 'windows'
         run: |
           cd scripts
+          ./rebuildmods.sh
+          ./rebuildwake.sh
           ./rebuildmods.sh
           ./rebuildwake.sh
           ./rebuildwide.sh
@@ -143,7 +149,7 @@ jobs:
         shell: cmd
         run: |
           cd %CD%\scripts
-          rebuildmods.bat && rebuildwake.bat && rebuildwide.bat && rebuildlauncher.bat && makedocs.bat
+          rebuildmods.bat && rebuildwake.bat && rebuildmods.bat && rebuildwake.bat && rebuildwide.bat && rebuildlauncher.bat && makedocs.bat
 
       # --- createrelease: no dedicated script, build via `wake app` -----------
       - name: build createrelease (unix)
