@@ -268,5 +268,11 @@ jobs:
             Wonkey ${{ needs.guard.outputs.wonkey }}${{ needs.guard.outputs.suffix }}
             wake ${{ needs.guard.outputs.wake }}
             wide ${{ needs.guard.outputs.wide }}
-          files: dist/**/*
+          # Only the final archives/installers, NOT the unpacked package trees.
+          # dist/**/* would recurse into thousands of example files and the upload
+          # opens them all at once -> "EMFILE: too many open files".
+          files: |
+            dist/*.tgz
+            dist/*.pkg
+            dist/*.exe
           fail_on_unmatched_files: false
