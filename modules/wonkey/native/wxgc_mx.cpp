@@ -7,6 +7,7 @@
 
 #include <mutex>
 #include <condition_variable>
+#include <chrono>
 
 #ifdef _WIN32
 #include <windows.h>
