@@ -5,9 +5,9 @@
 Using libc..
 Using std..
 
-Const WONKEY_VERSION:="2022.04"
+Const WONKEY_VERSION:="2026.05"
 
-Const WAKE_VERSION:="1.1.0"
+Const WAKE_VERSION:="1.1.1"
 
 Const RELEASE_SUFFIX:=""
 
