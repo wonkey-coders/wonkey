@@ -123,6 +123,7 @@ jobs:
         run: |
           if ($env:MATRIX_MSVC -eq 'true') {
             "WX_MSVC_VERSIONS=2022" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+            "WX_ARCH_WINDOWS=x64"   | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           } else {
             "WX_USE_MSVC=0" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           }

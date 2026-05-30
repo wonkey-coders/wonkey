@@ -30,6 +30,14 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v2
 
+      # Force mingw/gcc: VS 2022 is present on the runner, so without this wake's
+      # autodetection (WX_USE_MSVC empty) would switch this job to MSVC. This CI
+      # is the mingw test; the MSVC build is covered by windows-msvc.yml.
+      - name: configure wake for mingw
+        shell: pwsh
+        run: |
+          "WX_USE_MSVC=0" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+
       # Runs a set of commands using the runners shell
       - name: print host infos
         shell: cmd

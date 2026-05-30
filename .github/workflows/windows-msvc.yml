@@ -24,6 +24,7 @@ jobs:
         shell: pwsh
         run: |
           "WX_MSVC_VERSIONS=2022" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "WX_ARCH_WINDOWS=x64"   | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: print host infos
         shell: cmd
