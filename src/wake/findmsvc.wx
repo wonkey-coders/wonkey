@@ -75,10 +75,17 @@ Function FindMSVC:Bool()
 	Return True
 End
 
-' Looks for a subfolder in both Program Files roots:
-' VS 2022 installs under %ProgramFiles%, VS 2017/2019 under %ProgramFiles(x86)%.
+' Looks for a subfolder across the Program Files roots:
+' VS 2022 installs under the real 64-bit %ProgramFiles%, VS 2017/2019 under %ProgramFiles(x86)%.
 ' Windows Kits 10 lives under %ProgramFiles(x86)%. Returns "" if not found.
+' NOTE: wake.exe is a 32-bit (WOW64) process, so on 64-bit Windows both %ProgramFiles%
+' and %ProgramFiles(x86)% resolve to "C:\Program Files (x86)" and the real 64-bit
+' "C:\Program Files" (where VS 2022 lives) is invisible. %ProgramW6432% always points
+' to the true 64-bit Program Files even from a 32-bit process, so check it first.
 Function FindProgDir:String( sub:String )
+
+	Local w6432:=GetEnv( "ProgramW6432" )
+	If w6432 And GetFileType( w6432+"\"+sub )=FileType.Directory Return w6432+"\"+sub
 
 	Local dir:=GetEnv( "ProgramFiles" )+"\"+sub
 	If GetFileType( dir )=FileType.Directory Return dir

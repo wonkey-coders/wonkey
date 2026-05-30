@@ -5,9 +5,9 @@
 Using libc..
 Using std..
 
-Const WONKEY_VERSION:="2026.05"
+Const WONKEY_VERSION:="2022.04"
 
-Const WAKE_VERSION:="1.1.1"
+Const WAKE_VERSION:="1.1.0"
 
 Const RELEASE_SUFFIX:=""
 
@@ -434,8 +434,14 @@ Function FindMSVC:bool()
 	Return True
 End
 
-' VS 2022 installs under %ProgramFiles%, VS 2017/2019 under %ProgramFiles(x86)%.
+' VS 2022 installs under the real 64-bit %ProgramFiles%, VS 2017/2019 under %ProgramFiles(x86)%.
+' wake/createrelease is a 32-bit (WOW64) process: %ProgramFiles% is redirected to the x86
+' root, hiding the 64-bit "C:\Program Files" where VS 2022 lives. %ProgramW6432% always
+' points to the true 64-bit Program Files even from a 32-bit process, so check it first.
 Function FindProgDir:String( sub:String )
+
+	Local w6432:=GetEnv( "ProgramW6432" )
+	If w6432 And GetFileType( w6432+"\"+sub )=FileType.Directory Return w6432+"\"+sub
 
 	Local dir:=GetEnv( "ProgramFiles" )+"\"+sub
 	If GetFileType( dir )=FileType.Directory Return dir
