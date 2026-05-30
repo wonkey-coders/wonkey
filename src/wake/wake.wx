@@ -838,9 +838,15 @@ Function LoadEnv:Bool( path:String )
 		
 		Local name:=line.Slice( 0,i ).Trim()
 		Local value:=line.Slice( i+1 ).Trim()
-		
+
+		' Let the real process environment win over plain config defaults, so callers
+		' (e.g. CI via GITHUB_ENV) can force toolchain/arch without this file clobbering them.
+		' Self-referencing compositions like PATH=${PATH};... must still apply, so only
+		' skip when the config value does NOT reference the variable it is setting.
+		If GetEnv( name ) And Not value.Contains( "${"+name+"}" ) Continue
+
 		value=ReplaceEnv( value,lineid )
-		
+
 		SetEnv( name,value )
 
 	Next
