@@ -85,6 +85,14 @@ jobs:
             runner: macos-latest
             shell: bash
             commit_bins: true
+          # ARM variant: same host=macos, native arm64 build (no Rosetta), and NO
+          # commit-back of binaries (x86_64 stays canonical in bin/macos/).
+          # Produces a wonkey_..._macos_arm64 package alongside the x64 one.
+          - id: macos-arm
+            host: macos
+            runner: macos-latest
+            shell: bash
+            commit_bins: false
           - id: windows
             host: windows
             runner: windows-2022
@@ -127,6 +135,23 @@ jobs:
           } else {
             "WX_USE_MSVC=0" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
           }
+
+      # --- macOS: target architecture -----------------------------------------
+      # macos-latest is arm64. The default (env_macos.txt) builds x86_64, so the
+      # canonical 'macos' job keeps producing the x64 package (runs under Rosetta).
+      # The 'macos-arm' job overrides WX_MACOS_ARCHS to build native arm64; wake
+      # reads this to set both the compile target and __ARCH__ (so the package is
+      # named _arm64). A real env var wins over env_macos.txt (see LoadEnv).
+      - name: configure macos arch
+        if: matrix.host == 'macos'
+        env:
+          MATRIX_ID: ${{ matrix.id }}
+        run: |
+          if [ "$MATRIX_ID" = "macos-arm" ]; then
+            echo "WX_MACOS_ARCHS=-arch arm64 -target arm64-apple-darwin" >> "$GITHUB_ENV"
+          else
+            echo "WX_MACOS_ARCHS=-arch x86_64 -target x86_64-apple-darwin" >> "$GITHUB_ENV"
+          fi
 
       # --- Bootstrap -----------------------------------------------------------
       # The 2nd mods/wake pass is required here (unlike the test CIs): pass 1
