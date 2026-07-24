@@ -2,5 +2,5 @@
 	"module":"emscripten",
 	"version":"1.0.0",
 	"support":"http://github.com/wonkey-coders",
-	"depends":["libc","sdl2"]
+	"depends":["wonkey"]
 }

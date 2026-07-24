@@ -4,5 +4,5 @@
   "author": "Danilo Krahn, Wonkey Coders",
   "version": "1.0.0",
   "support": "https://github.com/wonkey-coders/wonkey",
-  "depends": ["libc"]
+  "depends": ["wonkey"]
 }
