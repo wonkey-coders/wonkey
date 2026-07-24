@@ -998,11 +998,41 @@ Class LiteralExpr Extends Expr
 		Else
 		
 			Select tokeType
-			Case TOKE_INTLIT 
-				type=Type.IntType
-			Case TOKE_FLOATLIT 
+			Case TOKE_INTLIT
+
+			    Local tkLower := toke.ToLower()
+			    Local atIdx := tkLower.Find( "@" )
+
+			    If atIdx <> -1
+			        Local suffix := tkLower.Slice( atIdx + 1 )
+			        Select suffix
+			        Case "ub"
+			            type = Type.UByteType
+			        Case "b"
+			            type = Type.ByteType
+			        Case "us"
+			            type = Type.UShortType
+			        Case "s"
+			            type = Type.ShortType
+			        Case "ui"
+			            type = Type.UIntType
+			        Case "i"
+			            type = Type.IntType
+			        Case "ul"
+			            type = Type.ULongType
+			        Case "l"
+			            type = Type.LongType
+			        Default
+			            Throw New SemantEx( "Invalid or malformed numeric suffix: @" + suffix )
+			        End
+			    Else
+				    ' Flujo original de Wonkey si no hay sufijo
+			        type = Type.IntType
+			    Endif
+			Case TOKE_FLOATLIT
+				If toke.Find( "@" ) <> -1 Throw New SemantEx( "Numeric suffixes ('@') are not valid on Float literals" )
 				type=Type.FloatType
-			Case TOKE_STRINGLIT 
+			Case TOKE_STRINGLIT
 				type=Type.StringType
 			Case TOKE_KEYWORD
 				type=Type.BoolType
@@ -1013,27 +1043,65 @@ Class LiteralExpr Extends Expr
 		If Not type SemantError( "LiteralExpr.OnSemant()" )
 		
 		Local t:=toke
-		
 		Local ptype:=TCast<PrimType>( type )
 		
-		If ptype And ptype.IsIntegral And t And t[0]=CHAR_DOLLAR
-		
-			Local n:ULong
-			For Local i:=1 Until toke.Length
-				Local c:=toke[i]
-				If c>=97
-					c-=87
-				Else If c>=65
-					c-=55
-				Else
-					c-=48
-				Endif
-				n=n Shl 4 | c
-			Next
-			t=String( n )
+		' --- EVALUACIÓN DE BASES PURA PARA ENTEROS ---
+		If ptype And ptype.IsIntegral And t
+
+			' Primero quitamos el sufijo @ si existe para no alterar la lógica numérica
+			Local _suffix:=t.Find( "@" )
+			If _suffix <> -1 t = t.Slice( 0, _suffix )
+
+			' ¡AQUÍ SÍ! Quitamos los guiones bajos únicamente al token numérico
+			t = t.Replace( "_", "" )
+
+			Local isBin:=False
+			Local isHex:=False
+			Local startIdx:=0
+
+			'$
+			If t[0]=CHAR_DOLLAR
+				isHex=True
+				startIdx=1
+			'%
+			Else If t[0]=37
+				isBin=True
+				startIdx=1
+			'0x
+			Else If t.Length > 2 And t[0]=48 And (t[1]=120 Or t[1]=88)
+				isHex=True
+				startIdx=2
+			'0b
+			Else If t.Length > 2 And t[0]=48 And (t[1]=98 Or t[1]=66)
+				isBin=True
+				startIdx=2
+			Endif
+
+			If isHex
+				Local n:ULong
+				For Local i:=startIdx Until t.Length
+					Local c:=t[i]
+					If c>=97
+						c-=87
+					Else If c>=65
+						c-=55
+					Else
+						c-=48
+					Endif
+					n=n Shl 4 | c
+				Next
+				t=String( n )
+			Else If isBin
+				Local n:ULong
+				For Local i:=startIdx Until t.Length
+					Local c:=t[i] - 48
+					n=n Shl 1 | c
+				Next
+				t=String( n )
+			Endif
 			
 		Else If ptype=Type.StringType
-		
+			' Los strings se quedan intactos con sus guiones bajos y arrobas, solo se les quita las comillas
 			t=DequoteWxString( t )
 		Endif
 		

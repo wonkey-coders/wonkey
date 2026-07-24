@@ -1,4 +1,4 @@
 {
 	"module":"zlib",
-	"depends":["libc"]
+	"depends":["wonkey"]
 }

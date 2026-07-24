@@ -13,6 +13,7 @@ Const DECL_FINAL:=			$000800
 Const DECL_EXTERN:=			$001000
 Const DECL_EXTENSION:=		$002000
 Const DECL_DEFAULT:=		$004000
+Const DECL_INLINE:=		$008000
 
 Const DECL_GETTER:=			$010000
 Const DECL_SETTER:=			$020000
@@ -90,6 +91,10 @@ Class Decl Extends PNode
 	
 	Property IsDefault:Bool()
 		Return (flags & DECL_DEFAULT)<>0
+	End
+	
+	Property IsInline:Bool()
+		Return (flags & DECL_INLINE)<>0
 	End
 	
 	Method ToNode:SNode( scope:Scope ) Virtual

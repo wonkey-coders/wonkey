@@ -2,6 +2,5 @@
 	"module":"bullet",
 	"about":"bullet 3d physics lib wrapper",
 	"version":"1.0.0",
-	"depends":["libc"]
+	"depends":["std"]
 }
-

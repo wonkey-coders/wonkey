@@ -412,6 +412,8 @@ Class Translator_CPP Extends Translator
 		
 		Local proto:=retType+ident+"("+params+")"
 		
+		If fdecl.IsInline proto="inline "+proto
+		
 		If header And func.IsMethod	'Member
 			If fdecl.IsAbstract Or fdecl.IsVirtual Or ctype.IsVirtual
 				proto="virtual "+proto

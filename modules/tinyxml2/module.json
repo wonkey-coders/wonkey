@@ -1,3 +1,4 @@
 {
-	"module":"tinyxml2"
+	"module":"tinyxml2",
+	"depends":["wonkey"]
 }

@@ -7,4 +7,3 @@
 	"support": "https://github.com/glfw/glfw, https://github.com/wonkey-coders",
 	"depends":["libc"]
 }
-

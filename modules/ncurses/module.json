@@ -3,5 +3,5 @@
 	"about":"ncurses library wrapper",
 	"author":"Rob C",
 	"version":"1.0.0",
-	"depends":["libc"]
+	"depends":["std"]
 }

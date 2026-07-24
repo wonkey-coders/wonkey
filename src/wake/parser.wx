@@ -466,6 +466,7 @@ Class Parser
 		Local whereExpr:Expr
 		Local symbol:String
 		Local originalKind:String = kind
+		Local isArrowFunc := False
 		
 		originalKind = kind
 	
@@ -575,7 +576,7 @@ Class Parser
 			End
 			
 			Select Toke
-			Case "virtual","abstract","override","final","extension"
+			Case "virtual","abstract","override","final","extension","inline"
 			
 				If (flags & DECL_EXTENSION) Error( "Extension methods cannot have modifiers" )
 			
@@ -593,14 +594,26 @@ Class Parser
 				Else If CParse( "extension" )
 					If kind<>"method" Or Not (flags & DECL_EXTERN) Error( "Only extern methods can be declared 'Extension'" )
 					flags|=DECL_EXTENSION
+				Else If CParse( "inline" )
+					If (flags & DECL_ABSTRACT) Error( "Abstract declarations cannot be 'Inline'" )
+					If (flags & DECL_EXTERN) Error( "Extern declarations cannot be 'Inline'" )
+				    If (flags & (DECL_VIRTUAL|DECL_OVERRIDE)) Error( "Virtual/Override methods cannot be 'Inline'" )
+					flags|=DECL_INLINE
 				Endif
 				
 			End
 			
-			If CParse( "=" )
-				
+			' --- COMPROBACIÓN EXCLUSIVA PARA EVITAR CONFLICTO CON EXPRESIONES FLECHA ---
+			If Toke = "="
+				BeginTryParse()
+				Bump()
+				If Toke = ">" isArrowFunc = True
+				TryParseFailed() ' Restauramos el token a "=" pase lo que pase
+			Endif
+
+			If Not isArrowFunc And CParse( "=" )
+				' Comportamiento original de Wonkey para externas
 				If Not (flags & DECL_EXTERN) Error( "Non-extern declarations cannot be assigned an extern symbol" )
-					
 				symbol=ParseString()
 			Endif
 
@@ -619,7 +632,7 @@ Class Parser
 				If CParse( "virtual" ) flags|=DECL_VIRTUAL
 			Endif
 			
-			ParseEol()
+			If Not isArrowFunc ParseEol()
 			
 		Catch ex:ParseEx
 		
@@ -638,6 +651,41 @@ Class Parser
 		decl.whereExpr=whereExpr
 		decl.symbol=symbol
 		
+		' --- INTERCEPCIÓN DE LA FUNCIÓN FLECHA ---
+		If isArrowFunc
+			' Mimetizamos comportamiento ante expresiones mal formadas
+			Try
+
+				If (flags & (DECL_EXTERN|DECL_ABSTRACT)) Error( "Arrow function syntax cannot be combined with Extern or Abstract declarations" )
+
+				' Consumimos de forma efectiva el "=" y el ">" que dejamos intactos arriba
+				CParse( "=" )
+				CParse( ">" )
+
+				' Parseamos la expresión matemática/lógica de retorno
+				Local expr := ParseExpr()
+
+				' Inyectamos el Return sintáctico en el árbol de sentencias de decl
+				Local retStmt := New ReturnStmtExpr( expr, srcpos, EndPos )
+				decl.stmts = New StmtExpr[]( retStmt )
+
+				' En lugar de salir a ciegas, obligamos al lexer a consumir
+				' el fin de línea de la misma manera que Wonkey limpia una asignación inline.
+				decl.endpos = EndPos
+
+				' Y ahora que hemos movido el engranaje, Wonkey ya ve el salto de línea real
+				ParseEol()
+
+			Catch ex:ParseEx
+
+				SkipToNextLine()
+			End
+
+			' Salimos elegantemente del parser
+			Return decl
+		Endif
+
+		' Flujo original de Wonkey si no es flecha
 		If (flags & (DECL_EXTERN|DECL_ABSTRACT)) And Not (flags & DECL_DEFAULT)
 			decl.endpos=EndPos
 			Return decl

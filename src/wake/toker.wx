@@ -194,25 +194,71 @@ Class Toker
 			Else
 				_tokeType=TOKE_IDENT
 			Endif
-			
-		Else If IsDigit( ch ) Or (ch=CHAR_DOT And _pos<_len And IsDigit( _text[_pos] ))
+		' numeros
+		Else If IsDigit( ch ) Or (ch=CHAR_DOT And _pos<_len And IsDigit(_text[_pos])) Or (ch=CHAR_DOLLAR And _pos<_len And IsHexDigit(_text[_pos])) Or (ch=37 And _pos<_len And (_text[_pos]=48 Or _text[_pos]=49))
 
 			_tokeType=TOKE_INTLIT
 			If ch=CHAR_DOT
 				_tokeType=TOKE_FLOATLIT
 				_pos+=1
+			'$ prefijo para hex
+			Else If ch=CHAR_DOLLAR
+				_pos+=1
+				While _pos<_len And (IsHexDigit(_text[_pos]) Or (_text[_pos]=CHAR_UNDERSCORE And _pos+1<_len And IsHexDigit(_text[_pos+1])))
+					_pos+=1
+				Wend
+			'% prefijo para bin
+			Else If ch=37
+				_pos+=1
+				While _pos<_len And (_text[_pos]=48 Or _text[_pos]=49 Or (_text[_pos]=CHAR_UNDERSCORE And _pos+1<_len And (_text[_pos+1]=48 Or _text[_pos+1]=49)))
+					_pos+=1
+				Wend
 			Endif
 			
-			While _pos<_len And IsDigit( _text[_pos] )
-				_pos+=1
-			Wend
+			'0x o 0b prefijos universales (cuando ch empezó siendo '0')
+			If ch=48 And _pos<_len
+			    Local nextCh := _text[_pos]
+			    ' Hexadecimal: 0x o 0X
+			    If nextCh=120 Or nextCh=88
+			        _pos+=1
+			        While _pos<_len And (IsHexDigit(_text[_pos]) Or (_text[_pos]=CHAR_UNDERSCORE And _pos+1<_len And IsHexDigit(_text[_pos+1])))
+			            _pos+=1
+			        Wend
+			    ' Binario: 0b o 0B
+			    Elseif nextCh=98 Or nextCh=66
+			        _pos+=1
+			        While _pos<_len And (_text[_pos]=48 Or _text[_pos]=49 Or (_text[_pos]=CHAR_UNDERSCORE And _pos+1<_len And (_text[_pos+1]=48 Or _text[_pos+1]=49)))
+			            _pos+=1
+			        Wend
+			    Endif
+			Endif
 			
+			' Consumir dígitos restantes en caso de números decimales estándar
+			While _pos<_len
+				Local nextCh := _text[_pos]
+				If IsDigit(nextCh)
+					_pos+=1
+				' "_" Debe ir seguido por un caracter valido
+				Elseif nextCh=CHAR_UNDERSCORE And _pos+1<_len And IsDigit(_text[_pos+1])
+					_pos+=1
+				Else
+					Exit
+				Endif
+			Wend
+
 			'.#
-			If _pos+1<_len And _text[_pos]=CHAR_DOT And IsDigit( _text[_pos+1] ) And _tokeType=TOKE_INTLIT
+			If _pos+1<_len And _text[_pos]=CHAR_DOT And IsDigit(_text[_pos+1]) And _tokeType=TOKE_INTLIT
 				_tokeType=TOKE_FLOATLIT
 				_pos+=2
-				While _pos<_len And IsDigit( _text[_pos] )
-					_pos+=1
+				While _pos<_len
+					Local nextCh := _text[_pos]
+					If IsDigit( nextCh )
+						_pos+=1
+					Elseif nextCh=CHAR_UNDERSCORE And _pos+1<_len And IsDigit(_text[_pos+1])
+						_pos+=1
+					Else
+						Exit
+					Endif
 				Wend
 			Endif
 			
@@ -223,12 +269,38 @@ Class Toker
 				If tpos<_len And IsDigit( _text[tpos] )
 					_tokeType=TOKE_FLOATLIT
 					_pos=tpos+1
-					While _pos<_len And IsDigit( _text[_pos] )
-						_pos+=1
+					While _pos<_len
+						Local nextCh := _text[_pos]
+						If IsDigit( nextCh )
+							_pos+=1
+						Elseif nextCh=CHAR_UNDERSCORE And _pos+1<_len And IsDigit(_text[_pos+1])
+							_pos+=1
+						Else
+							Exit
+						Endif
 					Wend
 				Endif
 			Endif
 			
+			' --- FILTRO DE SUFIJOS CON ARROBA ---
+			If _pos<_len And _text[_pos]=64 ' '@'
+
+			    Local hasLetters := False
+			    Local savedPos := _pos
+			    _pos+=1
+
+			    While _pos<_len
+			        Local sufCh := _text[_pos]
+			        If sufCh=117 Or sufCh=85 Or sufCh=98 Or sufCh=66 Or sufCh=115 Or sufCh=83 Or sufCh=105 Or sufCh=73 Or sufCh=108 Or sufCh=76
+			            _pos+=1
+			            hasLetters=True
+			        Else
+			            Exit
+			        Endif
+			    Wend
+			    If Not hasLetters _pos=savedPos
+			Endif
+
 		Else If ch=CHAR_QUOTE
 		
 			While _pos<_len
@@ -257,15 +329,6 @@ Class Toker
 			Else
 				_tokeType=TOKE_BADSTRINGLIT
 			Endif
-			
-		Else If ch=CHAR_DOLLAR And _pos<_len And IsHexDigit( _text[_pos] )
-		
-			_pos+=1
-			While _pos<_len And IsHexDigit( _text[_pos] )
-				_pos+=1
-			Wend
-			
-			_tokeType=TOKE_INTLIT
 			
 		Else If ch=CHAR_HASH And (_tokeType=TOKE_EOL Or _tokeType=TOKE_PREPROC)
 		

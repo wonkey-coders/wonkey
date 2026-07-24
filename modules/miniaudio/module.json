@@ -4,5 +4,5 @@
 	"author":"David Reid (@makron), Wonkey Coders",
 	"version":"1.0.0",
 	"support":"http://github.com/wonkey-coders",
-	"depends":[]
+	"depends":["libc"]
 }
